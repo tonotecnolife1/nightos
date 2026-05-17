@@ -467,12 +467,12 @@ export function ChatWindow({
 
   const placeholder =
     phase.name === "hearing"
-      ? "上の選択肢から選んでね"
+      ? "上から選んでね"
       : phase.name === "freeform"
-        ? "話しかけてもOK・書いてもOK"
+        ? "話しかけてもOK"
         : phase.name === "responded"
-          ? "続けて相談する場合はここに"
-          : "下から選ぶか、自由に書いてもOK";
+          ? "続けて相談…"
+          : "選ぶか自由に書いてもOK";
 
   return (
     <div className="flex flex-col h-dvh">

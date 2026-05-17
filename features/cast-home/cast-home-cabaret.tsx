@@ -21,15 +21,14 @@ export function CastHomeCabaret({ data, storeMessages }: Props) {
       <VisitNotificationPoller castId={data.cast.id} />
 
       {/* ── Hero ── */}
-      <div className="relative bg-gradient-hero px-5 pt-12 pb-6">
-        <p className="text-body-sm text-ink-secondary mb-1">おかえりなさい</p>
-        <h1 className="font-display text-[26px] leading-[1.2] font-medium tracking-wide text-ink">
-          {data.cast.name}さん
+      <div className="relative bg-gradient-hero px-5 pt-4 pb-4 flex items-center justify-between">
+        <h1 className="font-display text-[20px] leading-[1.2] font-medium tracking-wide text-ink">
+          ホーム
         </h1>
         <Link
           href="/cast/my"
           aria-label="マイページ"
-          className="absolute top-12 right-5 w-9 h-9 rounded-full bg-pearl-warm/60 backdrop-blur-sm flex items-center justify-center hover:bg-pearl-warm/80 transition shadow-soft"
+          className="w-9 h-9 rounded-full bg-pearl-warm/60 backdrop-blur-sm flex items-center justify-center hover:bg-pearl-warm/80 transition shadow-soft"
         >
           <UserCircle size={22} className="text-ink-secondary" />
         </Link>

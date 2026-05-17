@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { UserCircle } from "lucide-react";
+import { UserCircle, UserPlus } from "lucide-react";
 import { SummaryCards } from "./components/summary-cards";
 import { RuriMamaEntryCard } from "./components/ruri-mama-entry-card";
 import { FollowTargetList } from "./components/follow-target-list";
@@ -18,19 +18,18 @@ interface Props {
 
 export function CastHomeClub({ data, storeMessages, customers }: Props) {
   return (
-    <div>
+    <div className="relative">
       <VisitNotificationPoller castId={data.cast.id} />
 
       {/* ── Hero ── */}
-      <div className="relative bg-gradient-hero px-5 pt-12 pb-6">
-        <p className="text-body-sm text-ink-secondary mb-1">おかえりなさい</p>
-        <h1 className="font-display text-[26px] leading-[1.2] font-medium tracking-wide text-ink">
-          {data.cast.name}さん
+      <div className="relative bg-gradient-hero px-5 pt-4 pb-4 flex items-center justify-between">
+        <h1 className="font-display text-[20px] leading-[1.2] font-medium tracking-wide text-ink">
+          ホーム
         </h1>
         <Link
           href="/cast/my"
           aria-label="マイページ"
-          className="absolute top-12 right-5 w-9 h-9 rounded-full bg-pearl-warm/60 backdrop-blur-sm flex items-center justify-center hover:bg-pearl-warm/80 transition shadow-soft"
+          className="w-9 h-9 rounded-full bg-pearl-warm/60 backdrop-blur-sm flex items-center justify-center hover:bg-pearl-warm/80 transition shadow-soft"
         >
           <UserCircle size={22} className="text-ink-secondary" />
         </Link>
@@ -63,6 +62,15 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
         </section>
 
       </div>
+
+      {/* FAB: 顧客新規登録 (1タップ) */}
+      <Link
+        href="/cast/customers/new"
+        className="fixed bottom-24 right-5 z-50 w-14 h-14 rounded-full bg-amethyst shadow-elevated-light flex items-center justify-center text-pearl hover:bg-amethyst-dark active:scale-95 transition-all"
+        aria-label="お客様を新規登録"
+      >
+        <UserPlus size={22} />
+      </Link>
     </div>
   );
 }
