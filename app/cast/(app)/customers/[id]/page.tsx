@@ -16,6 +16,7 @@ import { StoreInfoSection } from "@/features/customer-card/components/store-info
 import { VisitHistory } from "@/features/customer-card/components/visit-history";
 import { CustomerPhotoUpload } from "@/features/customer-card/components/customer-photo-upload";
 import { CollapsibleSection } from "@/features/customer-card/components/collapsible-section";
+import { AddToScheduleButton } from "@/features/cast-schedule/add-to-schedule-button";
 import { getCurrentCastId } from "@/lib/nightos/auth";
 import { mockCustomers } from "@/lib/nightos/mock-data";
 import {
@@ -109,6 +110,12 @@ export default async function CustomerCardPage({
             ボトルを記録
           </Link>
         </div>
+
+        <AddToScheduleButton
+          castId={castId}
+          customerId={customer.id}
+          customerName={customer.name}
+        />
 
         {/* LINE exchange action */}
         <LineExchangeButton
