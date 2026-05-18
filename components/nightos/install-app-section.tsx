@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle, Download } from "lucide-react";
+import { CheckCircle, Download, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   clearInstallPrompt,
@@ -10,6 +10,13 @@ import {
 } from "@/lib/nightos/pwa";
 
 type InstallStatus = "loading" | "installed" | "available" | "ios" | "unavailable";
+
+const shareToInstall = async () => {
+  if (typeof navigator === "undefined" || !navigator.share) return;
+  try {
+    await navigator.share({ title: "NIGHTOS", url: window.location.origin });
+  } catch {}
+};
 
 export function InstallAppSection() {
   const [status, setStatus] = useState<InstallStatus>("loading");
@@ -66,15 +73,24 @@ export function InstallAppSection() {
       )}
 
       {status === "ios" && (
-        <p className="text-[11px] text-ink-muted leading-relaxed">
-          画面下の <span className="font-medium">共有</span> ボタン →{" "}
-          <span className="font-medium">ホーム画面に追加</span> をタップしてください。
-        </p>
+        <>
+          <p className="text-[11px] text-ink-muted leading-relaxed">
+            「共有」→「ホーム画面に追加」をタップしてください
+          </p>
+          <button
+            type="button"
+            onClick={shareToInstall}
+            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-gradient-blush text-ink text-body-sm font-medium shadow-soft hover:brightness-[1.02] transition"
+          >
+            <Share2 size={14} />
+            共有を開く
+          </button>
+        </>
       )}
 
       {status === "unavailable" && (
         <p className="text-[11px] text-ink-muted leading-relaxed">
-          Chrome のメニュー →{" "}
+          Chrome のメニュー（右上 ⋮）→{" "}
           <span className="font-medium">ホーム画面に追加</span> から追加できます。
         </p>
       )}
@@ -152,15 +168,24 @@ export function InstallAppSectionAlways() {
       )}
 
       {status === "ios" && (
-        <p className="text-[11px] text-ink-muted leading-relaxed">
-          画面下の <span className="font-medium">共有</span> ボタン →{" "}
-          <span className="font-medium">ホーム画面に追加</span> をタップしてください。
-        </p>
+        <>
+          <p className="text-[11px] text-ink-muted leading-relaxed">
+            「共有」→「ホーム画面に追加」をタップしてください
+          </p>
+          <button
+            type="button"
+            onClick={shareToInstall}
+            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-gradient-blush text-ink text-body-sm font-medium shadow-soft hover:brightness-[1.02] transition"
+          >
+            <Share2 size={14} />
+            共有を開く
+          </button>
+        </>
       )}
 
       {status === "unavailable" && (
         <p className="text-[11px] text-ink-muted leading-relaxed">
-          Chrome のメニュー →{" "}
+          Chrome のメニュー（右上 ⋮）→{" "}
           <span className="font-medium">ホーム画面に追加</span> から追加できます。
         </p>
       )}
