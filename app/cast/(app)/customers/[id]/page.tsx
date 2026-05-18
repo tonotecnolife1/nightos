@@ -16,7 +16,7 @@ import { StoreInfoSection } from "@/features/customer-card/components/store-info
 import { VisitHistory } from "@/features/customer-card/components/visit-history";
 import { CustomerPhotoUpload } from "@/features/customer-card/components/customer-photo-upload";
 import { CollapsibleSection } from "@/features/customer-card/components/collapsible-section";
-import { getCurrentCastId } from "@/lib/nightos/auth";
+import { getCurrentCastId, getCurrentVenueType } from "@/lib/nightos/auth";
 import { mockCustomers } from "@/lib/nightos/mock-data";
 import {
   getAllCasts,
@@ -31,11 +31,13 @@ export default async function CustomerCardPage({
 }) {
   const castId = await getCurrentCastId();
 
-  const [context, screenshots, allCasts] = await Promise.all([
+  const [context, screenshots, allCasts, venueType] = await Promise.all([
     getCustomerContext(castId, params.id),
     getScreenshotsForCustomer(castId, params.id),
     getAllCasts(),
+    getCurrentVenueType(),
   ]);
+  const isCabaret = venueType === "cabaret";
   if (!context) notFound();
 
   // Resolve referrer name (if any) for the mini badge
@@ -68,27 +70,29 @@ export default async function CustomerCardPage({
 
         <CustomerPhotoUpload customerId={customer.id} customerName={customer.name} />
 
-        {/* Manager + change button */}
-        <div className="flex items-center gap-2 flex-wrap text-[11px] text-ink-secondary">
-          <span>
-            管理:{" "}
-            <span className="text-ink font-medium">
-              {allCasts.find((c) => c.id === customer.manager_cast_id)?.name ?? "—"}
+        {/* Manager + change button (club only) */}
+        {!isCabaret && (
+          <div className="flex items-center gap-2 flex-wrap text-[11px] text-ink-secondary">
+            <span>
+              管理:{" "}
+              <span className="text-ink font-medium">
+                {allCasts.find((c) => c.id === customer.manager_cast_id)?.name ?? "—"}
+              </span>
+              {" / 担当: "}
+              <span className="text-ink font-medium">
+                {allCasts.find((c) => c.id === customer.cast_id)?.name ?? "—"}
+              </span>
             </span>
-            {" / 担当: "}
-            <span className="text-ink font-medium">
-              {allCasts.find((c) => c.id === customer.cast_id)?.name ?? "—"}
-            </span>
-          </span>
-          <ChangeManagerButton
-            customerId={customer.id}
-            customerName={customer.name}
-            currentManagerId={customer.manager_cast_id ?? null}
-            allCasts={allCasts}
-            requesterCastId={castId}
-            requesterName={allCasts.find((c) => c.id === castId)?.name ?? "キャスト"}
-          />
-        </div>
+            <ChangeManagerButton
+              customerId={customer.id}
+              customerName={customer.name}
+              currentManagerId={customer.manager_cast_id ?? null}
+              allCasts={allCasts}
+              requesterCastId={castId}
+              requesterName={allCasts.find((c) => c.id === castId)?.name ?? "キャスト"}
+            />
+          </div>
+        )}
 
         <CustomerStats context={context} />
 

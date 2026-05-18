@@ -6,8 +6,9 @@ import { StatCard } from "@/components/nightos/stat-card";
 import { CustomerPageShell } from "@/features/cast-customers/components/customer-page-shell";
 import {
   getAllCasts,
-  getAllCustomers,
+  getCustomersForCast,
 } from "@/lib/nightos/supabase-queries";
+import { getCurrentCastId, getCurrentVenueType } from "@/lib/nightos/auth";
 import { mockCasts } from "@/lib/nightos/mock-data";
 import {
   buildReferralTree,
@@ -17,10 +18,23 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function CastCustomerListPage() {
-  const [allCasts, customers] = await Promise.all([
+  const castId = await getCurrentCastId();
+  const [allCasts, allCustomers, venueType] = await Promise.all([
     getAllCasts(),
-    getAllCustomers(),
+    getCustomersForCast(castId),
+    getCurrentVenueType(),
   ]);
+  const isCabaret = venueType === "cabaret";
+
+  // Split: customers this cast manages vs. customers they assist (not managing)
+  const myCustomers = allCustomers.filter(
+    (c) => c.manager_cast_id === castId || c.cast_id === castId && !c.manager_cast_id,
+  );
+  // Help customers: assigned to this cast but managed by someone else
+  const helpCustomers = allCustomers.filter(
+    (c) => c.cast_id === castId && c.manager_cast_id && c.manager_cast_id !== castId,
+  );
+  const customers = isCabaret ? allCustomers : myCustomers;
 
   const funnel = calculateFunnelStats(customers);
   const tree = buildReferralTree({ customers, casts: mockCasts });
@@ -52,7 +66,7 @@ export default async function CastCustomerListPage() {
             tone="default"
           />
           <StatCard
-            label="担当あり"
+            label={isCabaret ? "フリー" : "担当あり"}
             value={funnel.assigned}
             unit="人"
             tone="rose"
@@ -95,6 +109,7 @@ export default async function CastCustomerListPage() {
           <CustomerPageShell
             allCasts={allCasts}
             allMyCustomers={customers}
+            helpCustomers={!isCabaret ? helpCustomers : []}
           />
         )}
       </div>

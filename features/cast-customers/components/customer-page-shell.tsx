@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { HandHelping } from "lucide-react";
 import type { Cast, Customer } from "@/types/nightos";
 import { Card } from "@/components/nightos/card";
 import { CustomerFilterBar } from "./customer-filter-bar";
@@ -22,11 +23,11 @@ const LS_FILTERS = "nightos.customers.filters";
 
 interface Props {
   allCasts: Cast[];
-  /** 自分に関係する全顧客（マスター＋担当両方） */
   allMyCustomers: Customer[];
+  helpCustomers?: Customer[];
 }
 
-export function CustomerPageShell({ allCasts, allMyCustomers }: Props) {
+export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = [] }: Props) {
   const [grouping, setGrouping] = useState<ViewGrouping>("customer");
   const [filters, setFilters] = useState<CustomerFilters>(
     DEFAULT_CUSTOMER_FILTERS,
@@ -54,16 +55,18 @@ export function CustomerPageShell({ allCasts, allMyCustomers }: Props) {
   };
 
   const managerOptions = useMemo(
-    () =>
-      allCasts.filter(
-        (c) => c.club_role === "mama" || c.club_role === "oneesan",
-      ),
+    () => allCasts,
     [allCasts],
   );
 
   const filteredMyCustomers = useMemo(
     () => applyCustomerFilters(allMyCustomers, filters),
     [allMyCustomers, filters],
+  );
+
+  const filteredHelpCustomers = useMemo(
+    () => applyCustomerFilters(helpCustomers, filters),
+    [helpCustomers, filters],
   );
 
   if (!loaded) return null;
@@ -93,6 +96,31 @@ export function CustomerPageShell({ allCasts, allMyCustomers }: Props) {
           casts={allCasts}
           mode={grouping}
         />
+      )}
+
+      {helpCustomers.length > 0 && (
+        <div className="space-y-2 pt-2 border-t border-ink/[0.06]">
+          <div className="flex items-center gap-1.5 px-1">
+            <HandHelping size={13} className="text-champagne-dark" />
+            <h3 className="text-label-md text-ink-secondary font-medium">
+              ヘルプで入ったお客様
+            </h3>
+            <span className="text-[10px] text-ink-muted ml-auto">
+              {filteredHelpCustomers.length}人
+            </span>
+          </div>
+          {filteredHelpCustomers.length === 0 ? (
+            <Card className="p-6 text-center text-body-sm text-ink-muted">
+              該当する顧客が見つかりません
+            </Card>
+          ) : (
+            <CustomerMapView
+              customers={filteredHelpCustomers}
+              casts={allCasts}
+              mode={grouping}
+            />
+          )}
+        </div>
       )}
     </div>
   );
