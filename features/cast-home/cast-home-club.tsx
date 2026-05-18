@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { UserCircle, UserPlus } from "lucide-react";
+import { CalendarDays, UserCircle, UserPlus } from "lucide-react";
 import { SummaryCards } from "./components/summary-cards";
 import { RuriMamaEntryCard } from "./components/ruri-mama-entry-card";
 import { FollowTargetList } from "./components/follow-target-list";
@@ -26,13 +26,22 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
         <h1 className="font-display text-[20px] leading-[1.2] font-medium tracking-wide text-ink">
           ホーム
         </h1>
-        <Link
-          href="/cast/my"
-          aria-label="マイページ"
-          className="w-9 h-9 rounded-full bg-pearl-warm/60 backdrop-blur-sm flex items-center justify-center hover:bg-pearl-warm/80 transition shadow-soft"
-        >
-          <UserCircle size={22} className="text-ink-secondary" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/cast/schedule"
+            aria-label="スケジュール"
+            className="w-9 h-9 rounded-full bg-pearl-warm/60 backdrop-blur-sm flex items-center justify-center hover:bg-pearl-warm/80 transition shadow-soft"
+          >
+            <CalendarDays size={18} className="text-ink-secondary" />
+          </Link>
+          <Link
+            href="/cast/my"
+            aria-label="マイページ"
+            className="w-9 h-9 rounded-full bg-pearl-warm/60 backdrop-blur-sm flex items-center justify-center hover:bg-pearl-warm/80 transition shadow-soft"
+          >
+            <UserCircle size={22} className="text-ink-secondary" />
+          </Link>
+        </div>
       </div>
 
       <div className="px-5 pt-5 pb-8 space-y-5">
