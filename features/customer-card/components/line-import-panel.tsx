@@ -33,6 +33,7 @@ import {
   type MemoFieldKey,
 } from "../actions";
 import { compressImage } from "../lib/compress-image";
+import { ImageLightbox } from "./image-lightbox";
 
 interface Props {
   customer: Customer;
@@ -546,6 +547,7 @@ function ScreenshotHistoryRow({
   customerId: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [lightbox, setLightbox] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const handleDelete = () => {
@@ -565,7 +567,13 @@ function ScreenshotHistoryRow({
         onClick={() => setExpanded((v) => !v)}
         className="w-full flex items-center gap-3 px-3 py-2 text-left active:bg-pearl-soft"
       >
-        <div className="w-12 h-12 rounded-btn overflow-hidden border border-pearl-soft shrink-0 bg-pearl-soft relative">
+        {/* Thumbnail — separate tap target to open lightbox */}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setLightbox(true); }}
+          className="w-12 h-12 rounded-btn overflow-hidden border border-pearl-soft shrink-0 bg-pearl-soft relative hover:opacity-80 active:scale-95 transition-all"
+          aria-label="画像を拡大"
+        >
           <Image
             src={screenshot.image_data}
             alt="LINEスクショ"
@@ -574,7 +582,7 @@ function ScreenshotHistoryRow({
             className="object-cover"
             unoptimized
           />
-        </div>
+        </button>
         <div className="flex-1 min-w-0">
           <div className="text-label-sm text-ink-muted">{dateLabel}</div>
           <div className="text-body-sm text-ink truncate">
@@ -582,17 +590,30 @@ function ScreenshotHistoryRow({
           </div>
         </div>
       </button>
+      {lightbox && (
+        <ImageLightbox
+          src={screenshot.image_data}
+          alt="LINEスクショ"
+          onClose={() => setLightbox(false)}
+        />
+      )}
       {expanded && (
         <div className="px-3 pb-3 pt-1 space-y-2 border-t border-pearl-soft">
           <div className="flex justify-center">
-            <Image
-              src={screenshot.image_data}
-              alt="LINEスクショ"
-              width={400}
-              height={600}
-              className="rounded-btn border border-pearl-soft max-h-96 w-auto object-contain"
-              unoptimized
-            />
+            <button
+              type="button"
+              onClick={() => setLightbox(true)}
+              className="hover:opacity-90 active:scale-[0.99] transition-all"
+            >
+              <Image
+                src={screenshot.image_data}
+                alt="LINEスクショ"
+                width={400}
+                height={600}
+                className="rounded-btn border border-pearl-soft max-h-96 w-auto object-contain"
+                unoptimized
+              />
+            </button>
           </div>
           {screenshot.applied_fields.length > 0 ? (
             <div className="text-label-sm text-amethyst-dark">
