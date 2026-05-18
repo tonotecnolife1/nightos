@@ -32,8 +32,17 @@ const SYSTEM_PROMPT = `あなたは銀座のクラブのママ「さくらママ
 メッセージ本文のみを返してください。前置きや見出しは不要、装飾も不要。
 `;
 
+interface ShiftEntry {
+  date: string;
+  status: string;
+  startTime?: string;
+  endTime?: string;
+  note?: string;
+}
+
 interface RequestBody {
   castId: string;
+  upcomingShifts?: ShiftEntry[];
 }
 
 interface BriefingResponse {
@@ -69,7 +78,7 @@ export async function POST(req: Request) {
 
   try {
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-    const prompt = buildUserPrompt(data);
+    const prompt = buildUserPrompt(data, body.upcomingShifts);
     const response = await client.messages.create({
       model: SAKURA_MAMA_MODEL,
       max_tokens: 350,
@@ -96,13 +105,22 @@ export async function POST(req: Request) {
   }
 }
 
-function buildUserPrompt(data: CastHomeData): string {
+function buildUserPrompt(data: CastHomeData, upcomingShifts?: ShiftEntry[]): string {
   const lines: string[] = [];
   lines.push(`[キャスト]`);
   lines.push(`名前: ${data.cast.name}`);
   lines.push(`今月の指名: ${data.cast.nomination_count}本`);
   lines.push(`リピート率: ${Math.round(data.cast.repeat_rate * 100)}%`);
   lines.push("");
+
+  if (upcomingShifts && upcomingShifts.length > 0) {
+    lines.push(`[直近の出勤予定]`);
+    upcomingShifts.forEach((s) => {
+      const timeStr = s.startTime ? ` ${s.startTime}〜${s.endTime ?? ""}` : "";
+      lines.push(`- ${s.date}${timeStr}${s.note ? ` (${s.note})` : ""}`);
+    });
+    lines.push("");
+  }
 
   if (data.targets.length === 0) {
     lines.push(`[今日連絡するお客様]`);
