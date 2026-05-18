@@ -31,14 +31,15 @@ export default async function CustomerCardPage({
 }) {
   const castId = await getCurrentCastId();
 
-  const [context, screenshots, allCasts, venueType] = await Promise.all([
+  const [context, allCasts, venueType] = await Promise.all([
     getCustomerContext(castId, params.id),
-    getScreenshotsForCustomer(castId, params.id),
     getAllCasts(),
     getCurrentVenueType(),
   ]);
-  const isCabaret = venueType === "cabaret";
   if (!context) notFound();
+  const isCabaret = venueType === "cabaret";
+  const isManager = context.customer.manager_cast_id === castId;
+  const screenshots = await getScreenshotsForCustomer(castId, params.id, isManager);
 
   // Resolve referrer name (if any) for the mini badge
   const customer = context.customer;

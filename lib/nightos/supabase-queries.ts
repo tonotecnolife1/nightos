@@ -898,20 +898,22 @@ function createBottleMock(input: CreateBottleInput): Bottle {
 export async function getScreenshotsForCustomer(
   castId: string,
   customerId: string,
+  allForCustomer = false,
 ): Promise<LineScreenshot[]> {
   return withFallback(
     "getScreenshotsForCustomer",
-    () => getScreenshotsForCustomerReal(castId, customerId),
-    () => getScreenshotsForCustomerMock(castId, customerId),
+    () => getScreenshotsForCustomerReal(castId, customerId, allForCustomer),
+    () => getScreenshotsForCustomerMock(castId, customerId, allForCustomer),
   );
 }
 
 function getScreenshotsForCustomerMock(
   castId: string,
   customerId: string,
+  allForCustomer = false,
 ): LineScreenshot[] {
   return mockScreenshots
-    .filter((s) => s.cast_id === castId && s.customer_id === customerId)
+    .filter((s) => s.customer_id === customerId && (allForCustomer || s.cast_id === castId))
     .sort(
       (a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
