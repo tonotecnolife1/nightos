@@ -10,6 +10,7 @@ import { FunnelBadge } from "@/features/customer-card/components/funnel-badge";
 import { LineExchangeButton } from "@/features/customer-card/components/line-exchange-button";
 import { LineImportPanel } from "@/features/customer-card/components/line-import-panel";
 import { LineHistoryTimeline } from "@/features/customer-card/components/line-history-timeline";
+import { LineCommunicationSummary } from "@/features/customer-card/components/line-communication-summary";
 import { MemoSection } from "@/features/customer-card/components/memo-section";
 import { RefreshMemoButton } from "@/features/customer-card/components/refresh-memo-button";
 import { StoreInfoSection } from "@/features/customer-card/components/store-info-section";
@@ -150,6 +151,12 @@ export default async function CustomerCardPage({
         {/* ── LINE・連絡（折りたたみ） ── */}
         <div className="border-t border-ink/[0.06] pt-2">
           <CollapsibleSection title="LINE・連絡履歴">
+            <LineCommunicationSummary
+              customerId={customer.id}
+              customerName={customer.name}
+              castName={allCasts.find((c) => c.id === castId)?.name ?? "キャスト"}
+              screenshots={screenshots}
+            />
             <LineImportPanel
               customer={customer}
               memo={context.memo}
