@@ -23,6 +23,8 @@
     --rose-gold: #dba98e;
     --rose-gold-deep: #a87560;
     --rose-gold-metallic: linear-gradient(135deg, #f0c5af 0%, #d4a486 50%, #a87560 100%);
+    /* Light-only variant for dark backgrounds — keeps the text legible on nocturne */
+    --rose-gold-metallic-light: linear-gradient(135deg, #fce4d4 0%, #f0c5af 50%, #dba98e 100%);
 
     /* Champagne */
     --champagne-soft: #f5e8d2;
@@ -383,15 +385,16 @@
     pointer-events: none;
   }
   .hero-night h2 {
-    background: var(--rose-gold-metallic);
+    background: var(--rose-gold-metallic-light);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     font-size: 30px;
     position: relative;
+    text-shadow: 0 1px 12px rgba(243, 216, 200, 0.15);
   }
-  .hero-night p { color: rgba(248, 237, 224, 0.75); position: relative; }
-  .hero-night .label { color: var(--rose-gold-soft); }
+  .hero-night p { color: rgba(252, 240, 224, 0.88); position: relative; }
+  .hero-night .label { color: #f8e0cc; letter-spacing: 0.22em !important; }
 
   /* NG vs OK */
   .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
