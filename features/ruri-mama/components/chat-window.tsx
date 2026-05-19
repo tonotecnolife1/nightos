@@ -134,6 +134,7 @@ export function ChatWindow({
     null,
   );
   const scrollRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   // Save session to history whenever phase becomes "responded"
   useEffect(() => {
@@ -205,6 +206,10 @@ export function ChatWindow({
     hearingContext: Record<string, string>,
     messagesToSend: ChatMessage[],
   ) => {
+    // Abort any in-progress call before starting a new one
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
     setPhase({ name: "loading" });
     try {
       const feedbackContext = recentFeedbackSamples(castId, 8);
@@ -219,23 +224,23 @@ export function ChatWindow({
           intent,
           recentFeedback: feedbackContext,
         }),
+        signal: controller.signal,
       });
       if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data: RuriMamaResponse = await res.json();
       setStubMode(data.isStub);
-      // Keep options array so user can pick; content shows a placeholder
-      // until they pick. After they pick, the component replaces content.
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: data.reply, // fallback/placeholder — picker replaces
+          content: data.reply,
           isStub: data.isStub,
           options: data.options && data.options.length >= 2 ? data.options : undefined,
         },
       ]);
       setPhase({ name: "responded" });
     } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return; // silently ignore — new topic took over
       console.error(err);
       setMessages((prev) => [
         ...prev,
@@ -422,13 +427,13 @@ export function ChatWindow({
   };
 
   const handleUserSend = (text: string, images?: string[]) => {
-    // Free-form / responded / freeform → just send the text as-is
-    if (phase.name === "freeform" || phase.name === "responded") {
+    // Free-form / responded / freeform / loading → just send the text as-is
+    // (loading: aborts the current request and switches to the new topic)
+    if (phase.name === "freeform" || phase.name === "responded" || phase.name === "loading") {
       sendNewMessage(text, "freeform", {}, images);
       return;
     }
     // If images are attached, always go to freeform (skip hearing flow)
-    // because images typically mean "check this" / "what do you think"
     if (images && images.length > 0) {
       sendNewMessage(text, "freeform", {}, images);
       return;
@@ -462,17 +467,18 @@ export function ChatWindow({
 
   const currentHearingStep =
     phase.name === "hearing" ? phase.flow.steps[phase.step] : null;
-  const isInputDisabled =
-    phase.name === "hearing" || phase.name === "loading";
+  const isInputDisabled = phase.name === "hearing";
 
   const placeholder =
     phase.name === "hearing"
-      ? "上の選択肢から選んでね"
-      : phase.name === "freeform"
-        ? "話しかけてもOK・書いてもOK"
-        : phase.name === "responded"
-          ? "続けて相談する場合はここに"
-          : "下から選ぶか、自由に書いてもOK";
+      ? "上から選んでね"
+      : phase.name === "loading"
+        ? "別の話題を送ると切り替えられます"
+        : phase.name === "freeform"
+          ? "話しかけてもOK"
+          : phase.name === "responded"
+            ? "続けて相談…"
+            : "選ぶか自由に書いてもOK";
 
   return (
     <div className="flex flex-col h-dvh">

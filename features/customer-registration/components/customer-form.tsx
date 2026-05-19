@@ -162,7 +162,6 @@ export function CustomerForm({
           className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
           style={{ fontSize: "16px" }}
         >
-          <option value="">なし</option>
           {casts.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}

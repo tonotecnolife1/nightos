@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
-import { ArrowLeft, Building2, ChevronRight, Crown, Settings, UserCircle, Users } from "lucide-react";
+import { ArrowLeft, BarChart3, Building2, ChevronRight, Crown, Settings, UserCircle, Users } from "lucide-react";
 import { mockLogout } from "@/app/auth/actions";
 import { InstallAppSection } from "@/components/nightos/install-app-section";
 import type { CastUserRole } from "@/types/nightos";
@@ -122,6 +122,16 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
               </Link>
             </div>
           </section>
+
+          {/* 成績 */}
+          <Link
+            href="/cast/stats"
+            className="flex items-center gap-3 rounded-card border border-ink/[0.06] bg-pearl-warm px-4 py-3 shadow-soft hover:border-gold/40 transition"
+          >
+            <BarChart3 size={15} className="text-ink-secondary shrink-0" />
+            <span className="flex-1 text-body-sm text-ink">成績・統計</span>
+            <ChevronRight size={13} className="text-ink-muted" />
+          </Link>
 
           {/* ログアウト */}
           <button

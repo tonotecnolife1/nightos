@@ -4,6 +4,7 @@ import { Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { GemCard } from "@/components/nightos/card";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { getUpcomingShifts } from "@/lib/nightos/schedule-store";
 
 interface Props {
   castId: string;
@@ -67,10 +68,12 @@ export function MorningBriefing({ castId }: Props) {
     }
 
     try {
+      const today = todayKey();
+      const upcomingShifts = getUpcomingShifts(today, 5);
       const res = await fetch("/api/morning-briefing", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ castId }),
+        body: JSON.stringify({ castId, upcomingShifts }),
       });
       if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data = (await res.json()) as {

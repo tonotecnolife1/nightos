@@ -10,13 +10,14 @@ import { FunnelBadge } from "@/features/customer-card/components/funnel-badge";
 import { LineExchangeButton } from "@/features/customer-card/components/line-exchange-button";
 import { LineImportPanel } from "@/features/customer-card/components/line-import-panel";
 import { LineHistoryTimeline } from "@/features/customer-card/components/line-history-timeline";
+import { LineCommunicationSummary } from "@/features/customer-card/components/line-communication-summary";
 import { MemoSection } from "@/features/customer-card/components/memo-section";
 import { RefreshMemoButton } from "@/features/customer-card/components/refresh-memo-button";
 import { StoreInfoSection } from "@/features/customer-card/components/store-info-section";
 import { VisitHistory } from "@/features/customer-card/components/visit-history";
 import { CustomerPhotoUpload } from "@/features/customer-card/components/customer-photo-upload";
 import { CollapsibleSection } from "@/features/customer-card/components/collapsible-section";
-import { getCurrentCastId } from "@/lib/nightos/auth";
+import { getCurrentCastId, getCurrentVenueType } from "@/lib/nightos/auth";
 import { mockCustomers } from "@/lib/nightos/mock-data";
 import {
   getAllCasts,
@@ -31,12 +32,15 @@ export default async function CustomerCardPage({
 }) {
   const castId = await getCurrentCastId();
 
-  const [context, screenshots, allCasts] = await Promise.all([
+  const [context, allCasts, venueType] = await Promise.all([
     getCustomerContext(castId, params.id),
-    getScreenshotsForCustomer(castId, params.id),
     getAllCasts(),
+    getCurrentVenueType(),
   ]);
   if (!context) notFound();
+  const isCabaret = venueType === "cabaret";
+  const isManager = context.customer.manager_cast_id === castId;
+  const screenshots = await getScreenshotsForCustomer(castId, params.id, isManager);
 
   // Resolve referrer name (if any) for the mini badge
   const customer = context.customer;
@@ -68,27 +72,29 @@ export default async function CustomerCardPage({
 
         <CustomerPhotoUpload customerId={customer.id} customerName={customer.name} />
 
-        {/* Manager + change button */}
-        <div className="flex items-center gap-2 flex-wrap text-[11px] text-ink-secondary">
-          <span>
-            管理:{" "}
-            <span className="text-ink font-medium">
-              {allCasts.find((c) => c.id === customer.manager_cast_id)?.name ?? "—"}
+        {/* Manager + change button (club only) */}
+        {!isCabaret && (
+          <div className="flex items-center gap-2 flex-wrap text-[11px] text-ink-secondary">
+            <span>
+              管理:{" "}
+              <span className="text-ink font-medium">
+                {allCasts.find((c) => c.id === customer.manager_cast_id)?.name ?? "—"}
+              </span>
+              {" / 担当: "}
+              <span className="text-ink font-medium">
+                {allCasts.find((c) => c.id === customer.cast_id)?.name ?? "—"}
+              </span>
             </span>
-            {" / 担当: "}
-            <span className="text-ink font-medium">
-              {allCasts.find((c) => c.id === customer.cast_id)?.name ?? "—"}
-            </span>
-          </span>
-          <ChangeManagerButton
-            customerId={customer.id}
-            customerName={customer.name}
-            currentManagerId={customer.manager_cast_id ?? null}
-            allCasts={allCasts}
-            requesterCastId={castId}
-            requesterName={allCasts.find((c) => c.id === castId)?.name ?? "キャスト"}
-          />
-        </div>
+            <ChangeManagerButton
+              customerId={customer.id}
+              customerName={customer.name}
+              currentManagerId={customer.manager_cast_id ?? null}
+              allCasts={allCasts}
+              requesterCastId={castId}
+              requesterName={allCasts.find((c) => c.id === castId)?.name ?? "キャスト"}
+            />
+          </div>
+        )}
 
         <CustomerStats context={context} />
 
@@ -145,6 +151,12 @@ export default async function CustomerCardPage({
         {/* ── LINE・連絡（折りたたみ） ── */}
         <div className="border-t border-ink/[0.06] pt-2">
           <CollapsibleSection title="LINE・連絡履歴">
+            <LineCommunicationSummary
+              customerId={customer.id}
+              customerName={customer.name}
+              castName={allCasts.find((c) => c.id === castId)?.name ?? "キャスト"}
+              screenshots={screenshots}
+            />
             <LineImportPanel
               customer={customer}
               memo={context.memo}

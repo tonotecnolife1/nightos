@@ -96,10 +96,10 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
             {t === "all"
               ? "すべて"
               : t === "channels"
-              ? "チャンネル"
+              ? "グループ"
               : t === "coaching"
               ? "📚 指導"
-              : "DM"}
+              : "個別連絡"}
           </button>
         ))}
       </div>
@@ -192,11 +192,6 @@ function RoomRow({
             <span className="text-body-md font-medium text-ink truncate">
               {displayName}
             </span>
-            {room.type === "dm" && memberCount > 1 && (
-              <span className="text-label-sm text-ink-muted">
-                {memberCount}人
-              </span>
-            )}
           </div>
           {timeStr && (
             <span className="text-label-sm text-ink-muted shrink-0 ml-2">

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -8,6 +11,14 @@ interface Props {
 }
 
 export function ChipOptions({ question, options, onPick, onSkip }: Props) {
+  const [picked, setPicked] = useState<string | null>(null);
+
+  const handlePick = (opt: string) => {
+    if (picked) return;
+    setPicked(opt);
+    onPick(opt);
+  };
+
   return (
     <div className="rounded-2xl border border-amethyst-border bg-amethyst-muted px-4 py-3.5 space-y-2.5 animate-fade-in">
       <p className="text-label-md text-amethyst-dark">{question}</p>
@@ -16,16 +27,21 @@ export function ChipOptions({ question, options, onPick, onSkip }: Props) {
           <button
             key={opt}
             type="button"
-            onClick={() => onPick(opt)}
+            onClick={() => handlePick(opt)}
+            disabled={!!picked}
             className={cn(
-              "px-3.5 h-9 rounded-badge text-body-sm bg-pearl-warm text-amethyst-dark border border-amethyst-border",
-              "hover:bg-amethyst hover:text-pearl hover:border-amethyst-dark transition-colors active:scale-95",
+              "px-3.5 h-9 rounded-badge text-body-sm border transition-all active:scale-95",
+              picked === opt
+                ? "bg-amethyst text-pearl border-amethyst-dark scale-95 shadow-soft"
+                : picked
+                  ? "bg-pearl-soft text-ink-muted border-pearl-soft opacity-50"
+                  : "bg-pearl-warm text-amethyst-dark border-amethyst-border hover:bg-amethyst hover:text-pearl hover:border-amethyst-dark",
             )}
           >
             {opt}
           </button>
         ))}
-        {onSkip && (
+        {onSkip && !picked && (
           <button
             type="button"
             onClick={onSkip}

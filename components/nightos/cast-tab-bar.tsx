@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  BarChart3,
+  CalendarDays,
   Home,
   MessageCircle,
   Sparkles,
@@ -51,11 +51,11 @@ const TABS: Tab[] = [
     match: (p) => p.startsWith("/cast/chat") || p.startsWith("/mama/chat"),
   },
   {
-    key: "stats",
-    label: "成績",
-    href: "/cast/stats",
-    icon: BarChart3,
-    match: (p) => p.startsWith("/cast/stats"),
+    key: "schedule",
+    label: "予定",
+    href: "/cast/schedule",
+    icon: CalendarDays,
+    match: (p) => p.startsWith("/cast/schedule"),
   },
 ];
 

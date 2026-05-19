@@ -261,14 +261,18 @@ export async function getRecentVisitsForCastReal(
 export async function getScreenshotsForCustomerReal(
   castId: string,
   customerId: string,
+  allForCustomer = false,
 ): Promise<LineScreenshot[]> {
   const supabase = createServerSupabaseClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("line_screenshots")
     .select("*")
-    .eq("cast_id", castId)
     .eq("customer_id", customerId)
     .order("created_at", { ascending: false });
+  if (!allForCustomer) {
+    query = query.eq("cast_id", castId);
+  }
+  const { data, error } = await query;
   if (error) throw error;
   return (data ?? []).map(rowToScreenshot);
 }

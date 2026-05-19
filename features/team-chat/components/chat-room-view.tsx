@@ -383,6 +383,8 @@ export function ChatRoomView({
               msg={activeThread}
               currentCastId={currentCastId}
               isCoaching={isCoaching}
+              showAvatar={true}
+              showName={true}
               editingId={editingId}
               editDraft={editDraft}
               setEditDraft={setEditDraft}
@@ -394,25 +396,31 @@ export function ChatRoomView({
             />
             {activeThreadReplies.length > 0 && (
               <div className="text-label-sm text-ink-muted pl-2">
-                {activeThreadReplies.length} replies
+                {activeThreadReplies.length} 件の返信
               </div>
             )}
-            {activeThreadReplies.map((m) => (
-              <MessageRow
-                key={m.id}
-                msg={m}
-                currentCastId={currentCastId}
-                isCoaching={isCoaching}
-                editingId={editingId}
-                editDraft={editDraft}
-                setEditDraft={setEditDraft}
-                onStartEdit={startEdit}
-                onCancelEdit={cancelEdit}
-                onCommitEdit={commitEdit}
-                onDelete={handleDelete}
-                onCopy={handleCopy}
-              />
-            ))}
+            {activeThreadReplies.map((m, idx) => {
+              const prev = activeThreadReplies[idx - 1];
+              const isGrouped = !!prev && prev.sender_id === m.sender_id && !prev.deleted_at;
+              return (
+                <MessageRow
+                  key={m.id}
+                  msg={m}
+                  currentCastId={currentCastId}
+                  isCoaching={isCoaching}
+                  showAvatar={!isGrouped}
+                  showName={!isGrouped}
+                  editingId={editingId}
+                  editDraft={editDraft}
+                  setEditDraft={setEditDraft}
+                  onStartEdit={startEdit}
+                  onCancelEdit={cancelEdit}
+                  onCommitEdit={commitEdit}
+                  onDelete={handleDelete}
+                  onCopy={handleCopy}
+                />
+              );
+            })}
           </div>
 
           {/* Thread input */}
@@ -469,10 +477,7 @@ export function ChatRoomView({
                   {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                 </button>
               </div>
-              <p className="text-[10px] text-ink-muted mt-1.5 pl-1">
-                Enter で改行 / 送信ボタン または ⌘/Ctrl+Enter で送信
-              </p>
-            </div>
+                </div>
           )}
         </div>
       )}
@@ -511,14 +516,19 @@ export function ChatRoomView({
           </div>
         )}
 
-        {visibleTopMessages.map((msg) => {
+        {visibleTopMessages.map((msg, idx) => {
+          const prev = visibleTopMessages[idx - 1];
+          const isGrouped = !!prev && prev.sender_id === msg.sender_id && !prev.deleted_at;
           const replies = threadReplies(msg.id);
+          const isMe = msg.sender_id === currentCastId;
           return (
             <div key={msg.id}>
               <MessageRow
                 msg={msg}
                 currentCastId={currentCastId}
                 isCoaching={isCoaching}
+                showAvatar={!isGrouped}
+                showName={!isGrouped}
                 onOpenThread={() => setThreadOpen(msg.id)}
                 highlight={isSearching ? normalizedQuery : undefined}
                 editingId={editingId}
@@ -535,7 +545,10 @@ export function ChatRoomView({
                 <button
                   type="button"
                   onClick={() => setThreadOpen(msg.id)}
-                  className="ml-14 mt-1 mb-2 flex items-center gap-2 text-label-sm text-amethyst-dark hover:underline"
+                  className={cn(
+                    "mt-1 mb-2 flex items-center gap-2 text-label-sm text-amethyst-dark hover:underline px-2",
+                    isMe ? "flex-row-reverse mr-2" : "ml-12",
+                  )}
                 >
                   <div className="flex -space-x-1.5">
                     {replies
@@ -648,6 +661,8 @@ interface MessageRowProps {
   msg: ChatMessage;
   currentCastId: string;
   isCoaching?: boolean;
+  showAvatar: boolean;
+  showName: boolean;
   onOpenThread?: () => void;
   /** Lowercased search query to highlight; if set, matching substrings get wrapped. */
   highlight?: string;
@@ -665,6 +680,8 @@ function MessageRow({
   msg,
   currentCastId,
   isCoaching,
+  showAvatar,
+  showName,
   onOpenThread,
   highlight,
   editingId,
@@ -697,7 +714,6 @@ function MessageRow({
 
   const canEdit = isMe && !msg.is_bot && !isDeleted;
 
-  // Long-press to open action sheet on touch devices
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleTouchStart = () => {
     longPressTimer.current = setTimeout(() => setMenuOpen(true), 500);
@@ -709,69 +725,79 @@ function MessageRow({
     }
   };
 
+  const avatarEl = msg.is_bot ? (
+    <RuriMamaAvatar size={32} />
+  ) : (
+    <div
+      className={cn(
+        "w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[12px] font-medium",
+        msg.sender_role === "mama"
+          ? "bg-champagne-soft text-ink"
+          : msg.sender_role === "oneesan"
+            ? "bg-blush-soft text-blush-deep"
+            : "bg-pearl-soft text-ink-secondary",
+      )}
+    >
+      {msg.sender_name.charAt(0)}
+    </div>
+  );
+
   return (
-    <div id={`msg-${msg.id}`} className="flex items-start gap-3 py-2 group">
-      {/* Avatar */}
-      {msg.is_bot ? (
-        <RuriMamaAvatar size={40} />
-      ) : (
-        <div
-          className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-body-sm font-medium",
-            isMe
-              ? "bg-amethyst-muted text-amethyst-dark"
-              : msg.sender_role === "mama"
-                ? "bg-champagne-soft text-ink"
-                : msg.sender_role === "oneesan"
-                  ? "bg-blush-soft text-blush-deep"
-                  : "bg-pearl-soft text-ink-secondary",
-          )}
-        >
-          {msg.sender_name.charAt(0)}
+    <div
+      id={`msg-${msg.id}`}
+      className={cn(
+        "flex items-end gap-2 px-2",
+        isMe ? "flex-row-reverse" : "flex-row",
+        showAvatar ? "mt-3" : "mt-0.5",
+      )}
+    >
+      {/* Avatar — others only */}
+      {!isMe && (
+        <div className="shrink-0 self-end mb-1 w-8">
+          {showAvatar ? avatarEl : null}
         </div>
       )}
 
-      {/* Message body */}
+      {/* Bubble + meta */}
       <div
-        className="flex-1 min-w-0"
+        className={cn(
+          "flex flex-col max-w-[72%]",
+          isMe ? "items-end" : "items-start",
+        )}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchEnd}
       >
-        <div className="flex items-baseline gap-2">
-          <span className="text-body-sm font-medium text-ink">
-            {msg.sender_name}
-          </span>
-          {msg.is_bot && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-amethyst-muted text-amethyst-dark">
-              BOT
+        {/* Sender name (others, first in group) */}
+        {!isMe && showName && (
+          <div className="flex items-center gap-1.5 mb-0.5 px-1">
+            <span className="text-[11px] font-medium text-ink-secondary">
+              {msg.sender_name}
             </span>
-          )}
-          {msg.sender_role === "mama" && !msg.is_bot && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-champagne-dark text-ink">
-              店長
-            </span>
-          )}
-          {isCoaching && !msg.is_bot && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald/10 text-emerald border border-emerald/20">
-              指導
-            </span>
-          )}
-          <span className="text-label-sm text-ink-muted">{timeStr}</span>
-          {msg.id.startsWith("tmp_") && (
-            <Clock size={11} className="text-ink-muted animate-pulse" aria-label="送信中" />
-          )}
-          {msg.edited_at && !isDeleted && (
-            <span className="text-[10px] text-ink-muted">（編集済み）</span>
-          )}
-        </div>
+            {msg.is_bot && (
+              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-amethyst-muted text-amethyst-dark">
+                AI
+              </span>
+            )}
+            {msg.sender_role === "mama" && !msg.is_bot && (
+              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-champagne-dark text-ink">
+                店長
+              </span>
+            )}
+            {isCoaching && !msg.is_bot && (
+              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-emerald/10 text-emerald border border-emerald/20">
+                指導
+              </span>
+            )}
+          </div>
+        )}
 
         {isDeleted ? (
-          <div className="text-body-sm text-ink-muted italic mt-0.5">
+          <div className="text-body-sm text-ink-muted italic px-3 py-2">
             （メッセージは取り消されました）
           </div>
         ) : isEditing ? (
-          <div className="mt-1 space-y-1.5">
+          <div className="w-full space-y-1.5">
             <textarea
               value={editDraft}
               onChange={(e) => setEditDraft(e.target.value)}
@@ -813,37 +839,54 @@ function MessageRow({
                 <X size={12} />
                 キャンセル
               </button>
-              <span className="text-[10px] text-ink-muted ml-1">
-                ⌘/Ctrl+Enter で保存、Esc でキャンセル
-              </span>
             </div>
           </div>
         ) : (
-          <div className="text-body-md text-ink mt-0.5 leading-relaxed whitespace-pre-wrap">
+          /* Bubble */
+          <div
+            className={cn(
+              "px-3.5 py-2 text-body-md leading-relaxed whitespace-pre-wrap break-words",
+              isMe
+                ? "bg-amethyst text-pearl rounded-2xl rounded-br-sm shadow-soft"
+                : "bg-pearl-warm border border-ink/[0.06] text-ink rounded-2xl rounded-bl-sm shadow-soft",
+            )}
+          >
             {renderContentParts(msg.content, highlight)}
           </div>
         )}
 
-        {/* Action buttons */}
+        {/* Timestamp + status row */}
+        {!isDeleted && !isEditing && (
+          <div className={cn("flex items-center gap-1.5 mt-0.5 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
+            <span className="text-[10px] text-ink-muted">{timeStr}</span>
+            {msg.id.startsWith("tmp_") && (
+              <Clock size={9} className="text-ink-muted animate-pulse" />
+            )}
+            {msg.edited_at && (
+              <span className="text-[9px] text-ink-muted">編集済み</span>
+            )}
+          </div>
+        )}
+
+        {/* Action buttons (tap-revealed) */}
         {!isEditing && !isDeleted && (
-          <div className="flex items-center gap-3 mt-1.5 relative">
+          <div className={cn("flex items-center gap-2 mt-1 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
             {onOpenThread && (
               <button
                 type="button"
                 onClick={onOpenThread}
-                className="flex items-center gap-1 text-label-sm text-ink-muted hover:text-ink-secondary"
+                className="flex items-center gap-0.5 text-[10px] text-ink-muted hover:text-ink-secondary"
               >
-                <MessageCircle size={12} />
+                <MessageCircle size={10} />
                 返信
               </button>
             )}
             <button
               type="button"
               onClick={() => onCopy(msg)}
-              className="flex items-center gap-1 text-label-sm text-ink-muted hover:text-ink-secondary"
-              aria-label="コピー"
+              className="flex items-center gap-0.5 text-[10px] text-ink-muted hover:text-ink-secondary"
             >
-              <Copy size={12} />
+              <Copy size={10} />
               コピー
             </button>
             {canEdit && (
@@ -851,13 +894,15 @@ function MessageRow({
                 <button
                   type="button"
                   onClick={() => setMenuOpen((v) => !v)}
-                  className="flex items-center gap-1 text-label-sm text-ink-muted hover:text-ink-secondary"
-                  aria-label="その他の操作"
+                  className="flex items-center gap-0.5 text-[10px] text-ink-muted hover:text-ink-secondary"
                 >
-                  <MoreHorizontal size={14} />
+                  <MoreHorizontal size={12} />
                 </button>
                 {menuOpen && (
-                  <div className="absolute z-30 left-0 top-full mt-1 min-w-[140px] rounded-card border border-ink/[0.06] bg-pearl shadow-soft overflow-hidden">
+                  <div className={cn(
+                    "absolute z-30 top-full mt-1 min-w-[140px] rounded-card border border-ink/[0.06] bg-pearl shadow-soft overflow-hidden",
+                    isMe ? "right-0" : "left-0",
+                  )}>
                     <button
                       type="button"
                       onClick={() => {
