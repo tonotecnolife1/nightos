@@ -14,6 +14,26 @@ const config: Config = {
           DEFAULT: "#faf7f2",
           soft: "#f5efe6",
           warm: "#fdfcf9",
+          // v3
+          light: "#fdfcf9",
+          deep: "#e8dccb",
+        },
+        // ═══════════════ v3 (Luxury Lady Night 2026-05-19) ═══════════════
+        "rose-gold": {
+          soft: "#f3d8c8",
+          DEFAULT: "#dba98e",
+          deep: "#8a5e4d",
+          ink: "#6e4736",
+        },
+        nocturne: {
+          mist: "#dccfc1",
+          dusk: "#b5a594",
+          deep: "#3d2e2a",
+        },
+        wine: {
+          soft: "#d4a8a8",
+          DEFAULT: "#9a5d5d",
+          deep: "#5e3838",
         },
         // ── v2 palette (design.md §1.2) ──
         // blush は warm peach 寄りの主強調色。light/dark は v2 soft/deep のエイリアス。
@@ -111,6 +131,9 @@ const config: Config = {
           "0 4px 12px rgba(201, 141, 128, 0.14), 0 16px 32px rgba(201, 141, 128, 0.10)",
         warm:
           "0 8px 24px rgba(201, 141, 128, 0.10), 0 24px 48px rgba(184, 148, 85, 0.08)",
+        // ── v3 (Luxury Lady Night) — matte philosophy, drop shadow only ──
+        luxe:
+          "0 6px 16px rgba(168, 117, 96, 0.32), 0 24px 48px rgba(61, 46, 42, 0.22)",
 
         // ── 既存（v1 / 互換）。v2 では使わない ──
         card: "0 1px 4px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03)",
@@ -139,6 +162,15 @@ const config: Config = {
           "linear-gradient(180deg, #fdfcf9 0%, #faf7f2 50%, #f5efe6 100%)",
         "gradient-champagne":
           "linear-gradient(135deg, #f3e6c8 0%, #e6cda5 100%)",
+        // ── v3 (Luxury Lady Night) metallics ──
+        "gradient-rose-gold-metallic":
+          "linear-gradient(135deg, #f0c5af 0%, #d4a486 50%, #a87560 100%)",
+        "gradient-rose-gold-metallic-light":
+          "linear-gradient(135deg, #ffeede 0%, #fce4d4 50%, #f3d8c8 100%)",
+        "gradient-champagne-metallic":
+          "linear-gradient(135deg, #f0e0bc 0%, #d8b88a 100%)",
+        "gradient-gold-metallic":
+          "linear-gradient(135deg, #e8d0a0 0%, #c8a672 50%, #8c6f44 100%)",
       },
       fontFamily: {
         sans: [

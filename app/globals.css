@@ -102,4 +102,40 @@
   .pearl-sheen {
     background-color: #faf7f2;
   }
+
+  /* ════════════════════════════════════════════════════════════════
+   * v3 "Luxury Lady Night" — semantic typography & metallic clips
+   * ════════════════════════════════════════════════════════════════ */
+
+  /* Tracking presets */
+  .tracking-luxe { letter-spacing: 0.18em; }
+
+  /* Metallic text — rose-gold gradient clipped to text */
+  .text-metallic {
+    background: linear-gradient(135deg, #f0c5af 0%, #d4a486 50%, #a87560 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+  }
+  .text-metallic-light {
+    background: linear-gradient(135deg, #ffeede 0%, #fce4d4 50%, #f3d8c8 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+  }
+
+  /* Hero background — Pearl + rose-gold-soft halo + champagne-soft halo */
+  .bg-hero-pearl {
+    background:
+      radial-gradient(ellipse at top left, #f3d8c8 0%, transparent 55%),
+      radial-gradient(ellipse at bottom right, #f3e6c8 0%, transparent 60%),
+      linear-gradient(180deg, #fdfcf9 0%, #faf7f2 100%);
+  }
+
+  /* Glass pearl (cards/KPI) */
+  .bg-glass-pearl {
+    background: rgba(253, 248, 240, 0.72);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+            backdrop-filter: blur(16px) saturate(140%);
+  }
 }
