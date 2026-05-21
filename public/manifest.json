@@ -10,13 +10,13 @@
   "theme_color": "#e8b9a5",
   "icons": [
     {
-      "src": "/ruri-mama-b.svg",
+      "src": "/sakura-mama-b.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/ruri-mama.svg",
+      "src": "/sakura-mama.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     }

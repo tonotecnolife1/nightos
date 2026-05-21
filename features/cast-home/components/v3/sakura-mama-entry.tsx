@@ -9,7 +9,7 @@ interface Props {
 export function SakuraMamaEntry({ hint }: Props) {
   return (
     <Link
-      href="/cast/ruri-mama"
+      href="/cast/sakura-mama"
       className="block w-full text-left relative overflow-hidden bg-hero-pearl border border-ink/[0.08] shadow-warm"
       style={{
         padding: 22,

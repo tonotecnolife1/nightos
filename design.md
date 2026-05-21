@@ -352,7 +352,7 @@ xl  24px    セクション間（gap-6）
 ```
 
 - アイコン円は **塗りつぶさない**。gold 細ラインで縁取り
-- `rose-gradient` / `ruri-gradient` の塗り円は廃止
+- `rose-gradient` / `sakura-gradient` の塗り円は廃止
 
 ### 4.7 BottomSheet
 
@@ -415,8 +415,8 @@ VIP バッジは v3 で rose-gold メタリックに昇格（高級感サイン�
 | 1 | `Sparkles` ✨ + 「MVP」「NEW」バッジ | テンプレ感の最大要因 |
 | 2 | センター大配置の "NIGHTOS" 巨大ロゴ | スタートアップHP感 |
 | 3 | `tracking-wider uppercase` 英語ラベル | テンプレ感（v3 でも厳守）|
-| 4 | `rose-gradient` / `ruri-gradient` 塗り円 | 派手・AI感。legacy 残存箇所は段階的に置換 |
-| 5 | `shadow-glow-*` ハロー | 浮きすぎ。**残存7箇所要修正**（templates, ruri-mama, customer-card）|
+| 4 | `rose-gradient` / `sakura-gradient` 塗り円 | 派手・AI感。legacy 残存箇所は段階的に置換 |
+| 5 | `shadow-glow-*` ハロー | 浮きすぎ。**残存7箇所要修正**（templates, sakura-mama, customer-card）|
 | 6 | パステル4色以上を1画面に | 散漫 |
 | 7 | `bg-ink` ベタ黒のボタン | 冷たすぎる（v1 で導入、v2 で廃止）|
 | 8 | 角丸 < 12px | 硬すぎる。`rounded-btn` (16px) も段階廃止 |
@@ -465,7 +465,7 @@ VIP バッジは v3 で rose-gold メタリックに昇格（高級感サイン�
 - [ ] Store / Customer サイドの主要画面
 
 ### Phase 5: 負債解消
-- [ ] `features/templates/*` / `features/ruri-mama/*` の `rose-gradient` / `ruri-gradient` / `shadow-glow-*` / `rounded-btn` 撤去
+- [ ] `features/templates/*` / `features/sakura-mama/*` の `rose-gradient` / `sakura-gradient` / `shadow-glow-*` / `rounded-btn` 撤去
 - [ ] `components/ui/button.tsx` の dark palette 残骸（`from-gold-dark`, `text-bg`）クリーンアップ
 - [ ] `app/store/dashboard/store-dashboard-club.tsx` の `tracking-wider uppercase` 1箇所修正
 
@@ -511,7 +511,7 @@ PR を出す前に毎回:
 | 🔴 高 | `cast-home-club.tsx` の FAB | `bg-amethyst shadow-elevated-light text-pearl` | `bg-rose-gold-metallic shadow-luxe text-white` |
 | 🔴 高 | `cast-tab-bar.tsx` | `shadow-elevated-light` + `bg-amethyst-muted` active | `shadow-warm` + `bg-rose-gold-soft` active |
 | 🟠 中高 | `features/templates/*` 多数 | `rose-gradient` / `shadow-glow-*` / `rounded-btn` | v3 トークンに置換、Phase 5 |
-| 🟠 中高 | `features/ruri-mama/*` chat bubble | `rose-gradient` + `shadow-soft-card` | rose-gold メタリック + `shadow-luxe` |
+| 🟠 中高 | `features/sakura-mama/*` chat bubble | `rose-gradient` + `shadow-soft-card` | rose-gold メタリック + `shadow-luxe` |
 | 🟡 中 | `components/ui/button.tsx` | `from-gold-dark` / `text-bg`（dark palette 残骸） | rose-gold / `text-ink` に置換 |
 | 🟢 低 | `store-dashboard-club.tsx` | `tracking-wider uppercase` 1箇所 | 通常の `tracking-wide` |
 

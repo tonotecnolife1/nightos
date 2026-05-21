@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/nightos/page-header";
 import {
   AVATAR_VARIANTS,
-  RuriMamaAvatar,
+  SakuraMamaAvatar,
   getStoredVariant,
   setStoredVariant,
   type AvatarVariant,
-} from "@/components/nightos/ruri-mama-avatar";
+} from "@/components/nightos/sakura-mama-avatar";
 import { cn } from "@/lib/utils";
 
 export default function AvatarPickerPage() {
@@ -58,7 +58,7 @@ export default function AvatarPickerPage() {
               >
                 <div className="flex items-center gap-4">
                   {/* Large preview */}
-                  <RuriMamaAvatar
+                  <SakuraMamaAvatar
                     variant={variant.id}
                     size={88}
                     withGlow={isSelected}
@@ -86,19 +86,19 @@ export default function AvatarPickerPage() {
                 {isSelected && (
                   <div className="mt-3 pt-3 border-t border-amethyst-border flex items-center justify-around">
                     <div className="flex flex-col items-center gap-1">
-                      <RuriMamaAvatar variant={variant.id} size={32} />
+                      <SakuraMamaAvatar variant={variant.id} size={32} />
                       <span className="text-[10px] text-ink-muted">
                         メッセージ
                       </span>
                     </div>
                     <div className="flex flex-col items-center gap-1">
-                      <RuriMamaAvatar variant={variant.id} size={44} />
+                      <SakuraMamaAvatar variant={variant.id} size={44} />
                       <span className="text-[10px] text-ink-muted">
                         ヘッダー
                       </span>
                     </div>
                     <div className="flex flex-col items-center gap-1">
-                      <RuriMamaAvatar variant={variant.id} size={36} />
+                      <SakuraMamaAvatar variant={variant.id} size={36} />
                       <span className="text-[10px] text-ink-muted">
                         テンプレ
                       </span>
@@ -114,7 +114,7 @@ export default function AvatarPickerPage() {
           <p className="font-semibold text-ink mb-1">実写を使いたい場合</p>
           <p>
             お好きな写真を <code className="font-mono text-xs">public/</code> に置いて、
-            <code className="font-mono text-xs">components/nightos/ruri-mama-avatar.tsx</code> 内の
+            <code className="font-mono text-xs">components/nightos/sakura-mama-avatar.tsx</code> 内の
             <code className="font-mono text-xs"> AVATAR_VARIANTS</code> の <code className="font-mono text-xs">src</code> を差し替えれば反映されます。
             正方形・256×256以上推奨。
           </p>

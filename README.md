@@ -107,7 +107,7 @@ cp .env.example .env.local
 Vercel の場合は Environment Variables に `ANTHROPIC_API_KEY` を追加するだけ。
 
 - モデル: `claude-haiku-4-5-20251001`（コスパ重視。約 $0.005/回）
-- システムプロンプト: `features/ruri-mama/data/system-prompt.ts`
+- システムプロンプト: `features/sakura-mama/data/system-prompt.ts`
 - キー無効・通信失敗時はスタブ応答に自動フォールバック
 
 ---
@@ -207,7 +207,7 @@ NIGHTOS は 2 つのログイン方式を併用しています。
 | キャスト | `/cast/home` | 連絡リスト・サマリ |
 | キャスト | `/cast/customers/[id]` | 顧客カルテ |
 | キャスト | `/cast/templates` | メッセージテンプレート |
-| キャスト | `/cast/ruri-mama` | さくらママ AI |
+| キャスト | `/cast/sakura-mama` | さくらママ AI |
 | キャスト | `/cast/stats` | 個人の売上・指名推移 |
 | キャスト | `/cast/chat` | チーム内チャット |
 | ママ | `/mama/home` | ママダッシュボード |
@@ -224,7 +224,7 @@ NIGHTOS は 2 つのログイン方式を併用しています。
 | 店舗 | `/store/dashboard` | 効果ダッシュボード |
 | 店舗 | `/store/approvals` | キャスト申請承認 |
 | 来店客 | `/customer/home` | 自分のキープボトル / クーポン / ランク |
-| API | `/api/ruri-mama` | Claude 呼出し |
+| API | `/api/sakura-mama` | Claude 呼出し |
 | API | `/api/setup` | Supabase シード投入（gated）|
 | API | `/api/setup-auth` | Auth ユーザー作成 + cast 紐付け（gated）|
 
@@ -251,7 +251,7 @@ app/
   mama/                    ママ / お姉さん向け
   store/                   店舗スタッフ向け
   api/
-    ruri-mama/route.ts     Claude 呼出し
+    sakura-mama/route.ts     Claude 呼出し
     setup/route.ts         DB シード
 
 components/nightos/        NIGHTOS 用 UI kit
@@ -260,7 +260,7 @@ features/
   cast-home/               連絡リスト
   customer-card/           顧客カルテ
   templates/               テンプレート
-  ruri-mama/               AI チャット
+  sakura-mama/               AI チャット
   team-management/         ママ側チーム管理
   team-chat/               1on1 / グループチャット
   store-dashboard/         店舗ダッシュボード

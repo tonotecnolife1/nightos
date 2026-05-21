@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { SakuraMamaAvatar } from "@/components/nightos/sakura-mama-avatar";
 import { SAKURA_MAMA_CHAT_NAME } from "@/lib/nightos/constants";
 import type { ChatMessage, ChatRoom } from "../types";
 
@@ -555,7 +555,7 @@ export function ChatRoomView({
                       .slice(0, 3)
                       .map((r) =>
                         r.is_bot ? (
-                          <RuriMamaAvatar key={r.id} size={20} />
+                          <SakuraMamaAvatar key={r.id} size={20} />
                         ) : (
                           <div
                             key={r.id}
@@ -726,7 +726,7 @@ function MessageRow({
   };
 
   const avatarEl = msg.is_bot ? (
-    <RuriMamaAvatar size={32} />
+    <SakuraMamaAvatar size={32} />
   ) : (
     <div
       className={cn(

@@ -343,7 +343,7 @@ export interface CastGoal {
   updatedAt: string;
 }
 
-// ═══════════════ Ruri-Mama chat types ═══════════════
+// ═══════════════ Sakura-Mama chat types ═══════════════
 
 export type ChatRole = "user" | "assistant";
 
@@ -395,7 +395,7 @@ export interface HearingFlow {
   steps: HearingStep[];
 }
 
-export interface RuriMamaRequest {
+export interface SakuraMamaRequest {
   messages: ChatMessage[];
   customerId?: string;
   hearingContext?: Record<string, string>;
@@ -421,7 +421,7 @@ export interface RuriMamaRequest {
   refinementDirection?: string;
 }
 
-export interface RuriMamaResponse {
+export interface SakuraMamaResponse {
   /**
    * 3パターンの回答選択肢。ユーザーが1つ選択して採用する。
    * 後方互換のため reply プロパティも保持（options の最初の content が入る）。

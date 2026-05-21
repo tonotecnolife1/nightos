@@ -16,31 +16,31 @@ export const AVATAR_VARIANTS: {
     id: "photo",
     label: "さくらママ（実写風）",
     description: "白い着物の銀座のママ・油絵調の温かい雰囲気",
-    src: "/ruri-mama-photo.jpg",
+    src: "/sakura-mama-photo.jpg",
   },
   {
     id: "a",
     label: "親しみ系（イラスト）",
     description: "やわらかい雰囲気・笑顔・ピンク基調",
-    src: "/ruri-mama.svg",
+    src: "/sakura-mama.svg",
   },
   {
     id: "b",
     label: "大人っぽい系（イラスト）",
     description: "落ち着いた表情・しっかりメイク・パープル基調",
-    src: "/ruri-mama-b.svg",
+    src: "/sakura-mama-b.svg",
   },
   {
     id: "c",
     label: "横顔シルエット",
     description: "顔を見せず雰囲気だけ・ミステリアス",
-    src: "/ruri-mama-c.svg",
+    src: "/sakura-mama-c.svg",
   },
   {
     id: "d",
     label: "椿のロゴ風",
     description: "顔なし・椿の花とブランドモノグラム",
-    src: "/ruri-mama-d.svg",
+    src: "/sakura-mama-d.svg",
   },
 ];
 
@@ -66,7 +66,7 @@ export function setStoredVariant(variant: AvatarVariant) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(STORAGE_KEY, variant);
   // Notify other components in the same tab so they can re-render
-  window.dispatchEvent(new CustomEvent("ruri-avatar-changed"));
+  window.dispatchEvent(new CustomEvent("sakura-avatar-changed"));
 }
 
 interface Props {
@@ -79,7 +79,7 @@ interface Props {
 }
 
 /**
- * Ruri-Mama avatar.
+ * Sakura-Mama avatar.
  *
  * Reads the chosen variant from localStorage so the cast can pick a
  * style on the picker page (`/cast/avatars`) and have it persist
@@ -88,7 +88,7 @@ interface Props {
  * To replace with your own photo: drop the image into `public/` and
  * update the `src` field in AVATAR_VARIANTS above.
  */
-export function RuriMamaAvatar({
+export function SakuraMamaAvatar({
   size = 40,
   className,
   withGlow = false,
@@ -107,8 +107,8 @@ export function RuriMamaAvatar({
     }
     setResolved(getStoredVariant());
     const onChange = () => setResolved(getStoredVariant());
-    window.addEventListener("ruri-avatar-changed", onChange);
-    return () => window.removeEventListener("ruri-avatar-changed", onChange);
+    window.addEventListener("sakura-avatar-changed", onChange);
+    return () => window.removeEventListener("sakura-avatar-changed", onChange);
   }, [variant]);
 
   const config =

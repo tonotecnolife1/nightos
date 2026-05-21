@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { MessageSquare } from "lucide-react";
 
 const CHAT_PATTERNS = [
-  /^\/cast\/ruri-mama/,
+  /^\/cast\/sakura-mama/,
   /^\/cast\/chat/,
-  /^\/mama\/ruri-mama/,
+  /^\/mama\/sakura-mama/,
   /^\/mama\/chat/,
 ];
 

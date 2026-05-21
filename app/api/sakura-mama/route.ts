@@ -3,26 +3,26 @@ import Anthropic from "@anthropic-ai/sdk";
 import {
   SAKURA_MAMA_MODEL,
   SAKURA_MAMA_SYSTEM_PROMPT,
-} from "@/features/ruri-mama/data/system-prompt";
+} from "@/features/sakura-mama/data/system-prompt";
 import {
   formatExamplesForPrompt,
   retrieveRelevantExamples,
-} from "@/features/ruri-mama/data/training-examples";
+} from "@/features/sakura-mama/data/training-examples";
 import {
   generateStubOptions,
   generateStubRefinedOptions,
-} from "@/features/ruri-mama/data/stub-responses";
+} from "@/features/sakura-mama/data/stub-responses";
 import { MOCK_TODAY } from "@/lib/nightos/mock-data";
 import { buildRegionContextLine } from "@/lib/nightos/regions";
 import { getCustomerContext } from "@/lib/nightos/supabase-queries";
-import { parseBody, ruriMamaSchema } from "@/lib/nightos/validation";
+import { parseBody, sakuraMamaSchema } from "@/lib/nightos/validation";
 import type {
   Bottle,
   CustomerContext,
   Intent,
   ReplyOption,
-  RuriMamaRequest,
-  RuriMamaResponse,
+  SakuraMamaRequest,
+  SakuraMamaResponse,
   Visit,
 } from "@/types/nightos";
 
@@ -33,9 +33,9 @@ export const maxDuration = 60;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export async function POST(req: Request) {
-  const parsed = await parseBody(req, ruriMamaSchema);
+  const parsed = await parseBody(req, sakuraMamaSchema);
   if (parsed instanceof NextResponse) return parsed;
-  const body = parsed as RuriMamaRequest;
+  const body = parsed as SakuraMamaRequest;
 
   // ── Refine mode: take previous reply + direction, return 3 refined options ──
   if (body.refineStep === "apply" && body.previousReply && body.refinementDirection) {
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       customer: customerContext,
       userText,
     });
-    return NextResponse.json<RuriMamaResponse>({
+    return NextResponse.json<SakuraMamaResponse>({
       options,
       reply: options[0].content,
       isStub: true,
@@ -155,14 +155,14 @@ export async function POST(req: Request) {
         customer: customerContext,
         userText,
       });
-      return NextResponse.json<RuriMamaResponse>({
+      return NextResponse.json<SakuraMamaResponse>({
         options: stubOptions,
         reply: stubOptions[0].content,
         isStub: true,
       });
     }
 
-    return NextResponse.json<RuriMamaResponse>({
+    return NextResponse.json<SakuraMamaResponse>({
       options,
       reply: options[0].content,
       isStub: false,
@@ -175,7 +175,7 @@ export async function POST(req: Request) {
       customer: customerContext,
       userText,
     });
-    return NextResponse.json<RuriMamaResponse>({
+    return NextResponse.json<SakuraMamaResponse>({
       options,
       reply: options[0].content,
       isStub: true,
@@ -269,7 +269,7 @@ function parseOptionsFromText(text: string): ReplyOption[] {
 // ═══════════════════════════════════════════════════════════
 
 async function handleRefineApply(
-  body: RuriMamaRequest,
+  body: SakuraMamaRequest,
 ): Promise<Response> {
   const previousReply = body.previousReply ?? "";
   const direction = body.refinementDirection ?? "";
@@ -277,7 +277,7 @@ async function handleRefineApply(
   // Stub mode
   if (!process.env.ANTHROPIC_API_KEY) {
     const options = generateStubRefinedOptions({ previousReply, direction });
-    return NextResponse.json<RuriMamaResponse>({
+    return NextResponse.json<SakuraMamaResponse>({
       options,
       reply: options[0].content,
       isStub: true,
@@ -319,14 +319,14 @@ ${direction}
 
     if (options.length < 3) {
       const stub = generateStubRefinedOptions({ previousReply, direction });
-      return NextResponse.json<RuriMamaResponse>({
+      return NextResponse.json<SakuraMamaResponse>({
         options: stub,
         reply: stub[0].content,
         isStub: true,
       });
     }
 
-    return NextResponse.json<RuriMamaResponse>({
+    return NextResponse.json<SakuraMamaResponse>({
       options,
       reply: options[0].content,
       isStub: false,
@@ -334,7 +334,7 @@ ${direction}
   } catch (err) {
     console.error("[sakura-mama refine] Claude call failed:", err);
     const options = generateStubRefinedOptions({ previousReply, direction });
-    return NextResponse.json<RuriMamaResponse>({
+    return NextResponse.json<SakuraMamaResponse>({
       options,
       reply: options[0].content,
       isStub: true,
@@ -357,7 +357,7 @@ function buildContextPrefix(opts: {
 }): string {
   const lines: string[] = [];
 
-  // Time/season context — helps Ruri-Mama adjust tone
+  // Time/season context — helps Sakura-Mama adjust tone
   const now = new Date();
   const hour = now.getHours();
   const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
@@ -412,7 +412,7 @@ function buildContextPrefix(opts: {
       if (regionLine) lines.push(regionLine);
     }
 
-    // Visit stats — lets Ruri-Mama gauge customer temperature
+    // Visit stats — lets Sakura-Mama gauge customer temperature
     if (visits.length > 0) {
       lines.push(formatVisitStats(visits, opts.today));
     }

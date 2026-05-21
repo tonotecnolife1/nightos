@@ -133,9 +133,9 @@ test.describe("IDOR — Direct API Manipulation", () => {
   });
 
   test("AI chat history scoped to current cast", async ({ page }) => {
-    // The /api/ruri-mama route should reject requests for other cast's history
+    // The /api/sakura-mama route should reject requests for other cast's history
     const response = await page.request.get(
-      `/api/ruri-mama/history?castId=${CAST_YUKI}`,
+      `/api/sakura-mama/history?castId=${CAST_YUKI}`,
       { failOnStatusCode: false },
     );
     // Either blocked entirely or returns empty (not CAST_YUKI's data)

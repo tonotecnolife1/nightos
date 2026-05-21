@@ -23,7 +23,7 @@ mock データが client/server bundle に焼き込まれている。
   bundle 分岐 (`next.config.js` で `webpack.NormalModuleReplacementPlugin`)。
 - 計測順: 先に `next build` の出力を `.next/analyze` で観測してから判断。
 
-### 2. AVATAR / ICON の SVG が `<link rel="apple-touch-icon" href="/ruri-mama-b.svg" />`
+### 2. AVATAR / ICON の SVG が `<link rel="apple-touch-icon" href="/sakura-mama-b.svg" />`
 **症状**: PNG/ICO 版がない。iOS が SVG を apple-touch-icon に使えない端末がある。
 
 **対応**: 180x180 PNG を `public/apple-touch-icon.png` として配置。

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { Card } from "@/components/nightos/card";
-import { getStyleStats } from "@/features/ruri-mama/lib/option-choice-store";
+import { getStyleStats } from "@/features/sakura-mama/lib/option-choice-store";
 import type { ReplyOptionStyle } from "@/types/nightos";
 
 const STYLE_LABELS: Record<ReplyOptionStyle, string> = {

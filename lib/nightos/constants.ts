@@ -40,9 +40,6 @@ export type ClubRole = "mama" | "oneesan" | "help";
 // Claude Haiku 4.5 — コスパ重視。
 export const SAKURA_MAMA_MODEL = "claude-haiku-4-5-20251001";
 
-/** @deprecated Use SAKURA_MAMA_MODEL instead */
-export const RURI_MAMA_MODEL = SAKURA_MAMA_MODEL;
-
 /**
  * UI に表示するさくらママの名前。
  * 通常の UI では「さくらママ」のみを表示する。

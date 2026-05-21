@@ -66,7 +66,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
         {/* Apple touch icon for "Add to Home Screen" */}
-        <link rel="apple-touch-icon" href="/ruri-mama-b.svg" />
+        <link rel="apple-touch-icon" href="/sakura-mama-b.svg" />
       </head>
       <body className="font-sans bg-pearl text-ink antialiased">
         <ConnectionStatus />

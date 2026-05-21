@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Bookmark, CalendarDays, Star, UserCircle, Users } from "lucide-react";
 import { StatCard } from "@/components/nightos/stat-card";
-import { RuriMamaEntryCard } from "./components/ruri-mama-entry-card";
+import { SakuraMamaEntryCard } from "./components/sakura-mama-entry-card";
 import { FollowTargetList } from "./components/follow-target-list";
 import { MorningBriefing } from "./components/morning-briefing";
 import { StoreMessageBanner } from "./components/store-message-banner";
@@ -76,7 +76,7 @@ export function CastHomeCabaret({ data, storeMessages }: Props) {
 
         <MorningBriefing castId={data.cast.id} />
 
-        <RuriMamaEntryCard />
+        <SakuraMamaEntryCard />
 
         {/* ── フォロー対象 ── */}
         <section className="space-y-3">

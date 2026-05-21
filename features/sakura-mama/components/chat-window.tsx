@@ -31,7 +31,7 @@ import type {
   Customer,
   HearingFlow,
   Intent,
-  RuriMamaResponse,
+  SakuraMamaResponse,
 } from "@/types/nightos";
 
 // ═══════════════ Persistence helpers ═══════════════
@@ -213,7 +213,7 @@ export function ChatWindow({
     setPhase({ name: "loading" });
     try {
       const feedbackContext = recentFeedbackSamples(castId, 8);
-      const res = await fetch("/api/ruri-mama", {
+      const res = await fetch("/api/sakura-mama", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -227,7 +227,7 @@ export function ChatWindow({
         signal: controller.signal,
       });
       if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data: RuriMamaResponse = await res.json();
+      const data: SakuraMamaResponse = await res.json();
       setStubMode(data.isStub);
       setMessages((prev) => [
         ...prev,
@@ -292,7 +292,7 @@ export function ChatWindow({
     setPhase({ name: "loading" });
 
     try {
-      const res = await fetch("/api/ruri-mama", {
+      const res = await fetch("/api/sakura-mama", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -307,7 +307,7 @@ export function ChatWindow({
         }),
       });
       if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data: import("@/types/nightos").RuriMamaResponse = await res.json();
+      const data: import("@/types/nightos").SakuraMamaResponse = await res.json();
       setStubMode(data.isStub);
       setMessages((prev) => [
         ...prev,

@@ -224,7 +224,7 @@ function IdleState({
       <button
         type="button"
         onClick={onPick}
-        className="w-full h-12 rounded-btn ruri-gradient text-pearl shadow-glow-amethyst flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+        className="w-full h-12 rounded-btn sakura-gradient text-pearl shadow-glow-amethyst flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
       >
         <Camera size={18} />
         <span className="text-label-md font-medium">スクショを選ぶ</span>

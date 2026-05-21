@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  ruriMamaSchema,
+  sakuraMamaSchema,
   chatAiSchema,
   extractMemoSchema,
   extractBusinessCardSchema,
@@ -8,7 +8,7 @@ import {
   suggestBottleSchema,
 } from "@/lib/nightos/validation";
 
-describe("ruriMamaSchema", () => {
+describe("sakuraMamaSchema", () => {
   const valid = {
     messages: [{ role: "user", content: "hello" }],
     castId: "cast1",
@@ -16,26 +16,26 @@ describe("ruriMamaSchema", () => {
   };
 
   it("accepts valid input", () => {
-    expect(ruriMamaSchema.safeParse(valid).success).toBe(true);
+    expect(sakuraMamaSchema.safeParse(valid).success).toBe(true);
   });
 
   it("rejects empty messages", () => {
-    const r = ruriMamaSchema.safeParse({ ...valid, messages: [] });
+    const r = sakuraMamaSchema.safeParse({ ...valid, messages: [] });
     expect(r.success).toBe(false);
   });
 
   it("rejects missing castId", () => {
     const { castId: _, ...noCast } = valid;
-    expect(ruriMamaSchema.safeParse(noCast).success).toBe(false);
+    expect(sakuraMamaSchema.safeParse(noCast).success).toBe(false);
   });
 
   it("rejects invalid intent", () => {
-    const r = ruriMamaSchema.safeParse({ ...valid, intent: "hack" });
+    const r = sakuraMamaSchema.safeParse({ ...valid, intent: "hack" });
     expect(r.success).toBe(false);
   });
 
   it("rejects castId with special characters", () => {
-    const r = ruriMamaSchema.safeParse({
+    const r = sakuraMamaSchema.safeParse({
       ...valid,
       castId: "'; DROP TABLE--",
     });
@@ -43,7 +43,7 @@ describe("ruriMamaSchema", () => {
   });
 
   it("accepts optional fields", () => {
-    const r = ruriMamaSchema.safeParse({
+    const r = sakuraMamaSchema.safeParse({
       ...valid,
       customerId: "cust1",
       hearingContext: { purpose: "お礼" },
@@ -52,7 +52,7 @@ describe("ruriMamaSchema", () => {
   });
 
   it("rejects message content exceeding limit", () => {
-    const r = ruriMamaSchema.safeParse({
+    const r = sakuraMamaSchema.safeParse({
       ...valid,
       messages: [{ role: "user", content: "x".repeat(21000) }],
     });

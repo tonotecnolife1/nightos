@@ -102,13 +102,13 @@ async function main() {
     await wait(2000);
     await screenshot(page, "08-template-cards");
 
-    // ═══════════════ Scene 5: Ruri-Mama AI Chat ═══════════════
-    console.log("📱 Scene 5: Ruri-Mama chat");
+    // ═══════════════ Scene 5: Sakura-Mama AI Chat ═══════════════
+    console.log("📱 Scene 5: Sakura-Mama chat");
     // Navigate via tab bar
-    await page.goto(`${BASE_URL}/cast/ruri-mama`);
+    await page.goto(`${BASE_URL}/cast/sakura-mama`);
     await page.waitForSelector("text=さくらママ");
     await wait(1500);
-    await screenshot(page, "09-ruri-mama-picker");
+    await screenshot(page, "09-sakura-mama-picker");
 
     // Pick "LINEで連絡したい"
     await page.click("text=LINEで連絡したい");
@@ -137,12 +137,12 @@ async function main() {
     }
 
     // Wait for response
-    console.log("   ⏳ Waiting for Ruri-Mama response...");
+    console.log("   ⏳ Waiting for Sakura-Mama response...");
     await page.waitForSelector("text=【アドバイス】", { timeout: 30000 }).catch(() => {
       // Stub mode might not have this exact text, wait a bit more
     });
     await wait(3000);
-    await screenshot(page, "11-ruri-mama-response");
+    await screenshot(page, "11-sakura-mama-response");
 
     // Scroll to see full response
     await page.evaluate(() => {
@@ -150,7 +150,7 @@ async function main() {
       if (scrollEl) scrollEl.scrollTo({ top: scrollEl.scrollHeight, behavior: "smooth" });
     });
     await wait(2000);
-    await screenshot(page, "12-ruri-mama-full-response");
+    await screenshot(page, "12-sakura-mama-full-response");
 
     // ═══════════════ Scene 6: Cast Stats ═══════════════
     console.log("📱 Scene 6: Cast stats");

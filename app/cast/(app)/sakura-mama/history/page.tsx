@@ -12,7 +12,7 @@ import {
   groupByCustomer,
   loadSessions,
   type ChatSession,
-} from "@/features/ruri-mama/lib/chat-session-store";
+} from "@/features/sakura-mama/lib/chat-session-store";
 
 export default function ChatHistoryPage() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -77,7 +77,7 @@ export default function ChatHistoryPage() {
             action={
               !query && (
                 <Link
-                  href="/cast/ruri-mama"
+                  href="/cast/sakura-mama"
                   className="inline-block h-10 px-5 rounded-btn bg-amethyst text-pearl text-label-md font-medium active:scale-[0.98]"
                 >
                   さくらママに相談する
@@ -149,7 +149,7 @@ function SessionRow({
 
   return (
     <Link
-      href={`/cast/ruri-mama/history/${session.id}`}
+      href={`/cast/sakura-mama/history/${session.id}`}
       className="block"
     >
       <Card className="p-3 active:scale-[0.99] transition-transform">

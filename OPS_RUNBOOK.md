@@ -131,7 +131,7 @@
 1. Anthropic console → **Usage** で日別 / モデル別の利用量
 2. 通常: `claude-haiku-4-5` で約 $0.005/回。1 日 1,000 回なら約 $5
 3. 急増の原因候補:
-   - bot / クローラに API ルートが叩かれている → Vercel Logs で `/api/ruri-mama` `/api/morning-briefing` 等の頻度確認
+   - bot / クローラに API ルートが叩かれている → Vercel Logs で `/api/sakura-mama` `/api/morning-briefing` 等の頻度確認
    - 無限ループ / リトライの実装ミス → 該当 commit を refresh
 4. 緊急停止: Anthropic console → API Keys → 該当キーを **Disable** → 一時的にスタブモードに戻る
 
@@ -201,7 +201,7 @@ select count(*) from visits;
 |---------|--------|--------|
 | 5xx エラー率 | Vercel Analytics | > 1% / 5min |
 | Function Duration p95 | Vercel Analytics | > 3s / 5min |
-| AI 応答失敗率 | `[nightos:error]` の `scope: ruri-mama.*` 件数 | > 10/h |
+| AI 応答失敗率 | `[nightos:error]` の `scope: sakura-mama.*` 件数 | > 10/h |
 | Anthropic 月次コスト | Anthropic Usage | 月額予算の 80% |
 | Supabase DB Connections | Supabase Reports | > 60% |
 | Sign-up / day | Supabase Auth Users | 急減 → 認証障害の疑い |

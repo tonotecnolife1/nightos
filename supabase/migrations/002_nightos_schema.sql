@@ -2,7 +2,7 @@
 -- NIGHTOS MVP schema (002)
 -- ───────────────────────────────────────────────────────────────
 -- Night-club workspace: stores input customer data, casts consume
--- it via AI-assisted home and Ruri-Mama chat.
+-- it via AI-assisted home and Sakura-Mama chat.
 -- RLS is disabled for MVP; will be added once Supabase Auth is
 -- wired up in a later iteration.
 --
@@ -98,7 +98,7 @@ create table if not exists follow_logs (
 
 create index if not exists follow_logs_cast_idx on follow_logs(cast_id, sent_at desc);
 
--- ─── Ruri-Mama AI chat history ─────────────────────────────────
+-- ─── Sakura-Mama AI chat history ─────────────────────────────────
 create table if not exists ai_chats (
   id text primary key,
   cast_id text references nightos_casts(id) on delete cascade,

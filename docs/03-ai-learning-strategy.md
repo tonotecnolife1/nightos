@@ -185,7 +185,7 @@ source: "元No.1 Aさん"
 構造化した知見を system prompt の「夜の世界の常識」セクションに追加:
 
 ```
-ファイル: features/ruri-mama/data/system-prompt.ts
+ファイル: features/sakura-mama/data/system-prompt.ts
 ```
 
 1つの知見 = 2〜3行で追加。prompt 全体が長くなりすぎないよう、最も汎用的なものを選ぶ。

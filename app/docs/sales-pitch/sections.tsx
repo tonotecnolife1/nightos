@@ -137,7 +137,7 @@ export function Sections() {
         </div>
       </section>
 
-      {/* ═══ RURI-MAMA AI ═══ */}
+      {/* ═══ SAKURA-MAMA AI ═══ */}
       <section className="px-8 py-20 bg-white print:break-after-page">
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div>
@@ -157,7 +157,7 @@ export function Sections() {
             ]} />
           </div>
           <PhoneFrame caption="さくらママ AI チャット">
-            <MockRuriMama />
+            <MockSakuraMama />
           </PhoneFrame>
         </div>
       </section>
@@ -385,7 +385,7 @@ function MockCastHome() {
   );
 }
 
-function MockRuriMama() {
+function MockSakuraMama() {
   return (
     <div className="px-3">
       <div className="rounded-t-lg bg-gradient-to-r from-[#9a7bbb] to-[#6e4f8f] text-white p-2 text-center">

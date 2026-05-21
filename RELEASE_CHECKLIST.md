@@ -125,7 +125,7 @@ mock 専用のまま残っている機能（要 real impl 追加）:
 ※ 後でやる宣言済み。残スコープ:
 - [ ] cast home の SummaryCards / DouhanTracker / FollowTargetList サブコンポーネント
 - [ ] store dashboard / funnel / douhan-pace
-- [ ] ruri-mama 画面 / customer-card 詳細
+- [ ] sakura-mama 画面 / customer-card 詳細
 - [ ] mama 系画面群
 
 ### R2. テスト

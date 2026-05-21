@@ -40,7 +40,7 @@
 
 ```
 rose-gradient:  135deg — #d9a99e → #c98d80 → #a6695c
-ruri-gradient:  135deg — #b89cd3 → #9a7bbb → #6e4f8f
+sakura-gradient:  135deg — #b89cd3 → #9a7bbb → #6e4f8f
 gradient-pearl: 180deg — #fdfcf9 → #faf7f2 → #f5efe6
 gradient-champagne: 135deg — #f7f0de → #f1e7d0
 ```
@@ -51,7 +51,7 @@ gradient-champagne: 135deg — #f7f0de → #f1e7d0
 - **カード背景**: `bg-pearl-warm`（白に近い暖色）
 - **ボーダー**: `border-pearl-soft` がデフォルト
 - **CTA ボタン**: `rose-gradient`（ローズゴールド）
-- **AI 関連**: `ruri-gradient`（アメジスト紫）
+- **AI 関連**: `sakura-gradient`（アメジスト紫）
 - **テキスト**: `text-ink` → `text-ink-secondary` → `text-ink-muted` の3段階
 
 ---
@@ -160,7 +160,7 @@ gradient-champagne: 135deg — #f7f0de → #f1e7d0
 
 // プレミアムカード（さくらママ）
 <GemCard className="p-4">
-// → ruri-gradient text-pearl shadow-glow-amethyst rounded-card
+// → sakura-gradient text-pearl shadow-glow-amethyst rounded-card
 
 // 閲覧専用（店舗メモ）
 <StoreInfoCard>
@@ -187,7 +187,7 @@ gradient-champagne: 135deg — #f7f0de → #f1e7d0
 ```tsx
 // プライマリ（CTA）
 <Button variant="primary">  // rose-gradient + 白文字
-<Button variant="ruri">     // ruri-gradient + 白文字（AI関連）
+<Button variant="sakura">     // sakura-gradient + 白文字（AI関連）
 <Button variant="secondary"> // pearl-soft + ボーダー
 <Button variant="ghost">    // テキストのみ
 <Button variant="outline">  // ボーダー + roseGold テキスト
@@ -219,7 +219,7 @@ gradient-champagne: 135deg — #f7f0de → #f1e7d0
 <PageHeader title="タイトル" subtitle="サブ" showBack />
 
 // さくらママ専用（紫グラデーション）
-<PageHeader title="さくらママ" tone="ruri" />
+<PageHeader title="さくらママ" tone="sakura" />
 
 // → sticky top-0 z-50, backdrop-blur-md
 ```
@@ -357,9 +357,9 @@ gradient-champagne: 135deg — #f7f0de → #f1e7d0
 | キャスト/お姉さん | roseGold | amethyst-muted | roseGold/20 |
 | ママ | champagne | champagne | gradient-champagne |
 | ヘルプ | pearl-soft | pearl-soft | pearl-soft |
-| さくらママ(AI) | amethyst | — | ruri-gradient |
+| さくらママ(AI) | amethyst | — | sakura-gradient |
 | 店舗スタッフ | champagne | champagne | champagne-dark |
-| 来店客 | amethyst | champagne | ruri-gradient |
+| 来店客 | amethyst | champagne | sakura-gradient |
 
 ---
 
@@ -372,7 +372,7 @@ gradient-champagne: 135deg — #f7f0de → #f1e7d0
 // ママ: bg-gradient-champagne text-ink
 // お姉さん: bg-roseGold/20 text-roseGold-dark
 // ヘルプ: bg-pearl-soft text-ink-secondary
-// BOT: RuriMamaAvatar コンポーネント
+// BOT: SakuraMamaAvatar コンポーネント
 
 // 役職バッジ: px-1.5 py-0.5 rounded text-[9px] font-semibold
 // ママ: bg-champagne-dark text-ink

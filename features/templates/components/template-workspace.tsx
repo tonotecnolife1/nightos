@@ -3,8 +3,8 @@
 import { Loader2, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Card } from "@/components/nightos/card";
-import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
-import { CustomerContextPicker } from "@/features/ruri-mama/components/customer-context-picker";
+import { SakuraMamaAvatar } from "@/components/nightos/sakura-mama-avatar";
+import { CustomerContextPicker } from "@/features/sakura-mama/components/customer-context-picker";
 import { useCastId } from "@/lib/nightos/cast-context";
 import type { Bottle, CastMemo, Customer } from "@/types/nightos";
 import { CategoryTabs } from "./category-tabs";
@@ -137,7 +137,7 @@ export function TemplateWorkspace({
       {customerId && (
         <Card className="!bg-amethyst-muted !border-amethyst-border p-4 space-y-3">
           <div className="flex items-center gap-2.5">
-            <RuriMamaAvatar size={36} />
+            <SakuraMamaAvatar size={36} />
             <div className="flex-1">
               <div className="text-label-md text-amethyst-dark font-semibold">
                 さくらママに専用文面を作ってもらう
@@ -152,7 +152,7 @@ export function TemplateWorkspace({
             <button
               type="button"
               onClick={handleGenerateAi}
-              className="w-full h-11 rounded-btn ruri-gradient text-pearl shadow-glow-amethyst flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              className="w-full h-11 rounded-btn sakura-gradient text-pearl shadow-glow-amethyst flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
             >
               <Sparkles size={16} />
               <span className="text-label-md font-medium">

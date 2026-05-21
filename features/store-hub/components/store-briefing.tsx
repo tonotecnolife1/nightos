@@ -3,7 +3,7 @@
 import { Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/nightos/card";
-import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { SakuraMamaAvatar } from "@/components/nightos/sakura-mama-avatar";
 
 interface CachedBriefing {
   briefing: string;
@@ -62,7 +62,7 @@ export function StoreBriefing() {
   return (
     <Card className="!bg-gradient-champagne !border-champagne-dark p-4">
       <div className="flex items-center gap-2 mb-2">
-        <RuriMamaAvatar size={28} />
+        <SakuraMamaAvatar size={28} />
         <span className="text-label-sm text-ink-secondary font-medium uppercase tracking-wider">
           <Sparkles size={11} className="inline mr-1" />
           今夜の重点ポイント

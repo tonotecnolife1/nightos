@@ -170,7 +170,7 @@ export function FollowTargetCard({
           LINE文面
         </Link>
         <Link
-          href={`/cast/ruri-mama?customerId=${customer.id}`}
+          href={`/cast/sakura-mama?customerId=${customer.id}`}
           className="flex items-center justify-center gap-1.5 h-10 px-3.5 rounded-pill text-[12px] font-medium border border-gold/30 bg-champagne-soft/60 text-gold-deep active:scale-[0.98] transition-transform"
           onClick={(e) => e.stopPropagation()}
         >

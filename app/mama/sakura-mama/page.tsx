@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-// ママもさくらママに相談できる。Cast ruri-mama page をそのまま使う。
-export default function MamaRuriMamaPage({
+// ママもさくらママに相談できる。Cast sakura-mama page をそのまま使う。
+export default function MamaSakuraMamaPage({
   searchParams,
 }: {
   searchParams: { customerId?: string };
@@ -9,5 +9,5 @@ export default function MamaRuriMamaPage({
   const qs = searchParams.customerId
     ? `?customerId=${searchParams.customerId}`
     : "";
-  redirect(`/cast/ruri-mama${qs}`);
+  redirect(`/cast/sakura-mama${qs}`);
 }

@@ -100,7 +100,7 @@ test.describe("XSS — Stored / Reflected Input", () => {
 test.describe("CSRF — State-Changing Actions", () => {
   test("AI chat POST from a different origin is rejected", async ({ page }) => {
     // Simulate a cross-origin request (no valid session from another origin)
-    const response = await page.request.post("/api/ruri-mama", {
+    const response = await page.request.post("/api/sakura-mama", {
       headers: {
         Origin: "https://malicious-site.example.com",
         Referer: "https://malicious-site.example.com/attack",

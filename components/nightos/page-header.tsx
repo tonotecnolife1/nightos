@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { RuriMamaAvatar } from "./ruri-mama-avatar";
+import { SakuraMamaAvatar } from "./sakura-mama-avatar";
 
 interface Props {
   title: string;
@@ -12,7 +12,7 @@ interface Props {
   showBack?: boolean;
   right?: ReactNode;
   className?: string;
-  tone?: "default" | "ruri";
+  tone?: "default" | "sakura";
 }
 
 export function PageHeader({
@@ -24,12 +24,12 @@ export function PageHeader({
   tone = "default",
 }: Props) {
   const router = useRouter();
-  const isRuri = tone === "ruri";
+  const isSakura = tone === "sakura";
   return (
     <header
       className={cn(
         "sticky top-0 z-50 px-5 py-4 backdrop-blur-md",
-        isRuri
+        isSakura
           ? "bg-gradient-blush text-ink shadow-soft"
           : "bg-pearl-warm/85 border-b border-ink/[0.06]",
         className,
@@ -46,7 +46,7 @@ export function PageHeader({
             <ArrowLeft size={22} />
           </button>
         )}
-        {isRuri && <RuriMamaAvatar size={44} withGlow />}
+        {isSakura && <SakuraMamaAvatar size={44} withGlow />}
         <div className="flex-1 min-w-0">
           <h1 className="font-display text-[20px] leading-tight font-medium tracking-wide text-ink">
             {title}

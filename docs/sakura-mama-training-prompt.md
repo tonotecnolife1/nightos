@@ -9,7 +9,7 @@
 
 ### Phase 1: 100パターンの教師データ作成
 - 下記のマスタープロンプトを Claude (Opus/Sonnet) に投げて100通りの例を生成
-- 出力を `features/ruri-mama/data/training-examples.ts` に保存
+- 出力を `features/sakura-mama/data/training-examples.ts` に保存
 - システムプロンプトに few-shot として埋め込む（厳選した20-30例）
 - 残りの70-80例は RAG 的に検索 → 関連する2-3例だけ注入
 
@@ -129,7 +129,7 @@ I-1 年末年始 / I-2 GW前後 / I-3 お盆 / I-4 クリスマス / I-5 バレ�
 生成したデータは以下に保存:
 
 ```
-features/ruri-mama/data/
+features/sakura-mama/data/
 ├── training-examples.ts     # 100パターン全量
 ├── training-curated.ts      # few-shot 埋め込み用（厳選20-30件）
 └── training-retrieval.ts    # RAG検索用インデックス（keywords → example ID）

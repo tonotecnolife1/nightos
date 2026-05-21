@@ -36,12 +36,12 @@ const TABS: Tab[] = [
     match: (p) => p.startsWith("/cast/customers"),
   },
   {
-    key: "ruri-mama",
+    key: "sakura-mama",
     label: SAKURA_MAMA_DISPLAY_NAME,
-    href: "/cast/ruri-mama",
+    href: "/cast/sakura-mama",
     icon: Sparkles,
     match: (p) =>
-      p.startsWith("/cast/ruri-mama") || p.startsWith("/mama/ruri-mama"),
+      p.startsWith("/cast/sakura-mama") || p.startsWith("/mama/sakura-mama"),
   },
   {
     key: "chat",
@@ -60,9 +60,9 @@ const TABS: Tab[] = [
 ];
 
 const HIDE_PATTERNS = [
-  /^\/cast\/ruri-mama/,
+  /^\/cast\/sakura-mama/,
   /^\/cast\/chat\/.+/,
-  /^\/mama\/ruri-mama/,
+  /^\/mama\/sakura-mama/,
   /^\/mama\/chat\/.+/,
 ];
 

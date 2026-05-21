@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/nightos/page-header";
-import { MessageBubble } from "@/features/ruri-mama/components/message-bubble";
+import { MessageBubble } from "@/features/sakura-mama/components/message-bubble";
 import {
   loadSessions,
   type ChatSession,
-} from "@/features/ruri-mama/lib/chat-session-store";
+} from "@/features/sakura-mama/lib/chat-session-store";
 
 export default function SessionViewPage({
   params,

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, RefreshCw, Sparkles } from "lucide-react";
-import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { SakuraMamaAvatar } from "@/components/nightos/sakura-mama-avatar";
 import { cn } from "@/lib/utils";
 import type { LineScreenshot } from "@/types/nightos";
 import type { LineSummaryResponse } from "@/app/api/line-history-summary/route";
@@ -113,7 +113,7 @@ export function LineCommunicationSummary({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <RuriMamaAvatar size={28} />
+          <SakuraMamaAvatar size={28} />
           <div>
             <p className="text-label-sm font-medium text-amethyst-dark">連絡の経緯</p>
             <p className="text-[10px] text-ink-muted">さくらママによる要約</p>

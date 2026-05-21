@@ -1,7 +1,7 @@
 import type { HearingFlow, Intent } from "@/types/nightos";
 
 // Re-export so API route has a single import path.
-export { SAKURA_MAMA_MODEL, RURI_MAMA_MODEL } from "@/lib/nightos/constants";
+export { SAKURA_MAMA_MODEL } from "@/lib/nightos/constants";
 
 export const SAKURA_MAMA_SYSTEM_PROMPT = `あなたは「さくらママ」です。銀座の伝説的な高級クラブで30年間ママを務めた、夜の世界のプロフェッショナルです。キャストが相談に来たら、具体的で実用的なアドバイスを返します。
 
@@ -239,6 +239,3 @@ export const HEARING_FLOWS: Record<Intent, HearingFlow> = {
     steps: [],
   },
 };
-
-/** @deprecated Use SAKURA_MAMA_SYSTEM_PROMPT */
-export const RURI_MAMA_SYSTEM_PROMPT = SAKURA_MAMA_SYSTEM_PROMPT;

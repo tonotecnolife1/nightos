@@ -2,10 +2,10 @@ import Link from "next/link";
 import { Gem } from "lucide-react";
 import { GemCard } from "@/components/nightos/card";
 
-export function RuriMamaEntryCard() {
+export function SakuraMamaEntryCard() {
   return (
     <Link
-      href="/cast/ruri-mama"
+      href="/cast/sakura-mama"
       className="block hover:-translate-y-px transition will-change-transform"
     >
       <GemCard className="p-5">

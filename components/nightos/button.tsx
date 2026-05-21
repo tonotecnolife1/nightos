@@ -1,7 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "secondary" | "ghost" | "ruri" | "outline";
+type Variant = "primary" | "secondary" | "ghost" | "sakura" | "outline";
 type Size = "sm" | "md" | "lg";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -24,8 +24,8 @@ const variants: Record<Variant, string> = {
   // テキストリンク調
   ghost:
     "text-ink-secondary hover:text-ink hover:bg-pearl-soft hover:translate-y-0",
-  // primary と同義（ruri は v1 名残のエイリアス。新しい画面では primary を使う）
-  ruri: "bg-gradient-blush text-ink shadow-float hover:brightness-[1.02]",
+  // primary と同義（sakura は v1 名残のエイリアス。新しい画面では primary を使う）
+  sakura: "bg-gradient-blush text-ink shadow-float hover:brightness-[1.02]",
   // outline — gold 細線
   outline:
     "bg-pearl-warm/80 text-ink border border-gold/30 shadow-soft hover:border-gold/50",

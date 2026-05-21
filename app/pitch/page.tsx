@@ -15,7 +15,7 @@ import {
   Wine,
   Zap,
 } from "lucide-react";
-import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { SakuraMamaAvatar } from "@/components/nightos/sakura-mama-avatar";
 
 export default function PitchPage() {
   return (
@@ -109,10 +109,10 @@ export default function PitchPage() {
         </div>
       </section>
 
-      {/* Ruri-Mama */}
+      {/* Sakura-Mama */}
       <section className="px-6 py-8 bg-pearl-soft">
         <div className="flex items-center gap-3 mb-4">
-          <RuriMamaAvatar size={52} withGlow />
+          <SakuraMamaAvatar size={52} withGlow />
           <div>
             <h2 className="text-display-sm text-ink">さくらママAI</h2>
             <p className="text-body-sm text-ink-secondary">銀座30年の経験者</p>
@@ -120,19 +120,19 @@ export default function PitchPage() {
         </div>
 
         <div className="space-y-2.5">
-          <RuriMamaFeature
+          <SakuraMamaFeature
             situation="来店翌日"
             action="お礼LINEの文面を、顧客カルテを見ながら提案"
           />
-          <RuriMamaFeature
+          <SakuraMamaFeature
             situation="接客中（急ぎ）"
             action="「会話が続かない」→ 1問で具体的な切り出し方を回答"
           />
-          <RuriMamaFeature
+          <SakuraMamaFeature
             situation="ボトル残量低下"
             action="顧客の好みに合わせた次のボトル候補を3本提案"
           />
-          <RuriMamaFeature
+          <SakuraMamaFeature
             situation="毎朝"
             action="「今日の重点ポイント」をキャストと店舗に生成"
           />
@@ -184,7 +184,7 @@ export default function PitchPage() {
       <section className="px-6 pt-4 pb-12 text-center">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-8 h-14 rounded-btn ruri-gradient text-pearl shadow-glow-amethyst text-label-md font-medium active:scale-95 transition-transform"
+          className="inline-flex items-center gap-2 px-8 h-14 rounded-btn sakura-gradient text-pearl shadow-glow-amethyst text-label-md font-medium active:scale-95 transition-transform"
         >
           デモを見る
           <ArrowRight size={16} />
@@ -265,7 +265,7 @@ function BenefitRow({ icon, text }: { icon: React.ReactNode; text: string }) {
   );
 }
 
-function RuriMamaFeature({
+function SakuraMamaFeature({
   situation,
   action,
 }: {

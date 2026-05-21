@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { SakuraMamaAvatar } from "@/components/nightos/sakura-mama-avatar";
 import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/types/nightos";
 
@@ -40,10 +40,10 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
     );
   }
 
-  // Assistant message — show Ruri-Mama avatar to the left
+  // Assistant message — show Sakura-Mama avatar to the left
   return (
     <div className="flex justify-start gap-2 items-end">
-      <RuriMamaAvatar size={32} className="mb-1" />
+      <SakuraMamaAvatar size={32} className="mb-1" />
       <div
         className={cn(
           "max-w-[78%] rounded-2xl px-4 py-3 text-body-md whitespace-pre-wrap leading-relaxed shadow-soft-card",

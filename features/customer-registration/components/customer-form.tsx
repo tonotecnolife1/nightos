@@ -193,7 +193,7 @@ export function CustomerForm({
       <div className="flex items-start gap-2 px-3 py-2.5 rounded-2xl bg-emerald/5 border border-emerald/20">
         <Bot size={14} className="text-emerald mt-0.5 shrink-0" />
         <p className="text-[11px] text-ink-secondary leading-relaxed">
-          職業・好みのお酒・話題などはルリママとのチャットから自動で補完されます。
+          職業・好みのお酒・話題などはさくらママとのチャットから自動で補完されます。
         </p>
       </div>
 

@@ -74,7 +74,7 @@ export function MemoCard({
 }
 
 /**
- * Premium card — used for hero CTAs (Ruri-Mama entry, member status banners).
+ * Premium card — used for hero CTAs (Sakura-Mama entry, member status banners).
  * v2: blush gradient instead of v1 amethyst, warm shadow instead of glow.
  */
 export function GemCard({ className, ...rest }: BaseProps) {

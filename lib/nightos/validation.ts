@@ -46,7 +46,7 @@ const chatMessage = z.object({
 
 // ═══════════════ Per-route schemas ═══════════════
 
-export const ruriMamaSchema = z.object({
+export const sakuraMamaSchema = z.object({
   messages: z.array(chatMessage).min(1).max(40),
   customerId: customerId.optional(),
   hearingContext: z.record(z.string(), z.string().max(200)).optional(),

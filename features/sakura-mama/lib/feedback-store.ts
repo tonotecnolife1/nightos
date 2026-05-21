@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Stores per-message feedback locally so future Ruri-Mama prompts can
+ * Stores per-message feedback locally so future Sakura-Mama prompts can
  * reference recent helpful/unhelpful signals to improve quality.
  *
  * Each entry is a (snippet, feedback, timestamp) tuple keyed by the cast.
@@ -9,7 +9,7 @@
  * snippet so the localStorage stays small.
  */
 
-const STORAGE_KEY = "nightos.ruri-feedback";
+const STORAGE_KEY = "nightos.sakura-feedback";
 const MAX_ENTRIES = 30;
 
 export type FeedbackValue = "helpful" | "not_helpful";

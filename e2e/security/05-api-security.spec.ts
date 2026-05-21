@@ -18,10 +18,10 @@ test.describe("API Routes — Unauthenticated Access", () => {
   });
 
   const API_ROUTES = [
-    { method: "GET", path: "/api/ruri-mama/history" },
+    { method: "GET", path: "/api/sakura-mama/history" },
     { method: "GET", path: "/api/cast/memo" },
     { method: "GET", path: "/api/cast/customers" },
-    { method: "POST", path: "/api/ruri-mama" },
+    { method: "POST", path: "/api/sakura-mama" },
     { method: "POST", path: "/api/store/set-cast-goal" },
     { method: "POST", path: "/api/cast/follow-log" },
     { method: "GET", path: "/api/cast/bottles" },
@@ -54,7 +54,7 @@ test.describe("API Routes — Input Validation", () => {
   });
 
   test("AI chat API rejects missing required fields", async ({ page }) => {
-    const response = await page.request.post("/api/ruri-mama", {
+    const response = await page.request.post("/api/sakura-mama", {
       data: {
         // Missing required 'messages' and 'castId' fields
         intent: "follow",
@@ -67,7 +67,7 @@ test.describe("API Routes — Input Validation", () => {
   test("AI chat API sanitizes prompt injection in messages", async ({
     page,
   }) => {
-    const response = await page.request.post("/api/ruri-mama", {
+    const response = await page.request.post("/api/sakura-mama", {
       data: {
         castId: "cast1",
         intent: "freeform",
@@ -124,7 +124,7 @@ test.describe("API Routes — HTTP Method Enforcement", () => {
 
   test("GET-only endpoints reject POST requests", async ({ page }) => {
     const response = await page.request.post(
-      "/api/ruri-mama/history",
+      "/api/sakura-mama/history",
       {
         data: { attack: true },
         failOnStatusCode: false,
@@ -134,7 +134,7 @@ test.describe("API Routes — HTTP Method Enforcement", () => {
   });
 
   test("POST-only endpoints reject GET requests", async ({ page }) => {
-    const response = await page.request.get("/api/ruri-mama", {
+    const response = await page.request.get("/api/sakura-mama", {
       failOnStatusCode: false,
     });
     expect([404, 405]).toContain(response.status());
@@ -170,7 +170,7 @@ test.describe("API Routes — Response Header Security", () => {
   }) => {
     // Trigger a 400/404 and verify no stack trace in the response
     const response = await page.request.get(
-      "/api/ruri-mama/history?castId=INVALID-ID",
+      "/api/sakura-mama/history?castId=INVALID-ID",
       { failOnStatusCode: false },
     );
     const body = await response.text();
@@ -196,7 +196,7 @@ test.describe("API Routes — Rate Limiting (Informational)", () => {
 
     // Send 10 rapid requests
     const promises = Array.from({ length: 10 }, () =>
-      page.request.post("/api/ruri-mama", {
+      page.request.post("/api/sakura-mama", {
         data: {
           castId: "cast1",
           intent: "freeform",

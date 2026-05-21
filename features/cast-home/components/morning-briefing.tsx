@@ -3,7 +3,7 @@
 import { Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { GemCard } from "@/components/nightos/card";
-import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { SakuraMamaAvatar } from "@/components/nightos/sakura-mama-avatar";
 import { getUpcomingShifts } from "@/lib/nightos/schedule-store";
 
 interface Props {
@@ -110,7 +110,7 @@ export function MorningBriefing({ castId }: Props) {
       />
       <div className="relative">
         <div className="flex items-center gap-2 mb-2">
-          <RuriMamaAvatar size={28} />
+          <SakuraMamaAvatar size={28} />
           <span className="text-body-sm font-medium text-ink">
             今朝のさくらママから
           </span>
