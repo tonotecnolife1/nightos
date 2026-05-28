@@ -1,0 +1,333 @@
+/* ════════════════════════════════════════════════════════════════════
+ * NIGHTOS — Luxury Lady Night (v3, 2026-05-19)
+ *
+ * Tokens for the brand redesign that overrides the v2 (blush) palette
+ * with a warm rose-gold metallic + champagne + nocturne deep system.
+ * Cool hues are FORBIDDEN. Reference: reference/design-preview-v3.html.
+ * ════════════════════════════════════════════════════════════════════ */
+
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap");
+
+:root {
+  /* ─── BASE — paper & ink ─── */
+  --pearl:           #faf7f2;  /* page background */
+  --pearl-light:     #fdfcf9;  /* elevated card (almost white) */
+  --pearl-warm:      #f4e9dc;  /* warm cream — Hero gradient, reaction chip */
+  --pearl-soft:      #f5efe6;  /* recessed section */
+  --pearl-deep:      #e8dccb;  /* divider band */
+  --ink:             #2b232a;  /* primary text */
+  --ink-soft:        #6b5a58;  /* secondary text */
+  --ink-mute:        #a89a96;  /* tertiary / placeholder */
+  --line:            rgba(43, 35, 42, 0.08);
+  --line-strong:     rgba(43, 35, 42, 0.14);
+
+  /* ─── SIGNATURE — Rose Gold (primary CTA) ─── */
+  --rose-gold-soft:  #f3d8c8;
+  --rose-gold:       #dba98e;
+  --rose-gold-deep:  #8a5e4d;  /* button fill — passes AA 5.7:1 vs #fdfcf9 cream */
+  /* Text-only token: for cream / pearl button text — never use as fill */
+  --rose-gold-ink:   #6e4736;
+  /* The hero gradient — only on light backgrounds */
+  --rose-gold-metallic:       linear-gradient(135deg, #f0c5af 0%, #d4a486 50%, #a87560 100%);
+  /* Light-only variant — keeps text legible on nocturne (all stops bright) */
+  --rose-gold-metallic-light: linear-gradient(135deg, #ffeede 0%, #fce4d4 50%, #f3d8c8 100%);
+
+  /* ─── CHAMPAGNE — card grounds, KPI underlay ─── */
+  --champagne-soft:  #f5e8d2;
+  --champagne:       #e6cda5;
+  --champagne-deep:  #bf9d6e;
+  --champagne-metallic: linear-gradient(135deg, #f0e0bc 0%, #d8b88a 100%);
+
+  /* ─── GOLD — line / hairline / VIP mark (NEVER as fill) ─── */
+  --gold-soft:       #e0c896;
+  --gold:            #b89455;
+  --gold-deep:       #876c3e;
+  --gold-metallic:   linear-gradient(135deg, #e8d0a0 0%, #c8a672 50%, #8c6f44 100%);
+
+  /* ─── NOCTURNE — depth, hero overlay, on-photo bg ─── */
+  --nocturne-mist:   #dccfc1;
+  --nocturne-dusk:   #b5a594;
+  --nocturne-deep:   #3d2e2a;
+
+  /* ─── WINE — VIP, danger, accent ─── */
+  --wine-soft:       #d4a8a8;
+  --wine:            #9a5d5d;
+  --wine-deep:       #5e3838;
+
+  /* ─── STATE ─── */
+  --success:         #7a9477;  /* dusty sage — never neon */
+  --warning:         #c8a063;  /* champagne-deep */
+  --danger:          #9a5d5d;  /* wine */
+
+  /* ─── GLASS tokens (always paired with backdrop-blur ≥16px) ─── */
+  --glass-pearl:     rgba(248, 241, 230, 0.65);
+  --glass-champagne: rgba(230, 210, 174, 0.55);
+  --glass-nocturne:  rgba(61, 46, 42, 0.45);
+
+  /* ─── ELEVATION — 4-tier (Matte philosophy: drop shadow only, NO inset highlight) ─── */
+  --shadow-soft:
+    0 2px 4px rgba(168, 117, 96, 0.10),
+    0 6px 14px rgba(168, 117, 96, 0.12);
+  --shadow-float:
+    0 4px 12px rgba(201, 141, 128, 0.14),
+    0 16px 32px rgba(201, 141, 128, 0.10);
+  --shadow-warm:
+    0 8px 24px rgba(201, 141, 128, 0.10),
+    0 24px 48px rgba(184, 148, 85, 0.08);
+  --shadow-luxe:
+    0 6px 16px rgba(168, 117, 96, 0.32),
+    0 24px 48px rgba(61, 46, 42, 0.22);
+
+  /* ─── RADII — "when in doubt, go one step larger" ─── */
+  --radius-sm:    12px;  /* input, micro badge */
+  --radius-md:    16px;  /* rare — utility rect */
+  --radius-card:  22px;  /* cards, list rows (DEFAULT) */
+  --radius-2xl:   24px;  /* glass cards, sheets */
+  --radius-xl:    28px;  /* hero, large sheets */
+  --radius-pill:  999px; /* all buttons, avatars, tabs */
+
+  /* ─── SPACING ─── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+
+  /* ─── FONT FAMILIES ─── */
+  --font-serif:    "Noto Serif JP", "Hiragino Mincho ProN", serif;
+  --font-sans:     "Noto Sans JP", system-ui, -apple-system, sans-serif;
+  --font-display:  "Cormorant Garamond", "Noto Serif JP", Georgia, serif;
+  --font-mono:     "Geist Mono", ui-monospace, monospace;
+
+  /* ─── TYPOGRAPHY SEMANTIC ROLES ─── */
+  /* display-* are Noto Serif JP (mincho) — page/section/card titles */
+  --type-display-xl:  500 28px/1.3 var(--font-serif);
+  --type-display-md:  500 22px/1.3 var(--font-serif);
+  --type-display-sm:  500 18px/1.4 var(--font-serif);
+
+  /* body-* are Noto Sans JP — all UI text and forms */
+  --type-body-lg:     400 16px/1.6 var(--font-sans);
+  --type-body-md:     400 14px/1.6 var(--font-sans);
+  --type-body-sm:     400 12px/1.5 var(--font-sans);
+  --type-label:       500 11px/1   var(--font-sans);
+
+  /* KPI numerals — Cormorant Garamond. weight 400 (≥40px) / 500 (metallic). */
+  /* Avoid weight 300 — too thin on cream bg. */
+  --type-kpi-xl:      400 56px/1   var(--font-display);
+  --type-kpi-md:      400 32px/1   var(--font-display);
+  --type-kpi-sm:      500 16px/1   var(--font-display);
+
+  /* Letter-spacing — display uses tracking-wide; tracking-wider uppercase is BANNED */
+  --tracking-tight:   -0.01em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.02em;
+  --tracking-luxe:    0.18em;   /* tiny eyebrows / pill labels only */
+
+  /* ─── SURFACES — どの地の上で何が合法か ─── */
+  --surface-pearl:    var(--pearl);
+  --surface-nocturne: linear-gradient(180deg, #2b201d 0%, #3d2e2a 60%, #4a3833 100%);
+  --ink-on-dark:      #f4e9dc;   /* nocturne上の主テキスト */
+  --ink-on-dark-soft: #c9b8a8;   /* nocturne上の副テキスト */
+  --hero-fade:        linear-gradient(180deg, transparent 0%, var(--pearl) 100%);
+  --ring:             0 0 0 3px rgba(184, 148, 85, 0.35);   /* focus 可視化 */
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * Reset & defaults
+ * ════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+body {
+  font: var(--type-body-lg);
+  color: var(--ink);
+  background: var(--pearl);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * Semantic typography classes (use these directly)
+ * ════════════════════════════════════════════════════════════════════ */
+.t-display-xl { font: var(--type-display-xl); letter-spacing: var(--tracking-wide); color: var(--ink); }
+.t-display-md { font: var(--type-display-md); letter-spacing: var(--tracking-wide); color: var(--ink); }
+.t-display-sm { font: var(--type-display-sm); letter-spacing: var(--tracking-wide); color: var(--ink); }
+.t-body-lg    { font: var(--type-body-lg);    color: var(--ink); }
+.t-body-md    { font: var(--type-body-md);    color: var(--ink-soft); }
+.t-body-sm    { font: var(--type-body-sm);    color: var(--ink-soft); }
+.t-label      { font: var(--type-label);      color: var(--ink-mute); letter-spacing: var(--tracking-wide); }
+.t-eyebrow    { font: var(--type-label);      color: var(--rose-gold-deep); letter-spacing: var(--tracking-luxe); }
+.t-kpi        { font: var(--type-kpi-xl);     color: var(--ink); }
+.t-kpi-md     { font: var(--type-kpi-md);     color: var(--ink); }
+
+/* Metallic text — rose-gold gradient clipped to text */
+.t-metallic {
+  background: var(--rose-gold-metallic);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.t-metallic--light {
+  background: var(--rose-gold-metallic-light);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * Utilities — Glass / KPI tabular-nums
+ * ════════════════════════════════════════════════════════════════════ */
+.glass {
+  background: var(--glass-pearl);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  box-shadow: var(--shadow-soft);
+}
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .glass { background: var(--pearl-light); }   /* 非対応端末は不透明 */
+}
+.t-kpi,
+.t-kpi-md { font-variant-numeric: tabular-nums; }   /* 桁を縦に揃える */
+
+/* ════════════════════════════════════════════════════════════════════
+ * Textures & Ornaments — 既存トークンの上に乗せる "質感の層"
+ * 新色は足さない。SVG turbulence(grain) + 重なる円盤 + 金の縦糸。
+ * 大面積メタリックは不可なので、grain で散らして膜にする。
+ * ════════════════════════════════════════════════════════════════════ */
+
+/* 粒子ノイズ (data URI / fractalNoise, alpha 8%) — 全テクスチャの土台 */
+:root {
+  --grain:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --grain-coarse:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* 紙のような微粒子オーバーレイ — pearl地に重ねて使う */
+.texture-paper { position: relative; isolation: isolate; }
+.texture-paper::after {
+  content: ""; position: absolute; inset: 0;
+  background-image: var(--grain);
+  background-size: 240px 240px;
+  opacity: .08;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* nocturne地の上の粗いグレイン — 「箔の散り」感 */
+.texture-noct { position: relative; isolation: isolate; }
+.texture-noct::after {
+  content: ""; position: absolute; inset: 0;
+  background-image: var(--grain-coarse);
+  background-size: 320px 320px;
+  opacity: .22;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ──────────────────────────────────────────────
+ * Ornament Scene — 重なる円盤の舞台
+ * ヒーロー背景・空の状態・章扉などに使う背景レイヤー
+ * ────────────────────────────────────────────── */
+.ornament-scene {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(80% 60% at 85% 0%, rgba(201,152,138,0.22) 0%, transparent 60%),
+    radial-gradient(70% 55% at 0% 100%, rgba(106,74,68,0.30) 0%, transparent 65%),
+    var(--surface-nocturne);
+}
+.ornament-scene > * { position: relative; z-index: 2; }
+
+/* 円盤の基本形 — 位置・サイズは inline style で指定する想定 */
+.ornament-disc {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(.3px);   /* 縁を 1px だけ和らげる */
+}
+
+/* 円盤バリエーション — 全て既存トークンの組み合わせ + grain */
+.ornament-disc--umber {
+  background:
+    radial-gradient(circle at 30% 28%,
+      rgba(122,89,56,0.95) 0%,
+      rgba(74,56,51,0.85) 55%,
+      rgba(43,32,29,0.95) 100%),
+    var(--grain);
+  background-size: cover, 240px 240px;
+  background-blend-mode: normal, overlay;
+}
+.ornament-disc--ink {
+  background:
+    radial-gradient(circle at 35% 30%,
+      rgba(61,46,42,0.95) 0%,
+      rgba(43,32,29,0.95) 60%,
+      rgba(20,14,12,0.98) 100%),
+    var(--grain);
+  background-size: cover, 240px 240px;
+  background-blend-mode: normal, overlay;
+}
+.ornament-disc--mist {
+  background:
+    radial-gradient(circle at 32% 30%,
+      rgba(215,208,199,0.85) 0%,
+      rgba(176,166,152,0.55) 55%,
+      rgba(120,108,96,0.35) 100%),
+    var(--grain);
+  background-size: cover, 240px 240px;
+  background-blend-mode: normal, multiply;
+  opacity: .85;
+}
+/* 金箔の円盤 — 大面積ベタにならないよう grain を強めに散らす */
+.ornament-disc--gold {
+  background:
+    radial-gradient(circle at 28% 26%,
+      rgba(228,196,138,0.95) 0%,
+      rgba(184,148,85,0.92) 45%,
+      rgba(120,92,52,0.95) 100%),
+    var(--grain-coarse);
+  background-size: cover, 320px 320px;
+  background-blend-mode: normal, overlay;
+}
+.ornament-disc--rose {
+  background:
+    radial-gradient(circle at 30% 28%,
+      rgba(214,164,140,0.92) 0%,
+      rgba(168,118,98,0.92) 50%,
+      rgba(110,71,54,0.95) 100%),
+    var(--grain);
+  background-size: cover, 240px 240px;
+  background-blend-mode: normal, overlay;
+}
+
+/* 縦の金の糸 — 余白を1本通る */
+.ornament-thread {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(184,148,85,0.0) 5%,
+    rgba(184,148,85,0.55) 25%,
+    rgba(212,180,120,0.7) 50%,
+    rgba(184,148,85,0.55) 75%,
+    transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ヒーロー上で円盤を溶かすためのフェード — 下端を pearl に繋ぐ */
+.ornament-scene::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 80px;
+  background: var(--hero-fade);
+  pointer-events: none;
+  z-index: 1;
+}
+.ornament-scene--no-fade::after { display: none; }

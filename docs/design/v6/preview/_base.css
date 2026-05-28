@@ -1,0 +1,50 @@
+/* Shared base for design-system preview cards. ~700px wide */
+@import url("../colors_and_type.css");
+
+html, body {
+  background: var(--pearl);
+  font: var(--type-body-md);
+  color: var(--ink);
+}
+.card {
+  width: 700px;
+  padding: 24px 28px;
+  background: var(--pearl);
+  display: block;
+}
+.card.bare { padding: 0; }
+.card-title {
+  font: var(--type-display-sm);
+  letter-spacing: var(--tracking-wide);
+  margin: 0 0 16px;
+}
+.row { display: flex; gap: 12px; align-items: stretch; }
+.col { display: flex; flex-direction: column; gap: 12px; }
+.grid { display: grid; gap: 12px; }
+.swatch {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--pearl-light);
+  box-shadow: var(--shadow-soft);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.swatch .chip {
+  height: 72px;
+  width: 100%;
+}
+.swatch .meta {
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  background: var(--pearl-light);
+}
+.swatch .name { font: 500 13px/1.3 var(--font-sans); color: var(--ink); }
+.swatch .hex  { font: 400 13px/1 var(--font-display); color: var(--ink-soft); letter-spacing: 0.04em; }
+.swatch .role { font: 400 11px/1.2 var(--font-sans); color: var(--ink-mute); margin-top: 2px; }
+.dark-text .name, .dark-text .hex { color: white; }
+.dark-text .meta { background: var(--nocturne-deep); }

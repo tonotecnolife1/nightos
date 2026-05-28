@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NIGHTOS — V5 Screens Overview</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<style>
+  html, body { margin: 0; padding: 0; background: #0f0807; min-height: 100vh; }
+  body {
+    padding: 48px 32px 96px;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(94,56,56,0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 10% 90%, rgba(140,111,68,0.18) 0%, transparent 60%),
+      #0f0807;
+    color: #fdfcf9;
+    font: 400 14px/1.6 var(--font-sans);
+  }
+  .hdr { text-align: center; margin-bottom: 40px; }
+  .hdr .eyebrow {
+    font: 500 11px/1 var(--font-sans); letter-spacing: 0.32em;
+    color: #C8A672; display: block; margin-bottom: 14px;
+  }
+  .hdr h1 {
+    margin: 0;
+    font: 400 44px/1.1 var(--font-serif); letter-spacing: 0.04em;
+    background: linear-gradient(135deg, #EBD9A8 0%, #C8A672 50%, #8C6F44 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,0.45));
+  }
+  .hdr p {
+    margin: 12px auto 0; max-width: 560px;
+    font: 400 13.5px/1.7 var(--font-sans); color: rgba(253,252,249,0.7);
+    letter-spacing: 0.02em;
+  }
+  .hdr .brass {
+    width: 240px; height: 1px; margin: 22px auto 0;
+    background: linear-gradient(90deg, transparent, rgba(235,217,168,0.7), transparent);
+  }
+
+  .grid {
+    display: grid; gap: 64px 44px;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    max-width: 1600px; margin: 0 auto;
+    justify-items: center;
+  }
+  .slot { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .slot .cap {
+    display: flex; align-items: baseline; gap: 10px;
+    font: 400 13px/1 var(--font-sans); letter-spacing: 0.18em;
+    color: rgba(253,252,249,0.85); text-transform: uppercase;
+  }
+  .slot .cap .num {
+    font: 400 22px/1 var(--font-display);
+    color: #EBD9A8; letter-spacing: 0.04em;
+  }
+  .slot .cap .name { font-family: var(--font-serif); font-size: 16px; text-transform: none; letter-spacing: 0.04em; }
+  .slot .sub {
+    font: 400 11px/1.4 var(--font-sans); color: rgba(253,252,249,0.5);
+    letter-spacing: 0.04em;
+  }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="hdr">
+    <span class="eyebrow">NIGHTOS · LUXURY LADY NIGHT</span>
+    <h1>V5 Bordeaux Salon — All Screens</h1>
+    <p>Cast Home v5 と同じトークン (champagne-gold metallic + wine-deep + champagne-tinted pearl) で 10 画面を統一。</p>
+    <div class="brass"></div>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="cast-home-v5.jsx"></script>
+  <script type="text/babel" src="cast-schedule.jsx"></script>
+  <script type="text/babel" src="cast-customers.jsx"></script>
+  <script type="text/babel" src="cast-customer-detail.jsx"></script>
+  <script type="text/babel" src="cast-customer-new.jsx"></script>
+  <script type="text/babel" src="cast-chat.jsx"></script>
+  <script type="text/babel" src="cast-chat-room.jsx"></script>
+  <script type="text/babel" src="cast-stats.jsx"></script>
+  <script type="text/babel" src="cast-my.jsx"></script>
+  <script type="text/babel" src="cast-templates.jsx"></script>
+  <script type="text/babel" src="cast-sakura-mama-shell.jsx"></script>
+  <script type="text/babel" src="cast-sakura-mama.jsx"></script>
+  <script type="text/babel" data-presets="react">
+    const screens = [
+      { num: '01', name: 'Home',         sub: '/cast/home',                 comp: window.CastHomeV5 },
+      { num: '02', name: 'Schedule',     sub: '/cast/schedule',             comp: window.CastScheduleScreen },
+      { num: '03', name: 'Customers',    sub: '/cast/customers',            comp: window.CastCustomersScreen },
+      { num: '04', name: 'Customer',     sub: '/cast/customers/[id]',       comp: window.CustomerDetailScreen },
+      { num: '05', name: 'New Customer', sub: '/cast/customers/new',        comp: window.NewCustomerScreen },
+      { num: '06', name: 'Chat',         sub: '/cast/chat',                 comp: window.ChatListScreen },
+      { num: '07', name: 'Chat Room',    sub: '/cast/chat/[id]',            comp: window.ChatRoomScreen },
+      { num: '08', name: 'Stats',        sub: '/cast/stats',                comp: window.StatsScreen },
+      { num: '09', name: 'My Page',      sub: '/cast/my',                   comp: window.MyPageScreen },
+      { num: '10', name: 'Templates',    sub: '/cast/templates',            comp: window.TemplatesScreen },
+      { num: '11', name: 'Sakura Mama',  sub: '/cast/sakura-mama',          comp: window.RuriMamaScreen },
+    ];
+
+    function Slot({ num, name, sub, Comp }) {
+      return (
+        <div className="slot">
+          <div className="cap">
+            <span className="num">{num}</span>
+            <span className="name">{name}</span>
+          </div>
+          <span className="sub">{sub}</span>
+          {Comp
+            ? <IOSDevice width={392} height={844}><Comp/></IOSDevice>
+            : <div style={{
+                width: 392, height: 844, borderRadius: 32,
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px dashed rgba(235,217,168,0.3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'rgba(253,252,249,0.4)', fontFamily: 'var(--font-sans)',
+              }}>component not exported</div>
+          }
+        </div>
+      );
+    }
+
+    function Overview() {
+      return (
+        <>{screens.map(s => (
+          <Slot key={s.num} num={s.num} name={s.name} sub={s.sub} Comp={s.comp}/>
+        ))}</>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('grid')).render(<Overview/>);
+  </script>
+</body>
+</html>
