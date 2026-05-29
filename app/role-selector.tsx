@@ -63,12 +63,23 @@ export function RoleSelector() {
   return (
     <main className="min-h-dvh bg-pearl flex flex-col">
       {/* ── Hero ── */}
-      <div className="bg-gradient-hero px-6 pt-14 pb-12">
+      <div
+        className="relative overflow-hidden px-6 pt-14 pb-12"
+        style={{
+          background:
+            "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
+            "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
+            "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
+        }}
+      >
         <div className="max-w-sm mx-auto">
-          <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
+          <div className="text-label-xs tracking-luxe text-roseGold-deep mb-2">
+            NIGHTOS · WELCOME
+          </div>
+          <h1 className="font-serif text-[2rem] leading-[1.15] font-medium tracking-[0.02em] t-metallic">
             {step === "venue" ? "業態を選ぶ" : "役割を選ぶ"}
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <p className="mt-2 text-body-sm text-ink-soft">
             {step === "venue"
               ? "あなたのお店の業態に合わせます"
               : `${venue === "club" ? "クラブ" : "キャバクラ"}でのあなたの立場`}
@@ -170,27 +181,49 @@ function BigCard({
     <button
       type="button"
       onClick={onClick}
-      className={`group w-full text-left px-5 py-4 rounded-card border transition will-change-transform hover:-translate-y-px ${
+      className={`group relative overflow-hidden w-full text-left px-5 py-4 rounded-card border transition will-change-transform hover:-translate-y-px ${
         accent
-          ? "border-gold/30 bg-gradient-to-br from-pearl-warm via-pearl-warm to-blush-soft/50 shadow-float"
-          : "border-ink/[0.06] bg-pearl-warm hover:border-gold/40 shadow-soft"
+          ? "border-ink/[0.08] shadow-warm"
+          : "border-ink/[0.08] bg-pearl-light/85 backdrop-blur-md shadow-soft hover:shadow-warm"
       }`}
+      style={
+        accent
+          ? {
+              background:
+                "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
+                "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
+                "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
+            }
+          : undefined
+      }
     >
+      {accent && (
+        <span
+          aria-hidden
+          className="absolute left-0 top-0 bottom-0 w-1 bg-rose-gold-metallic"
+        />
+      )}
       <div className="flex items-center gap-4">
-        <span className="w-12 h-12 rounded-full border border-gold/40 bg-gradient-to-br from-pearl-warm to-champagne-soft/60 flex items-center justify-center shrink-0">
+        <span
+          className="w-12 h-12 rounded-full border border-gold/40 flex items-center justify-center shrink-0"
+          style={{
+            background: "var(--champagne-metallic)",
+            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.6)",
+          }}
+        >
           {icon}
         </span>
         <div className="flex-1 min-w-0">
-          <div className="font-display text-[18px] leading-tight font-medium text-ink">
+          <div className="font-serif text-[18px] leading-tight font-medium tracking-[0.02em] text-ink">
             {title}
           </div>
-          <p className="text-[11px] text-ink-muted mt-1 leading-relaxed">
+          <p className="text-[11px] text-ink-soft mt-1 leading-relaxed">
             {description}
           </p>
         </div>
         <ChevronRight
           size={18}
-          className="text-ink-muted shrink-0 group-hover:text-blush-deep transition-colors"
+          className="text-ink-mute shrink-0 group-hover:text-roseGold-deep transition-colors"
         />
       </div>
     </button>
