@@ -156,7 +156,7 @@ export default async function CustomerStoreDetailPage({
         {/* Coupons */}
         <section className="space-y-2">
           <h2 className="relative font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5 pl-3.5"><span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
-            <Sparkles size={16} className="text-amethyst-dark" />
+            <Sparkles size={16} className="text-gold-deep" />
             クーポン
           </h2>
 

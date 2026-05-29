@@ -24,9 +24,9 @@ export function CustomerContextPicker({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-2 px-4 py-3 rounded-2xl bg-pearl-warm border border-amethyst-border shadow-soft-card text-left active:scale-[0.99]"
+        className="w-full flex items-center gap-2 px-4 py-3 rounded-2xl bg-pearl-warm border border-gold/30 shadow-soft text-left active:scale-[0.99]"
       >
-        <UserCircle2 size={18} className="text-amethyst-dark shrink-0" />
+        <UserCircle2 size={18} className="text-gold-deep shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="text-label-sm text-ink-mute">顧客コンテキスト</div>
           <div className="text-body-md text-ink truncate">
@@ -66,7 +66,7 @@ export function CustomerContextPicker({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-full mt-2 left-0 right-0 z-50 rounded-2xl bg-pearl-warm border border-amethyst-border shadow-elevated-light overflow-hidden animate-fade-in max-h-[60vh] overflow-y-auto">
+        <div className="absolute top-full mt-2 left-0 right-0 z-50 rounded-2xl bg-pearl-warm border border-gold/30 shadow-warm overflow-hidden animate-fade-in max-h-[60vh] overflow-y-auto">
           <button
             type="button"
             onClick={() => {
@@ -89,7 +89,7 @@ export function CustomerContextPicker({
               }}
               className={cn(
                 "w-full text-left px-4 py-3 hover:bg-pearl-soft border-b border-pearl-soft last:border-b-0",
-                selectedId === c.id && "bg-amethyst-muted",
+                selectedId === c.id && "bg-champagne-soft/60",
               )}
             >
               <div className="text-body-md text-ink">{formatCustomerName(c.name)}</div>

@@ -113,7 +113,7 @@ export default function SignupCastForm() {
             既にアカウントをお持ちの方は{" "}
             <Link
               href="/cast/auth/login"
-              className="text-blush-deep underline-offset-2 hover:underline"
+              className="text-roseGold-deep underline-offset-2 hover:underline"
             >
               ログイン
             </Link>

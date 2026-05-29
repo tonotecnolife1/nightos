@@ -103,7 +103,7 @@ export default function ResetPasswordForm() {
           <p className="text-body-sm text-ink-soft text-center">
             <Link
               href="/auth/login"
-              className="text-blush-deep underline-offset-2 hover:underline"
+              className="text-roseGold-deep underline-offset-2 hover:underline"
             >
               ログイン画面に戻る
             </Link>

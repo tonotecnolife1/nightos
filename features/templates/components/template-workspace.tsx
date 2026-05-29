@@ -160,24 +160,24 @@ export function TemplateWorkspace({
             <button
               type="button"
               onClick={handleGenerateAi}
-              className="w-full h-11 rounded-btn ruri-gradient text-pearl shadow-glow-amethyst flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              className="w-full h-11 rounded-pill bg-roseGold-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
             >
               <Sparkles size={16} />
-              <span className="text-label-md font-medium">
+              <span className="text-label-md font-semibold tracking-[0.04em]">
                 専用文面を作ってもらう
               </span>
             </button>
           )}
 
           {loading && (
-            <div className="flex items-center justify-center gap-2 h-11 text-amethyst-dark">
+            <div className="flex items-center justify-center gap-2 h-11 text-roseGold-deep">
               <Loader2 size={16} className="animate-spin" />
               <span className="text-body-sm">さくらママが考え中…</span>
             </div>
           )}
 
           {error && (
-            <div className="text-body-sm text-rose">{error}</div>
+            <div className="text-body-sm text-wine-deep">{error}</div>
           )}
 
           {aiTemplate && (
@@ -281,7 +281,7 @@ function AiTemplateResult({
         type="button"
         onClick={onRegenerate}
         disabled={regenerating}
-        className="w-full text-label-sm text-amethyst-dark underline underline-offset-2 disabled:opacity-50"
+        className="w-full text-label-sm text-gold-deep underline underline-offset-2 disabled:opacity-50"
       >
         別の文面で作り直す
       </button>

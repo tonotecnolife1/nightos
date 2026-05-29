@@ -65,7 +65,7 @@ export default function SetupClient({ secret }: Props) {
           <button
             type="button"
             onClick={() => setSchemaStatus("info")}
-            className="text-body-sm text-amethyst-dark underline"
+            className="text-body-sm text-gold-deep underline"
           >
             SQL を表示
           </button>
@@ -226,7 +226,7 @@ export default function SetupClient({ secret }: Props) {
           </h2>
           <p className="text-body-sm text-ink-soft">
             セットアップ完了後、
-            <a href="/auth/login" className="text-amethyst-dark underline ml-1">
+            <a href="/auth/login" className="text-gold-deep underline ml-1">
               ログインページ
             </a>
             からキャストを選択（デモ）またはメール/パスワードでログインしてください。

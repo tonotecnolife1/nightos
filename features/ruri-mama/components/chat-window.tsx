@@ -600,7 +600,7 @@ export function ChatWindow({
 
         {phase.name === "loading" && (
           <div className="flex items-center gap-2 text-ink-mute text-body-sm pl-2">
-            <Sparkles size={14} className="text-amethyst animate-shimmer" />
+            <Sparkles size={14} className="text-gold-deep animate-shimmer" />
             さくらママが考え中…
           </div>
         )}
@@ -610,7 +610,7 @@ export function ChatWindow({
             <button
               type="button"
               onClick={handleNewConsultation}
-              className="flex items-center gap-1.5 px-5 h-10 rounded-full bg-pearl-warm border border-amethyst-border text-amethyst-dark text-label-md font-medium shadow-soft-card active:scale-95 hover:bg-amethyst-muted"
+              className="flex items-center gap-1.5 px-5 h-10 rounded-full bg-pearl-warm border border-gold/30 text-gold-deep text-label-md font-medium shadow-soft active:scale-95 hover:bg-champagne-soft/60"
             >
               <Plus size={14} />
               新しい相談を始める

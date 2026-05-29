@@ -200,7 +200,7 @@ export default async function CustomerHomePage() {
               </h2>
               <Link
                 href="/customer/coupons"
-                className="text-[12px] text-blush-deep flex items-center gap-0.5"
+                className="text-[12px] text-roseGold-deep flex items-center gap-0.5"
               >
                 すべて見る
                 <ChevronRight size={12} />
@@ -293,7 +293,7 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
             <div className="text-[9px] text-ink-mute">ボトル</div>
           </div>
           <div className="rounded-btn bg-pearl-soft py-1.5">
-            <div className="font-display text-body-md text-amethyst-dark">
+            <div className="font-display text-body-md text-gold-deep">
               {activeCouponCount}
             </div>
             <div className="text-[9px] text-ink-mute">クーポン</div>

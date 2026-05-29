@@ -22,7 +22,7 @@ export default function PitchPage() {
     <div className="bg-pearl min-h-dvh">
       {/* Hero */}
       <section className="px-6 pt-12 pb-8 text-center bg-pearl-soft">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-badge bg-amethyst-muted text-amethyst-dark text-label-sm border border-amethyst-border mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-badge bg-champagne-soft/60 text-gold-deep text-label-sm border border-gold/30 mb-4">
           <Sparkles size={12} />
           夜のお店専用
         </div>
@@ -138,7 +138,7 @@ export default function PitchPage() {
           />
         </div>
 
-        <p className="text-label-sm text-amethyst-dark mt-4 text-center">
+        <p className="text-label-sm text-gold-deep mt-4 text-center">
           一般論は言わない。必ず「顧客の情報を見て」具体的に答えます
         </p>
       </section>
@@ -184,7 +184,7 @@ export default function PitchPage() {
       <section className="px-6 pt-4 pb-12 text-center">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-8 h-14 rounded-btn ruri-gradient text-pearl shadow-glow-amethyst text-label-md font-medium active:scale-95 transition-transform"
+          className="inline-flex items-center gap-2 px-8 h-14 rounded-btn bg-roseGold-deep text-pearl shadow-luxe text-label-md font-medium active:scale-95 transition-transform"
         >
           デモを見る
           <ArrowRight size={16} />
@@ -210,7 +210,7 @@ function SectionTitle({ emoji, title }: { emoji: string; title: string }) {
 
 function ProblemCard({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft-card">
+    <div className="rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft">
       <div className="text-body-md font-semibold text-ink mb-1">{title}</div>
       <div className="text-body-sm text-ink-soft leading-relaxed">
         {body}
@@ -236,7 +236,7 @@ function FeatureCard({
     amethyst: "bg-gradient-amethyst text-pearl",
   }[tone];
   return (
-    <div className="flex gap-3 rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft-card">
+    <div className="flex gap-3 rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft">
       <div
         className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${iconBg}`}
       >
@@ -255,7 +255,7 @@ function FeatureCard({
 function BenefitRow({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="flex items-start gap-2.5">
-      <div className="w-7 h-7 rounded-full bg-amethyst-muted flex items-center justify-center shrink-0 text-amethyst-dark">
+      <div className="w-7 h-7 rounded-full bg-champagne-soft/60 flex items-center justify-center shrink-0 text-gold-deep">
         {icon}
       </div>
       <span className="text-body-md text-ink leading-relaxed pt-0.5">
@@ -273,8 +273,8 @@ function RuriMamaFeature({
   action: string;
 }) {
   return (
-    <div className="rounded-btn bg-pearl-warm border border-amethyst-border px-3 py-2.5">
-      <div className="text-label-sm text-amethyst-dark font-medium">
+    <div className="rounded-btn bg-pearl-warm border border-gold/30 px-3 py-2.5">
+      <div className="text-label-sm text-gold-deep font-medium">
         {situation}
       </div>
       <div className="text-body-sm text-ink">{action}</div>

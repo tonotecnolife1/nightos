@@ -82,7 +82,7 @@ export function MemoSection({ customer, memo }: Props) {
                 type="button"
                 onClick={save}
                 disabled={pending}
-                className="flex items-center gap-1 h-9 px-4 rounded-btn text-label-sm text-pearl rose-gradient shadow-soft-card disabled:opacity-60"
+                className="flex items-center gap-1 h-9 px-4 rounded-btn text-label-sm text-pearl bg-roseGold-deep shadow-soft disabled:opacity-60"
               >
                 <Check size={14} />
                 {pending ? "保存中…" : "保存"}
@@ -91,14 +91,14 @@ export function MemoSection({ customer, memo }: Props) {
           ) : (
             <>
               {savedAt && (
-                <span className="text-label-sm text-amethyst-dark">
+                <span className="text-label-sm text-gold-deep">
                   保存しました
                 </span>
               )}
               <button
                 type="button"
                 onClick={() => setEditing(true)}
-                className="flex items-center gap-1 h-9 px-3 rounded-btn text-label-sm text-blush-dark bg-blush-light hover:bg-blush"
+                className="flex items-center gap-1 h-9 px-3 rounded-btn text-label-sm text-roseGold-deep bg-roseGold-soft/60 hover:bg-roseGold-deep"
               >
                 <Pencil size={14} />
                 編集する
@@ -126,7 +126,7 @@ function MemoField({
 }) {
   return (
     <div>
-      <div className="text-label-sm text-blush-dark mb-1">{label}</div>
+      <div className="text-label-sm text-roseGold-deep mb-1">{label}</div>
       {editing ? (
         <textarea
           value={value}

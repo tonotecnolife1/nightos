@@ -55,7 +55,7 @@ export default async function CastStatsPage() {
               value={Math.round(data.monthly.repeatRate * 100)}
               unit="%"
               tone="rose"
-              icon={<Heart size={12} className="text-blush-dark" />}
+              icon={<Heart size={12} className="text-roseGold-deep" />}
             />
           </div>
           <StatCard
@@ -63,14 +63,14 @@ export default async function CastStatsPage() {
             value={Math.round(data.monthly.followRate * 100)}
             unit="%"
             tone="amethyst"
-            icon={<TrendingUp size={12} className="text-amethyst-dark" />}
+            icon={<TrendingUp size={12} className="text-gold-deep" />}
           />
           <StatCard
             label="今月の新規"
             value={data.monthly.newCustomerCount}
             unit="人"
             tone="default"
-            icon={<UserPlus size={12} className="text-amethyst-dark" />}
+            icon={<UserPlus size={12} className="text-gold-deep" />}
           />
         </div>
 
@@ -81,7 +81,7 @@ export default async function CastStatsPage() {
             value={data.monthly.totalCustomerCount}
             unit="人"
             tone="rose"
-            icon={<Users size={12} className="text-blush-dark" />}
+            icon={<Users size={12} className="text-roseGold-deep" />}
           />
           <StatCard
             label="連続連絡"

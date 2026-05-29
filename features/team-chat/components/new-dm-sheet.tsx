@@ -72,7 +72,7 @@ export function NewDmSheet({ storeCasts }: Props) {
       <button
         type="button"
         onClick={openSheet}
-        className="w-10 h-10 rounded-full bg-amethyst-muted text-amethyst-dark flex items-center justify-center"
+        className="w-10 h-10 rounded-full bg-champagne-soft/60 text-gold-deep flex items-center justify-center"
         aria-label="新しいチャットを作成"
       >
         <Plus size={20} />
@@ -172,8 +172,8 @@ export function NewDmSheet({ storeCasts }: Props) {
                           className="w-full flex items-center gap-3 px-3 py-3.5 rounded-card hover:bg-pearl-soft active:bg-pearl-soft transition text-left disabled:opacity-50"
                         >
                           {/* Avatar */}
-                          <div className="w-10 h-10 rounded-full bg-blush-soft border border-blush/30 flex items-center justify-center shrink-0">
-                            <span className="text-body-sm font-medium text-blush-deep">
+                          <div className="w-10 h-10 rounded-full bg-roseGold-soft/60 border border-blush/30 flex items-center justify-center shrink-0">
+                            <span className="text-body-sm font-medium text-roseGold-deep">
                               {cast.name.charAt(0)}
                             </span>
                           </div>
@@ -188,7 +188,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                               className={cn(
                                 "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition",
                                 isChecked
-                                  ? "bg-amethyst border-amethyst"
+                                  ? "bg-roseGold-deep border-roseGold-deep"
                                   : "border-ink/20",
                               )}
                             >

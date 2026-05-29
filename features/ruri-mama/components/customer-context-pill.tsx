@@ -33,7 +33,7 @@ export function CustomerContextPill({
         className={cn(
           "w-full flex items-center gap-2 px-3 h-9 rounded-full border transition-all active:scale-[0.99]",
           selected
-            ? "bg-amethyst-muted border-amethyst-border text-amethyst-dark"
+            ? "bg-champagne-soft/60 border-gold/30 text-gold-deep"
             : "bg-pearl-warm border-pearl-soft text-ink-soft",
         )}
       >
@@ -77,7 +77,7 @@ export function CustomerContextPill({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-card bg-pearl-warm border border-amethyst-border shadow-elevated-light overflow-hidden animate-fade-in max-h-[60vh] overflow-y-auto">
+        <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-card bg-pearl-warm border border-gold/30 shadow-warm overflow-hidden animate-fade-in max-h-[60vh] overflow-y-auto">
           <button
             type="button"
             onClick={() => {
@@ -86,7 +86,7 @@ export function CustomerContextPill({
             }}
             className={cn(
               "w-full text-left px-3 py-2.5 hover:bg-pearl-soft border-b border-pearl-soft",
-              !selectedId && "bg-amethyst-muted",
+              !selectedId && "bg-champagne-soft/60",
             )}
           >
             <div className="text-body-sm text-ink-soft">
@@ -103,7 +103,7 @@ export function CustomerContextPill({
               }}
               className={cn(
                 "w-full text-left px-3 py-2.5 hover:bg-pearl-soft border-b border-pearl-soft last:border-b-0",
-                selectedId === c.id && "bg-amethyst-muted",
+                selectedId === c.id && "bg-champagne-soft/60",
               )}
             >
               <div className="text-body-sm text-ink">

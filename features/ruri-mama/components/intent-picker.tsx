@@ -95,7 +95,7 @@ export function IntentPicker({ onPick }: Props) {
               type="button"
               onClick={() => onPick(opt.value)}
               className={cn(
-                "w-full text-left rounded-card border shadow-soft-card transition-all active:scale-[0.98]",
+                "w-full text-left rounded-card border shadow-soft transition-all active:scale-[0.98]",
                 cls.bg,
                 cls.border,
               )}

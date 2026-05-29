@@ -207,7 +207,7 @@ export function TemplateEditor({ category, onChange }: Props) {
                 <button
                   type="button"
                   onClick={() => startEdit(t)}
-                  className="text-label-sm text-amethyst-dark"
+                  className="text-label-sm text-gold-deep"
                 >
                   編集
                 </button>

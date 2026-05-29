@@ -262,7 +262,7 @@ function ShiftEditSheet({
                   ? s === "working"
                     ? "bg-roseGold-deep text-pearl-light border-amethyst"
                     : "bg-pearl-soft border-ink/[0.08] text-ink"
-                  : "bg-pearl-warm border-ink/[0.06] text-ink-soft hover:border-amethyst/20",
+                  : "bg-pearl-warm border-ink/[0.06] text-ink-soft hover:border-roseGold-deep/30",
               )}
             >
               {STATUS_STYLE[s].label}

@@ -109,13 +109,13 @@ export function LineCommunicationSummary({
   if (screenshots.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-amethyst-border bg-amethyst-muted/40 p-4 space-y-3">
+    <div className="rounded-2xl border border-gold/30 bg-champagne-soft/60/40 p-4 space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <RuriMamaAvatar size={28} />
           <div>
-            <p className="text-label-sm font-medium text-amethyst-dark">連絡の経緯</p>
+            <p className="text-label-sm font-medium text-gold-deep">連絡の経緯</p>
             <p className="text-[10px] text-ink-mute">さくらママによる要約</p>
           </div>
         </div>
@@ -123,7 +123,7 @@ export function LineCommunicationSummary({
           type="button"
           onClick={() => void fetchSummary(true)}
           disabled={loading}
-          className="p-1.5 rounded-full text-ink-mute hover:text-amethyst-dark hover:bg-amethyst-muted transition disabled:opacity-40"
+          className="p-1.5 rounded-full text-ink-mute hover:text-gold-deep hover:bg-champagne-soft/60 transition disabled:opacity-40"
           aria-label="再生成"
         >
           <RefreshCw size={13} className={cn(loading && "animate-spin")} />
@@ -142,7 +142,7 @@ export function LineCommunicationSummary({
           <button
             type="button"
             onClick={() => void fetchSummary(true)}
-            className="ml-1 text-amethyst-dark underline underline-offset-2"
+            className="ml-1 text-gold-deep underline underline-offset-2"
           >
             再試行
           </button>

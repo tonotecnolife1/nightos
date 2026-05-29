@@ -56,7 +56,7 @@ export default function ChatHistoryPage() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="顧客名・キーワードで検索"
             style={{ fontSize: "13px" }}
-            className="w-full h-10 pl-8 pr-3 rounded-full bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-amethyst-border placeholder:text-ink-mute"
+            className="w-full h-10 pl-8 pr-3 rounded-full bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-gold/30 placeholder:text-ink-mute"
           />
         </div>
 

@@ -53,7 +53,7 @@ export function VisitListClient({ visits: initial }: Props) {
           />
           <Link
             href="/store/visits/new"
-            className="h-10 px-4 rounded-btn bg-gradient-rose-gold text-pearl flex items-center gap-1 shadow-soft-card text-label-md font-medium active:scale-95 transition-transform"
+            className="h-10 px-4 rounded-btn bg-gradient-rose-gold text-pearl flex items-center gap-1 shadow-soft text-label-md font-medium active:scale-95 transition-transform"
           >
             <CalendarPlus size={14} />
             新規来店

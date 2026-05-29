@@ -50,7 +50,7 @@ export function CustomerPhotoUpload({ customerId, customerName }: Props) {
   return (
     <div className="flex items-center gap-3">
       <div className="relative">
-        <div className="w-16 h-16 rounded-full overflow-hidden bg-pearl-soft border border-pearl-soft shadow-soft-card">
+        <div className="w-16 h-16 rounded-full overflow-hidden bg-pearl-soft border border-pearl-soft shadow-soft">
           {photo ? (
             <Image
               src={photo}
@@ -69,7 +69,7 @@ export function CustomerPhotoUpload({ customerId, customerName }: Props) {
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-amethyst-dark text-pearl flex items-center justify-center shadow-soft-card"
+          className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-gold-deep text-pearl-light flex items-center justify-center shadow-soft"
         >
           <Camera size={13} />
         </button>

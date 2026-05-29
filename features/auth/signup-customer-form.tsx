@@ -90,7 +90,7 @@ export default function SignupCustomerForm() {
 
           <p className="text-body-sm text-ink-soft text-center">
             既にアカウントをお持ちの方は{" "}
-            <Link href="/customer/auth/login" className="text-blush-deep underline-offset-2 hover:underline">
+            <Link href="/customer/auth/login" className="text-roseGold-deep underline-offset-2 hover:underline">
               ログイン
             </Link>
           </p>

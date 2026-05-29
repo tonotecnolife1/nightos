@@ -169,7 +169,7 @@ function ReferralToggle({
 }) {
   const toneClass =
     tone === "strong"
-      ? "bg-amethyst-muted/40 border-amethyst-border text-amethyst-dark"
+      ? "bg-champagne-soft/60/40 border-gold/30 text-gold-deep"
       : "bg-pearl-soft border-pearl-soft text-ink-soft";
   return (
     <button
@@ -210,8 +210,8 @@ function TreeChildWrapper({
 }) {
   const lineColor =
     lineTone === "strong"
-      ? "bg-amethyst-border"
-      : "bg-amethyst-border/60";
+      ? "bg-gold/30"
+      : "bg-gold/30/60";
   return (
     <div className="relative pl-6 mt-2 first:mt-0">
       {/* Horizontal elbow (card center y) */}
@@ -252,8 +252,8 @@ function ReferralNodeCard({
     <a
       href={`/cast/customers/${node.customer.id}`}
       className={cn(
-        "block rounded-card bg-pearl-warm border shadow-soft-card px-3 py-2 active:scale-[0.99] transition-transform",
-        isRoot ? "border-amethyst-border" : "border-pearl-soft",
+        "block rounded-card bg-pearl-warm border shadow-soft px-3 py-2 active:scale-[0.99] transition-transform",
+        isRoot ? "border-gold/30" : "border-pearl-soft",
       )}
     >
       {/* 1行目: 名前 + ファネル状態バッジ（担当ありは表示しない） [余白] 紹介元ラベル */}
@@ -267,7 +267,7 @@ function ReferralNodeCard({
           />
         )}
         {isRoot && (
-          <span className="ml-auto flex items-center gap-1 text-[10px] text-amethyst-dark font-medium shrink-0 bg-amethyst-muted/40 border border-amethyst-border rounded-badge px-1.5 py-0.5">
+          <span className="ml-auto flex items-center gap-1 text-[10px] text-gold-deep font-medium shrink-0 bg-champagne-soft/60/40 border border-gold/30 rounded-badge px-1.5 py-0.5">
             <Crown size={10} />
             お連れ様合計{rootRefCount ?? 0}人
           </span>
@@ -326,9 +326,9 @@ function ManagerBlock({
     : "管理者未割り当て";
 
   return (
-    <div className="flex flex-col gap-2 rounded-card bg-amethyst-muted/20 border border-amethyst-border p-2.5">
+    <div className="flex flex-col gap-2 rounded-card bg-champagne-soft/60/20 border border-gold/30 p-2.5">
       <div className="flex items-center gap-1.5">
-        <Crown size={14} className="text-amethyst-dark shrink-0" />
+        <Crown size={14} className="text-gold-deep shrink-0" />
         <span className="text-body-sm font-semibold text-ink flex-1 truncate">
           {managerLabel}
         </span>
@@ -413,7 +413,7 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
     customer.category === "vip"
       ? "bg-roseGold-muted text-roseGold-dark border-roseGold-border"
       : customer.category === "new"
-        ? "bg-amethyst-muted/50 text-amethyst-dark border-amethyst-border"
+        ? "bg-champagne-soft/60/50 text-gold-deep border-gold/30"
         : "bg-pearl-soft text-ink-soft border-pearl-soft";
   return (
     <a

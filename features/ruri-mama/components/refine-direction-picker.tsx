@@ -14,9 +14,9 @@ interface Props {
  */
 export function RefineDirectionPicker({ onPick, onCancel }: Props) {
   return (
-    <div className="rounded-card border border-amethyst-border bg-amethyst-muted/30 p-3 space-y-2">
+    <div className="rounded-card border border-gold/30 bg-champagne-soft/60/30 p-3 space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-label-sm text-amethyst-dark font-medium">
+        <span className="text-label-sm text-gold-deep font-medium">
           どの方向でブラッシュアップしますか？
         </span>
         <button
@@ -35,7 +35,7 @@ export function RefineDirectionPicker({ onPick, onCancel }: Props) {
             key={d.id}
             type="button"
             onClick={() => onPick(d)}
-            className="flex items-center justify-center gap-1 h-9 rounded-full bg-pearl-warm border border-amethyst-border text-[11px] text-ink active:scale-[0.97] hover:bg-amethyst-muted/50 transition-all"
+            className="flex items-center justify-center gap-1 h-9 rounded-full bg-pearl-warm border border-gold/30 text-[11px] text-ink active:scale-[0.97] hover:bg-champagne-soft/60/50 transition-all"
           >
             <span>{d.emoji}</span>
             <span>{d.label}</span>

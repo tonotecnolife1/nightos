@@ -71,7 +71,7 @@ export function LineHistoryTimeline({ screenshots, customerName }: Props) {
               {/* Date marker */}
               <div className="relative flex items-center gap-3 mb-2 mt-4 first:mt-0">
                 <div className="w-10 h-10 shrink-0 flex items-center justify-center z-10">
-                  <div className="w-2.5 h-2.5 rounded-full bg-amethyst-dark border-2 border-pearl" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-gold-deep border-2 border-pearl" />
                 </div>
                 <span className="text-[11px] font-medium text-ink-mute bg-pearl px-2 py-0.5 rounded-full border border-pearl-soft">
                   {date}

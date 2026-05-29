@@ -111,12 +111,12 @@ export function LineImportPanel({ customer, memo, screenshots }: Props) {
     <section className="space-y-3">
       <header className="flex items-center justify-between">
         <h3 className="text-display-sm text-ink flex items-center gap-1.5">
-          <Camera size={16} className="text-amethyst-dark" />
+          <Camera size={16} className="text-gold-deep" />
           LINEから自動更新
         </h3>
       </header>
 
-      <Card className="!bg-amethyst-muted !border-amethyst-border p-4">
+      <Card className="!bg-champagne-soft/60 !border-gold/30 p-4">
         {phase.name === "idle" && (
           <IdleState
             onPick={() => fileInputRef.current?.click()}
@@ -216,7 +216,7 @@ function IdleState({
 }) {
   return (
     <div className="space-y-3 text-center">
-      <p className="text-body-sm text-amethyst-dark leading-relaxed">
+      <p className="text-body-sm text-gold-deep leading-relaxed">
         LINEのスクリーンショットを取り込むと、
         <br />
         会話の内容を読み取って個人メモを自動更新します
@@ -224,7 +224,7 @@ function IdleState({
       <button
         type="button"
         onClick={onPick}
-        className="w-full h-12 rounded-btn ruri-gradient text-pearl shadow-glow-amethyst flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+        className="w-full h-12 rounded-btn bg-roseGold-deep text-pearl shadow-luxe flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
       >
         <Camera size={18} />
         <span className="text-label-md font-medium">スクショを選ぶ</span>
@@ -242,9 +242,9 @@ function LoadingState({ label }: { label: string }) {
     <div className="flex flex-col items-center gap-3 py-6">
       <Loader2
         size={28}
-        className="text-amethyst-dark animate-spin"
+        className="text-gold-deep animate-spin"
       />
-      <p className="text-body-sm text-amethyst-dark font-medium">{label}</p>
+      <p className="text-body-sm text-gold-deep font-medium">{label}</p>
     </div>
   );
 }
@@ -269,7 +269,7 @@ function SuccessState({
       <button
         type="button"
         onClick={onContinue}
-        className="text-label-md text-amethyst-dark underline underline-offset-2"
+        className="text-label-md text-gold-deep underline underline-offset-2"
       >
         続けて取り込む
       </button>
@@ -293,7 +293,7 @@ function ErrorState({
       <button
         type="button"
         onClick={onRetry}
-        className="w-full h-10 rounded-btn bg-pearl-warm border border-amethyst-border text-amethyst-dark text-label-md active:scale-95"
+        className="w-full h-10 rounded-btn bg-pearl-warm border border-gold/30 text-gold-deep text-label-md active:scale-95"
       >
         もう一度試す
       </button>
@@ -390,7 +390,7 @@ function ReviewPanel({
 
       {/* Image preview thumbnail */}
       <div className="flex gap-3">
-        <div className="w-20 h-20 rounded-btn overflow-hidden border border-amethyst-border shrink-0 bg-pearl-warm relative">
+        <div className="w-20 h-20 rounded-btn overflow-hidden border border-gold/30 shrink-0 bg-pearl-warm relative">
           {/* Use unoptimized for data URLs */}
           <Image
             src={imageData}
@@ -402,7 +402,7 @@ function ReviewPanel({
           />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-label-sm text-amethyst-dark font-medium mb-1">
+          <p className="text-label-sm text-gold-deep font-medium mb-1">
             読み取り結果
           </p>
           <p className="text-body-sm text-ink leading-relaxed">
@@ -419,7 +419,7 @@ function ReviewPanel({
         </div>
       ) : (
         <div className="space-y-2.5">
-          <p className="text-label-sm text-amethyst-dark font-medium">
+          <p className="text-label-sm text-gold-deep font-medium">
             更新する項目を選んでください
           </p>
           {updatableFields.map((field) => (
@@ -449,7 +449,7 @@ function ReviewPanel({
           type="button"
           onClick={handleSave}
           disabled={pending || (updatableFields.length > 0 && selected.length === 0)}
-          className="flex-1 h-11 rounded-btn rose-gradient text-pearl text-label-md font-medium shadow-glow-rose disabled:opacity-60 active:scale-95"
+          className="flex-1 h-11 rounded-btn bg-roseGold-deep text-pearl-light text-label-md font-medium shadow-luxe disabled:opacity-60 active:scale-95"
         >
           {pending
             ? "保存中…"
@@ -505,7 +505,7 @@ function FieldDiff({
       className={cn(
         "w-full text-left rounded-btn border px-3 py-2.5 transition-all",
         checked
-          ? "bg-pearl-warm border-amethyst shadow-soft-card"
+          ? "bg-pearl-warm border-amethyst shadow-soft"
           : "bg-pearl-warm/60 border-pearl-soft",
       )}
     >
@@ -514,14 +514,14 @@ function FieldDiff({
           className={cn(
             "w-5 h-5 rounded mt-0.5 flex items-center justify-center shrink-0 border-2",
             checked
-              ? "bg-amethyst border-amethyst text-pearl"
+              ? "bg-roseGold-deep border-roseGold-deep text-pearl"
               : "border-ink-muted",
           )}
         >
           {checked && <Check size={12} strokeWidth={3} />}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-label-sm text-amethyst-dark font-medium mb-1">
+          <div className="text-label-sm text-gold-deep font-medium mb-1">
             {label}
           </div>
           <div className="text-body-sm text-ink leading-relaxed">
@@ -616,7 +616,7 @@ function ScreenshotHistoryRow({
             </button>
           </div>
           {screenshot.applied_fields.length > 0 ? (
-            <div className="text-label-sm text-amethyst-dark">
+            <div className="text-label-sm text-gold-deep">
               <Sparkles size={10} className="inline mr-1" />
               反映したフィールド: {screenshot.applied_fields.join(", ")}
             </div>

@@ -103,11 +103,11 @@ export default function SignupStaffForm() {
           </form>
 
           <p className="text-body-sm text-ink-soft text-center">
-            <Link href="/store/auth/signup-owner" className="text-blush-deep underline-offset-2 hover:underline">
+            <Link href="/store/auth/signup-owner" className="text-roseGold-deep underline-offset-2 hover:underline">
               新しい店舗を開く（オーナー）
             </Link>
             {"  ·  "}
-            <Link href="/store/auth/login" className="text-blush-deep underline-offset-2 hover:underline">
+            <Link href="/store/auth/login" className="text-roseGold-deep underline-offset-2 hover:underline">
               ログイン
             </Link>
           </p>

@@ -84,7 +84,7 @@ export default function AvatarPickerPage() {
 
                 {/* Mini preview row showing all sizes that the avatar appears in */}
                 {isSelected && (
-                  <div className="mt-3 pt-3 border-t border-amethyst-border flex items-center justify-around">
+                  <div className="mt-3 pt-3 border-t border-gold/30 flex items-center justify-around">
                     <div className="flex flex-col items-center gap-1">
                       <RuriMamaAvatar variant={variant.id} size={32} />
                       <span className="text-[10px] text-ink-mute">

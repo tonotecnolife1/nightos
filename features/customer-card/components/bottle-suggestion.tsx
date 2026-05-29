@@ -57,7 +57,7 @@ export function BottleSuggestion({ customerId }: Props) {
       <button
         type="button"
         onClick={handleClick}
-        className="w-full mt-2 inline-flex items-center justify-center gap-1.5 px-3 h-9 rounded-btn bg-amethyst-muted border border-amethyst-border text-amethyst-dark text-label-sm font-medium active:scale-95 hover:bg-amethyst hover:text-pearl transition-colors"
+        className="w-full mt-2 inline-flex items-center justify-center gap-1.5 px-3 h-9 rounded-btn bg-champagne-soft/60 border border-gold/30 text-gold-deep text-label-sm font-medium active:scale-95 hover:bg-roseGold-deep hover:text-pearl-light transition-colors"
       >
         <Sparkles size={12} />
         さくらママに次のボトル候補を聞く
@@ -67,7 +67,7 @@ export function BottleSuggestion({ customerId }: Props) {
 
   if (phase === "loading") {
     return (
-      <div className="mt-2 flex items-center justify-center gap-2 h-9 text-amethyst-dark text-label-sm">
+      <div className="mt-2 flex items-center justify-center gap-2 h-9 text-gold-deep text-label-sm">
         <Loader2 size={12} className="animate-spin" />
         さくらママが選んでます…
       </div>
@@ -90,8 +90,8 @@ export function BottleSuggestion({ customerId }: Props) {
   return (
     <div className="mt-3 space-y-2">
       <div className="flex items-center gap-1.5">
-        <Sparkles size={12} className="text-amethyst-dark" />
-        <span className="text-label-sm text-amethyst-dark font-medium">
+        <Sparkles size={12} className="text-gold-deep" />
+        <span className="text-label-sm text-gold-deep font-medium">
           さくらママのおすすめ {isStub && "(デモ)"}
         </span>
       </div>
@@ -103,7 +103,7 @@ export function BottleSuggestion({ customerId }: Props) {
       <button
         type="button"
         onClick={handleClick}
-        className="text-label-sm text-amethyst-dark underline underline-offset-2"
+        className="text-label-sm text-gold-deep underline underline-offset-2"
       >
         別の候補で作り直す
       </button>

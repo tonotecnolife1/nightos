@@ -310,7 +310,7 @@ export function ChatRoomView({
           aria-label={searchOpen ? "検索を閉じる" : "検索"}
           className={cn(
             "w-14 shrink-0 flex items-center justify-end text-ink-soft",
-            searchOpen && "text-amethyst-dark",
+            searchOpen && "text-gold-deep",
           )}
         >
           {searchOpen ? <X size={18} /> : <Search size={18} />}
@@ -433,7 +433,7 @@ export function ChatRoomView({
               <button
                 type="button"
                 onClick={cancelEdit}
-                className="text-[11px] text-amethyst-dark underline mt-0.5"
+                className="text-[11px] text-gold-deep underline mt-0.5"
               >
                 編集をやめる
               </button>
@@ -448,7 +448,7 @@ export function ChatRoomView({
                       prev.includes("@さくらママ") ? prev : "@さくらママ " + prev,
                     );
                   }}
-                  className="shrink-0 mb-1 p-1.5 rounded-full text-amethyst-dark hover:bg-amethyst-muted"
+                  className="shrink-0 mb-1 p-1.5 rounded-full text-gold-deep hover:bg-champagne-soft/60"
                   title="@さくらママ"
                 >
                   <Sparkles size={18} />
@@ -486,8 +486,8 @@ export function ChatRoomView({
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-1">
         {!isSearching && topMessages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 px-6 text-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-amethyst-muted flex items-center justify-center">
-              <MessageCircle size={24} className="text-amethyst-dark" />
+            <div className="w-14 h-14 rounded-full bg-champagne-soft/60 flex items-center justify-center">
+              <MessageCircle size={24} className="text-gold-deep" />
             </div>
             <div>
               <p className="text-body-md font-medium text-ink">
@@ -546,7 +546,7 @@ export function ChatRoomView({
                   type="button"
                   onClick={() => setThreadOpen(msg.id)}
                   className={cn(
-                    "mt-1 mb-2 flex items-center gap-2 text-label-sm text-amethyst-dark hover:underline px-2",
+                    "mt-1 mb-2 flex items-center gap-2 text-label-sm text-gold-deep hover:underline px-2",
                     isMe ? "flex-row-reverse mr-2" : "ml-12",
                   )}
                 >
@@ -602,7 +602,7 @@ export function ChatRoomView({
           <button
             type="button"
             onClick={cancelEdit}
-            className="text-[11px] text-amethyst-dark underline mt-0.5"
+            className="text-[11px] text-gold-deep underline mt-0.5"
           >
             編集をやめる
           </button>
@@ -617,7 +617,7 @@ export function ChatRoomView({
                   prev.includes("@さくらママ") ? prev : "@さくらママ " + prev,
                 );
               }}
-              className="shrink-0 mb-1 p-1.5 rounded-full text-amethyst-dark hover:bg-amethyst-muted"
+              className="shrink-0 mb-1 p-1.5 rounded-full text-gold-deep hover:bg-champagne-soft/60"
               title="@さくらママ"
             >
               <Sparkles size={18} />
@@ -734,7 +734,7 @@ function MessageRow({
         msg.sender_role === "mama"
           ? "bg-champagne-soft text-ink"
           : msg.sender_role === "oneesan"
-            ? "bg-blush-soft text-blush-deep"
+            ? "bg-roseGold-soft/60 text-roseGold-deep"
             : "bg-pearl-soft text-ink-soft",
       )}
     >
@@ -775,7 +775,7 @@ function MessageRow({
               {msg.sender_name}
             </span>
             {msg.is_bot && (
-              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-amethyst-muted text-amethyst-dark">
+              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-champagne-soft/60 text-gold-deep">
                 AI
               </span>
             )}
@@ -951,7 +951,7 @@ function renderContentParts(content: string, highlight?: string) {
       return (
         <span
           key={i}
-          className="px-1 py-0.5 rounded bg-amethyst-muted text-amethyst-dark font-medium text-body-sm"
+          className="px-1 py-0.5 rounded bg-champagne-soft/60 text-gold-deep font-medium text-body-sm"
         >
           @さくらママ
         </span>

@@ -136,7 +136,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
             <button
               type="button"
               onClick={toggleAll}
-              className="text-[11px] text-amethyst-dark underline"
+              className="text-[11px] text-gold-deep underline"
             >
               {selected.size === filtered.length ? "全選択解除" : "全選択"}
             </button>
@@ -152,14 +152,14 @@ export function CustomerTransferForm({ customers, casts }: Props) {
                   onClick={() => toggle(c.id)}
                   className={`w-full text-left p-3 rounded-btn border transition-all flex items-center gap-3 ${
                     isSelected
-                      ? "bg-amethyst-muted border-amethyst-border"
+                      ? "bg-champagne-soft/60 border-gold/30"
                       : "bg-pearl-warm border-pearl-soft"
                   }`}
                 >
                   <div
                     className={`w-4 h-4 rounded-sm border flex items-center justify-center shrink-0 transition-colors ${
                       isSelected
-                        ? "bg-amethyst border-amethyst"
+                        ? "bg-roseGold-deep border-roseGold-deep"
                         : "border-pearl-soft bg-white"
                     }`}
                   >

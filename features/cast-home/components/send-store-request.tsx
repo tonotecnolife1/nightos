@@ -26,7 +26,7 @@ export function SendStoreRequest({ castId, castName }: Props) {
   };
 
   return (
-    <div className="rounded-card bg-pearl-warm border border-pearl-soft shadow-soft-card overflow-hidden">
+    <div className="rounded-card bg-pearl-warm border border-pearl-soft shadow-soft overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(!open)}

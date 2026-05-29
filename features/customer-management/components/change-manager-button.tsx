@@ -145,9 +145,9 @@ export function ChangeManagerButton({
   }
 
   return (
-    <Card className="p-3 !border-amethyst-border !bg-amethyst-muted/20 space-y-2.5">
+    <Card className="p-3 !border-gold/30 !bg-champagne-soft/60/20 space-y-2.5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-amethyst-dark">
+        <div className="flex items-center gap-1.5 text-gold-deep">
           <Crown size={13} />
           <span className="text-body-sm font-medium">管理者を変更</span>
         </div>
@@ -201,7 +201,7 @@ export function ChangeManagerButton({
             ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
             : isOwner
               ? "bg-roseGold-deep text-pearl-light shadow-luxe-card"
-              : "bg-champagne-dark text-ink shadow-soft-card",
+              : "bg-champagne-dark text-ink shadow-soft",
         )}
       >
         {isOwner ? "即適用（オーナー権限）" : "承認を申請する"}

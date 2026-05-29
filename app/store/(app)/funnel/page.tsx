@@ -63,7 +63,7 @@ export default function StoreFunnelPage() {
   const CATEGORIES: { value: CustomerCategory; label: string; color: string }[] =
     [
       { value: "vip", label: "VIP", color: "bg-roseGold-dark" },
-      { value: "regular", label: "常連", color: "bg-amethyst" },
+      { value: "regular", label: "常連", color: "bg-gold-deep" },
       { value: "new", label: "新規", color: "bg-pearl-soft" },
     ];
   const categoryBreakdown = CATEGORIES.map(({ value, label, color }) => {
@@ -117,7 +117,7 @@ export default function StoreFunnelPage() {
             </div>
             <div>
               <div className="text-[10px] text-ink-mute">LINE交換率</div>
-              <div className="text-display-sm font-display text-amethyst-dark">
+              <div className="text-display-sm font-display text-gold-deep">
                 {Math.round(overall.lineExchangedRate * 100)}%
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function StoreFunnelPage() {
         {topReferrers.length > 0 && (
           <section className="space-y-2">
             <div className="flex items-center gap-1.5">
-              <Users size={14} className="text-amethyst-dark" />
+              <Users size={14} className="text-gold-deep" />
               <h2 className="text-display-sm text-ink">お連れ様貢献ランキング</h2>
             </div>
             <div className="space-y-1.5">
@@ -192,8 +192,8 @@ export default function StoreFunnelPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
-                    <Users size={11} className="text-amethyst" />
-                    <span className="text-body-sm font-display text-amethyst-dark">
+                    <Users size={11} className="text-gold-deep" />
+                    <span className="text-body-sm font-display text-gold-deep">
                       {count}人
                     </span>
                   </div>
@@ -271,7 +271,7 @@ export default function StoreFunnelPage() {
         {recentLineExchanges.length > 0 && (
           <section className="space-y-2">
             <h2 className="text-display-sm text-ink flex items-center gap-1.5">
-              <MessageCircle size={14} className="text-amethyst-dark" />
+              <MessageCircle size={14} className="text-gold-deep" />
               最近のLINE交換
             </h2>
             {recentLineExchanges.map((c) => {
@@ -280,8 +280,8 @@ export default function StoreFunnelPage() {
               );
               return (
                 <Card key={c.id} className="p-2.5 flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-amethyst-muted flex items-center justify-center shrink-0">
-                    <MessageCircle size={11} className="text-amethyst-dark" />
+                  <div className="w-7 h-7 rounded-full bg-champagne-soft/60 flex items-center justify-center shrink-0">
+                    <MessageCircle size={11} className="text-gold-deep" />
                   </div>
                   <div className="flex-1 min-w-0 flex items-baseline gap-2">
                     <span className="text-body-sm text-ink truncate">

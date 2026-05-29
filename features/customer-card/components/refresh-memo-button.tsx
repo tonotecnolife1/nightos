@@ -99,10 +99,10 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
 
   if (preview) {
     return (
-      <Card className="p-3 !border-amethyst-border !bg-amethyst-muted/20 space-y-3">
+      <Card className="p-3 !border-gold/30 !bg-champagne-soft/60/20 space-y-3">
         <div className="flex items-center gap-1.5">
-          <Sparkles size={14} className="text-amethyst-dark" />
-          <span className="text-body-sm font-medium text-amethyst-dark">
+          <Sparkles size={14} className="text-gold-deep" />
+          <span className="text-body-sm font-medium text-gold-deep">
             メモ更新プレビュー
           </span>
         </div>
@@ -146,7 +146,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
         "w-full flex items-center justify-center gap-1.5 h-10 rounded-btn border transition-all active:scale-[0.98]",
         loading
           ? "bg-pearl-soft text-ink-mute border-pearl-soft"
-          : "bg-amethyst-muted text-amethyst-dark border-amethyst-border hover:bg-amethyst-muted/70",
+          : "bg-champagne-soft/60 text-gold-deep border-gold/30 hover:bg-champagne-soft/60/70",
       )}
     >
       {loading ? (
@@ -180,7 +180,7 @@ function DiffRow({
       <div className="flex items-center gap-1.5">
         <span className="text-[10px] text-ink-mute font-medium">{label}</span>
         {changed && (
-          <span className="text-[9px] px-1.5 py-0.5 rounded-badge bg-amethyst-muted text-amethyst-dark">
+          <span className="text-[9px] px-1.5 py-0.5 rounded-badge bg-champagne-soft/60 text-gold-deep">
             変更あり
           </span>
         )}

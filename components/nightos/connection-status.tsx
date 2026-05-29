@@ -41,7 +41,7 @@ export function ConnectionStatus() {
     issues.push({
       icon: <Sparkles size={12} />,
       text: "AIはスタブ応答",
-      tone: "text-amethyst-dark",
+      tone: "text-gold-deep",
     });
   }
 

@@ -27,8 +27,8 @@ export function CustomerSelectInline({
   const selected = customers.find((c) => c.id === selectedId);
 
   return (
-    <div className="rounded-card border border-amethyst-border bg-amethyst-muted/30 p-3 space-y-2">
-      <div className="flex items-center gap-1.5 text-label-sm text-amethyst-dark font-medium">
+    <div className="rounded-card border border-gold/30 bg-champagne-soft/60/30 p-3 space-y-2">
+      <div className="flex items-center gap-1.5 text-label-sm text-gold-deep font-medium">
         <UserCircle2 size={14} />
         誰のご相談ですか？
       </div>
@@ -40,8 +40,8 @@ export function CustomerSelectInline({
         className={cn(
           "w-full flex items-center gap-2 px-3 h-10 rounded-btn border text-left transition-all active:scale-[0.99]",
           selected
-            ? "bg-pearl-warm border-amethyst-border"
-            : "bg-pearl-warm border-amethyst-border animate-shimmer",
+            ? "bg-pearl-warm border-gold/30"
+            : "bg-pearl-warm border-gold/30 animate-shimmer",
         )}
       >
         <div className="flex-1 min-w-0">
@@ -109,7 +109,7 @@ export function CustomerSelectInline({
                 }}
                 className={cn(
                   "w-full text-left px-3 py-2 hover:bg-pearl-soft",
-                  selectedId === c.id && "bg-amethyst-muted",
+                  selectedId === c.id && "bg-champagne-soft/60",
                 )}
               >
                 <div className="flex items-center gap-1.5">

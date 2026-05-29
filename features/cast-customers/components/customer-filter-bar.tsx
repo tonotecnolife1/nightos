@@ -226,7 +226,7 @@ export function CustomerFilterBar({
       {!expanded && activeCount > 0 && (
         <div className="flex items-center justify-between text-[11px] text-ink-mute px-1">
           <span>
-            <span className="text-amethyst-dark font-medium">
+            <span className="text-gold-deep font-medium">
               {filteredCount}人
             </span>
             <span> 表示 / 全{totalCount}人</span>

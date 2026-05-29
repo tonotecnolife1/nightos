@@ -41,7 +41,7 @@ export function ChatLimitBanner() {
               </p>
               <button
                 type="button"
-                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-btn ruri-gradient text-pearl text-label-sm font-medium"
+                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-btn bg-roseGold-deep text-pearl text-label-sm font-medium"
               >
                 <Zap size={13} />
                 プレミアムにアップグレード
@@ -66,7 +66,7 @@ export function ChatLimitBanner() {
 
   return (
     <div className="px-4 py-1.5 flex items-center justify-center gap-2 bg-pearl-warm border-b border-pearl-soft">
-      <Sparkles size={10} className="text-amethyst-dark" />
+      <Sparkles size={10} className="text-gold-deep" />
       <span className="text-label-sm text-ink-mute">
         無料チャット: {usage.remaining}回 残り
       </span>

@@ -338,7 +338,7 @@ function EntryCard({
                 className={cn(
                   "text-[10px] h-6 px-2 rounded-full border transition-all active:scale-95",
                   cancelReason === preset
-                    ? "bg-blush-soft text-blush-deep border-blush"
+                    ? "bg-roseGold-soft/60 text-roseGold-deep border-blush"
                     : "bg-pearl text-ink-soft border-pearl-soft hover:border-ink-muted",
                 )}
               >

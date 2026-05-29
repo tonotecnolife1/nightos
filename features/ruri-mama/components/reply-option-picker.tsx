@@ -30,9 +30,9 @@ const STYLE_TONE: Record<
     selectedText: "text-ink",
   },
   warm: {
-    bg: "bg-amethyst-muted",
-    border: "border-amethyst-border",
-    text: "text-amethyst-dark",
+    bg: "bg-champagne-soft/60",
+    border: "border-gold/30",
+    text: "text-gold-deep",
     selectedBg: "bg-gradient-amethyst",
     selectedText: "text-pearl",
   },
@@ -56,7 +56,7 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-1.5 text-[11px] text-ink-mute px-1">
-        <Sparkles size={11} className="text-amethyst-dark" />
+        <Sparkles size={11} className="text-gold-deep" />
         3つの返し方から選んでください
       </div>
 
@@ -75,10 +75,10 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
               disabled={!!selectedId}
               className={cn(
                 "flex-shrink-0 w-[72vw] max-w-[280px] text-left rounded-card border transition-all snap-start",
-                "shadow-soft-card active:scale-[0.98]",
+                "shadow-soft active:scale-[0.98]",
                 isSelected
-                  ? cn(tone.selectedBg, "border-transparent scale-[1.02] shadow-elevated-light")
-                  : cn("bg-pearl-warm", tone.border, "hover:shadow-elevated-light"),
+                  ? cn(tone.selectedBg, "border-transparent scale-[1.02] shadow-warm")
+                  : cn("bg-pearl-warm", tone.border, "hover:shadow-warm"),
               )}
             >
               {/* Header */}
@@ -135,7 +135,7 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
       </div>
 
       {selectedId && (
-        <p className="text-[11px] text-amethyst-dark px-1 animate-fade-in flex items-center gap-1">
+        <p className="text-[11px] text-gold-deep px-1 animate-fade-in flex items-center gap-1">
           <Check size={11} />
           パターン{selectedId}を選択しました。反映中…
         </p>
@@ -175,10 +175,10 @@ export function RefineTriggerButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[11px] font-medium border border-amethyst-border transition-all active:scale-[0.97]",
+        "inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[11px] font-medium border border-gold/30 transition-all active:scale-[0.97]",
         disabled
           ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
-          : "bg-amethyst-muted text-amethyst-dark hover:bg-amethyst-muted/80",
+          : "bg-champagne-soft/60 text-gold-deep hover:bg-champagne-soft/60/80",
       )}
     >
       <Wand2 size={11} />

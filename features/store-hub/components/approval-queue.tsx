@@ -67,7 +67,7 @@ export function ApprovalQueue() {
             </div>
 
             <div className="flex items-center gap-1.5">
-              <UserCog size={13} className="text-amethyst-dark shrink-0" />
+              <UserCog size={13} className="text-gold-deep shrink-0" />
               <span className="text-body-sm font-medium text-ink">
                 {req.customerName}さま
               </span>
