@@ -847,8 +847,8 @@ function MessageRow({
             className={cn(
               "px-3.5 py-2 text-body-md leading-relaxed whitespace-pre-wrap break-words",
               isMe
-                ? "bg-roseGold-deep text-pearl-light rounded-2xl rounded-br-sm shadow-soft"
-                : "bg-pearl-warm border border-ink/[0.06] text-ink rounded-2xl rounded-bl-sm shadow-soft",
+                ? "bg-roseGold-deep text-pearl-light rounded-2xl rounded-br-sm shadow-luxe"
+                : "bg-pearl-light border border-ink/[0.08] text-ink rounded-2xl rounded-bl-sm shadow-soft",
             )}
           >
             {renderContentParts(msg.content, highlight)}
