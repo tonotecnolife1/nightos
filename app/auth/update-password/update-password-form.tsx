@@ -48,7 +48,7 @@ export default function UpdatePasswordForm({ email }: Props) {
                 required
                 minLength={8}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink shadow-soft focus:outline-none focus:border-blush-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink shadow-soft focus:outline-none focus:border-roseGold-deep"
                 style={{ fontSize: "16px" }}
               />
             </label>

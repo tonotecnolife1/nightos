@@ -52,7 +52,7 @@ export default function SignupCastForm() {
                 required
                 maxLength={40}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink placeholder:text-ink-muted shadow-soft focus:outline-none focus:border-blush-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -66,7 +66,7 @@ export default function SignupCastForm() {
                 maxLength={8}
                 disabled={pending}
                 autoCapitalize="characters"
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink placeholder:text-ink-muted shadow-soft focus:outline-none focus:border-blush-deep tracking-[0.2em] font-mono uppercase"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep tracking-[0.2em] font-mono uppercase"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -78,7 +78,7 @@ export default function SignupCastForm() {
                 placeholder="email@example.com"
                 required
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink placeholder:text-ink-muted shadow-soft focus:outline-none focus:border-blush-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -90,7 +90,7 @@ export default function SignupCastForm() {
                 required
                 minLength={8}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink shadow-soft focus:outline-none focus:border-blush-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink shadow-soft focus:outline-none focus:border-roseGold-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>

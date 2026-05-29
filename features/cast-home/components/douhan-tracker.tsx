@@ -352,7 +352,7 @@ function EntryCard({
             onChange={(e) => setCancelReason(e.target.value)}
             placeholder="または自由入力"
             style={{ fontSize: "14px" }}
-            className="w-full h-8 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-2 text-[12px] text-ink placeholder:text-ink-muted outline-none focus:border-blush-deep"
+            className="w-full h-8 rounded-2xl border border-ink/[0.06] bg-pearl-light px-2 text-[12px] text-ink placeholder:text-ink-mute outline-none focus:border-roseGold-deep"
           />
           <div className="flex items-center gap-1.5">
             <button
@@ -481,7 +481,7 @@ function AddForm({
         <select
           value={customerId}
           onChange={(e) => setCustomerId(e.target.value)}
-          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-blush-deep"
+          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-roseGold-deep"
           style={{ fontSize: "16px" }}
         >
           <option value="" disabled>
@@ -498,7 +498,7 @@ function AddForm({
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-blush-deep"
+          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-roseGold-deep"
           style={{ fontSize: "16px" }}
         />
 
@@ -507,7 +507,7 @@ function AddForm({
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder="場所やメモ（任意）"
-          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-blush-deep"
+          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-light px-3 text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-roseGold-deep"
           style={{ fontSize: "16px" }}
         />
       </div>

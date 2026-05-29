@@ -201,7 +201,7 @@ export default function SettingsClient({
                     aria-label="新しい店舗の招待コード"
                     disabled={pending}
                     autoCapitalize="characters"
-                    className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink placeholder:text-ink-muted shadow-soft focus:outline-none focus:border-blush-deep tracking-[0.2em] font-mono uppercase"
+                    className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep tracking-[0.2em] font-mono uppercase"
                     style={{ fontSize: "16px" }}
                   />
                   <div className="flex gap-2">
