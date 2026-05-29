@@ -30,25 +30,37 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
 
   return (
     <main className="min-h-dvh bg-pearl flex flex-col">
-      {/* Hero */}
-      <div className="bg-gradient-hero px-6 pt-12 pb-8">
+      {/* Hero — v6 pearl glass with rose-gold halo */}
+      <div
+        className="relative px-6 pt-12 pb-8 overflow-hidden"
+        style={{
+          background:
+            "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
+            "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
+            "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
+        }}
+      >
         <div className="max-w-sm mx-auto">
           <Link
             href="/cast/home"
-            className="inline-flex items-center gap-1 text-[12px] text-ink-muted hover:text-ink-secondary mb-4"
+            className="inline-flex items-center gap-1 text-[12px] text-ink-mute hover:text-ink-soft mb-4"
           >
             <ArrowLeft size={14} /> ホームに戻る
           </Link>
 
+          <div className="text-label-xs tracking-luxe text-roseGold-deep mb-2">
+            NIGHTOS · MY PAGE
+          </div>
+
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-pearl-warm/70 flex items-center justify-center shrink-0 shadow-soft">
-              <UserCircle size={32} className="text-ink-secondary" />
+            <div className="w-14 h-14 rounded-full glass flex items-center justify-center shrink-0 shadow-soft">
+              <UserCircle size={32} className="text-ink-soft" />
             </div>
             <div>
-              <p className="font-display text-[24px] leading-tight font-medium text-ink">
+              <p className="font-serif text-[26px] leading-tight font-medium tracking-[0.02em] t-metallic">
                 {castName}
               </p>
-              <p className="text-[12px] text-ink-muted mt-0.5">
+              <p className="text-[12px] text-ink-mute mt-1">
                 {ROLE_LABEL[userRole]}
               </p>
             </div>
