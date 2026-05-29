@@ -144,7 +144,7 @@ function CastFunnelRow({
         className={cn(
           "w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center shrink-0",
           rank === 1
-            ? "bg-roseGold text-pearl"
+            ? "bg-roseGold text-pearl-light"
             : rank === 2
               ? "bg-champagne-dark text-ink"
               : "bg-pearl-soft text-ink-soft",

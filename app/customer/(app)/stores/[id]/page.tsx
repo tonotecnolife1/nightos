@@ -219,7 +219,7 @@ function RankCard({ rank }: { rank: CustomerRank }) {
             <div className={`text-display-sm font-semibold ${colors.text}`}>
               {rank.label}ランク
             </div>
-            <div className={`text-label-sm ${rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl/80" : "text-ink-soft"}`}>
+            <div className={`text-label-sm ${rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl-light/80" : "text-ink-soft"}`}>
               来店 {rank.visitCount}回
             </div>
           </div>
@@ -228,10 +228,10 @@ function RankCard({ rank }: { rank: CustomerRank }) {
       {rank.nextTierLabel && (
         <div>
           <div className="flex items-center justify-between text-label-sm mb-1">
-            <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl/80" : "text-ink-soft"}>
+            <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl-light/80" : "text-ink-soft"}>
               次のランク: {rank.nextTierLabel}
             </span>
-            <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl" : "text-ink"}>
+            <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl-light" : "text-ink"}>
               あと{rank.visitsToNextTier}回
             </span>
           </div>

@@ -192,7 +192,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                                   : "border-ink/20",
                               )}
                             >
-                              {isChecked && <Check size={11} className="text-pearl" strokeWidth={3} />}
+                              {isChecked && <Check size={11} className="text-pearl-light" strokeWidth={3} />}
                             </div>
                           )}
                         </button>

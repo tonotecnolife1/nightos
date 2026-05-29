@@ -31,7 +31,7 @@ export function TableGrid({ value, onChange }: Props) {
               <div
                 className={cn(
                   "text-[10px]",
-                  active ? "text-pearl/80" : "text-ink-mute",
+                  active ? "text-pearl-light/80" : "text-ink-mute",
                 )}
               >
                 {t.seats}席

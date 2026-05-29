@@ -55,7 +55,7 @@ const toneClasses: Record<
 > = {
   rose: {
     bg: "bg-pearl-warm hover:bg-roseGold-muted",
-    iconBg: "bg-gradient-rose-gold text-pearl",
+    iconBg: "bg-gradient-rose-gold text-pearl-light",
     border: "border-roseGold-border",
   },
   amethyst: {

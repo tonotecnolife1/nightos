@@ -39,7 +39,7 @@ export function FeedbackButtons({ assistantContent }: Props) {
         className={cn(
           "flex items-center gap-1 px-3 h-8 rounded-badge text-label-sm transition-colors",
           feedback === "helpful"
-            ? "bg-roseGold text-pearl"
+            ? "bg-roseGold text-pearl-light"
             : "bg-pearl-warm text-ink-soft border border-pearl-soft hover:border-roseGold-border",
         )}
       >
@@ -52,7 +52,7 @@ export function FeedbackButtons({ assistantContent }: Props) {
         className={cn(
           "flex items-center gap-1 px-3 h-8 rounded-badge text-label-sm transition-colors",
           feedback === "not_helpful"
-            ? "bg-ink-secondary text-pearl"
+            ? "bg-ink-secondary text-pearl-light"
             : "bg-pearl-warm text-ink-soft border border-pearl-soft hover:border-ink-muted",
         )}
       >

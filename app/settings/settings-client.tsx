@@ -221,7 +221,7 @@ export default function SettingsClient({
                       type="button"
                       onClick={handleChangeStore}
                       disabled={newInviteCode.length !== 8 || pending}
-                      className="flex-1 px-4 py-2.5 rounded-pill bg-roseGold-deep text-pearl-light text-body-sm font-semibold tracking-[0.04em] shadow-luxe hover:-translate-y-px transition disabled:opacity-50 disabled:hover:translate-y-0"
+                      className="flex-1 px-4 py-2.5 rounded-pill bg-roseGold-deep text-pearl-light-light text-body-sm font-semibold tracking-[0.04em] shadow-luxe hover:-translate-y-px transition disabled:opacity-50 disabled:hover:translate-y-0"
                     >
                       {pending ? "変更中..." : "変更を確定"}
                     </button>
@@ -316,7 +316,7 @@ export default function SettingsClient({
                     type="button"
                     onClick={handleDelete}
                     disabled={!canDelete || pending}
-                    className="flex-1 px-4 py-2.5 rounded-pill bg-[#c2575b] text-pearl text-body-sm font-medium hover:brightness-[1.05] disabled:opacity-50 disabled:hover:brightness-100"
+                    className="flex-1 px-4 py-2.5 rounded-pill bg-wine-deep text-pearl-light text-body-sm font-medium hover:brightness-[1.05] disabled:opacity-50 disabled:hover:brightness-100"
                   >
                     {pending ? "削除中..." : "削除する"}
                   </button>

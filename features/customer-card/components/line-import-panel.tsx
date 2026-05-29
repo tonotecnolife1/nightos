@@ -514,7 +514,7 @@ function FieldDiff({
           className={cn(
             "w-5 h-5 rounded mt-0.5 flex items-center justify-center shrink-0 border-2",
             checked
-              ? "bg-roseGold-deep border-roseGold-deep text-pearl"
+              ? "bg-roseGold-deep border-roseGold-deep text-pearl-light"
               : "border-ink-muted",
           )}
         >

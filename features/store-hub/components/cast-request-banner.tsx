@@ -32,7 +32,7 @@ export function CastRequestBanner({ requests: initial }: { requests: Request[] }
           className="flex items-start gap-3 rounded-card bg-roseGold-muted border border-roseGold-border p-3 animate-fade-in"
         >
           <div className="w-8 h-8 rounded-full bg-gradient-rose-gold flex items-center justify-center shrink-0">
-            <Flag size={13} className="text-pearl" />
+            <Flag size={13} className="text-pearl-light" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-[10px] text-roseGold-dark font-medium">
