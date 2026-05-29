@@ -44,9 +44,10 @@ export default async function CustomerCouponsPage() {
             <section key={group.storeId} className="space-y-2">
               <Link
                 href={`/customer/stores/${group.storeId}`}
-                className="flex items-center gap-1.5 text-display-sm text-ink"
+                className="relative flex items-center gap-1.5 pl-3.5 font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink"
               >
-                <MapPin size={14} className="text-roseGold-dark" />
+                <span aria-hidden className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded bg-rose-gold-metallic" />
+                <MapPin size={14} className="text-roseGold-deep" />
                 {group.storeName}
               </Link>
               {group.coupons.map((coupon) => (
@@ -77,11 +78,11 @@ export default async function CustomerCouponsPage() {
 
         {/* How to earn */}
         <Card className="!bg-pearl-soft p-4 space-y-2">
-          <h3 className="text-label-md text-ink font-semibold flex items-center gap-1.5">
-            <Ticket size={14} className="text-amethyst-dark" />
+          <h3 className="font-serif text-[16px] leading-tight font-medium tracking-[0.02em] text-ink flex items-center gap-1.5">
+            <Ticket size={14} className="text-gold-deep" />
             クーポンの獲得方法
           </h3>
-          <ul className="text-body-sm text-ink-secondary space-y-1.5 leading-relaxed">
+          <ul className="text-body-sm text-ink-soft space-y-1.5 leading-relaxed">
             <li>
               🎯 <strong>来店回数</strong> — 5回・10回の節目でドリンクサービス
             </li>

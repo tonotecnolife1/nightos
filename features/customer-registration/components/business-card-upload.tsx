@@ -97,14 +97,14 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
         : { label: "精度: 低", cls: "bg-rose/10 text-rose border-rose/30" };
 
   return (
-    <Card className="p-3 !border-amethyst-border !bg-amethyst-muted/20 space-y-2.5">
+    <Card className="p-3 !border-gold/30 !bg-champagne-soft/30 space-y-2.5">
       <div className="flex items-center gap-1.5">
-        <ScanLine size={14} className="text-amethyst-dark" />
+        <ScanLine size={14} className="text-gold-deep" />
         <span className="text-label-md text-ink font-medium">
           名刺で入力を簡単に
         </span>
         {mode === "edit" && (
-          <span className="ml-auto text-[9px] text-ink-muted">
+          <span className="ml-auto text-[9px] text-ink-mute">
             既存値は上書きされます
           </span>
         )}
@@ -115,7 +115,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex-1 h-11 rounded-btn bg-amethyst text-pearl shadow-soft-card flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-medium"
+            className="flex-1 h-11 rounded-pill bg-roseGold-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
           >
             <Camera size={16} />
             撮影
@@ -123,7 +123,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           <button
             type="button"
             onClick={() => galleryInputRef.current?.click()}
-            className="flex-1 h-11 rounded-btn border border-amethyst-border bg-pearl-warm text-amethyst-dark flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-medium"
+            className="flex-1 h-11 rounded-pill border border-roseGold-deep/70 bg-transparent text-roseGold-deep inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-medium"
           >
             <Images size={16} />
             カメラロール
@@ -151,7 +151,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
       )}
 
       {loading && (
-        <div className="flex items-center gap-2 text-body-sm text-amethyst-dark py-2">
+        <div className="flex items-center gap-2 text-body-sm text-gold-deep py-2">
           <Loader2 size={14} className="animate-spin" />
           名刺を読み取り中…
         </div>
@@ -197,7 +197,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
             <button
               type="button"
               onClick={apply}
-              className="w-full h-10 rounded-btn bg-amethyst text-pearl shadow-soft-card flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-medium"
+              className="w-full h-10 rounded-pill bg-roseGold-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
             >
               <Check size={14} />
               フォームに反映する

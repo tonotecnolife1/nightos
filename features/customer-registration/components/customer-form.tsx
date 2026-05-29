@@ -153,7 +153,7 @@ export function CustomerForm({
       {/* 管理者 */}
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5">
-          <Crown size={13} className="text-amethyst-dark" />
+          <Crown size={13} className="text-gold-deep" />
           <label className="text-label-md text-ink font-medium">管理者</label>
         </div>
         <select
@@ -177,10 +177,10 @@ export function CustomerForm({
               key={opt.value}
               type="button"
               onClick={() => setCategory(opt.value)}
-              className={`flex-1 h-10 rounded-2xl border text-body-sm font-medium transition-all ${
+              className={`flex-1 h-10 rounded-pill border text-body-sm font-medium tracking-[0.04em] transition-all ${
                 category === opt.value
-                  ? "border-amethyst/40 bg-amethyst-muted text-amethyst-dark"
-                  : "border-ink/[0.06] bg-pearl-warm text-ink-secondary hover:border-amethyst/20"
+                  ? "border-roseGold-deep/70 bg-roseGold-soft/40 text-roseGold-deep"
+                  : "border-ink/[0.08] bg-pearl-light text-ink-soft hover:border-roseGold/30"
               }`}
             >
               {opt.label}
@@ -218,7 +218,7 @@ export function CustomerForm({
           {referrerOptions.length > 0 && (
             <div className="space-y-1.5">
               <div className="flex items-center gap-1.5">
-                <Users size={13} className="text-amethyst-dark" />
+                <Users size={13} className="text-gold-deep" />
                 <label className="text-label-md text-ink font-medium">どなたのご紹介？</label>
               </div>
               <select

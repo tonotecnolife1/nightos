@@ -118,13 +118,13 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
       </div>
 
       {error && (
-        <div className="rounded-btn bg-rose/10 border border-rose/30 text-rose text-body-sm px-3 py-2">
+        <div className="rounded-card bg-wine/10 border border-wine/30 text-wine-deep text-body-sm px-3 py-2">
           {error}
         </div>
       )}
       {success && (
-        <div className="flex items-center gap-2 rounded-btn bg-champagne border border-champagne-dark text-ink text-body-sm px-3 py-2">
-          <BellRing size={16} className="text-roseGold-dark" />
+        <div className="flex items-center gap-2 rounded-card bg-champagne-soft border border-gold/30 text-ink text-body-sm px-3 py-2">
+          <BellRing size={16} className="text-gold-deep" />
           {success}
         </div>
       )}
@@ -159,10 +159,10 @@ function NominationOption({
       type="button"
       onClick={onClick}
       className={cn(
-        "h-12 rounded-btn border flex items-center justify-center gap-1.5 text-label-md transition-all active:scale-95",
+        "h-12 rounded-pill border flex items-center justify-center gap-1.5 text-label-md font-medium tracking-[0.04em] transition-all active:scale-95",
         active
-          ? "bg-gradient-rose-gold text-pearl border-roseGold shadow-glow-rose"
-          : "bg-pearl-warm border-pearl-soft text-ink-secondary hover:border-champagne-dark",
+          ? "bg-roseGold-deep text-pearl-light border-roseGold-deep shadow-luxe"
+          : "bg-pearl-light border-ink/[0.08] text-ink-soft hover:border-roseGold/30 shadow-soft",
       )}
     >
       {active && <Check size={14} />}
