@@ -58,7 +58,7 @@ export function SingleCastTrend({ points }: Props) {
                   )}
                   <div
                     className={cn(
-                      "w-full rounded-t-sm bg-gradient-rose-gold transition-all",
+                      "w-full rounded-t-sm bg-rose-gold-metallic transition-all",
                       p.count === 0 && "bg-pearl-soft",
                     )}
                     style={{ height: `${Math.max(2, heightPct)}%` }}

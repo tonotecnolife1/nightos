@@ -19,7 +19,7 @@ const STYLE_TONE: Record<
     bg: "bg-roseGold-muted",
     border: "border-roseGold-border",
     text: "text-roseGold-dark",
-    selectedBg: "bg-gradient-rose-gold",
+    selectedBg: "bg-rose-gold-metallic",
     selectedText: "text-pearl-light",
   },
   practical: {
@@ -33,7 +33,7 @@ const STYLE_TONE: Record<
     bg: "bg-champagne-soft/60",
     border: "border-gold/30",
     text: "text-gold-deep",
-    selectedBg: "bg-gradient-amethyst",
+    selectedBg: "bg-gold-metallic",
     selectedText: "text-pearl-light",
   },
 };

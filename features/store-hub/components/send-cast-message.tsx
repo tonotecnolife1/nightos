@@ -61,7 +61,7 @@ export function SendCastMessage({ casts }: Props) {
             type="button"
             onClick={handleSend}
             disabled={pending || !message.trim()}
-            className="w-10 h-10 rounded-full bg-gradient-rose-gold text-pearl flex items-center justify-center disabled:opacity-40 active:scale-95"
+            className="w-10 h-10 rounded-full bg-rose-gold-metallic text-pearl flex items-center justify-center disabled:opacity-40 active:scale-95"
           >
             <Send size={14} />
           </button>

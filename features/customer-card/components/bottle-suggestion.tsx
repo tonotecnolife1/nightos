@@ -113,7 +113,7 @@ export function BottleSuggestion({ customerId }: Props) {
 
 function RecommendationCard({ rec }: { rec: BottleRecommendation }) {
   const tierStyles: Record<BottleRecommendation["tier"], string> = {
-    premium: "bg-gradient-rose-gold text-pearl border-roseGold",
+    premium: "bg-rose-gold-metallic text-pearl border-roseGold",
     standard: "bg-champagne text-ink border-champagne-dark",
     entry: "bg-pearl-warm text-ink border-pearl-soft",
   };

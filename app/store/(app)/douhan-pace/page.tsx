@@ -165,7 +165,7 @@ export default function StoreDouhanPacePage() {
                     </div>
                     <div className="h-1.5 bg-pearl-soft rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-rose-gold rounded-full transition-all"
+                        className="h-full bg-rose-gold-metallic rounded-full transition-all"
                         style={{ width: `${weekPct}%` }}
                       />
                     </div>
@@ -185,7 +185,7 @@ export default function StoreDouhanPacePage() {
                     </div>
                     <div className="h-1.5 bg-pearl-soft rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-amethyst rounded-full transition-all"
+                        className="h-full bg-gold-metallic rounded-full transition-all"
                         style={{ width: `${monthPct}%` }}
                       />
                     </div>

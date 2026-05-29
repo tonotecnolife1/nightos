@@ -15,7 +15,7 @@ export function CastRepeatTrend({ points }: Props) {
           </div>
           <div className="h-2.5 bg-pearl-soft rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-rose-gold transition-all"
+              className="h-full bg-rose-gold-metallic transition-all"
               style={{ width: `${p.rate * 100}%` }}
             />
           </div>

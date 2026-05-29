@@ -139,7 +139,7 @@ export function BottleListClient({ bottles: initial }: Props) {
                         ? "bg-wine/50"
                         : isLow
                           ? "bg-amber"
-                          : "bg-gradient-rose-gold",
+                          : "bg-rose-gold-metallic",
                     )}
                     style={{ width: `${pct}%` }}
                   />

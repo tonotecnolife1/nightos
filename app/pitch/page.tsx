@@ -232,8 +232,8 @@ function FeatureCard({
 }) {
   const iconBg = {
     champagne: "bg-champagne-dark text-ink",
-    rose: "bg-gradient-rose-gold text-pearl-light",
-    amethyst: "bg-gradient-amethyst text-pearl-light",
+    rose: "bg-rose-gold-metallic text-pearl-light",
+    amethyst: "bg-gold-metallic text-pearl-light",
   }[tone];
   return (
     <div className="flex gap-3 rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft">
@@ -293,7 +293,7 @@ function StepCard({
 }) {
   return (
     <div className="flex gap-3">
-      <div className="w-8 h-8 rounded-full bg-gradient-rose-gold text-pearl flex items-center justify-center shrink-0 font-display text-body-lg font-semibold">
+      <div className="w-8 h-8 rounded-full bg-rose-gold-metallic text-pearl flex items-center justify-center shrink-0 font-display text-body-lg font-semibold">
         {step}
       </div>
       <div className="flex-1 pt-0.5">

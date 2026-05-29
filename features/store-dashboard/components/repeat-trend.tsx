@@ -19,13 +19,13 @@ export function RepeatTrend({ points }: Props) {
           <div className="flex gap-1 h-2.5">
             <div className="flex-1 bg-pearl-soft rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-rose-gold transition-all"
+                className="h-full bg-rose-gold-metallic transition-all"
                 style={{ width: `${p.cast1 * 100}%` }}
               />
             </div>
             <div className="flex-1 bg-pearl-soft rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-amethyst transition-all"
+                className="h-full bg-gold-metallic transition-all"
                 style={{ width: `${p.cast2 * 100}%` }}
               />
             </div>

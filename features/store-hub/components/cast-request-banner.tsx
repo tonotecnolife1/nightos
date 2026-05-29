@@ -31,7 +31,7 @@ export function CastRequestBanner({ requests: initial }: { requests: Request[] }
           key={r.id}
           className="flex items-start gap-3 rounded-card bg-roseGold-muted border border-roseGold-border p-3 animate-fade-in"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-rose-gold flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-full bg-rose-gold-metallic flex items-center justify-center shrink-0">
             <Flag size={13} className="text-pearl-light" />
           </div>
           <div className="flex-1 min-w-0">

@@ -98,14 +98,14 @@ export default function StoreFunnelPage() {
             label="担当付き"
             count={overall.assigned + overall.lineExchanged}
             max={overall.total}
-            colorClass="bg-gradient-rose-gold"
+            colorClass="bg-rose-gold-metallic"
           />
           <FunnelRow
             icon={<MessageCircle size={14} />}
             label="LINE交換済み"
             count={overall.lineExchanged}
             max={overall.total}
-            colorClass="bg-gradient-amethyst"
+            colorClass="bg-gold-metallic"
           />
 
           <Card className="p-3 grid grid-cols-2 gap-3 text-center">
@@ -145,14 +145,14 @@ export default function StoreFunnelPage() {
                 <div className="flex gap-0.5 h-2">
                   {lineEx > 0 && (
                     <div
-                      className="bg-gradient-amethyst rounded-full"
+                      className="bg-gold-metallic rounded-full"
                       style={{ flex: lineEx }}
                       title={`LINE交換済み ${lineEx}`}
                     />
                   )}
                   {assigned > 0 && (
                     <div
-                      className="bg-gradient-rose-gold rounded-full"
+                      className="bg-rose-gold-metallic rounded-full"
                       style={{ flex: assigned }}
                       title={`担当あり ${assigned}`}
                     />
@@ -242,14 +242,14 @@ export default function StoreFunnelPage() {
                     )}
                     {stats.assigned > 0 && (
                       <div
-                        className="bg-gradient-rose-gold rounded-full"
+                        className="bg-rose-gold-metallic rounded-full"
                         style={{ flex: stats.assigned }}
                         title={`担当あり ${stats.assigned}`}
                       />
                     )}
                     {stats.lineExchanged > 0 && (
                       <div
-                        className="bg-gradient-amethyst rounded-full"
+                        className="bg-gold-metallic rounded-full"
                         style={{ flex: stats.lineExchanged }}
                         title={`LINE交換済み ${stats.lineExchanged}`}
                       />

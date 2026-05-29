@@ -14,7 +14,7 @@ export function CategoryBreakdown({ customers }: Props) {
   const newC = customers.filter((c) => c.category === "new").length;
 
   const segments = [
-    { label: "VIP", count: vip, pct: Math.round((vip / total) * 100), color: "bg-gradient-rose-gold" },
+    { label: "VIP", count: vip, pct: Math.round((vip / total) * 100), color: "bg-rose-gold-metallic" },
     { label: "常連", count: regular, pct: Math.round((regular / total) * 100), color: "bg-champagne-dark" },
     { label: "新規", count: newC, pct: Math.round((newC / total) * 100), color: "bg-roseGold-deep" },
   ];
