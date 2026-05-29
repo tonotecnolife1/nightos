@@ -57,7 +57,7 @@ export default async function MamaCustomersPage() {
 
         <Card className="p-3 flex items-center justify-between">
           <span className="text-body-sm text-ink-soft flex items-center gap-1.5">
-            <GitBranch size={13} className="text-amethyst-dark" />
+            <GitBranch size={13} className="text-gold-deep" />
             お連れ様の繋がり数
           </span>
           <span className="text-body-md text-ink font-medium">

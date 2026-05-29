@@ -65,7 +65,7 @@ export default async function MamaTeamCastDetailPage({
             value={Math.round(cast.repeat_rate * 100)}
             unit="%"
             tone="rose"
-            icon={<Heart size={12} className="text-blush-dark" />}
+            icon={<Heart size={12} className="text-roseGold-deep" />}
           />
           <StatCard
             label="新規顧客"
@@ -112,7 +112,7 @@ export default async function MamaTeamCastDetailPage({
         {/* Customers */}
         <section className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-display-sm text-ink">担当のお客様</h2>
+            <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">担当のお客様</h2>
             <span className="text-label-sm text-ink-mute">
               {castCustomers.length}人
             </span>

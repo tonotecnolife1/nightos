@@ -42,7 +42,10 @@ export default async function MamaTeamPage() {
       <div className="px-5 pt-4 pb-6 space-y-5">
         {/* Tonight's summary */}
         <section className="space-y-2">
-          <h2 className="text-display-sm text-ink">今夜のサマリー</h2>
+          <header className="relative flex items-baseline pl-3.5">
+            <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+            <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">今夜のサマリー</h2>
+          </header>
           <TeamPaceAlert paceList={paceList} />
           <CancellationAlert teamCasts={teamCasts} />
           <UpcomingDouhanList
@@ -71,7 +74,7 @@ export default async function MamaTeamPage() {
             value={teamCasts.length}
             unit="人"
             tone="amethyst"
-            icon={<Users size={12} className="text-amethyst-dark" />}
+            icon={<Users size={12} className="text-gold-deep" />}
           />
         </div>
 

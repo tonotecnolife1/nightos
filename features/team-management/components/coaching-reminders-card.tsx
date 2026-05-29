@@ -81,7 +81,7 @@ export function CoachingRemindersCard({
     return (
       <Card className="p-3">
         <div className="flex items-center gap-1.5 mb-1">
-          <Target size={14} className="text-amethyst-dark" />
+          <Target size={14} className="text-gold-deep" />
           <span className="text-body-sm font-semibold text-ink">
             育成リマインダ
           </span>
@@ -97,7 +97,7 @@ export function CoachingRemindersCard({
     <Card className="p-3">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
-          <Target size={14} className="text-amethyst-dark" />
+          <Target size={14} className="text-gold-deep" />
           <span className="text-body-sm font-semibold text-ink">
             育成リマインダ
           </span>
@@ -128,7 +128,7 @@ export function CoachingRemindersCard({
             reasons.push({
               icon: <Target size={10} />,
               text: "目標ノート未",
-              tone: "bg-amethyst-muted text-amethyst-dark",
+              tone: "bg-champagne-soft/60 text-gold-deep",
             });
           }
           return (
@@ -154,7 +154,7 @@ export function CoachingRemindersCard({
               </div>
               <Link
                 href={`/mama/team/${r.cast.id}`}
-                className="flex items-center gap-0.5 text-[10px] text-amethyst-dark font-medium shrink-0"
+                className="flex items-center gap-0.5 text-[10px] text-gold-deep font-medium shrink-0"
               >
                 開く
                 <ChevronRight size={12} />

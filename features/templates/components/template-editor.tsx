@@ -176,9 +176,9 @@ export function TemplateEditor({ category, onChange }: Props) {
               onClick={handleSave}
               disabled={!editor.body.trim()}
               className={cn(
-                "flex items-center gap-1 h-9 px-4 rounded-btn text-label-sm font-medium",
+                "inline-flex items-center gap-1 h-9 px-5 rounded-pill text-label-sm font-semibold tracking-[0.04em]",
                 editor.body.trim()
-                  ? "rose-gradient text-pearl shadow-soft-card"
+                  ? "bg-roseGold-deep text-pearl-light shadow-luxe"
                   : "bg-pearl-soft text-ink-mute",
               )}
             >

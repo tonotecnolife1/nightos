@@ -16,7 +16,7 @@ import type { Customer, Douhan } from "@/types/nightos";
 const DOW = ["日", "月", "火", "水", "木", "金", "土"];
 
 const STATUS_STYLE: Record<ShiftStatus, { bg: string; text: string; label: string }> = {
-  working: { bg: "bg-amethyst", text: "text-pearl", label: "出勤" },
+  working: { bg: "bg-roseGold-deep", text: "text-pearl-light", label: "出勤" },
   off: { bg: "bg-pearl-soft border border-ink/[0.08]", text: "text-ink-mute", label: "公休" },
   unknown: { bg: "", text: "", label: "" },
 };
@@ -117,10 +117,10 @@ export function ScheduleCalendar({ castId, customers }: Props) {
           <ChevronLeft size={18} />
         </button>
         <div className="text-center">
-          <div className="font-display text-[20px] font-medium text-ink">
+          <div className="font-serif text-[22px] leading-tight font-medium tracking-[0.02em] text-ink">
             {viewYear}年{viewMonth + 1}月
           </div>
-          <div className="text-[11px] text-ink-mute">
+          <div className="text-label-xs tracking-luxe text-ink-mute uppercase mt-0.5">
             出勤 {workingCount}日
           </div>
         </div>
@@ -191,7 +191,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
       {/* Legend */}
       <div className="flex items-center gap-4 px-1 text-[10px] text-ink-mute">
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded bg-amethyst inline-block" />
+          <span className="w-3 h-3 rounded bg-roseGold-deep inline-block" />
           出勤
         </span>
         <span className="flex items-center gap-1">
@@ -243,7 +243,7 @@ function ShiftEditSheet({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-sm animate-fade-in">
       <div className="w-full max-w-[520px] bg-pearl rounded-t-3xl p-5 pb-safe space-y-4 shadow-warm animate-slide-up">
         <div className="flex items-center justify-between">
-          <h3 className="font-display text-[18px] font-medium text-ink">{label}</h3>
+          <h3 className="font-serif text-[18px] leading-tight font-medium tracking-[0.02em] text-ink">{label}</h3>
           <button type="button" onClick={onCancel} className="w-8 h-8 rounded-full bg-pearl-soft flex items-center justify-center text-ink-soft">
             <X size={16} />
           </button>

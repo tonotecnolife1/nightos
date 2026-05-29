@@ -100,8 +100,8 @@ export default function ChatHistoryPage() {
                   }
                   className="w-full flex items-center gap-2 py-2 text-left"
                 >
-                  <div className="w-7 h-7 rounded-full bg-amethyst-muted flex items-center justify-center shrink-0">
-                    <User size={13} className="text-amethyst-dark" />
+                  <div className="w-7 h-7 rounded-full bg-champagne-soft/60 border border-gold/30 flex items-center justify-center shrink-0">
+                    <User size={13} className="text-gold-deep" />
                   </div>
                   <span className="text-[12px] font-semibold text-ink flex-1">
                     {group.customerName ? `${group.customerName}さま` : "顧客指定なし"}

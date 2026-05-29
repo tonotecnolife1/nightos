@@ -50,10 +50,10 @@ export default function AvatarPickerPage() {
                 type="button"
                 onClick={() => handleSelect(variant.id)}
                 className={cn(
-                  "w-full text-left rounded-card border-2 p-4 transition-all active:scale-[0.99]",
+                  "w-full text-left rounded-hero border p-4 transition-all active:scale-[0.99]",
                   isSelected
-                    ? "border-amethyst bg-amethyst-muted shadow-glow-amethyst"
-                    : "border-pearl-soft bg-pearl-warm hover:border-amethyst-border",
+                    ? "border-roseGold-deep bg-roseGold-soft/40 shadow-warm"
+                    : "border-ink/[0.08] bg-pearl-light hover:border-roseGold/30 shadow-soft",
                 )}
               >
                 <div className="flex items-center gap-4">

@@ -128,18 +128,26 @@ export function TemplateWorkspace({
       <CategoryTabs value={category} onChange={handleCategoryChange} />
 
       {!customerId && (
-        <div className="rounded-card bg-amethyst-muted border border-amethyst-border px-4 py-3.5 text-body-sm text-amethyst-dark">
+        <div className="rounded-card bg-champagne-soft/40 border border-gold/30 px-4 py-3.5 text-body-sm text-gold-deep">
           顧客を選択すると、文面が自動で埋まります
         </div>
       )}
 
       {/* AI personalized template generator */}
       {customerId && (
-        <Card className="!bg-amethyst-muted !border-amethyst-border p-4 space-y-3">
+        <div
+          className="relative overflow-hidden rounded-hero border border-ink/[0.08] shadow-warm p-4 space-y-3"
+          style={{
+            background:
+              "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
+              "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
+              "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
+          }}
+        >
           <div className="flex items-center gap-2.5">
             <RuriMamaAvatar size={36} />
             <div className="flex-1">
-              <div className="text-label-md text-amethyst-dark font-semibold">
+              <div className="text-label-xs tracking-luxe text-roseGold-deep mb-1">
                 さくらママに専用文面を作ってもらう
               </div>
               <div className="text-label-sm text-ink-soft">
@@ -182,7 +190,7 @@ export function TemplateWorkspace({
               regenerating={loading}
             />
           )}
-        </Card>
+        </div>
       )}
 
       {/* Custom user templates (above defaults) */}

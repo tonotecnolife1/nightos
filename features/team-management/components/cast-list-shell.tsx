@@ -90,11 +90,12 @@ export function CastListShell({
 
   return (
     <section className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-display-sm text-ink">
+      <header className="relative flex items-center justify-between pl-3.5">
+        <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+        <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">
           キャスト一覧（{teamCasts.length}人）
         </h2>
-      </div>
+      </header>
 
       {/* Search */}
       <div className="relative">
@@ -107,7 +108,7 @@ export function CastListShell({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="名前で検索"
-          className="w-full pl-8 pr-3 py-2 rounded-btn border border-pearl-soft bg-pearl-warm text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-amethyst-border"
+          className="w-full pl-8 pr-3 py-2 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-roseGold-deep transition"
         />
       </div>
 
@@ -119,10 +120,10 @@ export function CastListShell({
             type="button"
             onClick={() => setSort(opt.key)}
             className={cn(
-              "px-3 py-1 rounded-badge text-[11px] font-medium border whitespace-nowrap transition-colors",
+              "px-3 py-1 rounded-pill text-[11px] font-medium tracking-[0.04em] border whitespace-nowrap transition-colors",
               sort === opt.key
-                ? "bg-amethyst-muted text-amethyst-dark border-amethyst-border"
-                : "bg-pearl-warm text-ink-mute border-pearl-soft",
+                ? "bg-roseGold-soft/60 text-roseGold-deep border-roseGold/30"
+                : "bg-pearl-light text-ink-mute border-ink/[0.08]",
             )}
           >
             {opt.label}
@@ -208,7 +209,7 @@ function CastCard({ cast, customerCount, pace }: CastCardProps) {
             <div className="text-[9px] text-ink-mute">万円</div>
           </div>
           <div className="rounded-btn bg-pearl-soft py-1.5 text-center">
-            <div className="font-display text-body-md text-amethyst-dark">
+            <div className="font-display text-body-md text-gold-deep">
               {repeatPct}
             </div>
             <div className="text-[9px] text-ink-mute">% 再来店</div>

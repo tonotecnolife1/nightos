@@ -85,7 +85,7 @@ export function GoalSettingCard({ castId, castName, goal, setterName }: Props) {
           </div>
           <div className="text-right">
             <div className="text-[10px] text-ink-mute">同伴</div>
-            <div className="text-body-sm font-display text-amethyst-dark">
+            <div className="text-body-sm font-display text-gold-deep">
               {goal.douhanGoal}回
             </div>
           </div>
