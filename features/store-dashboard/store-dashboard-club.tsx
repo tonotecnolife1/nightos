@@ -58,19 +58,25 @@ export function StoreDashboardClub({ data, customers, allTargets }: Props) {
 
           {/* ── 今夜のアクション ── */}
           <section>
-            <h2 className="text-label-sm text-ink-muted tracking-wider uppercase mb-2">今夜のアクション</h2>
+            <h2 className="text-label-xs tracking-luxe text-roseGold-deep uppercase mb-2">今夜のアクション</h2>
             <AtRiskCustomers targets={allTargets} />
           </section>
 
           {/* ── キャスト別成績 ── */}
           <section>
-            <h2 className="text-display-sm text-ink mb-2">キャスト別成績</h2>
+            <header className="relative flex items-baseline pl-3.5 mb-3">
+              <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+              <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">キャスト別成績</h2>
+            </header>
             <CastTable stats={data.castStats} />
           </section>
 
           {/* ── 顧客構成 ── */}
           <section>
-            <h2 className="text-display-sm text-ink mb-2">顧客カテゴリ構成</h2>
+            <header className="relative flex items-baseline pl-3.5 mb-3">
+              <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+              <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">顧客カテゴリ構成</h2>
+            </header>
             <CategoryBreakdown customers={customers} />
           </section>
 

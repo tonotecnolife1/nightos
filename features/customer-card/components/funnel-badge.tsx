@@ -11,22 +11,22 @@ const CONFIG: Record<
     label: "店舗登録のみ",
     emoji: "🏪",
     icon: Store,
-    bg: "bg-pearl-soft border-pearl-soft",
-    text: "text-ink-muted",
+    bg: "bg-pearl-soft border-line-strong",
+    text: "text-ink-mute",
   },
   assigned: {
     label: "担当あり",
     emoji: "👤",
     icon: UserCheck,
-    bg: "bg-champagne border-champagne-dark",
-    text: "text-ink-secondary",
+    bg: "bg-champagne-soft/60 border-gold/30",
+    text: "text-gold-deep",
   },
   line_exchanged: {
     label: "LINE交換済み",
     emoji: "💬",
     icon: MessageCircle,
-    bg: "bg-emerald/10 border-emerald/25",
-    text: "text-emerald",
+    bg: "bg-success/15 border-success/25",
+    text: "text-success",
   },
 };
 
