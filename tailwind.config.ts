@@ -195,6 +195,13 @@ const config: Config = {
           "Georgia",
           "serif",
         ],
+        // v6: 章立て / hero / SectionHead 用の mincho display
+        serif: [
+          '"Noto Serif JP"',
+          '"Hiragino Mincho ProN"',
+          "Georgia",
+          "serif",
+        ],
       },
       fontSize: {
         // ── v6 semantic roles (serif for display, sans for body, Cormorant for KPI) ──

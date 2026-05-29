@@ -70,12 +70,13 @@ export function FollowTargetList({ targets }: { targets: FollowTarget[] }) {
         </div>
       )}
 
-      {sorted.map((t) => (
+      {sorted.map((t, i) => (
         <FollowTargetCard
           key={t.customer.id}
           target={t}
           contacted={contacted.has(t.customer.id)}
           onToggleContacted={handleToggle}
+          rank={i + 1}
         />
       ))}
     </div>
