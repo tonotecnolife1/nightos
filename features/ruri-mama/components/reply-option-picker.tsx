@@ -55,7 +55,7 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-1.5 text-[11px] text-ink-muted px-1">
+      <div className="flex items-center gap-1.5 text-[11px] text-ink-mute px-1">
         <Sparkles size={11} className="text-amethyst-dark" />
         3つの返し方から選んでください
       </div>
@@ -116,7 +116,7 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
                     選択済み ✓
                   </span>
                 ) : (
-                  <span className="text-[10px] text-ink-muted">タップ →</span>
+                  <span className="text-[10px] text-ink-mute">タップ →</span>
                 )}
               </div>
 
@@ -177,7 +177,7 @@ export function RefineTriggerButton({
       className={cn(
         "inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[11px] font-medium border border-amethyst-border transition-all active:scale-[0.97]",
         disabled
-          ? "bg-pearl-soft text-ink-muted cursor-not-allowed"
+          ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
           : "bg-amethyst-muted text-amethyst-dark hover:bg-amethyst-muted/80",
       )}
     >

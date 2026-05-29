@@ -18,7 +18,7 @@ export default function TokuteiPage() {
         <div className="max-w-2xl mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-[12px] text-ink-muted hover:text-ink-secondary mb-3"
+            className="inline-flex items-center gap-1 text-[12px] text-ink-mute hover:text-ink-soft mb-3"
           >
             <ArrowLeft size={14} /> 戻る
           </Link>
@@ -39,7 +39,7 @@ export default function TokuteiPage() {
           <Row label="連絡先">
             電話番号: 〔電話番号〕<br />
             メール: 〔連絡先メールアドレス〕<br />
-            <span className="text-[11px] text-ink-muted">
+            <span className="text-[11px] text-ink-mute">
               受付時間: 〔平日 10:00–18:00〕
             </span>
           </Row>
@@ -59,7 +59,7 @@ export default function TokuteiPage() {
           </Row>
         </dl>
 
-        <p className="text-[11px] text-ink-muted pt-6">
+        <p className="text-[11px] text-ink-mute pt-6">
           ⚠️ 本ページは雛形です。本番公開前に〔事業者名〕〔住所〕〔電話番号〕等を
           実際の情報に置き換え、必ず法務担当者のチェックを受けてください。
           無償サービスのみで提供する場合でも本表記の掲示が推奨されます。
@@ -72,7 +72,7 @@ export default function TokuteiPage() {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="grid grid-cols-[7rem_1fr] gap-4 py-3 first:pt-0 last:pb-0">
-      <dt className="text-body-sm text-ink-secondary">{label}</dt>
+      <dt className="text-body-sm text-ink-soft">{label}</dt>
       <dd className="text-body-sm text-ink leading-relaxed">{children}</dd>
     </div>
   );

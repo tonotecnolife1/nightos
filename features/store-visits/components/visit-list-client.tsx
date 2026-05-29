@@ -42,7 +42,7 @@ export function VisitListClient({ visits: initial }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <span className="text-label-sm text-ink-muted">
+        <span className="text-label-sm text-ink-mute">
           {visits.length}件の来店記録
         </span>
         <div className="flex items-center gap-2">
@@ -62,7 +62,7 @@ export function VisitListClient({ visits: initial }: Props) {
       </div>
 
       {visits.length === 0 ? (
-        <Card className="p-6 text-center text-body-sm text-ink-secondary">
+        <Card className="p-6 text-center text-body-sm text-ink-soft">
           来店記録がまだありません
         </Card>
       ) : (
@@ -81,13 +81,13 @@ export function VisitListClient({ visits: initial }: Props) {
                         指名
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-pearl-soft text-ink-secondary text-[10px]">
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-pearl-soft text-ink-soft text-[10px]">
                         <User size={9} />
                         フリー
                       </span>
                     )}
                   </div>
-                  <div className="text-label-sm text-ink-muted">
+                  <div className="text-label-sm text-ink-mute">
                     {formatDateTime(v.visited_at)}
                     {v.table_name && ` · ${v.table_name}`} ·{" "}
                     {v.cast_name}

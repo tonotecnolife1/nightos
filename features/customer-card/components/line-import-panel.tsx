@@ -176,16 +176,16 @@ export function LineImportPanel({ customer, memo, screenshots }: Props) {
             className="w-full flex items-center justify-between text-left"
           >
             <div className="flex items-center gap-1.5 text-label-md font-medium text-ink">
-              <History size={14} className="text-ink-secondary" />
+              <History size={14} className="text-ink-soft" />
               過去の取り込み履歴
-              <span className="text-label-sm text-ink-muted ml-1">
+              <span className="text-label-sm text-ink-mute ml-1">
                 {screenshots.length}件
               </span>
             </div>
             {historyOpen ? (
-              <ChevronUp size={16} className="text-ink-muted" />
+              <ChevronUp size={16} className="text-ink-mute" />
             ) : (
-              <ChevronDown size={16} className="text-ink-muted" />
+              <ChevronDown size={16} className="text-ink-mute" />
             )}
           </button>
           {historyOpen && (
@@ -229,7 +229,7 @@ function IdleState({
         <Camera size={18} />
         <span className="text-label-md font-medium">スクショを選ぶ</span>
       </button>
-      <p className="text-label-sm text-ink-muted">
+      <p className="text-label-sm text-ink-mute">
         ※ 写真ライブラリから選択 · 最大1400pxに自動圧縮
         {screenshotCount > 0 && ` · 過去${screenshotCount}件取り込み済み`}
       </p>
@@ -414,7 +414,7 @@ function ReviewPanel({
 
       {/* Diff fields */}
       {updatableFields.length === 0 ? (
-        <div className="rounded-btn bg-pearl-warm border border-pearl-soft px-3 py-3 text-body-sm text-ink-secondary text-center">
+        <div className="rounded-btn bg-pearl-warm border border-pearl-soft px-3 py-3 text-body-sm text-ink-soft text-center">
           メモを更新する必要はなさそうです
         </div>
       ) : (
@@ -441,7 +441,7 @@ function ReviewPanel({
           type="button"
           onClick={onCancel}
           disabled={pending}
-          className="flex-1 h-11 rounded-btn bg-pearl-warm border border-pearl-soft text-ink-secondary text-label-md active:scale-95"
+          className="flex-1 h-11 rounded-btn bg-pearl-warm border border-pearl-soft text-ink-soft text-label-md active:scale-95"
         >
           キャンセル
         </button>
@@ -525,11 +525,11 @@ function FieldDiff({
             {label}
           </div>
           <div className="text-body-sm text-ink leading-relaxed">
-            <span className="text-ink-muted">→ </span>
+            <span className="text-ink-mute">→ </span>
             {suggested}
           </div>
           {current && (
-            <div className="text-label-sm text-ink-muted line-through mt-0.5 leading-relaxed">
+            <div className="text-label-sm text-ink-mute line-through mt-0.5 leading-relaxed">
               {current}
             </div>
           )}
@@ -584,7 +584,7 @@ function ScreenshotHistoryRow({
           />
         </button>
         <div className="flex-1 min-w-0">
-          <div className="text-label-sm text-ink-muted">{dateLabel}</div>
+          <div className="text-label-sm text-ink-mute">{dateLabel}</div>
           <div className="text-body-sm text-ink truncate">
             {screenshot.extracted.summary || "(要約なし)"}
           </div>
@@ -621,7 +621,7 @@ function ScreenshotHistoryRow({
               反映したフィールド: {screenshot.applied_fields.join(", ")}
             </div>
           ) : (
-            <div className="text-label-sm text-ink-muted">
+            <div className="text-label-sm text-ink-mute">
               履歴のみ保存（メモは更新せず）
             </div>
           )}

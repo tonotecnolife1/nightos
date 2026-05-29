@@ -86,14 +86,14 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
         <div className="relative flex-1">
           <Search
             size={13}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute"
           />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="名前・職業・好み・メモで検索"
             style={{ fontSize: "13px" }}
-            className="w-full h-10 pl-8 pr-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-muted"
+            className="w-full h-10 pl-8 pr-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-mute"
           />
         </div>
         <Link
@@ -106,7 +106,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-[11px] text-ink-muted">
+        <span className="text-[11px] text-ink-mute">
           {filtered.length}人 / 全{customers.length}人
         </span>
         <CsvDownloadButton
@@ -117,7 +117,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
       </div>
 
       {filtered.length === 0 ? (
-        <Card className="p-6 text-center text-body-sm text-ink-secondary">
+        <Card className="p-6 text-center text-body-sm text-ink-soft">
           該当する顧客が見つかりません
         </Card>
       ) : (
@@ -146,7 +146,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
                         : "常連"}
                   </Badge>
                 </div>
-                <div className="text-[11px] text-ink-muted truncate">
+                <div className="text-[11px] text-ink-mute truncate">
                   {[c.job, c.favorite_drink, `担当: ${castName(c.cast_id)}`]
                     .filter(Boolean)
                     .join(" · ")}
@@ -158,7 +158,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
                 {/* Edit */}
                 <Link
                   href={`/store/customers/${c.id}/edit`}
-                  className="flex items-center gap-1 px-2.5 h-7 rounded-full text-[10px] font-medium border border-pearl-soft bg-pearl-warm text-ink-secondary active:scale-95"
+                  className="flex items-center gap-1 px-2.5 h-7 rounded-full text-[10px] font-medium border border-pearl-soft bg-pearl-warm text-ink-soft active:scale-95"
                 >
                   <Pencil size={10} />
                   編集

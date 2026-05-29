@@ -15,7 +15,7 @@ export default function SignupPicker() {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             どのアプリで登録しますか
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <p className="mt-1.5 text-body-sm text-ink-soft">
             ご自身の立場に合うものを選んでください
           </p>
         </div>
@@ -37,7 +37,7 @@ export default function SignupPicker() {
             title="来店客"
             description="自分のキープボトル・クーポン・会員ステータスを管理。"
           />
-          <p className="text-body-sm text-ink-secondary text-center pt-4">
+          <p className="text-body-sm text-ink-soft text-center pt-4">
             既にアカウントをお持ちの方は{" "}
             <Link
               href="/cast/auth/login"
@@ -67,7 +67,7 @@ function Pick({
       className="block px-5 py-4 rounded-card border border-ink/[0.06] bg-pearl-warm hover:border-gold/40 hover:-translate-y-px transition shadow-soft"
     >
       <div className="text-body-md font-medium text-ink">{title}</div>
-      <p className="text-[11px] text-ink-muted mt-0.5 leading-relaxed">
+      <p className="text-[11px] text-ink-mute mt-0.5 leading-relaxed">
         {description}
       </p>
     </Link>

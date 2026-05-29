@@ -88,7 +88,7 @@ export default function SettingsClient({
         <div className="max-w-sm mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-[12px] text-ink-muted hover:text-ink-secondary mb-3"
+            className="inline-flex items-center gap-1 text-[12px] text-ink-mute hover:text-ink-soft mb-3"
           >
             <ArrowLeft size={14} /> ホームに戻る
           </Link>
@@ -107,18 +107,18 @@ export default function SettingsClient({
             </h2>
             <dl className="space-y-1.5 text-body-sm">
               <div className="flex justify-between gap-3">
-                <dt className="text-ink-muted shrink-0">メール</dt>
+                <dt className="text-ink-mute shrink-0">メール</dt>
                 <dd className="text-ink truncate">{email}</dd>
               </div>
               {castName && (
                 <div className="flex justify-between gap-3">
-                  <dt className="text-ink-muted shrink-0">源氏名</dt>
+                  <dt className="text-ink-mute shrink-0">源氏名</dt>
                   <dd className="text-ink">{castName}</dd>
                 </div>
               )}
               {userRole && (
                 <div className="flex justify-between gap-3">
-                  <dt className="text-ink-muted shrink-0">役割</dt>
+                  <dt className="text-ink-mute shrink-0">役割</dt>
                   <dd className="text-ink">{ROLE_LABEL[userRole]}</dd>
                 </div>
               )}
@@ -132,7 +132,7 @@ export default function SettingsClient({
                 <h2 className="font-display text-[18px] leading-tight font-medium text-ink">
                   店舗の招待コード
                 </h2>
-                <p className="text-[11px] text-ink-muted mt-0.5">
+                <p className="text-[11px] text-ink-mute mt-0.5">
                   {storeInviteInfo.name} のキャスト・スタッフ用
                 </p>
               </div>
@@ -149,7 +149,7 @@ export default function SettingsClient({
                   {copied ? "コピー済み" : "コピー"}
                 </button>
               </div>
-              <p className="text-[11px] text-ink-muted leading-relaxed">
+              <p className="text-[11px] text-ink-mute leading-relaxed">
                 このコードを所属キャスト・スタッフに伝えると、新規登録時に
                 このお店に参加できます。コードを知らない人は加入できません。
               </p>
@@ -164,7 +164,7 @@ export default function SettingsClient({
                   所属店舗
                 </h2>
                 {currentStoreName && (
-                  <p className="text-[11px] text-ink-muted mt-0.5">
+                  <p className="text-[11px] text-ink-mute mt-0.5">
                     現在: {currentStoreName}
                   </p>
                 )}
@@ -180,9 +180,9 @@ export default function SettingsClient({
                 </button>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-[12px] text-ink-secondary leading-relaxed">
+                  <p className="text-[12px] text-ink-soft leading-relaxed">
                     新しい店舗の招待コード（8文字）を入力してください。
-                    <span className="block mt-1 text-ink-muted">
+                    <span className="block mt-1 text-ink-mute">
                       ※ 過去の店舗での履歴（来店・ボトル・メモ）は元の店舗側に残ります。
                     </span>
                   </p>
@@ -244,7 +244,7 @@ export default function SettingsClient({
             <h2 className="font-display text-[18px] leading-tight font-medium text-ink">
               パスワード
             </h2>
-            <p className="text-[11px] text-ink-muted leading-relaxed">
+            <p className="text-[11px] text-ink-mute leading-relaxed">
               再設定リンクをメールでお送りします
             </p>
             <Link
@@ -270,7 +270,7 @@ export default function SettingsClient({
             <h2 className="font-display text-[18px] leading-tight font-medium text-[#c2575b]">
               アカウントを削除
             </h2>
-            <p className="text-body-sm text-ink-secondary leading-relaxed">
+            <p className="text-body-sm text-ink-soft leading-relaxed">
               退会するとアカウントと、登録した顧客・来店・ボトル・メモ等の情報が
               <span className="font-medium text-ink">すべて完全に削除</span>
               され、復元できなくなります。
@@ -286,7 +286,7 @@ export default function SettingsClient({
               </button>
             ) : (
               <div className="space-y-2">
-                <p className="text-[12px] text-ink-secondary">
+                <p className="text-[12px] text-ink-soft">
                   確認のため、下の枠に
                   <span className="font-medium text-[#c2575b]"> 削除する </span>
                   と入力してください

@@ -35,7 +35,7 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
           <TrendingUp size={16} className="text-amethyst-dark" />
           顧客ファネル
         </h2>
-        <span className="text-[10px] text-ink-muted">全{stats.total}人</span>
+        <span className="text-[10px] text-ink-mute">全{stats.total}人</span>
       </div>
 
       <Card className="p-3 space-y-3">
@@ -65,7 +65,7 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
             )}
           </div>
           {/* Legend with counts */}
-          <div className="flex items-center justify-between text-[10px] text-ink-secondary">
+          <div className="flex items-center justify-between text-[10px] text-ink-soft">
             <div className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-pearl-soft border border-ink-muted" />
               店舗のみ {stats.storeOnly}
@@ -84,17 +84,17 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
         {/* Conversion rates */}
         <div className="grid grid-cols-2 gap-2 pt-2 border-t border-pearl-soft">
           <div>
-            <div className="text-[10px] text-ink-muted">担当化率</div>
+            <div className="text-[10px] text-ink-mute">担当化率</div>
             <div className="text-body-md font-display text-champagne-dark">
               {Math.round(stats.assignedRate * 100)}
-              <span className="text-[10px] text-ink-muted ml-0.5">%</span>
+              <span className="text-[10px] text-ink-mute ml-0.5">%</span>
             </div>
           </div>
           <div>
-            <div className="text-[10px] text-ink-muted">LINE交換率</div>
+            <div className="text-[10px] text-ink-mute">LINE交換率</div>
             <div className="text-body-md font-display text-emerald">
               {Math.round(stats.lineExchangedRate * 100)}
-              <span className="text-[10px] text-ink-muted ml-0.5">%</span>
+              <span className="text-[10px] text-ink-mute ml-0.5">%</span>
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
         {/* Top 3 casts by line rate */}
         {topCasts.length > 0 && (
           <div className="space-y-1.5 pt-2 border-t border-pearl-soft">
-            <div className="text-[10px] text-ink-muted font-medium uppercase tracking-wider">
+            <div className="text-[10px] text-ink-mute font-medium uppercase tracking-wider">
               LINE交換率 TOP{topCasts.length}
             </div>
             {topCasts.map((item, idx) => (
@@ -146,7 +146,7 @@ function CastFunnelRow({
             ? "bg-roseGold text-pearl"
             : rank === 2
               ? "bg-champagne-dark text-ink"
-              : "bg-pearl-soft text-ink-secondary",
+              : "bg-pearl-soft text-ink-soft",
         )}
       >
         {rank}

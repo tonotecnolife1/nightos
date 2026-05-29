@@ -34,7 +34,7 @@ export function StoreInfoSection({ context }: { context: CustomerContext }) {
         <dl className="space-y-2.5">
           {customer.favorite_drink && (
             <div>
-              <dt className="text-label-sm text-ink-secondary mb-0.5">
+              <dt className="text-label-sm text-ink-soft mb-0.5">
                 好きなお酒
               </dt>
               <dd className="text-body-md text-ink">{customer.favorite_drink}</dd>
@@ -42,7 +42,7 @@ export function StoreInfoSection({ context }: { context: CustomerContext }) {
           )}
           {bottles.length > 0 && (
             <div>
-              <dt className="text-label-sm text-ink-secondary mb-0.5">
+              <dt className="text-label-sm text-ink-soft mb-0.5">
                 キープボトル
               </dt>
               <dd className="space-y-1">

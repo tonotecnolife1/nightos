@@ -57,7 +57,7 @@ export function LineHistoryTimeline({ screenshots, customerName }: Props) {
           <MessageCircle size={16} />
           LINE やりとり履歴
         </h3>
-        <span className="text-label-sm text-ink-muted">{screenshots.length}件</span>
+        <span className="text-label-sm text-ink-mute">{screenshots.length}件</span>
       </div>
 
       {/* Timeline */}
@@ -73,7 +73,7 @@ export function LineHistoryTimeline({ screenshots, customerName }: Props) {
                 <div className="w-10 h-10 shrink-0 flex items-center justify-center z-10">
                   <div className="w-2.5 h-2.5 rounded-full bg-amethyst-dark border-2 border-pearl" />
                 </div>
-                <span className="text-[11px] font-medium text-ink-muted bg-pearl px-2 py-0.5 rounded-full border border-pearl-soft">
+                <span className="text-[11px] font-medium text-ink-mute bg-pearl px-2 py-0.5 rounded-full border border-pearl-soft">
                   {date}
                 </span>
               </div>
@@ -144,13 +144,13 @@ function TimelineEntry({
 
           <div className="flex-1 min-w-0 space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-ink-muted">{time}</span>
+              <span className="text-[10px] text-ink-mute">{time}</span>
               <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${
                 extracted.confidence === "high"
                   ? "bg-emerald/10 text-emerald"
                   : extracted.confidence === "medium"
                     ? "bg-champagne-dark text-ink"
-                    : "bg-pearl-soft text-ink-muted"
+                    : "bg-pearl-soft text-ink-mute"
               }`}>
                 {extracted.confidence === "high" ? "高精度" : extracted.confidence === "medium" ? "中精度" : "低精度"}
               </span>
@@ -187,10 +187,10 @@ function TimelineEntry({
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline gap-1.5 text-body-sm">
-      <span className="shrink-0 text-[10px] font-medium text-ink-muted bg-pearl-warm rounded px-1 py-0.5">
+      <span className="shrink-0 text-[10px] font-medium text-ink-mute bg-pearl-warm rounded px-1 py-0.5">
         {label}
       </span>
-      <span className="text-ink-secondary">{value}</span>
+      <span className="text-ink-soft">{value}</span>
     </div>
   );
 }

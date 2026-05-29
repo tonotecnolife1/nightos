@@ -86,7 +86,7 @@ export function CoachingRemindersCard({
             育成リマインダ
           </span>
         </div>
-        <p className="text-[11px] text-ink-muted pt-1">
+        <p className="text-[11px] text-ink-mute pt-1">
           1on1・目標ともに追いついています
         </p>
       </Card>
@@ -102,7 +102,7 @@ export function CoachingRemindersCard({
             育成リマインダ
           </span>
         </div>
-        <span className="text-[10px] text-ink-muted">
+        <span className="text-[10px] text-ink-mute">
           要対応 {reminders.length}件
         </span>
       </div>

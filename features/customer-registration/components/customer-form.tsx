@@ -192,7 +192,7 @@ export function CustomerForm({
       {/* AI補完ヒント */}
       <div className="flex items-start gap-2 px-3 py-2.5 rounded-2xl bg-emerald/5 border border-emerald/20">
         <Bot size={14} className="text-emerald mt-0.5 shrink-0" />
-        <p className="text-[11px] text-ink-secondary leading-relaxed">
+        <p className="text-[11px] text-ink-soft leading-relaxed">
           職業・好みのお酒・話題などはルリママとのチャットから自動で補完されます。
         </p>
       </div>
@@ -201,7 +201,7 @@ export function CustomerForm({
       <button
         type="button"
         onClick={() => setShowOptional((v) => !v)}
-        className="w-full flex items-center justify-between px-3 py-2.5 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink-secondary hover:bg-pearl-warm transition"
+        className="w-full flex items-center justify-between px-3 py-2.5 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink-soft hover:bg-pearl-warm transition"
       >
         <span>{showOptional ? "追加情報を閉じる" : "追加情報を入力する（任意）"}</span>
         {showOptional ? <ChevronUp size={15} /> : <ChevronDown size={15} />}

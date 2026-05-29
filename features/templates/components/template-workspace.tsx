@@ -142,7 +142,7 @@ export function TemplateWorkspace({
               <div className="text-label-md text-amethyst-dark font-semibold">
                 さくらママに専用文面を作ってもらう
               </div>
-              <div className="text-label-sm text-ink-secondary">
+              <div className="text-label-sm text-ink-soft">
                 この顧客のカルテを見て、ピッタリの一通を提案します
               </div>
             </div>
@@ -188,7 +188,7 @@ export function TemplateWorkspace({
       {/* Custom user templates (above defaults) */}
       {customForCategory.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-label-md text-ink-secondary font-medium">
+          <h3 className="text-label-md text-ink-soft font-medium">
             マイテンプレート
           </h3>
           {customForCategory.map((t) => (
@@ -208,7 +208,7 @@ export function TemplateWorkspace({
 
       {/* Default templates */}
       <div className="space-y-3">
-        <h3 className="text-label-md text-ink-secondary font-medium">
+        <h3 className="text-label-md text-ink-soft font-medium">
           定型テンプレート
         </h3>
         {visibleTemplates.map((t) => (

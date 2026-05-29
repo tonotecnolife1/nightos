@@ -85,7 +85,7 @@ export function MamaCustomerPageShell({ customers, allCasts }: Props) {
       />
 
       {filteredCustomers.length === 0 ? (
-        <Card className="p-8 text-center text-body-sm text-ink-secondary">
+        <Card className="p-8 text-center text-body-sm text-ink-soft">
           該当する顧客が見つかりません
         </Card>
       ) : (

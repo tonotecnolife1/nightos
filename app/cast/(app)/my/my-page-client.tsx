@@ -74,9 +74,9 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
           {storeName && (
             <section className="rounded-card border border-ink/[0.06] bg-pearl-warm p-4 shadow-soft">
               <div className="flex items-center gap-2.5">
-                <Building2 size={16} className="text-ink-muted shrink-0" />
+                <Building2 size={16} className="text-ink-mute shrink-0" />
                 <div>
-                  <p className="text-[11px] text-ink-muted">所属店舗</p>
+                  <p className="text-[11px] text-ink-mute">所属店舗</p>
                   <p className="text-body-md font-medium text-ink">{storeName}</p>
                 </div>
               </div>
@@ -92,15 +92,15 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
             className="flex items-center justify-between w-full rounded-card border border-ink/[0.06] bg-pearl-warm p-4 shadow-soft hover:border-ink/15 transition"
           >
             <div className="flex items-center gap-2.5">
-              <Settings size={16} className="text-ink-muted shrink-0" />
+              <Settings size={16} className="text-ink-mute shrink-0" />
               <span className="text-body-md text-ink">設定</span>
             </div>
-            <span className="text-ink-muted text-[12px]">›</span>
+            <span className="text-ink-mute text-[12px]">›</span>
           </Link>
 
           {/* メンバー管理 */}
           <section className="space-y-2">
-            <p className="text-[11px] text-ink-muted px-1">メンバー管理</p>
+            <p className="text-[11px] text-ink-mute px-1">メンバー管理</p>
             <div className="grid grid-cols-2 gap-2">
               <Link
                 href="/mama/team"
@@ -112,9 +112,9 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <span className="text-body-sm font-medium text-ink">メンバー</span>
-                    <ChevronRight size={11} className="text-ink-muted" />
+                    <ChevronRight size={11} className="text-ink-mute" />
                   </div>
-                  <span className="text-[10px] text-ink-muted">育成・目標設定</span>
+                  <span className="text-[10px] text-ink-mute">育成・目標設定</span>
                 </div>
               </Link>
               <Link
@@ -127,9 +127,9 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <span className="text-body-sm font-medium text-ink">全顧客</span>
-                    <ChevronRight size={11} className="text-ink-muted" />
+                    <ChevronRight size={11} className="text-ink-mute" />
                   </div>
-                  <span className="text-[10px] text-ink-muted">一覧・相関図・ファネル</span>
+                  <span className="text-[10px] text-ink-mute">一覧・相関図・ファネル</span>
                 </div>
               </Link>
             </div>
@@ -140,9 +140,9 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
             href="/cast/stats"
             className="flex items-center gap-3 rounded-card border border-ink/[0.06] bg-pearl-warm px-4 py-3 shadow-soft hover:border-gold/40 transition"
           >
-            <BarChart3 size={15} className="text-ink-secondary shrink-0" />
+            <BarChart3 size={15} className="text-ink-soft shrink-0" />
             <span className="flex-1 text-body-sm text-ink">成績・統計</span>
-            <ChevronRight size={13} className="text-ink-muted" />
+            <ChevronRight size={13} className="text-ink-mute" />
           </Link>
 
           {/* ログアウト */}

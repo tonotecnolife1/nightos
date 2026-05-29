@@ -34,7 +34,7 @@ export function CustomerContextPill({
           "w-full flex items-center gap-2 px-3 h-9 rounded-full border transition-all active:scale-[0.99]",
           selected
             ? "bg-amethyst-muted border-amethyst-border text-amethyst-dark"
-            : "bg-pearl-warm border-pearl-soft text-ink-secondary",
+            : "bg-pearl-warm border-pearl-soft text-ink-soft",
         )}
       >
         <UserCircle2 size={13} className="shrink-0" />
@@ -89,7 +89,7 @@ export function CustomerContextPill({
               !selectedId && "bg-amethyst-muted",
             )}
           >
-            <div className="text-body-sm text-ink-secondary">
+            <div className="text-body-sm text-ink-soft">
               指定なしで相談
             </div>
           </button>
@@ -109,7 +109,7 @@ export function CustomerContextPill({
               <div className="text-body-sm text-ink">
                 {formatCustomerName(c.name)}
               </div>
-              <div className="text-[10px] text-ink-muted">
+              <div className="text-[10px] text-ink-mute">
                 {c.job ?? "—"} ·{" "}
                 {c.category === "vip"
                   ? "VIP"

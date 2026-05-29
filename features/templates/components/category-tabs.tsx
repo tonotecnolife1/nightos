@@ -25,7 +25,7 @@ export function CategoryTabs({ value, onChange }: Props) {
               "h-9 rounded-full text-label-sm font-medium transition-all active:scale-95",
               active
                 ? "rose-gradient text-pearl shadow-soft-card"
-                : "text-ink-secondary hover:text-ink",
+                : "text-ink-soft hover:text-ink",
             )}
           >
             {cat.label}

@@ -53,7 +53,7 @@ export function NominationTrendBars({ points }: Props) {
         {points.map((p, i) => (
           <div
             key={p.date}
-            className="flex-1 text-center text-[9px] text-ink-muted"
+            className="flex-1 text-center text-[9px] text-ink-mute"
           >
             {i % 3 === 0 ? p.date.slice(-5) : ""}
           </div>
@@ -61,11 +61,11 @@ export function NominationTrendBars({ points }: Props) {
       </div>
       {/* Legend */}
       <div className="flex items-center gap-4 mt-3 text-label-sm">
-        <div className="flex items-center gap-1.5 text-ink-secondary">
+        <div className="flex items-center gap-1.5 text-ink-soft">
           <span className="w-2.5 h-2.5 rounded-sm bg-gradient-rose-gold" />
           あかり
         </div>
-        <div className="flex items-center gap-1.5 text-ink-secondary">
+        <div className="flex items-center gap-1.5 text-ink-soft">
           <span className="w-2.5 h-2.5 rounded-sm bg-gradient-amethyst" />
           ゆき
         </div>

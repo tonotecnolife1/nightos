@@ -25,7 +25,7 @@ export function BrandPicker({ value, onChange }: Props) {
               setAddingNew(false);
               onChange("");
             }}
-            className="text-label-sm text-ink-secondary underline"
+            className="text-label-sm text-ink-soft underline"
           >
             マスタから選ぶ
           </button>
@@ -37,7 +37,7 @@ export function BrandPicker({ value, onChange }: Props) {
           placeholder="例: 山崎25年"
           autoFocus
         />
-        <p className="text-[10px] text-ink-muted">
+        <p className="text-[10px] text-ink-mute">
           ※ 取り扱いはウイスキー / 焼酎 のみです
         </p>
       </div>
@@ -65,7 +65,7 @@ export function BrandPicker({ value, onChange }: Props) {
       <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
         {MOCK_BRANDS_CLUB.map((category) => (
           <div key={category.category} className="space-y-1.5">
-            <div className="text-label-sm text-ink-muted px-1">
+            <div className="text-label-sm text-ink-mute px-1">
               {category.category}
             </div>
             <div className="grid grid-cols-2 gap-2">

@@ -36,17 +36,17 @@ export function CancelledDouhanSection({ castId, customers }: Props) {
           <XCircle size={15} className="text-rose" />
           同伴キャンセル履歴
         </h2>
-        <span className="text-label-sm text-ink-muted">
+        <span className="text-label-sm text-ink-mute">
           {loaded ? `${items.length}件` : "..."}
         </span>
       </div>
 
       {!loaded ? (
-        <Card className="p-4 text-center text-body-sm text-ink-muted">
+        <Card className="p-4 text-center text-body-sm text-ink-mute">
           読み込み中...
         </Card>
       ) : items.length === 0 ? (
-        <Card className="p-4 text-center text-body-sm text-ink-muted">
+        <Card className="p-4 text-center text-body-sm text-ink-mute">
           キャンセル履歴はありません
         </Card>
       ) : (
@@ -61,21 +61,21 @@ export function CancelledDouhanSection({ castId, customers }: Props) {
                 <span className="text-body-sm font-medium text-ink truncate">
                   {customer ? formatCustomerName(customer.name) : "（顧客不明）"}
                 </span>
-                <span className="text-[10px] text-ink-muted shrink-0">
+                <span className="text-[10px] text-ink-mute shrink-0">
                   {formatDouhanDate(d.date)}
                 </span>
               </div>
-              <div className="text-[11px] text-ink-secondary">
+              <div className="text-[11px] text-ink-soft">
                 <span className="text-rose font-medium">理由:</span>{" "}
                 {d.cancellation_reason ?? "（理由未入力）"}
               </div>
               {d.note && (
-                <div className="text-[10px] text-ink-muted truncate">
+                <div className="text-[10px] text-ink-mute truncate">
                   予定: {d.note}
                 </div>
               )}
               {d.cancelled_at && (
-                <div className="text-[9px] text-ink-muted">
+                <div className="text-[9px] text-ink-mute">
                   キャンセル日時: {formatDateTime(d.cancelled_at)}
                 </div>
               )}

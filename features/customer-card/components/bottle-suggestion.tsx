@@ -138,7 +138,7 @@ function RecommendationCard({ rec }: { rec: BottleRecommendation }) {
           {tierLabels[rec.tier]}
         </span>
       </div>
-      <p className="text-label-sm text-ink-secondary leading-relaxed pl-4">
+      <p className="text-label-sm text-ink-soft leading-relaxed pl-4">
         {rec.reason}
       </p>
     </div>

@@ -49,18 +49,18 @@ export default function ChatHistoryPage() {
         <div className="relative">
           <Search
             size={13}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute"
           />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="顧客名・キーワードで検索"
             style={{ fontSize: "13px" }}
-            className="w-full h-10 pl-8 pr-3 rounded-full bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-amethyst-border placeholder:text-ink-muted"
+            className="w-full h-10 pl-8 pr-3 rounded-full bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-amethyst-border placeholder:text-ink-mute"
           />
         </div>
 
-        <div className="text-[11px] text-ink-muted">
+        <div className="text-[11px] text-ink-mute">
           {filtered.length}件の相談履歴
         </div>
 
@@ -106,7 +106,7 @@ export default function ChatHistoryPage() {
                   <span className="text-[12px] font-semibold text-ink flex-1">
                     {group.customerName ? `${group.customerName}さま` : "顧客指定なし"}
                   </span>
-                  <span className="text-[10px] text-ink-muted">
+                  <span className="text-[10px] text-ink-mute">
                     {group.sessions.length}件
                   </span>
                 </button>
@@ -159,11 +159,11 @@ function SessionRow({
               {session.title}
             </div>
             {preview && (
-              <div className="text-[10px] text-ink-secondary mt-0.5 truncate">
+              <div className="text-[10px] text-ink-soft mt-0.5 truncate">
                 {preview}…
               </div>
             )}
-            <div className="flex items-center gap-2 mt-1 text-[10px] text-ink-muted">
+            <div className="flex items-center gap-2 mt-1 text-[10px] text-ink-mute">
               <span className="flex items-center gap-0.5">
                 <Clock size={9} />
                 {dateLabel}
@@ -178,7 +178,7 @@ function SessionRow({
               e.stopPropagation();
               if (confirm("この履歴を削除しますか？")) onDelete();
             }}
-            className="w-6 h-6 rounded-full text-ink-muted hover:text-rose flex items-center justify-center shrink-0"
+            className="w-6 h-6 rounded-full text-ink-mute hover:text-rose flex items-center justify-center shrink-0"
           >
             <Trash2 size={11} />
           </button>

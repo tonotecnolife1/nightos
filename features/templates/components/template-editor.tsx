@@ -102,7 +102,7 @@ export function TemplateEditor({ category, onChange }: Props) {
           <h3 className="text-label-md text-ink font-semibold">
             マイテンプレート
           </h3>
-          <span className="text-label-sm text-ink-muted">
+          <span className="text-label-sm text-ink-mute">
             {customs.length}件
           </span>
         </div>
@@ -121,7 +121,7 @@ export function TemplateEditor({ category, onChange }: Props) {
       {editor && (
         <div className="space-y-2.5 rounded-btn bg-pearl-soft border border-pearl-warm p-3">
           <div>
-            <label className="block text-label-sm text-ink-secondary mb-1">
+            <label className="block text-label-sm text-ink-soft mb-1">
               タイトル
             </label>
             <input
@@ -135,7 +135,7 @@ export function TemplateEditor({ category, onChange }: Props) {
             />
           </div>
           <div>
-            <label className="block text-label-sm text-ink-secondary mb-1">
+            <label className="block text-label-sm text-ink-soft mb-1">
               文面（{`{姓}`} {`{ボトル名}`} {`{前回の話題}`} が使えます）
             </label>
             <textarea
@@ -149,7 +149,7 @@ export function TemplateEditor({ category, onChange }: Props) {
             />
           </div>
           <div>
-            <label className="block text-label-sm text-ink-secondary mb-1">
+            <label className="block text-label-sm text-ink-soft mb-1">
               説明（任意）
             </label>
             <input
@@ -166,7 +166,7 @@ export function TemplateEditor({ category, onChange }: Props) {
             <button
               type="button"
               onClick={() => setEditor(null)}
-              className="flex items-center gap-1 h-9 px-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink-secondary text-label-sm"
+              className="flex items-center gap-1 h-9 px-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink-soft text-label-sm"
             >
               <X size={12} />
               キャンセル
@@ -179,7 +179,7 @@ export function TemplateEditor({ category, onChange }: Props) {
                 "flex items-center gap-1 h-9 px-4 rounded-btn text-label-sm font-medium",
                 editor.body.trim()
                   ? "rose-gradient text-pearl shadow-soft-card"
-                  : "bg-pearl-soft text-ink-muted",
+                  : "bg-pearl-soft text-ink-mute",
               )}
             >
               <Save size={12} />
@@ -190,7 +190,7 @@ export function TemplateEditor({ category, onChange }: Props) {
       )}
 
       {customs.length === 0 && !editor ? (
-        <p className="text-body-sm text-ink-muted text-center py-2">
+        <p className="text-body-sm text-ink-mute text-center py-2">
           このカテゴリのマイテンプレートはまだありません
         </p>
       ) : (
@@ -221,7 +221,7 @@ export function TemplateEditor({ category, onChange }: Props) {
                 </button>
               </div>
             </div>
-            <p className="text-body-sm text-ink-secondary leading-relaxed line-clamp-2">
+            <p className="text-body-sm text-ink-soft leading-relaxed line-clamp-2">
               {t.body}
             </p>
           </div>

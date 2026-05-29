@@ -19,7 +19,7 @@ export function ConfirmationView({ email, backHref }: Props) {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             確認メールを送信しました
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <p className="mt-1.5 text-body-sm text-ink-soft">
             メール本文のリンクをタップで完了します
           </p>
         </div>
@@ -30,10 +30,10 @@ export function ConfirmationView({ email, backHref }: Props) {
             <p className="text-body-md text-ink">
               <span className="font-medium">{email}</span>
             </p>
-            <p className="text-body-sm text-ink-secondary leading-relaxed">
+            <p className="text-body-sm text-ink-soft leading-relaxed">
               上記のメールに送ったリンクをタップすると登録が完了します。
             </p>
-            <p className="text-[11px] text-ink-muted">
+            <p className="text-[11px] text-ink-mute">
               届かない場合は迷惑メール / プロモーションタブも確認してください。
             </p>
           </div>

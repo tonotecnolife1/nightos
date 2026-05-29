@@ -28,7 +28,7 @@ export function CustomerContextPicker({
       >
         <UserCircle2 size={18} className="text-amethyst-dark shrink-0" />
         <div className="flex-1 min-w-0">
-          <div className="text-label-sm text-ink-muted">顧客コンテキスト</div>
+          <div className="text-label-sm text-ink-mute">顧客コンテキスト</div>
           <div className="text-body-md text-ink truncate">
             {selected ? formatCustomerName(selected.name) : "指定なしで相談"}
           </div>
@@ -43,13 +43,13 @@ export function CustomerContextPicker({
             aria-label="クリア"
             className="p-1 rounded-full hover:bg-pearl-soft"
           >
-            <X size={14} className="text-ink-muted" />
+            <X size={14} className="text-ink-mute" />
           </button>
         )}
         <ChevronDown
           size={16}
           className={cn(
-            "text-ink-muted transition-transform",
+            "text-ink-mute transition-transform",
             open && "rotate-180",
           )}
         />
@@ -75,7 +75,7 @@ export function CustomerContextPicker({
             }}
             className="w-full text-left px-4 py-3 hover:bg-pearl-soft border-b border-pearl-soft"
           >
-            <div className="text-body-md text-ink-secondary">
+            <div className="text-body-md text-ink-soft">
               指定なしで相談
             </div>
           </button>
@@ -93,7 +93,7 @@ export function CustomerContextPicker({
               )}
             >
               <div className="text-body-md text-ink">{formatCustomerName(c.name)}</div>
-              <div className="text-label-sm text-ink-muted">
+              <div className="text-label-sm text-ink-mute">
                 {c.job ?? "—"} ·{" "}
                 {c.category === "vip"
                   ? "VIP"

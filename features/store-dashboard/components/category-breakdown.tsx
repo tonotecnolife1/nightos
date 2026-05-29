@@ -40,16 +40,16 @@ export function CategoryBreakdown({ customers }: Props) {
         {segments.map((seg) => (
           <div key={seg.label} className="flex items-center gap-1.5">
             <span className={`w-2.5 h-2.5 rounded-sm ${seg.color}`} />
-            <span className="text-ink-secondary">
+            <span className="text-ink-soft">
               {seg.label} {seg.count}人
             </span>
-            <span className="text-ink-muted">({seg.pct}%)</span>
+            <span className="text-ink-mute">({seg.pct}%)</span>
           </div>
         ))}
       </div>
 
       {/* Insight */}
-      <div className="text-label-sm text-ink-muted">
+      <div className="text-label-sm text-ink-mute">
         全{total}人
         {vip > 0 && regular > 0 && (
           <>

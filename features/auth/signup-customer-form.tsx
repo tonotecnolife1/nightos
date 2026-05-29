@@ -32,7 +32,7 @@ export default function SignupCustomerForm() {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             新規登録（来店客）
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <p className="mt-1.5 text-body-sm text-ink-soft">
             自分のキープボトル・クーポン・会員ステータスを管理
           </p>
         </div>
@@ -88,14 +88,14 @@ export default function SignupCustomerForm() {
             {error && <p className="text-[12px] text-[#c2575b] text-center leading-relaxed">{error}</p>}
           </form>
 
-          <p className="text-body-sm text-ink-secondary text-center">
+          <p className="text-body-sm text-ink-soft text-center">
             既にアカウントをお持ちの方は{" "}
             <Link href="/customer/auth/login" className="text-blush-deep underline-offset-2 hover:underline">
               ログイン
             </Link>
           </p>
 
-          <p className="text-[11px] text-ink-muted text-center leading-relaxed">
+          <p className="text-[11px] text-ink-mute text-center leading-relaxed">
             登録すると{" "}
             <Link href="/legal/terms" className="underline underline-offset-2">利用規約</Link>
             {" "}と{" "}
@@ -112,8 +112,8 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   return (
     <label className="block">
       <div className="flex items-baseline justify-between mb-1.5 px-1">
-        <span className="text-body-sm text-ink-secondary">{label}</span>
-        {hint && <span className="text-[11px] text-ink-muted">{hint}</span>}
+        <span className="text-body-sm text-ink-soft">{label}</span>
+        {hint && <span className="text-[11px] text-ink-mute">{hint}</span>}
       </div>
       {children}
     </label>

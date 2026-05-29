@@ -599,7 +599,7 @@ export function ChatWindow({
         )}
 
         {phase.name === "loading" && (
-          <div className="flex items-center gap-2 text-ink-muted text-body-sm pl-2">
+          <div className="flex items-center gap-2 text-ink-mute text-body-sm pl-2">
             <Sparkles size={14} className="text-amethyst animate-shimmer" />
             さくらママが考え中…
           </div>
@@ -619,7 +619,7 @@ export function ChatWindow({
               <button
                 type="button"
                 onClick={handleClearHistory}
-                className="flex items-center gap-1 text-label-sm text-ink-muted hover:text-rose underline underline-offset-2"
+                className="flex items-center gap-1 text-label-sm text-ink-mute hover:text-rose underline underline-offset-2"
               >
                 <Trash2 size={11} />
                 履歴を全部クリアする

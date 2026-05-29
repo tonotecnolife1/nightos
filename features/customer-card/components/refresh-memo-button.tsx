@@ -88,7 +88,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
           <button
             type="button"
             onClick={cancel}
-            className="ml-auto text-[10px] text-ink-muted underline"
+            className="ml-auto text-[10px] text-ink-mute underline"
           >
             閉じる
           </button>
@@ -107,7 +107,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
           </span>
         </div>
         {preview.summary && (
-          <p className="text-[11px] text-ink-secondary bg-pearl-warm px-2 py-1.5 rounded-btn">
+          <p className="text-[11px] text-ink-soft bg-pearl-warm px-2 py-1.5 rounded-btn">
             {preview.summary}
           </p>
         )}
@@ -127,7 +127,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
           <button
             type="button"
             onClick={cancel}
-            className="h-9 px-3 rounded-btn bg-pearl-soft text-ink-secondary text-label-sm active:scale-[0.98]"
+            className="h-9 px-3 rounded-btn bg-pearl-soft text-ink-soft text-label-sm active:scale-[0.98]"
           >
             <X size={12} className="inline mr-1" />
             破棄
@@ -145,7 +145,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
       className={cn(
         "w-full flex items-center justify-center gap-1.5 h-10 rounded-btn border transition-all active:scale-[0.98]",
         loading
-          ? "bg-pearl-soft text-ink-muted border-pearl-soft"
+          ? "bg-pearl-soft text-ink-mute border-pearl-soft"
           : "bg-amethyst-muted text-amethyst-dark border-amethyst-border hover:bg-amethyst-muted/70",
       )}
     >
@@ -178,7 +178,7 @@ function DiffRow({
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5">
-        <span className="text-[10px] text-ink-muted font-medium">{label}</span>
+        <span className="text-[10px] text-ink-mute font-medium">{label}</span>
         {changed && (
           <span className="text-[9px] px-1.5 py-0.5 rounded-badge bg-amethyst-muted text-amethyst-dark">
             変更あり
@@ -186,14 +186,14 @@ function DiffRow({
         )}
       </div>
       {changed && before && (
-        <div className="text-[11px] text-ink-muted line-through break-words pl-2 border-l-2 border-pearl-soft">
+        <div className="text-[11px] text-ink-mute line-through break-words pl-2 border-l-2 border-pearl-soft">
           {before}
         </div>
       )}
       <div
         className={cn(
           "text-[11px] break-words pl-2 border-l-2",
-          changed ? "text-ink border-amethyst" : "text-ink-secondary border-pearl-soft",
+          changed ? "text-ink border-amethyst" : "text-ink-soft border-pearl-soft",
         )}
       >
         {after ?? "(なし)"}

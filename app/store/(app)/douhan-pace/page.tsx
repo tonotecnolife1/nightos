@@ -87,7 +87,7 @@ export default function StoreDouhanPacePage() {
 
         {/* Role filter */}
         <div className="flex items-center gap-1.5 overflow-x-auto scroll-x">
-          <Filter size={12} className="text-ink-muted shrink-0" />
+          <Filter size={12} className="text-ink-mute shrink-0" />
           {FILTERS.map((f) => (
             <button
               key={f.value}
@@ -97,7 +97,7 @@ export default function StoreDouhanPacePage() {
                 "px-3 h-7 rounded-full text-[11px] font-medium shrink-0 transition-colors",
                 roleFilter === f.value
                   ? "bg-champagne text-ink"
-                  : "bg-pearl-soft text-ink-secondary",
+                  : "bg-pearl-soft text-ink-soft",
               )}
             >
               {f.label}
@@ -108,7 +108,7 @@ export default function StoreDouhanPacePage() {
         {/* Cast list */}
         <section className="space-y-2">
           {filtered.length === 0 ? (
-            <Card className="p-4 text-center text-body-sm text-ink-muted">
+            <Card className="p-4 text-center text-body-sm text-ink-mute">
               該当するキャストがいません
             </Card>
           ) : (
@@ -139,7 +139,7 @@ export default function StoreDouhanPacePage() {
                         {pace.castName}
                       </span>
                       {cast?.club_role && (
-                        <span className="text-[10px] text-ink-muted">
+                        <span className="text-[10px] text-ink-mute">
                           {cast.club_role === "mama" ? "店長" : "キャスト"}
                         </span>
                       )}
@@ -158,7 +158,7 @@ export default function StoreDouhanPacePage() {
                   {/* Week progress */}
                   <div>
                     <div className="flex items-center justify-between text-[10px] mb-0.5">
-                      <span className="text-ink-muted">今週</span>
+                      <span className="text-ink-mute">今週</span>
                       <span className="text-ink">
                         {pace.thisWeekCount} / {pace.weekTarget} 回
                       </span>
@@ -174,7 +174,7 @@ export default function StoreDouhanPacePage() {
                   {/* Month progress */}
                   <div>
                     <div className="flex items-center justify-between text-[10px] mb-0.5">
-                      <span className="text-ink-muted flex items-center gap-1">
+                      <span className="text-ink-mute flex items-center gap-1">
                         <Calendar size={9} />
                         今月
                       </span>

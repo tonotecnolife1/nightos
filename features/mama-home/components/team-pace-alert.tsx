@@ -40,7 +40,7 @@ export function TeamPaceAlert({ paceList }: Props) {
                   ミーティング注意: {risky.map((r) => r.castName).join("・")}
                   さん
                 </div>
-                <div className="text-[10px] text-ink-secondary mt-0.5">
+                <div className="text-[10px] text-ink-soft mt-0.5">
                   同伴月7回未達の見込み。至急フォローを
                 </div>
               </>
@@ -49,13 +49,13 @@ export function TeamPaceAlert({ paceList }: Props) {
                 <div className="text-body-sm font-medium text-amber">
                   ペース遅れ: {behind.map((r) => r.castName).join("・")}さん
                 </div>
-                <div className="text-[10px] text-ink-secondary mt-0.5">
+                <div className="text-[10px] text-ink-soft mt-0.5">
                   同伴ペース不足。声かけのタイミング
                 </div>
               </>
             )}
           </div>
-          <ChevronRight size={14} className="text-ink-muted shrink-0" />
+          <ChevronRight size={14} className="text-ink-mute shrink-0" />
         </div>
       </Card>
     </Link>

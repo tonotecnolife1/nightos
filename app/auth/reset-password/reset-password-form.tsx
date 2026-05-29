@@ -27,7 +27,7 @@ export default function ResetPasswordForm() {
             <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
               再設定メールを送りました
             </h1>
-            <p className="mt-1.5 text-body-sm text-ink-secondary">
+            <p className="mt-1.5 text-body-sm text-ink-soft">
               リンクをタップして新しいパスワードを設定してください
             </p>
           </div>
@@ -38,10 +38,10 @@ export default function ResetPasswordForm() {
               <p className="text-body-md text-ink">
                 <span className="font-medium">{submittedEmail}</span>
               </p>
-              <p className="text-body-sm text-ink-secondary leading-relaxed">
+              <p className="text-body-sm text-ink-soft leading-relaxed">
                 登録されているアドレスであれば、パスワード再設定用のリンクをお送りします。
               </p>
-              <p className="text-[11px] text-ink-muted">
+              <p className="text-[11px] text-ink-mute">
                 届かない場合は迷惑メール / プロモーションタブも確認してください。
               </p>
             </div>
@@ -64,7 +64,7 @@ export default function ResetPasswordForm() {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             パスワード再設定
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <p className="mt-1.5 text-body-sm text-ink-soft">
             登録メールアドレスに再設定リンクをお送りします
           </p>
         </div>
@@ -74,7 +74,7 @@ export default function ResetPasswordForm() {
         <div className="max-w-sm mx-auto flex flex-col gap-4">
           <form action={handleSubmit} className="space-y-3">
             <label className="block">
-              <span className="text-body-sm text-ink-secondary mb-1.5 block px-1">
+              <span className="text-body-sm text-ink-soft mb-1.5 block px-1">
                 メールアドレス
               </span>
               <input
@@ -100,7 +100,7 @@ export default function ResetPasswordForm() {
             )}
           </form>
 
-          <p className="text-body-sm text-ink-secondary text-center">
+          <p className="text-body-sm text-ink-soft text-center">
             <Link
               href="/auth/login"
               className="text-blush-deep underline-offset-2 hover:underline"

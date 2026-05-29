@@ -35,7 +35,7 @@ export function ChatLimitBanner() {
               <div className="text-body-md font-semibold text-ink">
                 今日の無料チャット回数に達しました
               </div>
-              <p className="text-body-sm text-ink-secondary mt-1">
+              <p className="text-body-sm text-ink-soft mt-1">
                 1日{CHAT_FREE_LIMIT}回まで無料でご利用いただけます。
                 明日にリセットされます。
               </p>
@@ -57,7 +57,7 @@ export function ChatLimitBanner() {
     return (
       <div className="px-4 py-2 flex items-center justify-center gap-2 bg-pearl-warm border-b border-pearl-soft">
         <AlertCircle size={12} className="text-amber" />
-        <span className="text-label-sm text-ink-secondary">
+        <span className="text-label-sm text-ink-soft">
           本日の残りチャット: {usage.remaining} / {CHAT_FREE_LIMIT}回
         </span>
       </div>
@@ -67,7 +67,7 @@ export function ChatLimitBanner() {
   return (
     <div className="px-4 py-1.5 flex items-center justify-center gap-2 bg-pearl-warm border-b border-pearl-soft">
       <Sparkles size={10} className="text-amethyst-dark" />
-      <span className="text-label-sm text-ink-muted">
+      <span className="text-label-sm text-ink-mute">
         無料チャット: {usage.remaining}回 残り
       </span>
     </div>

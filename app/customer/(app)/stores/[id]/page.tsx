@@ -104,12 +104,12 @@ export default async function CustomerStoreDetailPage({
           <h2 className="relative font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5 pl-3.5"><span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
             <Wine size={16} className="text-roseGold-dark" />
             キープボトル
-            <span className="text-label-sm text-ink-muted">
+            <span className="text-label-sm text-ink-mute">
               {store.bottles.length}本
             </span>
           </h2>
           {store.bottles.length === 0 ? (
-            <Card className="p-4 text-center text-body-sm text-ink-secondary">
+            <Card className="p-4 text-center text-body-sm text-ink-soft">
               この店舗にキープボトルはありません
             </Card>
           ) : (
@@ -125,7 +125,7 @@ export default async function CustomerStoreDetailPage({
                     <span className="text-body-md font-semibold text-ink">
                       {b.brand}
                     </span>
-                    <span className="text-body-sm text-ink-secondary">
+                    <span className="text-body-sm text-ink-soft">
                       残 {formatBottleRemainingPct(
                         b.remaining_glasses,
                         b.total_glasses,
@@ -169,14 +169,14 @@ export default async function CustomerStoreDetailPage({
           )}
 
           {activeCoupons.length === 0 && (
-            <Card className="p-4 text-center text-body-sm text-ink-secondary">
+            <Card className="p-4 text-center text-body-sm text-ink-soft">
               この店舗で使えるクーポンはありません
             </Card>
           )}
 
           {usedCoupons.length > 0 && (
             <div className="space-y-2 mt-3">
-              <h3 className="text-label-md text-ink-secondary font-medium">
+              <h3 className="text-label-md text-ink-soft font-medium">
                 利用済み
               </h3>
               {usedCoupons.map((coupon) => (
@@ -188,7 +188,7 @@ export default async function CustomerStoreDetailPage({
 
         {/* Last visit */}
         {store.last_visit && (
-          <div className="text-label-sm text-ink-muted text-center">
+          <div className="text-label-sm text-ink-mute text-center">
             最終来店:{" "}
             {new Date(store.last_visit).toLocaleDateString("ja-JP")}
           </div>
@@ -219,7 +219,7 @@ function RankCard({ rank }: { rank: CustomerRank }) {
             <div className={`text-display-sm font-semibold ${colors.text}`}>
               {rank.label}ランク
             </div>
-            <div className={`text-label-sm ${rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl/80" : "text-ink-secondary"}`}>
+            <div className={`text-label-sm ${rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl/80" : "text-ink-soft"}`}>
               来店 {rank.visitCount}回
             </div>
           </div>
@@ -228,7 +228,7 @@ function RankCard({ rank }: { rank: CustomerRank }) {
       {rank.nextTierLabel && (
         <div>
           <div className="flex items-center justify-between text-label-sm mb-1">
-            <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl/80" : "text-ink-secondary"}>
+            <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl/80" : "text-ink-soft"}>
               次のランク: {rank.nextTierLabel}
             </span>
             <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl" : "text-ink"}>
@@ -272,13 +272,13 @@ function CouponCard({ coupon, isUsed }: { coupon: Coupon; isUsed?: boolean }) {
               {coupon.title}
             </span>
             {isUsed && (
-              <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-pearl-soft text-ink-muted text-[10px]">
+              <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-pearl-soft text-ink-mute text-[10px]">
                 <Check size={8} />
                 利用済
               </span>
             )}
           </div>
-          <div className="text-label-sm text-ink-muted flex items-center gap-1">
+          <div className="text-label-sm text-ink-mute flex items-center gap-1">
             <Clock size={9} />
             〜{coupon.valid_until}
             <span className="ml-1 font-mono text-[10px] bg-pearl-soft px-1.5 rounded">

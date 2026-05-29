@@ -108,13 +108,13 @@ export default async function CustomerHomePage() {
                 )}
               </div>
               <div className="flex-1">
-                <div className="text-[11px] text-ink-secondary">
+                <div className="text-[11px] text-ink-soft">
                   {isDiamond ? "ダイヤモンド会員" : "プラチナ会員"}
                 </div>
                 <div className="font-display text-[20px] leading-tight text-ink">
                   {highestRank.rank.emoji} {highestRank.rank.label}
                 </div>
-                <div className="text-body-sm text-ink-secondary mt-0.5">
+                <div className="text-body-sm text-ink-soft mt-0.5">
                   全{overviews.length}店舗で特別なおもてなしを受けられます
                 </div>
               </div>
@@ -135,7 +135,7 @@ export default async function CustomerHomePage() {
             label="総来店"
             value={totalVisits}
             unit="回"
-            icon={<Calendar size={12} className="text-ink-secondary" />}
+            icon={<Calendar size={12} className="text-ink-soft" />}
           />
           <StatCard
             label="クーポン"
@@ -219,11 +219,11 @@ export default async function CustomerHomePage() {
                         <div className="text-body-sm font-semibold text-ink truncate">
                           {c.title}
                         </div>
-                        <div className="text-label-sm text-ink-muted">
+                        <div className="text-label-sm text-ink-mute">
                           {c.store_name} · 〜{c.valid_until}
                         </div>
                       </div>
-                      <ChevronRight size={14} className="text-ink-muted shrink-0" />
+                      <ChevronRight size={14} className="text-ink-mute shrink-0" />
                     </div>
                   </Card>
                 </Link>
@@ -263,7 +263,7 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
               {o.store_name}
             </h3>
             {o.nomination_cast && (
-              <div className="flex items-center gap-1 mt-0.5 text-label-sm text-ink-secondary">
+              <div className="flex items-center gap-1 mt-0.5 text-label-sm text-ink-soft">
                 <User size={11} />
                 担当: {o.nomination_cast}
               </div>
@@ -275,7 +275,7 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
             >
               {o.rank.emoji} {o.rank.label}
             </span>
-            <ChevronRight size={14} className="text-ink-muted" />
+            <ChevronRight size={14} className="text-ink-mute" />
           </div>
         </div>
 
@@ -284,23 +284,23 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
             <div className="font-display text-body-md text-ink">
               {o.visit_count}
             </div>
-            <div className="text-[9px] text-ink-muted">来店</div>
+            <div className="text-[9px] text-ink-mute">来店</div>
           </div>
           <div className="rounded-btn bg-pearl-soft py-1.5">
             <div className="font-display text-body-md text-roseGold-dark">
               {o.bottles.length}
             </div>
-            <div className="text-[9px] text-ink-muted">ボトル</div>
+            <div className="text-[9px] text-ink-mute">ボトル</div>
           </div>
           <div className="rounded-btn bg-pearl-soft py-1.5">
             <div className="font-display text-body-md text-amethyst-dark">
               {activeCouponCount}
             </div>
-            <div className="text-[9px] text-ink-muted">クーポン</div>
+            <div className="text-[9px] text-ink-mute">クーポン</div>
           </div>
           <div className="rounded-btn bg-pearl-soft py-1.5">
             <div className="text-[10px]">{o.rank.emoji}</div>
-            <div className="text-[9px] text-ink-muted">{o.rank.label}</div>
+            <div className="text-[9px] text-ink-mute">{o.rank.label}</div>
           </div>
         </div>
 
@@ -313,7 +313,7 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
                 style={{ width: `${Math.round(o.rank.progress * 100)}%` }}
               />
             </div>
-            <div className="flex justify-between text-[9px] text-ink-muted">
+            <div className="flex justify-between text-[9px] text-ink-mute">
               <span>{o.rank.label}</span>
               <span>{Math.round(o.rank.progress * 100)}% → {o.rank.nextTierLabel}</span>
             </div>
@@ -321,7 +321,7 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
         )}
 
         {o.bottles.length > 0 && (
-          <div className="flex items-center gap-2 text-label-sm text-ink-secondary overflow-hidden">
+          <div className="flex items-center gap-2 text-label-sm text-ink-soft overflow-hidden">
             <Wine size={12} className="text-roseGold-dark shrink-0" />
             <span className="truncate">
               {o.bottles.map((b) => b.brand).join(" · ")}

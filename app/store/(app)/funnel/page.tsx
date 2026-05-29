@@ -110,13 +110,13 @@ export default function StoreFunnelPage() {
 
           <Card className="p-3 grid grid-cols-2 gap-3 text-center">
             <div>
-              <div className="text-[10px] text-ink-muted">担当転換率</div>
+              <div className="text-[10px] text-ink-mute">担当転換率</div>
               <div className="text-display-sm font-display text-roseGold-dark">
                 {Math.round(overall.assignedRate * 100)}%
               </div>
             </div>
             <div>
-              <div className="text-[10px] text-ink-muted">LINE交換率</div>
+              <div className="text-[10px] text-ink-mute">LINE交換率</div>
               <div className="text-display-sm font-display text-amethyst-dark">
                 {Math.round(overall.lineExchangedRate * 100)}%
               </div>
@@ -134,7 +134,7 @@ export default function StoreFunnelPage() {
             <Card key={value} className="p-3 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-body-sm font-medium text-ink">{label}</span>
-                <span className="text-[10px] text-ink-muted">
+                <span className="text-[10px] text-ink-mute">
                   計 {total}人 / LINE {lineEx}人
                   {total > 0 && (
                     <> ({Math.round((lineEx / total) * 100)}%)</>
@@ -180,13 +180,13 @@ export default function StoreFunnelPage() {
             <div className="space-y-1.5">
               {topReferrers.map(({ customer, count }, i) => (
                 <Card key={customer.id} className="p-2.5 flex items-center gap-3">
-                  <span className="text-[11px] font-display text-ink-muted w-4 shrink-0 text-center">
+                  <span className="text-[11px] font-display text-ink-mute w-4 shrink-0 text-center">
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
                     <span className="text-body-sm text-ink">{customer.name}さま</span>
                     {customer.job && (
-                      <span className="ml-1.5 text-[10px] text-ink-muted">
+                      <span className="ml-1.5 text-[10px] text-ink-mute">
                         {customer.job}
                       </span>
                     )}
@@ -200,7 +200,7 @@ export default function StoreFunnelPage() {
                 </Card>
               ))}
             </div>
-            <p className="text-[10px] text-ink-muted px-0.5">
+            <p className="text-[10px] text-ink-mute px-0.5">
               お連れ様を多くご紹介いただいているお客様。特別なフォローで関係を深めましょう。
             </p>
           </section>
@@ -218,7 +218,7 @@ export default function StoreFunnelPage() {
                 <span className="text-body-sm font-medium text-ink">
                   {cast.name}さん
                 </span>
-                <span className="text-[10px] text-ink-muted">
+                <span className="text-[10px] text-ink-mute">
                   担当 {stats.assigned + stats.lineExchanged} → LINE{" "}
                   {stats.lineExchanged}
                   {stats.assigned + stats.lineExchanged > 0 && (
@@ -287,11 +287,11 @@ export default function StoreFunnelPage() {
                     <span className="text-body-sm text-ink truncate">
                       {c.name}さま
                     </span>
-                    <span className="text-[10px] text-ink-muted truncate">
+                    <span className="text-[10px] text-ink-mute truncate">
                       → {assignedCast?.name ?? "—"}さん
                     </span>
                   </div>
-                  <span className="text-[10px] text-ink-muted shrink-0">
+                  <span className="text-[10px] text-ink-mute shrink-0">
                     {formatDate(c.line_exchanged_at!)}
                   </span>
                 </Card>

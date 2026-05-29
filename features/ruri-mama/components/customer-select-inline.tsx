@@ -51,7 +51,7 @@ export function CustomerSelectInline({
               : "お客様を選択してください"}
           </div>
           {selected && (
-            <div className="text-[10px] text-ink-muted truncate">
+            <div className="text-[10px] text-ink-mute truncate">
               {selected.job ?? "—"} ·{" "}
               {selected.category === "vip"
                 ? "VIP"
@@ -72,13 +72,13 @@ export function CustomerSelectInline({
             aria-label="クリア"
             className="p-1 rounded-full hover:bg-pearl-soft"
           >
-            <X size={12} className="text-ink-muted" />
+            <X size={12} className="text-ink-mute" />
           </button>
         )}
         <ChevronDown
           size={14}
           className={cn(
-            "text-ink-muted transition-transform shrink-0",
+            "text-ink-mute transition-transform shrink-0",
             open && "rotate-180",
           )}
         />
@@ -93,7 +93,7 @@ export function CustomerSelectInline({
               onSelect(undefined);
               setOpen(false);
             }}
-            className="w-full text-left px-3 py-2 hover:bg-pearl-soft text-body-sm text-ink-secondary"
+            className="w-full text-left px-3 py-2 hover:bg-pearl-soft text-body-sm text-ink-soft"
           >
             指定なしで相談する
           </button>
@@ -117,12 +117,12 @@ export function CustomerSelectInline({
                     {formatCustomerName(c.name)}
                   </span>
                   {helpName && (
-                    <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-champagne-soft text-ink-secondary">
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-champagne-soft text-ink-soft">
                       {helpName}担当
                     </span>
                   )}
                 </div>
-                <div className="text-[10px] text-ink-muted">
+                <div className="text-[10px] text-ink-mute">
                   {c.job ?? "—"} ·{" "}
                   {c.category === "vip"
                     ? "VIP"

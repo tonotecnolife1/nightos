@@ -22,7 +22,7 @@ export function RefineDirectionPicker({ onPick, onCancel }: Props) {
         <button
           type="button"
           onClick={onCancel}
-          className="p-0.5 text-ink-muted hover:text-ink-secondary"
+          className="p-0.5 text-ink-mute hover:text-ink-soft"
           aria-label="キャンセル"
         >
           <X size={14} />

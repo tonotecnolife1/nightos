@@ -76,7 +76,7 @@ export default async function MamaTeamCastDetailPage({
         </div>
 
         <Card className="p-3 flex items-center justify-between">
-          <span className="text-body-sm text-ink-secondary">連絡達成率</span>
+          <span className="text-body-sm text-ink-soft">連絡達成率</span>
           <span className="text-body-md text-ink font-medium">
             {Math.round(stats.monthly.followRate * 100)}%
           </span>
@@ -101,24 +101,24 @@ export default async function MamaTeamCastDetailPage({
               <div className="text-body-sm font-medium text-ink">
                 指導ノートを開く
               </div>
-              <div className="text-[10px] text-ink-muted mt-0.5">
+              <div className="text-[10px] text-ink-mute mt-0.5">
                 チャットで指導メモを送る
               </div>
             </div>
           </div>
-          <ChevronRight size={14} className="text-ink-muted shrink-0" />
+          <ChevronRight size={14} className="text-ink-mute shrink-0" />
         </Link>
 
         {/* Customers */}
         <section className="space-y-2">
           <div className="flex items-center justify-between">
             <h2 className="text-display-sm text-ink">担当のお客様</h2>
-            <span className="text-label-sm text-ink-muted">
+            <span className="text-label-sm text-ink-mute">
               {castCustomers.length}人
             </span>
           </div>
           {castCustomers.length === 0 ? (
-            <Card className="p-4 text-center text-body-sm text-ink-muted">
+            <Card className="p-4 text-center text-body-sm text-ink-mute">
               担当しているお客様はいません
             </Card>
           ) : (
@@ -130,14 +130,14 @@ export default async function MamaTeamCastDetailPage({
               >
                 <Card className="p-3 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-pearl-soft flex items-center justify-center shrink-0">
-                    <User size={14} className="text-ink-secondary" />
+                    <User size={14} className="text-ink-soft" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline justify-between">
                       <span className="text-body-sm font-medium text-ink truncate">
                         {formatCustomerName(c.name)}
                       </span>
-                      <span className="text-[10px] text-ink-muted shrink-0 ml-2">
+                      <span className="text-[10px] text-ink-mute shrink-0 ml-2">
                         {c.category === "vip"
                           ? "VIP"
                           : c.category === "new"
@@ -146,12 +146,12 @@ export default async function MamaTeamCastDetailPage({
                       </span>
                     </div>
                     {c.job && (
-                      <div className="text-[10px] text-ink-muted truncate">
+                      <div className="text-[10px] text-ink-mute truncate">
                         {c.job}
                       </div>
                     )}
                   </div>
-                  <ChevronRight size={14} className="text-ink-muted" />
+                  <ChevronRight size={14} className="text-ink-mute" />
                 </Card>
               </Link>
             ))
@@ -167,7 +167,7 @@ export default async function MamaTeamCastDetailPage({
         <div className="text-center pt-2">
           <Link
             href={`/cast/customers`}
-            className="inline-flex items-center gap-1 text-[11px] text-ink-muted underline underline-offset-2"
+            className="inline-flex items-center gap-1 text-[11px] text-ink-mute underline underline-offset-2"
           >
             <Calendar size={10} />
             詳細な顧客カルテはキャスト画面から閲覧

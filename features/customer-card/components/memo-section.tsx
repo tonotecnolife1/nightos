@@ -73,7 +73,7 @@ export function MemoSection({ customer, memo }: Props) {
                 type="button"
                 onClick={cancel}
                 disabled={pending}
-                className="flex items-center gap-1 h-9 px-3 rounded-btn text-label-sm text-ink-secondary bg-pearl-soft hover:bg-pearl-warm"
+                className="flex items-center gap-1 h-9 px-3 rounded-btn text-label-sm text-ink-soft bg-pearl-soft hover:bg-pearl-warm"
               >
                 <X size={14} />
                 キャンセル
@@ -138,7 +138,7 @@ function MemoField({
         />
       ) : (
         <div className="text-body-md text-ink leading-relaxed min-h-[1.5rem] max-h-32 overflow-y-auto whitespace-pre-wrap break-words">
-          {value || <span className="text-ink-muted">未記入</span>}
+          {value || <span className="text-ink-mute">未記入</span>}
         </div>
       )}
     </div>

@@ -20,7 +20,7 @@ export function TeamOverviewBanner({ teamCasts, teamCustomerCount }: Props) {
           className="absolute inset-0 bg-[radial-gradient(400px_160px_at_120%_-20%,rgba(255,255,255,0.35),transparent_60%)]"
         />
         <div className="relative">
-          <div className="flex items-center gap-2 mb-2 text-[11px] text-ink-secondary">
+          <div className="flex items-center gap-2 mb-2 text-[11px] text-ink-soft">
             <Crown size={12} />
             メンバーの状況
           </div>
@@ -29,15 +29,15 @@ export function TeamOverviewBanner({ teamCasts, teamCustomerCount }: Props) {
               <div className="text-display-sm font-display text-ink">
                 メンバー {teamCasts.length}人
               </div>
-              <div className="text-body-sm text-ink-secondary mt-0.5">
+              <div className="text-body-sm text-ink-soft mt-0.5">
                 {teamCustomerCount}人のお客様を担当
               </div>
             </div>
-            <ChevronRight size={18} className="text-ink-muted" />
+            <ChevronRight size={18} className="text-ink-mute" />
           </div>
 
           <div className="mt-3 pt-3 border-t border-ink/[0.08]">
-            <div className="text-[10px] text-ink-muted flex items-center gap-1">
+            <div className="text-[10px] text-ink-mute flex items-center gap-1">
               <TrendingUp size={10} />
               今月の売上合計
             </div>

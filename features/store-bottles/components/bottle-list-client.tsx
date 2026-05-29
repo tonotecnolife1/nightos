@@ -63,7 +63,7 @@ export function BottleListClient({ bottles: initial }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <span className="text-label-sm text-ink-muted">
+        <span className="text-label-sm text-ink-mute">
           {bottles.length}本のキープボトル
         </span>
         <div className="flex items-center gap-2">
@@ -83,7 +83,7 @@ export function BottleListClient({ bottles: initial }: Props) {
       </div>
 
       {bottles.length === 0 ? (
-        <Card className="p-6 text-center text-body-sm text-ink-secondary">
+        <Card className="p-6 text-center text-body-sm text-ink-soft">
           キープボトルがまだありません
         </Card>
       ) : (
@@ -116,7 +116,7 @@ export function BottleListClient({ bottles: initial }: Props) {
                         </span>
                       )}
                     </div>
-                    <div className="text-label-sm text-ink-muted">
+                    <div className="text-label-sm text-ink-mute">
                       {b.customer_name}
                     </div>
                   </div>

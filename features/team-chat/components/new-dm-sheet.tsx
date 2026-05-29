@@ -96,7 +96,7 @@ export function NewDmSheet({ storeCasts }: Props) {
               <button
                 type="button"
                 onClick={closeSheet}
-                className="w-8 h-8 rounded-full text-ink-muted hover:bg-pearl-soft flex items-center justify-center"
+                className="w-8 h-8 rounded-full text-ink-mute hover:bg-pearl-soft flex items-center justify-center"
                 aria-label="閉じる"
               >
                 <X size={16} />
@@ -112,7 +112,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "dm"
                     ? "bg-roseGold-deep text-pearl-light border-amethyst"
-                    : "bg-transparent text-ink-secondary border-ink/[0.12] hover:border-ink/20",
+                    : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
                 <MessageCircle size={13} />
@@ -125,7 +125,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "group"
                     ? "bg-roseGold-deep text-pearl-light border-amethyst"
-                    : "bg-transparent text-ink-secondary border-ink/[0.12] hover:border-ink/20",
+                    : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
                 <Users size={13} />
@@ -142,7 +142,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
                   maxLength={40}
-                  className="w-full h-10 px-3 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-amethyst/40 transition"
+                  className="w-full h-10 px-3 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-roseGold-deep transition"
                 />
               </div>
             )}
@@ -152,7 +152,7 @@ export function NewDmSheet({ storeCasts }: Props) {
             {/* Cast list */}
             <div className="overflow-y-auto max-h-[50vh]">
               {storeCasts.length === 0 ? (
-                <p className="px-5 py-8 text-center text-body-sm text-ink-muted">
+                <p className="px-5 py-8 text-center text-body-sm text-ink-mute">
                   同じ店舗のキャストが見つかりません
                 </p>
               ) : (

@@ -37,7 +37,7 @@ export default function SignupOwnerForm() {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             新規登録（店舗オーナー）
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <p className="mt-1.5 text-body-sm text-ink-soft">
             新しい店舗を開く。登録後に招待コードを発行
           </p>
         </div>
@@ -47,7 +47,7 @@ export default function SignupOwnerForm() {
         <div className="max-w-sm mx-auto flex flex-col gap-5">
           <form action={handleSubmit} className="space-y-4">
             <section className="space-y-2">
-              <div className="text-body-sm text-ink-secondary px-1">業態</div>
+              <div className="text-body-sm text-ink-soft px-1">業態</div>
               <div className="grid grid-cols-2 gap-2">
                 <Choice
                   active={venueType === "cabaret"}
@@ -122,7 +122,7 @@ export default function SignupOwnerForm() {
             {error && <p className="text-[12px] text-[#c2575b] text-center leading-relaxed">{error}</p>}
           </form>
 
-          <p className="text-body-sm text-ink-secondary text-center">
+          <p className="text-body-sm text-ink-soft text-center">
             <Link href="/store/auth/signup-staff" className="text-blush-deep underline-offset-2 hover:underline">
               既存の店舗にスタッフとして参加
             </Link>
@@ -132,7 +132,7 @@ export default function SignupOwnerForm() {
             </Link>
           </p>
 
-          <p className="text-[11px] text-ink-muted text-center leading-relaxed">
+          <p className="text-[11px] text-ink-mute text-center leading-relaxed">
             登録すると{" "}
             <Link href="/legal/terms" className="underline underline-offset-2">利用規約</Link>
             {" "}と{" "}
@@ -149,8 +149,8 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   return (
     <label className="block">
       <div className="flex items-baseline justify-between mb-1.5 px-1">
-        <span className="text-body-sm text-ink-secondary">{label}</span>
-        {hint && <span className="text-[11px] text-ink-muted">{hint}</span>}
+        <span className="text-body-sm text-ink-soft">{label}</span>
+        {hint && <span className="text-[11px] text-ink-mute">{hint}</span>}
       </div>
       {children}
     </label>

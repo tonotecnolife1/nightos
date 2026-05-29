@@ -75,7 +75,7 @@ export default async function MamaStatsPage() {
         <section>
           <div className="flex items-baseline justify-between mb-2">
             <h2 className="text-display-sm text-ink">再来店率の動き</h2>
-            <span className="text-label-sm text-ink-muted">この1ヶ月</span>
+            <span className="text-label-sm text-ink-mute">この1ヶ月</span>
           </div>
           <Card className="p-4">
             <CastRepeatTrend points={data.repeatTrend} />
@@ -84,7 +84,7 @@ export default async function MamaStatsPage() {
 
         <section>
           <div className="flex items-center gap-2 mb-3">
-            <Calendar size={16} className="text-ink-secondary" />
+            <Calendar size={16} className="text-ink-soft" />
             <h2 className="text-display-sm text-ink">年間成績</h2>
           </div>
           <div className="grid grid-cols-2 gap-2.5">

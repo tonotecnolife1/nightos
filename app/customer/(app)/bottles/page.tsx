@@ -40,9 +40,9 @@ export default async function CustomerBottlesPage() {
           storeGroups.map((group) => (
             <section key={group.storeName} className="space-y-2">
               <div className="flex items-center gap-2 mb-1">
-                <Store size={14} className="text-ink-secondary" />
+                <Store size={14} className="text-ink-soft" />
                 <h2 className="text-label-md text-ink font-medium">{group.storeName}</h2>
-                <span className="text-label-sm text-ink-muted">{group.bottles.length}本</span>
+                <span className="text-label-sm text-ink-mute">{group.bottles.length}本</span>
               </div>
               {group.bottles.map((bv) => (
                 <BottleCard key={bv.bottle.id} bv={bv} />

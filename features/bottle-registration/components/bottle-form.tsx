@@ -79,11 +79,11 @@ export function BottleForm({ customers, initialCustomerId }: Props) {
         unit="%"
         onChange={setRemainingPct}
       />
-      <p className="text-[10px] text-ink-muted -mt-3">
+      <p className="text-[10px] text-ink-mute -mt-3">
         新ボトル = 100% / 半分 = 50% / 残りわずか = 10〜20%
       </p>
 
-      <div className="text-label-sm text-ink-muted">
+      <div className="text-label-sm text-ink-mute">
         キープ日: 今日（{new Date().toLocaleDateString("ja-JP")}）
       </div>
 

@@ -49,12 +49,12 @@ export function AiUsageSummary() {
         <div>
           <div className="text-display-sm font-display text-ink leading-none">
             {stats.total}
-            <span className="text-[11px] text-ink-muted ml-1">回相談</span>
+            <span className="text-[11px] text-ink-mute ml-1">回相談</span>
           </div>
         </div>
         {stats.topStyle && (
           <div className="text-right">
-            <div className="text-[10px] text-ink-muted">よく選ぶスタイル</div>
+            <div className="text-[10px] text-ink-mute">よく選ぶスタイル</div>
             <div className="text-body-sm text-amethyst-dark font-medium">
               {STYLE_LABELS[stats.topStyle]}
             </div>

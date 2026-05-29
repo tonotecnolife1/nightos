@@ -10,7 +10,7 @@ export function RepeatTrend({ points }: Props) {
       {points.map((p) => (
         <div key={p.week}>
           <div className="flex items-center justify-between text-label-sm mb-1">
-            <span className="text-ink-secondary">{p.label}</span>
+            <span className="text-ink-soft">{p.label}</span>
             <span className="text-ink">
               あかり {Math.round(p.cast1 * 100)}% / ゆき{" "}
               {Math.round(p.cast2 * 100)}%

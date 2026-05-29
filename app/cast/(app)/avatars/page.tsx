@@ -36,7 +36,7 @@ export default function AvatarPickerPage() {
         showBack
       />
       <div className="px-5 pt-4 pb-8 space-y-3">
-        <p className="text-body-sm text-ink-secondary leading-relaxed">
+        <p className="text-body-sm text-ink-soft leading-relaxed">
           アバターはさくらママのチャット画面・テンプレート画面・顧客カルテで
           使われます。タップした瞬間に反映されて、この端末に保存されます。
         </p>
@@ -76,7 +76,7 @@ export default function AvatarPickerPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-body-sm text-ink-secondary leading-relaxed">
+                    <p className="text-body-sm text-ink-soft leading-relaxed">
                       {variant.description}
                     </p>
                   </div>
@@ -87,19 +87,19 @@ export default function AvatarPickerPage() {
                   <div className="mt-3 pt-3 border-t border-amethyst-border flex items-center justify-around">
                     <div className="flex flex-col items-center gap-1">
                       <RuriMamaAvatar variant={variant.id} size={32} />
-                      <span className="text-[10px] text-ink-muted">
+                      <span className="text-[10px] text-ink-mute">
                         メッセージ
                       </span>
                     </div>
                     <div className="flex flex-col items-center gap-1">
                       <RuriMamaAvatar variant={variant.id} size={44} />
-                      <span className="text-[10px] text-ink-muted">
+                      <span className="text-[10px] text-ink-mute">
                         ヘッダー
                       </span>
                     </div>
                     <div className="flex flex-col items-center gap-1">
                       <RuriMamaAvatar variant={variant.id} size={36} />
-                      <span className="text-[10px] text-ink-muted">
+                      <span className="text-[10px] text-ink-mute">
                         テンプレ
                       </span>
                     </div>
@@ -110,7 +110,7 @@ export default function AvatarPickerPage() {
           })}
         </div>
 
-        <div className="mt-6 rounded-card bg-pearl-warm border border-pearl-soft p-4 text-body-sm text-ink-secondary leading-relaxed">
+        <div className="mt-6 rounded-card bg-pearl-warm border border-pearl-soft p-4 text-body-sm text-ink-soft leading-relaxed">
           <p className="font-semibold text-ink mb-1">実写を使いたい場合</p>
           <p>
             お好きな写真を <code className="font-mono text-xs">public/</code> に置いて、

@@ -154,7 +154,7 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
       {/* ── Scheduled ── */}
       {scheduled.length > 0 && (
         <div className="space-y-1.5">
-          <h3 className="text-[11px] text-ink-secondary font-medium px-0.5">
+          <h3 className="text-[11px] text-ink-soft font-medium px-0.5">
             予定（{scheduled.length}件）
           </h3>
           {scheduled.map((e) => (
@@ -176,7 +176,7 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
           <button
             type="button"
             onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-1 text-[11px] text-ink-secondary font-medium px-0.5"
+            className="flex items-center gap-1 text-[11px] text-ink-soft font-medium px-0.5"
           >
             完了（{completed.length}件）
             {showAll ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
@@ -194,7 +194,7 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
             <button
               type="button"
               onClick={() => setShowAll(true)}
-              className="text-[10px] text-ink-secondary underline-offset-2 hover:underline px-0.5"
+              className="text-[10px] text-ink-soft underline-offset-2 hover:underline px-0.5"
             >
               他{completed.length - 2}件を表示
             </button>
@@ -205,7 +205,7 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
       {/* ── Cancelled ── */}
       {cancelled.length > 0 && (
         <div className="space-y-1.5">
-          <h3 className="text-[11px] text-ink-secondary font-medium px-0.5">
+          <h3 className="text-[11px] text-ink-soft font-medium px-0.5">
             キャンセル（{cancelled.length}件）
           </h3>
           {cancelled.map((e) => (
@@ -220,7 +220,7 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
       )}
 
       {thisMonth.length === 0 && !showForm && (
-        <div className="text-center py-4 text-body-sm text-ink-muted">
+        <div className="text-center py-4 text-body-sm text-ink-mute">
           今月の同伴はまだありません
         </div>
       )}
@@ -303,21 +303,21 @@ function EntryCard({
             {formatCustomerName(customerName)}
           </span>
         </div>
-        <span className="text-[10px] text-ink-muted shrink-0 ml-2">
+        <span className="text-[10px] text-ink-mute shrink-0 ml-2">
           {dateStr}
         </span>
       </div>
 
       {/* Note */}
       {entry.note && (
-        <p className="text-[10px] text-ink-secondary pl-8 truncate">
+        <p className="text-[10px] text-ink-soft pl-8 truncate">
           {entry.note}
         </p>
       )}
 
       {/* Cancellation reason */}
       {isCancelled && entry.cancellation_reason && (
-        <p className="text-[10px] text-ink-secondary pl-8">
+        <p className="text-[10px] text-ink-soft pl-8">
           <span className="text-[#c2575b] font-medium">理由:</span>{" "}
           {entry.cancellation_reason}
         </p>
@@ -326,7 +326,7 @@ function EntryCard({
       {/* Cancel form (inline) */}
       {showCancelForm && (
         <div className="pl-8 space-y-1.5 pt-1 border-t border-ink/[0.06]">
-          <div className="text-[10px] text-ink-secondary font-medium">
+          <div className="text-[10px] text-ink-soft font-medium">
             キャンセル理由（必須）
           </div>
           <div className="flex flex-wrap gap-1">
@@ -339,7 +339,7 @@ function EntryCard({
                   "text-[10px] h-6 px-2 rounded-full border transition-all active:scale-95",
                   cancelReason === preset
                     ? "bg-blush-soft text-blush-deep border-blush"
-                    : "bg-pearl text-ink-secondary border-pearl-soft hover:border-ink-muted",
+                    : "bg-pearl text-ink-soft border-pearl-soft hover:border-ink-muted",
                 )}
               >
                 {preset}
@@ -363,7 +363,7 @@ function EntryCard({
                 "h-7 px-3 rounded-full text-[10px] font-medium transition-all active:scale-95",
                 cancelReason.trim()
                   ? "border border-[#c2575b]/40 bg-[#c2575b]/5 text-[#c2575b]"
-                  : "bg-pearl-soft text-ink-muted cursor-not-allowed",
+                  : "bg-pearl-soft text-ink-mute cursor-not-allowed",
               )}
             >
               キャンセル確定
@@ -374,7 +374,7 @@ function EntryCard({
                 setShowCancelForm(false);
                 setCancelReason("");
               }}
-              className="text-[10px] text-ink-muted"
+              className="text-[10px] text-ink-mute"
             >
               戻る
             </button>
@@ -399,7 +399,7 @@ function EntryCard({
             <button
               type="button"
               onClick={() => setShowCancelForm(true)}
-              className="flex items-center gap-0.5 h-6 px-2 rounded-full bg-pearl-soft text-ink-muted text-[10px] font-medium active:scale-[0.97]"
+              className="flex items-center gap-0.5 h-6 px-2 rounded-full bg-pearl-soft text-ink-mute text-[10px] font-medium active:scale-[0.97]"
             >
               キャンセル
             </button>
@@ -408,7 +408,7 @@ function EntryCard({
             <button
               type="button"
               onClick={onRevert}
-              className="text-[10px] text-ink-muted underline underline-offset-2"
+              className="text-[10px] text-ink-mute underline underline-offset-2"
             >
               予定に戻す
             </button>
@@ -426,7 +426,7 @@ function EntryCard({
               <button
                 type="button"
                 onClick={() => setConfirmDelete(false)}
-                className="text-[10px] text-ink-muted"
+                className="text-[10px] text-ink-mute"
               >
                 いいえ
               </button>
@@ -435,7 +435,7 @@ function EntryCard({
             <button
               type="button"
               onClick={() => setConfirmDelete(true)}
-              className="ml-auto text-ink-muted"
+              className="ml-auto text-ink-mute"
             >
               <Trash2 size={11} />
             </button>
@@ -472,7 +472,7 @@ function AddForm({
     <Card className="p-3 space-y-2.5">
       <div className="flex items-center justify-between">
         <h3 className="text-body-sm text-ink font-medium">同伴を登録</h3>
-        <button type="button" onClick={onClose} className="text-ink-muted p-0.5">
+        <button type="button" onClick={onClose} className="text-ink-mute p-0.5">
           <X size={14} />
         </button>
       </div>

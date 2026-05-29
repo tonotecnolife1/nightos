@@ -23,7 +23,7 @@ export default function Error({
         <h2 className="font-display text-[22px] font-medium text-ink">
           ページを読み込めませんでした
         </h2>
-        <p className="text-body-sm text-ink-secondary leading-relaxed">
+        <p className="text-body-sm text-ink-soft leading-relaxed">
           通信状況を確認して、もう一度お試しください。
         </p>
         <button
@@ -34,7 +34,7 @@ export default function Error({
           もう一度試す
         </button>
         {error.digest && (
-          <p className="text-[10px] text-ink-muted pt-3">
+          <p className="text-[10px] text-ink-mute pt-3">
             参照ID: {error.digest}
           </p>
         )}

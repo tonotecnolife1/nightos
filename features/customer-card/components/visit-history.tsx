@@ -19,9 +19,9 @@ export function VisitHistory({ visits, limit = 5 }: Props) {
   return (
     <section className="space-y-2">
       <h3 className="text-display-sm text-ink flex items-center gap-1.5">
-        <Calendar size={16} className="text-ink-secondary" />
+        <Calendar size={16} className="text-ink-soft" />
         来店履歴
-        <span className="text-label-sm text-ink-muted">直近{recent.length}回</span>
+        <span className="text-label-sm text-ink-mute">直近{recent.length}回</span>
       </h3>
 
       <Card className="p-0 overflow-hidden">
@@ -56,7 +56,7 @@ export function VisitHistory({ visits, limit = 5 }: Props) {
                   )}
                 </div>
                 {visit.table_name && (
-                  <div className="text-label-sm text-ink-muted">
+                  <div className="text-label-sm text-ink-mute">
                     テーブル: {visit.table_name}
                   </div>
                 )}
@@ -68,7 +68,7 @@ export function VisitHistory({ visits, limit = 5 }: Props) {
                   指名
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-pearl-soft text-ink-secondary text-label-sm">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-pearl-soft text-ink-soft text-label-sm">
                   <User size={10} />
                   フリー
                 </span>

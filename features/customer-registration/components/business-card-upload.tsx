@@ -167,7 +167,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
       {result && !loading && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-label-sm text-ink-secondary">
+            <span className="text-label-sm text-ink-soft">
               抽出された情報
             </span>
             <span
@@ -179,7 +179,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
               {confidenceBadge.label}
             </span>
             {isStub && (
-              <span className="text-[9px] text-ink-muted">（デモ応答）</span>
+              <span className="text-[9px] text-ink-mute">（デモ応答）</span>
             )}
           </div>
 
@@ -230,11 +230,11 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
 function ResultRow({ label, value }: { label: string; value: string | null }) {
   return (
     <div className="flex gap-2">
-      <span className="text-[10px] text-ink-muted shrink-0 w-16 pt-0.5">
+      <span className="text-[10px] text-ink-mute shrink-0 w-16 pt-0.5">
         {label}
       </span>
       <span className="text-ink flex-1 break-words">
-        {value ?? <span className="text-ink-muted">—</span>}
+        {value ?? <span className="text-ink-mute">—</span>}
       </span>
     </div>
   );

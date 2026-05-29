@@ -43,7 +43,7 @@ export const STATUS_CONFIG: Record<
   dormant: {
     label: "しばらく来てない",
     emoji: "⚪",
-    color: "text-ink-muted bg-pearl-soft border-pearl-soft",
+    color: "text-ink-mute bg-pearl-soft border-pearl-soft",
     sortOrder: 4,
   },
 };

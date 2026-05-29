@@ -23,7 +23,7 @@ export default async function StoreCustomersPage() {
         >
           <div>
             <div className="text-body-sm font-medium text-ink">担当移管</div>
-            <div className="text-[10px] text-ink-muted mt-0.5">
+            <div className="text-[10px] text-ink-mute mt-0.5">
               キャスト間で顧客の担当を引き継ぐ
             </div>
           </div>

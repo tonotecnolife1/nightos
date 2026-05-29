@@ -26,7 +26,7 @@ export default function UpdatePasswordForm({ email }: Props) {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             新しいパスワード
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary truncate">
+          <p className="mt-1.5 text-body-sm text-ink-soft truncate">
             {email} のパスワードを再設定します
           </p>
         </div>
@@ -37,10 +37,10 @@ export default function UpdatePasswordForm({ email }: Props) {
           <form action={handleSubmit} className="space-y-3">
             <label className="block">
               <div className="flex items-baseline justify-between mb-1.5 px-1">
-                <span className="text-body-sm text-ink-secondary">
+                <span className="text-body-sm text-ink-soft">
                   新しいパスワード
                 </span>
-                <span className="text-[11px] text-ink-muted">8文字以上</span>
+                <span className="text-[11px] text-ink-mute">8文字以上</span>
               </div>
               <input
                 type="password"

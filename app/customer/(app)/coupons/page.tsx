@@ -67,7 +67,7 @@ export default async function CustomerCouponsPage() {
         {/* Used — flat list */}
         {used.length > 0 && (
           <section className="space-y-2">
-            <h2 className="text-label-md text-ink-secondary font-medium">
+            <h2 className="text-label-md text-ink-soft font-medium">
               利用済み
             </h2>
             {used.map((coupon) => (
@@ -139,26 +139,26 @@ function CouponCard({
               {coupon.title}
             </span>
             {isUsed && (
-              <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-pearl-soft text-ink-muted text-[10px]">
+              <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-pearl-soft text-ink-mute text-[10px]">
                 <Check size={8} />
                 利用済
               </span>
             )}
           </div>
-          <p className="text-body-sm text-ink-secondary leading-relaxed">
+          <p className="text-body-sm text-ink-soft leading-relaxed">
             {coupon.description}
           </p>
           <div className="flex items-center justify-between mt-2">
-            <div className="text-label-sm text-ink-muted flex items-center gap-1">
+            <div className="text-label-sm text-ink-mute flex items-center gap-1">
               <Clock size={10} />
               {coupon.valid_from} 〜 {coupon.valid_until}
             </div>
-            <span className="font-mono text-label-sm text-ink-muted bg-pearl-soft px-2 py-0.5 rounded">
+            <span className="font-mono text-label-sm text-ink-mute bg-pearl-soft px-2 py-0.5 rounded">
               {coupon.code}
             </span>
           </div>
           {isUsed && (
-            <div className="text-[10px] text-ink-muted mt-1">
+            <div className="text-[10px] text-ink-mute mt-1">
               {coupon.store_name}
             </div>
           )}

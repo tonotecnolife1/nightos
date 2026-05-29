@@ -58,7 +58,7 @@ export default async function CustomerCardPage({
         <div className="flex items-center gap-2 flex-wrap">
           <FunnelBadge stage={customer.funnel_stage ?? "store_only"} />
           {referrer && (
-            <span className="text-[10px] text-ink-muted">
+            <span className="text-[10px] text-ink-mute">
               ご本人: {referrer.name}さま
             </span>
           )}
@@ -74,7 +74,7 @@ export default async function CustomerCardPage({
 
         {/* Manager + change button (club only) */}
         {!isCabaret && (
-          <div className="flex items-center gap-2 flex-wrap text-[11px] text-ink-secondary">
+          <div className="flex items-center gap-2 flex-wrap text-[11px] text-ink-soft">
             <span>
               管理:{" "}
               <span className="text-ink font-medium">

@@ -8,7 +8,7 @@ export function CastRepeatTrend({ points }: Props) {
       {points.map((p) => (
         <div key={p.week}>
           <div className="flex items-center justify-between text-label-sm mb-1">
-            <span className="text-ink-secondary">{p.label}</span>
+            <span className="text-ink-soft">{p.label}</span>
             <span className="text-ink font-medium">
               {Math.round(p.rate * 100)}%
             </span>

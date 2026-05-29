@@ -78,21 +78,21 @@ export function GoalSettingCard({ castId, castName, goal, setterName }: Props) {
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <div className="text-[10px] text-ink-muted">売上</div>
+            <div className="text-[10px] text-ink-mute">売上</div>
             <div className="text-body-sm font-display text-roseGold-dark">
               {formatCurrency(goal.salesGoal)}
             </div>
           </div>
           <div className="text-right">
-            <div className="text-[10px] text-ink-muted">同伴</div>
+            <div className="text-[10px] text-ink-mute">同伴</div>
             <div className="text-body-sm font-display text-amethyst-dark">
               {goal.douhanGoal}回
             </div>
           </div>
           {open ? (
-            <ChevronUp size={14} className="text-ink-muted" />
+            <ChevronUp size={14} className="text-ink-mute" />
           ) : (
-            <ChevronDown size={14} className="text-ink-muted" />
+            <ChevronDown size={14} className="text-ink-mute" />
           )}
         </div>
       </button>
@@ -101,7 +101,7 @@ export function GoalSettingCard({ castId, castName, goal, setterName }: Props) {
       {open && (
         <div className="border-t border-pearl-soft px-3 pb-3 pt-3 space-y-3">
           {goal.note && !open && (
-            <p className="text-[11px] text-ink-secondary">{goal.note}</p>
+            <p className="text-[11px] text-ink-soft">{goal.note}</p>
           )}
 
           <div className="grid grid-cols-2 gap-3">
@@ -156,10 +156,10 @@ export function GoalSettingCard({ castId, castName, goal, setterName }: Props) {
 
       {/* Note preview when collapsed */}
       {!open && goal.note && (
-        <div className="px-3 pb-2.5 text-[11px] text-ink-secondary border-t border-pearl-soft pt-2">
+        <div className="px-3 pb-2.5 text-[11px] text-ink-soft border-t border-pearl-soft pt-2">
           💬 {goal.note}
           {setterName && (
-            <span className="ml-1 text-ink-muted">— {setterName}</span>
+            <span className="ml-1 text-ink-mute">— {setterName}</span>
           )}
         </div>
       )}

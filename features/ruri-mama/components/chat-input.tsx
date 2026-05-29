@@ -189,7 +189,7 @@ export function ChatInput({
             "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-95",
             (text.trim() || images.length > 0) && !disabled
               ? "rose-gradient text-pearl shadow-glow-rose"
-              : "bg-pearl-soft text-ink-muted",
+              : "bg-pearl-soft text-ink-mute",
           )}
           aria-label="送信"
         >

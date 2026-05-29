@@ -74,19 +74,19 @@ export function LineExchangeButton({
             LINE交換済み
           </span>
           {dateStr && (
-            <span className="text-[10px] text-ink-muted ml-auto">
+            <span className="text-[10px] text-ink-mute ml-auto">
               {dateStr}
             </span>
           )}
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-[11px] text-ink-secondary">
+          <p className="text-[11px] text-ink-soft">
             お店に共有済み。これでファネル上位に反映されました✨
           </p>
           <button
             type="button"
             onClick={handleUndo}
-            className="inline-flex items-center gap-0.5 text-[10px] text-ink-muted hover:text-rose underline underline-offset-2 shrink-0 ml-2"
+            className="inline-flex items-center gap-0.5 text-[10px] text-ink-mute hover:text-rose underline underline-offset-2 shrink-0 ml-2"
           >
             <Undo2 size={9} />
             取り消す

@@ -30,7 +30,7 @@ export function StorePermissionBadge() {
         "inline-flex items-center gap-1 px-2 py-0.5 rounded-badge text-[10px] font-medium",
         isOwner
           ? "bg-champagne-dark text-ink"
-          : "bg-champagne text-ink-secondary",
+          : "bg-champagne text-ink-soft",
       )}
     >
       <Icon size={10} />

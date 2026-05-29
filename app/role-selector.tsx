@@ -111,7 +111,7 @@ export function RoleSelector() {
               <button
                 type="button"
                 onClick={() => setStep("venue")}
-                className="self-start text-[12px] text-ink-muted hover:text-ink-secondary mb-1 px-1"
+                className="self-start text-[12px] text-ink-mute hover:text-ink-soft mb-1 px-1"
               >
                 ← 業態選択に戻る
               </button>
@@ -153,7 +153,7 @@ export function RoleSelector() {
             </div>
           )}
 
-          <p className="mt-6 text-[11px] text-ink-muted text-center">
+          <p className="mt-6 text-[11px] text-ink-mute text-center">
             検証版のため、選択に応じて画面が切り替わります
           </p>
         </div>

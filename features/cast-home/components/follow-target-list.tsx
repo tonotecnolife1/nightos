@@ -52,11 +52,11 @@ export function FollowTargetList({ targets }: { targets: FollowTarget[] }) {
             style={{ width: `${pct}%` }}
           />
         </div>
-        <span className="text-[10px] text-ink-muted shrink-0 flex items-center gap-1">
+        <span className="text-[10px] text-ink-mute shrink-0 flex items-center gap-1">
           {allDone ? (
             <PartyPopper size={10} className="text-emerald" />
           ) : (
-            <Check size={10} className={doneCount > 0 ? "text-emerald" : "text-ink-muted"} />
+            <Check size={10} className={doneCount > 0 ? "text-emerald" : "text-ink-mute"} />
           )}
           {doneCount}/{total}
         </span>

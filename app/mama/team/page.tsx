@@ -77,13 +77,13 @@ export default async function MamaTeamPage() {
 
         <div className="grid grid-cols-2 gap-2.5">
           <Card className="p-3 flex items-center justify-between">
-            <span className="text-body-sm text-ink-secondary">お客様合計</span>
+            <span className="text-body-sm text-ink-soft">お客様合計</span>
             <span className="text-body-md text-ink font-medium">
               {teamCustomers.length}人
             </span>
           </Card>
           <Card className="p-3 flex items-center justify-between">
-            <span className="text-body-sm text-ink-secondary">平均リピート</span>
+            <span className="text-body-sm text-ink-soft">平均リピート</span>
             <span className="text-body-md text-ink font-medium">
               {Math.round(avgRepeat * 100)}%
             </span>

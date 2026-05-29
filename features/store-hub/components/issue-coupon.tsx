@@ -63,7 +63,7 @@ export function IssueCoupon({ customers }: Props) {
             className={`flex-1 text-center py-2 rounded-btn text-[10px] font-medium border transition-all active:scale-95 ${
               selectedPreset === i
                 ? "bg-amethyst-muted border-amethyst-border text-amethyst-dark"
-                : "bg-pearl-warm border-pearl-soft text-ink-secondary"
+                : "bg-pearl-warm border-pearl-soft text-ink-soft"
             }`}
           >
             {preset.label}

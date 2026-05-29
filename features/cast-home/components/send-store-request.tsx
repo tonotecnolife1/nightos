@@ -36,7 +36,7 @@ export function SendStoreRequest({ castId, castName }: Props) {
           <span className="text-[11px]">📋</span>
           <span className="text-[11px] font-medium text-ink">店舗へリクエスト</span>
         </div>
-        {open ? <ChevronUp size={12} className="text-ink-muted" /> : <ChevronDown size={12} className="text-ink-muted" />}
+        {open ? <ChevronUp size={12} className="text-ink-mute" /> : <ChevronDown size={12} className="text-ink-mute" />}
       </button>
 
       {open && (
@@ -53,7 +53,7 @@ export function SendStoreRequest({ castId, castName }: Props) {
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="VIPルーム準備、シャンパン用意 など"
                 style={{ fontSize: "13px" }}
-                className="flex-1 h-9 px-3 rounded-full bg-pearl-soft border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-muted"
+                className="flex-1 h-9 px-3 rounded-full bg-pearl-soft border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-mute"
                 onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
               />
               <button

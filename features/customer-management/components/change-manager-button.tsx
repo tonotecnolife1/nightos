@@ -111,7 +111,7 @@ export function ChangeManagerButton({
         onClick={() => setOpen(true)}
         className={cn(
           "inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-[10px] font-medium",
-          "bg-champagne border border-champagne-dark text-ink-secondary hover:bg-champagne-dark active:scale-[0.97]",
+          "bg-champagne border border-champagne-dark text-ink-soft hover:bg-champagne-dark active:scale-[0.97]",
         )}
       >
         <UserCog size={10} />
@@ -137,7 +137,7 @@ export function ChangeManagerButton({
         <div className="text-amber text-body-sm font-medium">
           承認申請を送信しました
         </div>
-        <p className="text-[10px] text-ink-secondary mt-1">
+        <p className="text-[10px] text-ink-soft mt-1">
           店舗オーナーの承認後に反映されます
         </p>
       </Card>
@@ -154,7 +154,7 @@ export function ChangeManagerButton({
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="text-ink-muted p-0.5"
+          className="text-ink-mute p-0.5"
           aria-label="キャンセル"
         >
           <X size={14} />
@@ -162,7 +162,7 @@ export function ChangeManagerButton({
       </div>
 
       <div>
-        <div className="text-[10px] text-ink-muted mb-0.5">
+        <div className="text-[10px] text-ink-mute mb-0.5">
           現在: {currentManager?.name ?? "未割り当て"}
         </div>
         <select
@@ -186,7 +186,7 @@ export function ChangeManagerButton({
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="変更理由（任意）"
-          className="w-full h-9 rounded-btn border border-pearl-soft bg-pearl-warm px-3 text-body-sm text-ink placeholder:text-ink-muted"
+          className="w-full h-9 rounded-btn border border-pearl-soft bg-pearl-warm px-3 text-body-sm text-ink placeholder:text-ink-mute"
           style={{ fontSize: "16px" }}
         />
       </div>
@@ -198,7 +198,7 @@ export function ChangeManagerButton({
         className={cn(
           "w-full h-10 rounded-btn text-label-md font-medium transition-all active:scale-[0.98]",
           selected === (effectiveManagerId ?? "")
-            ? "bg-pearl-soft text-ink-muted cursor-not-allowed"
+            ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
             : isOwner
               ? "bg-roseGold-deep text-pearl-light shadow-luxe-card"
               : "bg-champagne-dark text-ink shadow-soft-card",
@@ -208,7 +208,7 @@ export function ChangeManagerButton({
       </button>
 
       {!isOwner && (
-        <p className="text-[10px] text-ink-muted">
+        <p className="text-[10px] text-ink-mute">
           オーナーの承認が必要です。申請後、店舗スタッフ（オーナー）画面の承認キューに表示されます。
         </p>
       )}

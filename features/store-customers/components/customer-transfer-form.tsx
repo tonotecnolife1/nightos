@@ -107,7 +107,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
           hint={`担当顧客 ${filtered.length}人`}
         />
 
-        <div className="flex items-center justify-center gap-2 text-ink-muted">
+        <div className="flex items-center justify-center gap-2 text-ink-mute">
           <ArrowRight size={16} />
         </div>
 
@@ -170,17 +170,17 @@ export function CustomerTransferForm({ customers, casts }: Props) {
                       <span className="text-body-sm font-medium text-ink">
                         {c.name}さま
                       </span>
-                      <span className="text-[10px] text-ink-muted">
+                      <span className="text-[10px] text-ink-mute">
                         {CATEGORY_LABEL[c.category]}
                       </span>
                     </div>
                     <div className="flex gap-2 mt-0.5">
                       {c.job && (
-                        <span className="text-[10px] text-ink-muted truncate">
+                        <span className="text-[10px] text-ink-mute truncate">
                           {c.job}
                         </span>
                       )}
-                      <span className="text-[10px] text-ink-muted shrink-0">
+                      <span className="text-[10px] text-ink-mute shrink-0">
                         {FUNNEL_LABEL[c.funnel_stage ?? "store_only"]}
                       </span>
                     </div>
@@ -190,14 +190,14 @@ export function CustomerTransferForm({ customers, casts }: Props) {
             })}
           </div>
 
-          <p className="text-[10px] text-ink-muted">
+          <p className="text-[10px] text-ink-mute">
             {selected.size > 0
               ? `${selected.size}人を選択中`
               : "移管する顧客をタップして選択"}
           </p>
         </section>
       ) : (
-        <Card className="p-4 text-center text-body-sm text-ink-muted">
+        <Card className="p-4 text-center text-body-sm text-ink-mute">
           {sourceCastId ? "担当顧客がいません" : "移管元を選択してください"}
         </Card>
       )}

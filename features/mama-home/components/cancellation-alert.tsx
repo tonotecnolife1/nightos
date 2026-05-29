@@ -53,16 +53,16 @@ export function CancellationAlert({ teamCasts, threshold = 2 }: Props) {
               <XCircle size={12} />
               同伴キャンセル多め
             </div>
-            <div className="text-[11px] text-ink-secondary mt-0.5">
+            <div className="text-[11px] text-ink-soft mt-0.5">
               今月{threshold}件以上: {alerts
                 .map((a) => `${a.cast.name}さん(${a.count}件)`)
                 .join("・")}
             </div>
-            <div className="text-[10px] text-ink-muted mt-0.5">
+            <div className="text-[10px] text-ink-mute mt-0.5">
               タップで理由を確認
             </div>
           </div>
-          <ChevronRight size={14} className="text-ink-muted shrink-0" />
+          <ChevronRight size={14} className="text-ink-mute shrink-0" />
         </div>
       </Card>
     </Link>

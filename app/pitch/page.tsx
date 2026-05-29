@@ -34,7 +34,7 @@ export default function PitchPage() {
           <br />
           キャストの売上が上がる
         </p>
-        <p className="text-body-md text-ink-secondary max-w-xs mx-auto">
+        <p className="text-body-md text-ink-soft max-w-xs mx-auto">
           夜のお店のためのAIワークスペース。
           顧客管理・お客様への連絡・接客アドバイスを1つに。
         </p>
@@ -62,7 +62,7 @@ export default function PitchPage() {
       {/* Solution */}
       <section className="px-6 py-8 bg-pearl-soft">
         <SectionTitle emoji="✨" title="NIGHTOSの解決策" />
-        <p className="text-body-md text-ink-secondary mt-2 mb-5">
+        <p className="text-body-md text-ink-soft mt-2 mb-5">
           店舗スタッフは<strong className="text-ink">1日5分の入力だけ</strong>。
           分析も連絡の提案もAIが自動でやります。
         </p>
@@ -92,7 +92,7 @@ export default function PitchPage() {
       {/* Cast benefits */}
       <section className="px-6 py-8">
         <SectionTitle emoji="💫" title="キャストが得ること" />
-        <p className="text-body-md text-ink-secondary mt-2 mb-5">
+        <p className="text-body-md text-ink-soft mt-2 mb-5">
           <strong className="text-ink">キャストの入力作業はゼロ</strong>
           。店舗が入力した情報が自動で活用されます。
         </p>
@@ -115,7 +115,7 @@ export default function PitchPage() {
           <RuriMamaAvatar size={52} withGlow />
           <div>
             <h2 className="text-display-sm text-ink">さくらママAI</h2>
-            <p className="text-body-sm text-ink-secondary">銀座30年の経験者</p>
+            <p className="text-body-sm text-ink-soft">銀座30年の経験者</p>
           </div>
         </div>
 
@@ -171,10 +171,10 @@ export default function PitchPage() {
         <SectionTitle emoji="💰" title="料金" />
         <div className="mt-4 rounded-card bg-gradient-champagne border border-champagne-dark p-5 text-center">
           <div className="text-display-lg font-display text-ink">無料</div>
-          <p className="text-body-md text-ink-secondary mt-1">
+          <p className="text-body-md text-ink-soft mt-1">
             MVP検証版 — まずはお試しください
           </p>
-          <p className="text-label-sm text-ink-muted mt-2">
+          <p className="text-label-sm text-ink-mute mt-2">
             AI機能は従量課金（月額約22円〜）
           </p>
         </div>
@@ -189,7 +189,7 @@ export default function PitchPage() {
           デモを見る
           <ArrowRight size={16} />
         </Link>
-        <p className="text-label-sm text-ink-muted mt-3">
+        <p className="text-label-sm text-ink-mute mt-3">
           ↑ 実際に動くデモをご覧いただけます
         </p>
       </section>
@@ -212,7 +212,7 @@ function ProblemCard({ title, body }: { title: string; body: string }) {
   return (
     <div className="rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft-card">
       <div className="text-body-md font-semibold text-ink mb-1">{title}</div>
-      <div className="text-body-sm text-ink-secondary leading-relaxed">
+      <div className="text-body-sm text-ink-soft leading-relaxed">
         {body}
       </div>
     </div>
@@ -244,7 +244,7 @@ function FeatureCard({
       </div>
       <div>
         <div className="text-body-md font-semibold text-ink">{title}</div>
-        <div className="text-body-sm text-ink-secondary leading-relaxed">
+        <div className="text-body-sm text-ink-soft leading-relaxed">
           {body}
         </div>
       </div>
@@ -298,7 +298,7 @@ function StepCard({
       </div>
       <div className="flex-1 pt-0.5">
         <div className="text-body-md font-semibold text-ink">{title}</div>
-        <div className="text-body-sm text-ink-secondary">{body}</div>
+        <div className="text-body-sm text-ink-soft">{body}</div>
       </div>
     </div>
   );

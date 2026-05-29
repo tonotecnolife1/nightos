@@ -27,7 +27,7 @@ export function ApprovalLink() {
       >
         <div className="flex items-center gap-2.5">
           <div
-            className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${count > 0 ? "bg-amber/20 text-amber" : "bg-pearl-soft text-ink-muted"}`}
+            className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${count > 0 ? "bg-amber/20 text-amber" : "bg-pearl-soft text-ink-mute"}`}
           >
             <UserCog size={16} />
           </div>
@@ -42,13 +42,13 @@ export function ApprovalLink() {
                 </span>
               )}
             </div>
-            <div className="text-[10px] text-ink-secondary mt-0.5">
+            <div className="text-[10px] text-ink-soft mt-0.5">
               {count > 0
                 ? `${count}件の管理者変更申請が承認待ちです`
                 : "未処理の申請はありません"}
             </div>
           </div>
-          <ChevronRight size={14} className="text-ink-muted" />
+          <ChevronRight size={14} className="text-ink-mute" />
         </div>
       </Card>
     </Link>

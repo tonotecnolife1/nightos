@@ -35,7 +35,7 @@ export default function SignupCastForm() {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             新規登録（キャスト）
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <p className="mt-1.5 text-body-sm text-ink-soft">
             所属店舗のオーナーから受け取った招待コードで参加
           </p>
         </div>
@@ -109,7 +109,7 @@ export default function SignupCastForm() {
             )}
           </form>
 
-          <p className="text-body-sm text-ink-secondary text-center">
+          <p className="text-body-sm text-ink-soft text-center">
             既にアカウントをお持ちの方は{" "}
             <Link
               href="/cast/auth/login"
@@ -119,7 +119,7 @@ export default function SignupCastForm() {
             </Link>
           </p>
 
-          <p className="text-[11px] text-ink-muted text-center leading-relaxed">
+          <p className="text-[11px] text-ink-mute text-center leading-relaxed">
             登録すると{" "}
             <Link href="/legal/terms" className="underline underline-offset-2">
               利用規約
@@ -148,8 +148,8 @@ function Field({
   return (
     <label className="block">
       <div className="flex items-baseline justify-between mb-1.5 px-1">
-        <span className="text-body-sm text-ink-secondary">{label}</span>
-        {hint && <span className="text-[11px] text-ink-muted">{hint}</span>}
+        <span className="text-body-sm text-ink-soft">{label}</span>
+        {hint && <span className="text-[11px] text-ink-mute">{hint}</span>}
       </div>
       {children}
     </label>

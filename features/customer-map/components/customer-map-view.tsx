@@ -53,7 +53,7 @@ function CustomerBasedMap({
 
   return (
     <div className="space-y-3">
-      <div className="text-[10px] text-ink-muted px-1">
+      <div className="text-[10px] text-ink-mute px-1">
         担当顧客グループ {tree.length}件
       </div>
 
@@ -170,7 +170,7 @@ function ReferralToggle({
   const toneClass =
     tone === "strong"
       ? "bg-amethyst-muted/40 border-amethyst-border text-amethyst-dark"
-      : "bg-pearl-soft border-pearl-soft text-ink-secondary";
+      : "bg-pearl-soft border-pearl-soft text-ink-soft";
   return (
     <button
       type="button"
@@ -274,16 +274,16 @@ function ReferralNodeCard({
         )}
       </div>
       {/* 2行目: 管理：X、担当：Y、職業 */}
-      <div className="text-[11px] text-ink-secondary mt-1 truncate">
+      <div className="text-[11px] text-ink-soft mt-1 truncate">
         <span>管理：</span>
         <span className="text-ink font-medium">{manager?.name ?? "—"}</span>
-        <span className="text-ink-muted">、</span>
+        <span className="text-ink-mute">、</span>
         <span>担当：</span>
         <span className="text-ink font-medium">{cast?.name ?? "—"}</span>
         {node.customer.job && (
           <>
-            <span className="text-ink-muted">、</span>
-            <span className="text-ink-muted">{node.customer.job}</span>
+            <span className="text-ink-mute">、</span>
+            <span className="text-ink-mute">{node.customer.job}</span>
           </>
         )}
       </div>
@@ -332,7 +332,7 @@ function ManagerBlock({
         <span className="text-body-sm font-semibold text-ink flex-1 truncate">
           {managerLabel}
         </span>
-        <span className="text-[10px] text-ink-muted shrink-0">
+        <span className="text-[10px] text-ink-mute shrink-0">
           {group.totalCustomers}人
         </span>
       </div>
@@ -374,13 +374,13 @@ function CastBucket({
         <span className="text-[11px] font-medium text-ink flex-1 truncate">
           {castLabel}
         </span>
-        <span className="text-[9px] text-ink-muted shrink-0">
+        <span className="text-[9px] text-ink-mute shrink-0">
           {bucket.customers.length}
         </span>
         {expanded ? (
-          <ChevronDown size={10} className="text-ink-muted shrink-0" />
+          <ChevronDown size={10} className="text-ink-mute shrink-0" />
         ) : (
-          <ChevronRight size={10} className="text-ink-muted shrink-0" />
+          <ChevronRight size={10} className="text-ink-mute shrink-0" />
         )}
       </button>
 
@@ -414,7 +414,7 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
       ? "bg-roseGold-muted text-roseGold-dark border-roseGold-border"
       : customer.category === "new"
         ? "bg-amethyst-muted/50 text-amethyst-dark border-amethyst-border"
-        : "bg-pearl-soft text-ink-secondary border-pearl-soft";
+        : "bg-pearl-soft text-ink-soft border-pearl-soft";
   return (
     <a
       href={`/cast/customers/${customer.id}`}
@@ -424,7 +424,7 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
         {formatCustomerName(customer.name)}
       </span>
       {customer.job && (
-        <span className="text-[10px] text-ink-muted truncate max-w-[40%]">
+        <span className="text-[10px] text-ink-mute truncate max-w-[40%]">
           {customer.job}
         </span>
       )}

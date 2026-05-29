@@ -113,13 +113,13 @@ export function IntentPicker({ onPick }: Props) {
                   <div className="text-body-md font-semibold text-ink">
                     {opt.label}
                   </div>
-                  <div className="text-label-sm text-ink-secondary">
+                  <div className="text-label-sm text-ink-soft">
                     {opt.description}
                   </div>
                 </div>
                 <ChevronRight
                   size={16}
-                  className="text-ink-muted shrink-0"
+                  className="text-ink-mute shrink-0"
                 />
               </div>
             </button>

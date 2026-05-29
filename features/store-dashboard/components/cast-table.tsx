@@ -18,7 +18,7 @@ export function CastTable({
 
   return (
     <Card className="p-4 space-y-3">
-      <div className="grid grid-cols-[1.4fr_0.8fr_0.8fr_0.6fr_1fr] gap-2 text-label-sm text-ink-muted border-b border-pearl-soft pb-2">
+      <div className="grid grid-cols-[1.4fr_0.8fr_0.8fr_0.6fr_1fr] gap-2 text-label-sm text-ink-mute border-b border-pearl-soft pb-2">
         <div>キャスト</div>
         <div className="text-right">再来店率</div>
         <div className="text-right">連絡率</div>
@@ -61,7 +61,7 @@ export function CastTable({
             >
               {Math.round(s.followRate * 100)}%
             </div>
-            <div className="text-right text-ink-secondary">
+            <div className="text-right text-ink-soft">
               {s.customerCount}人
             </div>
             <div className="text-right">
@@ -69,7 +69,7 @@ export function CastTable({
                 {formatCurrency(s.cast.monthly_sales)}
               </div>
               {arpc > 0 && (
-                <div className="text-[10px] text-ink-muted">
+                <div className="text-[10px] text-ink-mute">
                   ARPU {formatCurrency(arpc)}
                 </div>
               )}
@@ -79,7 +79,7 @@ export function CastTable({
       })}
 
       {/* Legend */}
-      <div className="pt-2 border-t border-pearl-soft text-label-sm text-ink-muted space-y-0.5">
+      <div className="pt-2 border-t border-pearl-soft text-label-sm text-ink-mute space-y-0.5">
         <div className="flex items-center gap-1">
           <TrendingUp size={10} className="text-emerald" />
           売上トップ

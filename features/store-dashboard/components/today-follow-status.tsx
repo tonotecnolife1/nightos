@@ -71,7 +71,7 @@ export function TodayFollowStatus({
                 <span
                   className={cn(
                     "font-semibold",
-                    isDone ? "text-emerald" : pct > 0 ? "text-amber" : "text-ink-muted",
+                    isDone ? "text-emerald" : pct > 0 ? "text-amber" : "text-ink-mute",
                   )}
                 >
                   {isDone ? "✅ 完了" : `${s.contactedCount}/${s.targetCount}人`}

@@ -34,7 +34,7 @@ export function ChipOptions({ question, options, onPick, onSkip }: Props) {
               picked === opt
                 ? "bg-roseGold-deep text-pearl-light border-amethyst-dark scale-95 shadow-soft"
                 : picked
-                  ? "bg-pearl-soft text-ink-muted border-pearl-soft opacity-50"
+                  ? "bg-pearl-soft text-ink-mute border-pearl-soft opacity-50"
                   : "bg-pearl-warm text-amethyst-dark border-amethyst-border hover:bg-amethyst hover:text-pearl hover:border-amethyst-dark",
             )}
           >
@@ -45,7 +45,7 @@ export function ChipOptions({ question, options, onPick, onSkip }: Props) {
           <button
             type="button"
             onClick={onSkip}
-            className="px-3.5 h-9 rounded-badge text-body-sm bg-transparent text-ink-secondary underline underline-offset-2 hover:text-amethyst-dark"
+            className="px-3.5 h-9 rounded-badge text-body-sm bg-transparent text-ink-soft underline underline-offset-2 hover:text-amethyst-dark"
           >
             お任せ
           </button>

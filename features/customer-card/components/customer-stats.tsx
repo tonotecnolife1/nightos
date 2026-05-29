@@ -25,7 +25,7 @@ export function CustomerStats({ context }: { context: CustomerContext }) {
         label="来店"
         value={visitCount}
         unit="回"
-        icon={<Calendar size={12} className="text-ink-secondary" />}
+        icon={<Calendar size={12} className="text-ink-soft" />}
       />
       <StatCard
         label="使ってくれた金額"
