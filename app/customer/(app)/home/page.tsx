@@ -49,15 +49,26 @@ export default async function CustomerHomePage() {
 
   return (
     <div>
-      <header className="bg-gradient-hero px-5 pt-12 pb-6">
-        <p className="text-body-sm text-ink-secondary mb-1">
+      <header
+        className="relative overflow-hidden px-5 pt-12 pb-8"
+        style={{
+          background:
+            "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
+            "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
+            "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
+        }}
+      >
+        <div className="text-label-xs tracking-luxe text-roseGold-deep mb-2">
+          NIGHTOS · WELCOME
+        </div>
+        <p className="text-body-sm text-ink-soft mb-1">
           おかえりなさい
         </p>
-        <h1 className="font-display text-[28px] leading-[1.2] font-medium tracking-wide text-ink">
+        <h1 className="font-serif text-[2rem] leading-[1.15] font-medium tracking-[0.02em] t-metallic">
           {customer?.name ?? "ゲスト"}さん
         </h1>
         {customer && (
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-2 mt-3">
             <Badge
               tone={
                 customer.category === "vip"
@@ -73,7 +84,7 @@ export default async function CustomerHomePage() {
                   ? "新規"
                   : "常連"}
             </Badge>
-            <span className="text-[11px] text-ink-muted">
+            <span className="text-[11px] text-ink-mute">
               {overviews.length}店舗を利用中
             </span>
           </div>
@@ -230,11 +241,11 @@ export default async function CustomerHomePage() {
 // ═══════════════ Sub-components ═══════════════
 
 const rankBadgeStyles: Record<RankTier, string> = {
-  diamond: "bg-amethyst text-pearl",
-  platinum: "bg-roseGold text-pearl",
-  gold: "bg-champagne-dark text-ink",
-  silver: "bg-pearl-soft text-ink-secondary",
-  bronze: "bg-pearl-soft text-ink-muted",
+  diamond: "bg-gold-deep text-pearl-light",
+  platinum: "bg-roseGold-deep text-pearl-light",
+  gold: "bg-champagne-deep text-ink",
+  silver: "bg-pearl-soft text-ink-soft",
+  bronze: "bg-pearl-soft text-ink-mute",
 };
 
 function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {

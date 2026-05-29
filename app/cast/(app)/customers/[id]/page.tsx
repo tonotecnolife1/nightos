@@ -64,7 +64,7 @@ export default async function CustomerCardPage({
           )}
           <a
             href={`/store/customers/new?referrer=${customer.id}`}
-            className="ml-auto text-[10px] text-amethyst-dark underline underline-offset-2"
+            className="ml-auto text-[10px] text-roseGold-deep underline underline-offset-2"
           >
             + この方のお連れ様として登録
           </a>
@@ -102,14 +102,14 @@ export default async function CustomerCardPage({
         <div className="flex gap-2">
           <Link
             href={`/store/visits/new?customerId=${customer.id}`}
-            className="flex-1 flex items-center justify-center gap-1.5 h-10 rounded-pill border border-ink/[0.12] bg-pearl-soft text-body-sm text-ink-secondary hover:border-gold/40 hover:bg-pearl-warm transition"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-pill border border-roseGold-deep/70 bg-transparent text-body-sm font-medium text-roseGold-deep hover:bg-roseGold-soft/30 active:scale-[0.98] transition"
           >
             <CalendarPlus size={14} />
             来店を記録
           </Link>
           <Link
             href={`/store/bottles/new?customerId=${customer.id}`}
-            className="flex-1 flex items-center justify-center gap-1.5 h-10 rounded-pill border border-ink/[0.12] bg-pearl-soft text-body-sm text-ink-secondary hover:border-gold/40 hover:bg-pearl-warm transition"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-pill border border-gold/40 bg-champagne-soft/60 text-body-sm font-medium text-gold-deep hover:bg-champagne-soft/80 active:scale-[0.98] transition"
           >
             <Wine size={14} />
             ボトルを記録

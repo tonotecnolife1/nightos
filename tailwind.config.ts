@@ -114,7 +114,11 @@ const config: Config = {
         rose: "#ef4444",     // legacy (新規は danger を使う)
         amber: "#f59e0b",    // legacy (新規は warning を使う)
         line: {
-          DEFAULT: "#222230",
+          // v6: 半透明 ink。light theme で常用する hairline / divider。
+          DEFAULT: "rgba(43, 35, 42, 0.08)",
+          strong: "rgba(43, 35, 42, 0.14)",
+          // legacy dark palette
+          dark: "#222230",
           light: "#2c2c3a",
         },
       },

@@ -32,12 +32,23 @@ export default async function StoreHubPage() {
 
   return (
     <div>
-      <header className="bg-gradient-hero px-5 pt-12 pb-6">
-        <p className="text-body-sm text-ink-secondary mb-1">店舗管理</p>
-        <h1 className="font-display text-[26px] leading-[1.2] font-medium tracking-wide text-ink">
+      <header
+        className="relative overflow-hidden px-5 pt-12 pb-8"
+        style={{
+          background:
+            "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
+            "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
+            "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
+        }}
+      >
+        <div className="text-label-xs tracking-luxe text-roseGold-deep mb-2">
+          NIGHTOS · STORE HUB
+        </div>
+        <p className="text-body-sm text-ink-soft mb-1">店舗管理</p>
+        <h1 className="font-serif text-[1.75rem] leading-[1.15] font-medium tracking-[0.02em] t-metallic">
           CLUB NIGHTOS 銀座本店
         </h1>
-        <div className="mt-2">
+        <div className="mt-3">
           <StorePermissionBadge />
         </div>
       </header>

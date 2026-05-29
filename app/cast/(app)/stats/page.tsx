@@ -97,10 +97,18 @@ export default async function CastStatsPage() {
 
         {/* ── 再来店率の動き ── */}
         <section>
-          <div className="flex items-baseline justify-between mb-2">
-            <h2 className="text-display-sm text-ink">再来店率の動き</h2>
-            <span className="text-label-sm text-ink-muted">この1ヶ月</span>
-          </div>
+          <header className="relative flex items-baseline justify-between pl-3.5 mb-3">
+            <span
+              aria-hidden
+              className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic"
+            />
+            <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">
+              再来店率の動き
+            </h2>
+            <span className="text-label-xs tracking-luxe text-ink-mute uppercase">
+              この1ヶ月
+            </span>
+          </header>
           <Card className="p-4">
             <CastRepeatTrend points={data.repeatTrend} />
           </Card>
@@ -108,10 +116,16 @@ export default async function CastStatsPage() {
 
         {/* ── 年間成績 ── */}
         <section>
-          <div className="flex items-center gap-2 mb-3">
-            <Calendar size={16} className="text-ink-secondary" />
-            <h2 className="text-display-sm text-ink">年間成績</h2>
-          </div>
+          <header className="relative flex items-baseline gap-2 pl-3.5 mb-3">
+            <span
+              aria-hidden
+              className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic"
+            />
+            <Calendar size={16} className="text-ink-soft" />
+            <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">
+              年間成績
+            </h2>
+          </header>
           <div className="grid grid-cols-2 gap-2.5">
             <StatCard
               label="年間売上"
@@ -142,22 +156,35 @@ export default async function CastStatsPage() {
         </section>
 
         {/* ── さくらママからの励まし ── */}
-        <Card className="!bg-gradient-champagne !border-champagne-dark p-4">
+        <div
+          className="rounded-hero shadow-warm relative overflow-hidden border border-ink/[0.08] p-5"
+          style={{
+            background:
+              "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
+              "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
+              "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
+          }}
+        >
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-roseGold/20 flex items-center justify-center shrink-0">
-              <Award size={18} className="text-roseGold-dark" />
+            <div className="w-11 h-11 rounded-full border border-gold/35 flex items-center justify-center shrink-0"
+              style={{
+                background: "var(--champagne-metallic)",
+                boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.6)",
+              }}
+            >
+              <Award size={18} className="text-roseGold-deep" />
             </div>
             <div className="flex-1">
-              <div className="text-label-md font-semibold text-ink mb-1">
-                <Sparkles size={11} className="inline mr-1" />
-                {data.cast.name}さんへ
+              <div className="inline-flex items-center gap-1.5 text-label-xs tracking-luxe text-roseGold-deep mb-2">
+                <Sparkles size={11} strokeWidth={1.8} />
+                <span>{data.cast.name}さんへ</span>
               </div>
-              <p className="text-body-sm text-ink leading-relaxed">
+              <p className="font-serif text-[14.5px] leading-[1.75] font-medium tracking-[0.01em] text-ink">
                 {buildEncouragement(data)}
               </p>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
