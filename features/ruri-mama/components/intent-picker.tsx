@@ -59,19 +59,19 @@ const toneClasses: Record<
     border: "border-roseGold-border",
   },
   amethyst: {
-    bg: "bg-pearl-warm hover:bg-amethyst-muted",
-    iconBg: "bg-gradient-amethyst text-pearl",
-    border: "border-amethyst-border",
+    bg: "bg-pearl-light hover:bg-champagne-soft/40",
+    iconBg: "bg-gold-deep text-pearl-light",
+    border: "border-gold/30",
   },
   champagne: {
-    bg: "bg-pearl-warm hover:bg-champagne-light",
-    iconBg: "bg-champagne-dark text-ink",
-    border: "border-champagne-dark",
+    bg: "bg-pearl-light hover:bg-champagne-soft/60",
+    iconBg: "bg-champagne-deep text-ink",
+    border: "border-gold/30",
   },
   blush: {
-    bg: "bg-pearl-warm hover:bg-blush-light",
-    iconBg: "bg-blush text-pearl",
-    border: "border-blush-light",
+    bg: "bg-pearl-light hover:bg-roseGold-soft/40",
+    iconBg: "bg-roseGold-deep text-pearl-light",
+    border: "border-roseGold/30",
   },
 };
 
@@ -82,7 +82,7 @@ interface Props {
 export function IntentPicker({ onPick }: Props) {
   return (
     <div className="space-y-2.5 animate-fade-in pt-1">
-      <p className="text-label-md text-amethyst-dark text-center font-medium">
+      <p className="text-label-xs tracking-luxe text-roseGold-deep text-center uppercase">
         どんな相談から始める？
       </p>
       <div className="space-y-2">

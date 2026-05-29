@@ -32,7 +32,7 @@ export function ChipOptions({ question, options, onPick, onSkip }: Props) {
             className={cn(
               "px-3.5 h-9 rounded-badge text-body-sm border transition-all active:scale-95",
               picked === opt
-                ? "bg-amethyst text-pearl border-amethyst-dark scale-95 shadow-soft"
+                ? "bg-roseGold-deep text-pearl-light border-amethyst-dark scale-95 shadow-soft"
                 : picked
                   ? "bg-pearl-soft text-ink-muted border-pearl-soft opacity-50"
                   : "bg-pearl-warm text-amethyst-dark border-amethyst-border hover:bg-amethyst hover:text-pearl hover:border-amethyst-dark",

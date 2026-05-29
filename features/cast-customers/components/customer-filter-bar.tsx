@@ -99,7 +99,7 @@ export function CustomerFilterBar({
           className={cn(
             "flex items-center gap-1 h-9 px-3 rounded-full text-[11px] font-medium border transition-all active:scale-95",
             activeCount > 0
-              ? "bg-amethyst text-pearl border-amethyst"
+              ? "bg-roseGold-deep text-pearl-light border-amethyst"
               : "bg-pearl-warm text-ink-secondary border-pearl-soft",
           )}
         >
@@ -276,7 +276,7 @@ function ChipButton({
   const activeClass =
     tone === "roseGold"
       ? "bg-roseGold text-pearl border-roseGold"
-      : "bg-amethyst text-pearl border-amethyst";
+      : "bg-roseGold-deep text-pearl-light border-amethyst";
   return (
     <button
       type="button"

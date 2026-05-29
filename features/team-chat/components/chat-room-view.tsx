@@ -468,7 +468,7 @@ export function ChatRoomView({
                   className={cn(
                     "shrink-0 mb-1 p-2 rounded-full transition-colors",
                     input.trim() && !sending
-                      ? "bg-amethyst text-pearl"
+                      ? "bg-roseGold-deep text-pearl-light"
                       : "bg-pearl-soft text-ink-muted",
                   )}
                   aria-label="送信"
@@ -637,7 +637,7 @@ export function ChatRoomView({
               className={cn(
                 "shrink-0 mb-1 p-2 rounded-full transition-colors",
                 input.trim() && !sending
-                  ? "bg-amethyst text-pearl"
+                  ? "bg-roseGold-deep text-pearl-light"
                   : "bg-pearl-soft text-ink-muted",
               )}
               aria-label="送信"
@@ -824,7 +824,7 @@ function MessageRow({
                 className={cn(
                   "inline-flex items-center gap-1 px-3 py-1 rounded-full text-label-sm font-medium",
                   editDraft.trim()
-                    ? "bg-amethyst text-pearl"
+                    ? "bg-roseGold-deep text-pearl-light"
                     : "bg-pearl-soft text-ink-muted",
                 )}
               >
@@ -847,7 +847,7 @@ function MessageRow({
             className={cn(
               "px-3.5 py-2 text-body-md leading-relaxed whitespace-pre-wrap break-words",
               isMe
-                ? "bg-amethyst text-pearl rounded-2xl rounded-br-sm shadow-soft"
+                ? "bg-roseGold-deep text-pearl-light rounded-2xl rounded-br-sm shadow-soft"
                 : "bg-pearl-warm border border-ink/[0.06] text-ink rounded-2xl rounded-bl-sm shadow-soft",
             )}
           >

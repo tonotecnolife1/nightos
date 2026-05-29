@@ -200,7 +200,7 @@ export function ChangeManagerButton({
           selected === (effectiveManagerId ?? "")
             ? "bg-pearl-soft text-ink-muted cursor-not-allowed"
             : isOwner
-              ? "bg-amethyst text-pearl shadow-soft-card"
+              ? "bg-roseGold-deep text-pearl-light shadow-luxe-card"
               : "bg-champagne-dark text-ink shadow-soft-card",
         )}
       >

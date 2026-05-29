@@ -23,7 +23,7 @@ export function ViewGroupingToggle({ value, onChange }: Props) {
         className={cn(
           "h-7 px-3 rounded-full text-[10px] font-medium transition-all",
           value === "customer"
-            ? "bg-amethyst text-pearl"
+            ? "bg-roseGold-deep text-pearl-light"
             : "text-amethyst-dark",
         )}
       >
@@ -34,7 +34,7 @@ export function ViewGroupingToggle({ value, onChange }: Props) {
         onClick={() => onChange("cast")}
         className={cn(
           "h-7 px-3 rounded-full text-[10px] font-medium transition-all",
-          value === "cast" ? "bg-amethyst text-pearl" : "text-amethyst-dark",
+          value === "cast" ? "bg-roseGold-deep text-pearl-light" : "text-amethyst-dark",
         )}
       >
         ヘルプ顧客
