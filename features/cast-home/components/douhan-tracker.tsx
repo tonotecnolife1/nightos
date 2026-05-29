@@ -101,15 +101,19 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
   return (
     <section className="space-y-2.5">
       {/* Header + Add button */}
-      <div className="flex items-center justify-between">
-        <h2 className="font-display text-display-sm text-ink flex items-center gap-1.5">
-          <CalendarCheck size={16} className="text-gold" />
+      <div className="relative flex items-center justify-between pl-3.5">
+        <span
+          aria-hidden
+          className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic"
+        />
+        <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5">
+          <CalendarCheck size={16} className="text-gold-deep" />
           同伴
         </h2>
         <button
           type="button"
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-1 h-8 px-3 rounded-full bg-gradient-blush text-ink text-[11px] font-medium active:scale-[0.97] shadow-soft hover:-translate-y-px transition"
+          className="inline-flex items-center gap-1 h-8 px-3 rounded-pill bg-roseGold-deep text-pearl-light text-[11px] font-semibold tracking-[0.04em] active:scale-[0.97] shadow-soft hover:-translate-y-px transition"
         >
           <Plus size={12} />
           同伴を登録
@@ -126,18 +130,22 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
       )}
 
       {/* Progress */}
-      <Card className="p-3">
-        <div className="flex items-center justify-between mb-1.5">
+      <Card className="p-3.5">
+        <div className="flex items-center justify-between mb-2">
           <span className="text-body-sm text-ink font-medium">
-            今月 {completedCount} / {monthlyGoal} 回
+            今月{" "}
+            <span className="font-display text-[18px] tabular-nums text-roseGold-deep">
+              {completedCount}
+            </span>{" "}
+            / {monthlyGoal} 回
           </span>
-          <span className="text-[10px] text-ink-muted">
-            {pct >= 100 ? "達成！🎉" : `あと${monthlyGoal - completedCount}回`}
+          <span className="text-label-xs tracking-luxe text-ink-mute uppercase">
+            {pct >= 100 ? "達成 ✨" : `あと${monthlyGoal - completedCount}回`}
           </span>
         </div>
         <div className="h-1.5 bg-pearl-soft rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-blush to-blush-deep rounded-full transition-all"
+            className="h-full bg-rose-gold-metallic rounded-full transition-all"
             style={{ width: `${Math.min(pct, 100)}%` }}
           />
         </div>
@@ -275,12 +283,12 @@ function EntryCard({
         <div className="flex items-center gap-2 min-w-0">
           <div
             className={cn(
-              "w-6 h-6 rounded-full flex items-center justify-center shrink-0",
+              "w-6 h-6 rounded-full flex items-center justify-center shrink-0 border",
               isScheduled
-                ? "bg-amethyst-muted text-amethyst-dark"
+                ? "bg-champagne-soft/60 text-gold-deep border-gold/30"
                 : isCompleted
-                  ? "bg-emerald/15 text-emerald"
-                  : "bg-pearl-soft text-ink-muted",
+                  ? "bg-success/15 text-success border-success/25"
+                  : "bg-pearl-soft text-ink-mute border-line-strong",
             )}
           >
             {isScheduled ? (
@@ -509,10 +517,10 @@ function AddForm({
         onClick={handleSubmit}
         disabled={!canSubmit}
         className={cn(
-          "w-full h-10 rounded-full text-label-sm font-medium transition-all active:scale-[0.98]",
+          "w-full h-10 rounded-pill text-label-sm font-semibold tracking-[0.04em] transition-all active:scale-[0.98]",
           canSubmit
-            ? "bg-gradient-blush text-ink shadow-soft hover:-translate-y-px"
-            : "bg-pearl-soft text-ink-muted cursor-not-allowed",
+            ? "bg-roseGold-deep text-pearl-light shadow-luxe hover:-translate-y-px"
+            : "bg-pearl-soft text-ink-mute cursor-not-allowed",
         )}
       >
         登録する

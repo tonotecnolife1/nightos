@@ -33,17 +33,31 @@ export function StoreMessageBanner({ initialMessages }: Props) {
       {messages.map((m) => (
         <div
           key={m.id}
-          className="rounded-card bg-champagne-soft border border-champagne-dark p-4 shadow-soft"
+          className="relative overflow-hidden rounded-card border border-ink/[0.08] p-4 shadow-soft"
+          style={{
+            background:
+              "linear-gradient(135deg, var(--champagne-soft) 0%, var(--pearl-warm) 100%)",
+          }}
         >
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full border border-gold/40 flex items-center justify-center shrink-0">
+          <span
+            aria-hidden
+            className="absolute left-0 top-0 bottom-0 w-1 bg-gold-metallic"
+          />
+          <div className="flex items-start gap-3 pl-2">
+            <div
+              className="w-10 h-10 rounded-full border border-gold/40 flex items-center justify-center shrink-0"
+              style={{
+                background: "var(--champagne-metallic)",
+                boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.6)",
+              }}
+            >
               <Bell size={18} className="text-gold-deep" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-label-md font-medium text-ink mb-1">
+              <div className="text-label-xs tracking-luxe text-gold-deep mb-1.5">
                 店舗からの連絡
               </div>
-              <p className="text-body-sm text-ink leading-relaxed">
+              <p className="font-serif text-[14px] leading-[1.65] font-medium tracking-[0.01em] text-ink">
                 {m.message}
               </p>
             </div>
@@ -51,7 +65,7 @@ export function StoreMessageBanner({ initialMessages }: Props) {
               type="button"
               onClick={() => dismiss(m.id)}
               disabled={pending}
-              className="p-1 rounded-full hover:bg-champagne-dark/50 text-ink-muted shrink-0"
+              className="p-1 rounded-full hover:bg-pearl-warm/60 text-ink-mute shrink-0"
               aria-label="閉じる"
             >
               <X size={14} />
