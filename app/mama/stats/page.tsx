@@ -68,7 +68,7 @@ export default async function MamaStatsPage() {
           value={data.followStreakDays}
           unit="日"
           tone="default"
-          icon={<Flame size={12} className="text-amber" />}
+          icon={<Flame size={12} className="text-warning" />}
           className="!flex-row items-center justify-between"
         />
 

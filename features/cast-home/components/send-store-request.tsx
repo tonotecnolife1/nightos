@@ -42,7 +42,7 @@ export function SendStoreRequest({ castId, castName }: Props) {
       {open && (
         <div className="px-4 pb-3 pt-1">
           {success ? (
-            <div className="flex items-center gap-1.5 text-[11px] text-emerald font-medium py-1">
+            <div className="flex items-center gap-1.5 text-[11px] text-success font-medium py-1">
               <Check size={12} />
               送信しました
             </div>

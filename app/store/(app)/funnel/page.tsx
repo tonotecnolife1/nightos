@@ -259,7 +259,7 @@ export default function StoreFunnelPage() {
               </div>
               {stats.assigned + stats.lineExchanged > 0 &&
                 stats.lineExchangedRate < 0.5 && (
-                  <div className="text-[10px] text-amber">
+                  <div className="text-[10px] text-warning">
                     ⚠️ LINE交換率が低い。育成支援候補
                   </div>
                 )}

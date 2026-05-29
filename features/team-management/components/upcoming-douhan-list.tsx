@@ -84,8 +84,8 @@ export function UpcomingDouhanList({
                 <span
                   className={cn(
                     "w-10 text-center text-[10px] font-semibold py-0.5 rounded-badge shrink-0",
-                    label.tone === "today" && "bg-rose/15 text-rose",
-                    label.tone === "tomorrow" && "bg-amber/15 text-amber",
+                    label.tone === "today" && "bg-wine/15 text-wine-deep",
+                    label.tone === "tomorrow" && "bg-warning/15 text-warning",
                     label.tone === "later" && "bg-pearl-soft text-ink-mute",
                   )}
                 >

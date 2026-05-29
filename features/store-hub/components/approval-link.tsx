@@ -23,11 +23,11 @@ export function ApprovalLink() {
       className="block active:scale-[0.99] transition-transform"
     >
       <Card
-        className={`p-3 ${count > 0 ? "!border-amber/30 !bg-amber/5" : "!border-pearl-soft"}`}
+        className={`p-3 ${count > 0 ? "!border-warning/30 !bg-warning/5" : "!border-pearl-soft"}`}
       >
         <div className="flex items-center gap-2.5">
           <div
-            className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${count > 0 ? "bg-amber/20 text-amber" : "bg-pearl-soft text-ink-mute"}`}
+            className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${count > 0 ? "bg-warning/20 text-warning" : "bg-pearl-soft text-ink-mute"}`}
           >
             <UserCog size={16} />
           </div>

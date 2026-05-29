@@ -142,7 +142,7 @@ export default async function CustomerStoreDetailPage({
                     />
                   </div>
                   {isLow && (
-                    <div className="flex items-center gap-1 text-label-sm text-amber">
+                    <div className="flex items-center gap-1 text-label-sm text-warning">
                       <AlertTriangle size={11} />
                       残りわずか
                     </div>

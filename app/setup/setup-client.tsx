@@ -76,7 +76,7 @@ export default function SetupClient({ secret }: Props) {
               <p>と</p>
               <p className="font-semibold">supabase/migrations/003_schema_additions.sql</p>
               <p className="mt-1">の内容を順番に貼り付けて実行してください。</p>
-              <p className="mt-2 text-amber">※ テーブルが既に存在する場合は IF NOT EXISTS で安全にスキップされます。</p>
+              <p className="mt-2 text-warning">※ テーブルが既に存在する場合は IF NOT EXISTS で安全にスキップされます。</p>
             </div>
           )}
         </Card>
@@ -100,8 +100,8 @@ export default function SetupClient({ secret }: Props) {
           </Button>
 
           {status === "done" && result && (
-            <div className="bg-emerald/10 border border-emerald/20 rounded-btn p-3 space-y-1">
-              <p className="text-body-sm font-semibold text-emerald">
+            <div className="bg-success/10 border border-success/20 rounded-btn p-3 space-y-1">
+              <p className="text-body-sm font-semibold text-success">
                 セットアップ完了
               </p>
               {result.summary && (
@@ -135,8 +135,8 @@ export default function SetupClient({ secret }: Props) {
           )}
 
           {status === "error" && result && (
-            <div className="bg-rose/10 border border-rose/20 rounded-btn p-3">
-              <p className="text-body-sm font-semibold text-rose">
+            <div className="bg-wine/10 border border-wine/20 rounded-btn p-3">
+              <p className="text-body-sm font-semibold text-wine-deep">
                 エラーが発生しました
               </p>
               <p className="text-[11px] text-ink-soft mt-1">
@@ -164,7 +164,7 @@ export default function SetupClient({ secret }: Props) {
             Supabase Auth に 5 名のテストユーザー（akari@test.nightos など）を作成し、
             既存のキャストレコードに紐付けます。メール/パスワードでの実ログインが可能になります。
           </p>
-          <p className="text-[11px] text-ink-mute bg-amber/10 border border-amber/20 rounded-btn p-2">
+          <p className="text-[11px] text-ink-mute bg-warning/10 border border-warning/20 rounded-btn p-2">
             <strong>必要な環境変数:</strong> SUPABASE_SERVICE_ROLE_KEY
             （Supabase Dashboard → Project Settings → API → service_role secret）
           </p>
@@ -179,8 +179,8 @@ export default function SetupClient({ secret }: Props) {
           </Button>
 
           {authStatus === "done" && authResult && (
-            <div className="bg-emerald/10 border border-emerald/20 rounded-btn p-3 space-y-2">
-              <p className="text-body-sm font-semibold text-emerald">
+            <div className="bg-success/10 border border-success/20 rounded-btn p-3 space-y-2">
+              <p className="text-body-sm font-semibold text-success">
                 Auth セットアップ完了
               </p>
               {authResult.accounts && authResult.accounts.length > 0 && (
@@ -209,8 +209,8 @@ export default function SetupClient({ secret }: Props) {
           )}
 
           {authStatus === "error" && authResult && (
-            <div className="bg-rose/10 border border-rose/20 rounded-btn p-3">
-              <p className="text-body-sm font-semibold text-rose">
+            <div className="bg-wine/10 border border-wine/20 rounded-btn p-3">
+              <p className="text-body-sm font-semibold text-wine-deep">
                 エラーが発生しました
               </p>
               <p className="text-[11px] text-ink-soft mt-1">

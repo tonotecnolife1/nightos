@@ -22,21 +22,21 @@ export function TeamPaceAlert({ paceList }: Props) {
       <Card
         className={`p-3 border ${
           risky.length > 0
-            ? "!border-rose/30 !bg-rose/5"
-            : "!border-amber/30 !bg-amber/5"
+            ? "!border-wine/30 !bg-wine/5"
+            : "!border-warning/30 !bg-warning/5"
         }`}
       >
         <div className="flex items-center gap-2">
           <AlertTriangle
             size={16}
             className={
-              risky.length > 0 ? "text-rose shrink-0" : "text-amber shrink-0"
+              risky.length > 0 ? "text-wine-deep shrink-0" : "text-warning shrink-0"
             }
           />
           <div className="flex-1 min-w-0">
             {risky.length > 0 ? (
               <>
-                <div className="text-body-sm font-medium text-rose">
+                <div className="text-body-sm font-medium text-wine-deep">
                   ミーティング注意: {risky.map((r) => r.castName).join("・")}
                   さん
                 </div>
@@ -46,7 +46,7 @@ export function TeamPaceAlert({ paceList }: Props) {
               </>
             ) : (
               <>
-                <div className="text-body-sm font-medium text-amber">
+                <div className="text-body-sm font-medium text-warning">
                   ペース遅れ: {behind.map((r) => r.castName).join("・")}さん
                 </div>
                 <div className="text-[10px] text-ink-soft mt-0.5">

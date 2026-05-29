@@ -389,7 +389,7 @@ function EntryCard({
             <button
               type="button"
               onClick={onComplete}
-              className="flex items-center gap-0.5 h-6 px-2 rounded-full bg-emerald/10 text-emerald border border-emerald/20 text-[10px] font-medium active:scale-[0.97]"
+              className="flex items-center gap-0.5 h-6 px-2 rounded-full bg-success/10 text-success border border-success/20 text-[10px] font-medium active:scale-[0.97]"
             >
               <Check size={9} />
               完了にする

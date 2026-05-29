@@ -172,8 +172,8 @@ function CastCard({ cast, customerCount, pace }: CastCardProps) {
       <Card
         className={cn(
           "p-3",
-          pace?.status === "meeting_risk" && "!border-rose/30 !bg-rose/5",
-          pace?.status === "behind" && "!border-amber/30 !bg-amber/5",
+          pace?.status === "meeting_risk" && "!border-wine/30 !bg-wine/5",
+          pace?.status === "behind" && "!border-warning/30 !bg-warning/5",
         )}
       >
         <div className="flex items-start justify-between mb-2">

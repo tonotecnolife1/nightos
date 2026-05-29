@@ -19,10 +19,10 @@ export function StoreInfoSection({ context }: { context: CustomerContext }) {
     <StoreInfoCard title="店舗からの共有情報">
       {/* 気をつけること — 最上部に目立つ警告カードとして表示 */}
       {customer.store_memo && (
-        <div className="flex gap-2.5 rounded-2xl bg-amber/10 border border-amber/40 px-3 py-2.5 mb-3">
-          <AlertTriangle size={15} className="text-amber shrink-0 mt-0.5" />
+        <div className="flex gap-2.5 rounded-2xl bg-warning/10 border border-warning/40 px-3 py-2.5 mb-3">
+          <AlertTriangle size={15} className="text-warning shrink-0 mt-0.5" />
           <div>
-            <p className="text-label-sm font-semibold text-amber mb-1">気をつけること</p>
+            <p className="text-label-sm font-semibold text-warning mb-1">気をつけること</p>
             <p className="text-body-sm text-ink leading-relaxed whitespace-pre-wrap">
               {customer.store_memo}
             </p>
@@ -73,7 +73,7 @@ function BottleRow({ bottle }: { bottle: Bottle }) {
         <span
           className={cn(
             "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-badge text-[10px] font-medium",
-            "bg-amber/20 text-amber border border-amber/40",
+            "bg-warning/20 text-warning border border-warning/40",
           )}
         >
           <AlertTriangle size={9} />

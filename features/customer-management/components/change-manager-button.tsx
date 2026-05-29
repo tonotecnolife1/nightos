@@ -122,8 +122,8 @@ export function ChangeManagerButton({
 
   if (submitted === "applied") {
     return (
-      <Card className="p-3 !border-emerald/30 !bg-emerald/5">
-        <div className="flex items-center gap-1.5 text-emerald text-body-sm">
+      <Card className="p-3 !border-success/30 !bg-success/5">
+        <div className="flex items-center gap-1.5 text-success text-body-sm">
           <Check size={14} />
           管理者を変更しました
         </div>
@@ -133,8 +133,8 @@ export function ChangeManagerButton({
 
   if (submitted === "pending") {
     return (
-      <Card className="p-3 !border-amber/30 !bg-amber/5">
-        <div className="text-amber text-body-sm font-medium">
+      <Card className="p-3 !border-warning/30 !bg-warning/5">
+        <div className="text-warning text-body-sm font-medium">
           承認申請を送信しました
         </div>
         <p className="text-[10px] text-ink-soft mt-1">

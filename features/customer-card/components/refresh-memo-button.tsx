@@ -79,10 +79,10 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
 
   if (applied) {
     return (
-      <Card className="p-3 !border-emerald/30 !bg-emerald/5">
+      <Card className="p-3 !border-success/30 !bg-success/5">
         <div className="flex items-center gap-2">
-          <Check size={14} className="text-emerald" />
-          <span className="text-body-sm text-emerald font-medium">
+          <Check size={14} className="text-success" />
+          <span className="text-body-sm text-success font-medium">
             メモを更新しました
           </span>
           <button
@@ -119,7 +119,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
           <button
             type="button"
             onClick={apply}
-            className="flex-1 h-9 rounded-btn bg-emerald/10 text-emerald border border-emerald/25 text-label-sm font-medium active:scale-[0.98]"
+            className="flex-1 h-9 rounded-btn bg-success/10 text-success border border-success/25 text-label-sm font-medium active:scale-[0.98]"
           >
             <Check size={12} className="inline mr-1" />
             この内容で更新
@@ -160,7 +160,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
           アプリ内の全情報でメモを自動更新
         </>
       )}
-      {error && <span className="text-rose text-[10px]">{error}</span>}
+      {error && <span className="text-wine-deep text-[10px]">{error}</span>}
     </button>
   );
 }

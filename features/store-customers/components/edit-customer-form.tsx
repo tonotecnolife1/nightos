@@ -144,7 +144,7 @@ export function EditCustomerForm({ customer, casts }: Props) {
       />
 
       {error && (
-        <div className="rounded-btn bg-rose/10 border border-rose/30 text-rose text-body-sm px-3 py-2">
+        <div className="rounded-btn bg-wine/10 border border-wine/30 text-wine-deep text-body-sm px-3 py-2">
           {error}
         </div>
       )}
@@ -164,7 +164,7 @@ export function EditCustomerForm({ customer, casts }: Props) {
         type="button"
         onClick={handleDelete}
         disabled={pending}
-        className="w-full flex items-center justify-center gap-1.5 h-10 mt-2 rounded-btn text-rose border border-rose/30 hover:bg-rose/10 disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-1.5 h-10 mt-2 rounded-btn text-wine-deep border border-wine/30 hover:bg-wine/10 disabled:opacity-50"
       >
         <Trash2 size={14} />
         この顧客を削除

@@ -147,7 +147,7 @@ function TimelineEntry({
               <span className="text-[10px] text-ink-mute">{time}</span>
               <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${
                 extracted.confidence === "high"
-                  ? "bg-emerald/10 text-emerald"
+                  ? "bg-success/10 text-success"
                   : extracted.confidence === "medium"
                     ? "bg-champagne-dark text-ink"
                     : "bg-pearl-soft text-ink-mute"

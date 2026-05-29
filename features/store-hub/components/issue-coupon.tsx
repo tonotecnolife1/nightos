@@ -72,7 +72,7 @@ export function IssueCoupon({ customers }: Props) {
       </div>
 
       {success ? (
-        <div className="flex items-center gap-1.5 text-[11px] text-emerald font-medium">
+        <div className="flex items-center gap-1.5 text-[11px] text-success font-medium">
           <Check size={12} />
           {success}
         </div>

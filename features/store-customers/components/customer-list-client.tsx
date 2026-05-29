@@ -187,7 +187,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
                   type="button"
                   onClick={() => handleDelete(c.id, c.name)}
                   disabled={pending}
-                  className="ml-auto w-7 h-7 rounded-full bg-pearl-soft text-rose flex items-center justify-center hover:bg-rose/10 active:scale-95 disabled:opacity-50"
+                  className="ml-auto w-7 h-7 rounded-full bg-pearl-soft text-wine-deep flex items-center justify-center hover:bg-wine/10 active:scale-95 disabled:opacity-50"
                   aria-label="削除"
                 >
                   <Trash2 size={11} />

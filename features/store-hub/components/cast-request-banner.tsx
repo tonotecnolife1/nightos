@@ -46,7 +46,7 @@ export function CastRequestBanner({ requests: initial }: { requests: Request[] }
             type="button"
             onClick={() => handleResolve(r.id)}
             disabled={pending}
-            className="w-7 h-7 rounded-full bg-pearl-warm border border-pearl-soft flex items-center justify-center text-emerald hover:bg-emerald/10 active:scale-95 shrink-0"
+            className="w-7 h-7 rounded-full bg-pearl-warm border border-pearl-soft flex items-center justify-center text-success hover:bg-success/10 active:scale-95 shrink-0"
             title="対応済み"
           >
             <Check size={12} />

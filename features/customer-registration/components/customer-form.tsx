@@ -190,8 +190,8 @@ export function CustomerForm({
       </div>
 
       {/* AI補完ヒント */}
-      <div className="flex items-start gap-2 px-3 py-2.5 rounded-2xl bg-emerald/5 border border-emerald/20">
-        <Bot size={14} className="text-emerald mt-0.5 shrink-0" />
+      <div className="flex items-start gap-2 px-3 py-2.5 rounded-2xl bg-success/5 border border-success/20">
+        <Bot size={14} className="text-success mt-0.5 shrink-0" />
         <p className="text-[11px] text-ink-soft leading-relaxed">
           職業・好みのお酒・話題などはルリママとのチャットから自動で補完されます。
         </p>

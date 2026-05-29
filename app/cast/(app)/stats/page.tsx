@@ -88,7 +88,7 @@ export default async function CastStatsPage() {
             value={data.followStreakDays}
             unit="日"
             tone="default"
-            icon={<Flame size={12} className="text-amber" />}
+            icon={<Flame size={12} className="text-warning" />}
           />
         </div>
 

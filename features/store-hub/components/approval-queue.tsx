@@ -93,7 +93,7 @@ export function ApprovalQueue() {
               <button
                 type="button"
                 onClick={() => approve(req.id)}
-                className="flex-1 h-9 rounded-btn bg-emerald/10 text-emerald border border-emerald/25 text-label-sm font-medium active:scale-[0.98] flex items-center justify-center gap-1"
+                className="flex-1 h-9 rounded-btn bg-success/10 text-success border border-success/25 text-label-sm font-medium active:scale-[0.98] flex items-center justify-center gap-1"
               >
                 <Check size={12} />
                 承認する

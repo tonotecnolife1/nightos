@@ -67,10 +67,10 @@ export function LineExchangeButton({
       ? `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
       : "";
     return (
-      <div className="rounded-card border border-emerald/25 bg-emerald/5 p-3 space-y-1.5">
+      <div className="rounded-card border border-success/25 bg-success/5 p-3 space-y-1.5">
         <div className="flex items-center gap-1.5">
-          <Check size={14} className="text-emerald" />
-          <span className="text-body-sm font-medium text-emerald">
+          <Check size={14} className="text-success" />
+          <span className="text-body-sm font-medium text-success">
             LINE交換済み
           </span>
           {dateStr && (
@@ -86,7 +86,7 @@ export function LineExchangeButton({
           <button
             type="button"
             onClick={handleUndo}
-            className="inline-flex items-center gap-0.5 text-[10px] text-ink-mute hover:text-rose underline underline-offset-2 shrink-0 ml-2"
+            className="inline-flex items-center gap-0.5 text-[10px] text-ink-mute hover:text-wine-deep underline underline-offset-2 shrink-0 ml-2"
           >
             <Undo2 size={9} />
             取り消す
@@ -102,8 +102,8 @@ export function LineExchangeButton({
       onClick={handleExchange}
       className={cn(
         "w-full flex items-center justify-center gap-1.5 h-11 rounded-btn",
-        "bg-emerald/10 border border-emerald/25 text-emerald font-medium",
-        "text-label-md transition-all active:scale-[0.98] hover:bg-emerald/15",
+        "bg-success/10 border border-success/25 text-success font-medium",
+        "text-label-md transition-all active:scale-[0.98] hover:bg-success/15",
       )}
     >
       <MessageCircle size={14} />

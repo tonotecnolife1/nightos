@@ -214,7 +214,7 @@ export function TemplateEditor({ category, onChange }: Props) {
                 <button
                   type="button"
                   onClick={() => handleDelete(t.id)}
-                  className="text-label-sm text-rose"
+                  className="text-label-sm text-wine-deep"
                   aria-label="削除"
                 >
                   <Trash2 size={11} />

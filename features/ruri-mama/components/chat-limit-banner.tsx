@@ -28,9 +28,9 @@ export function ChatLimitBanner() {
   if (atLimit) {
     return (
       <div className="px-4 py-3 bg-pearl-warm border-b border-pearl-soft">
-        <Card className="p-4 !border-amber !bg-amber/5">
+        <Card className="p-4 !border-amber !bg-warning/5">
           <div className="flex items-start gap-3">
-            <Lock size={18} className="text-amber shrink-0 mt-0.5" />
+            <Lock size={18} className="text-warning shrink-0 mt-0.5" />
             <div>
               <div className="text-body-md font-semibold text-ink">
                 今日の無料チャット回数に達しました
@@ -56,7 +56,7 @@ export function ChatLimitBanner() {
   if (usage.remaining <= 3) {
     return (
       <div className="px-4 py-2 flex items-center justify-center gap-2 bg-pearl-warm border-b border-pearl-soft">
-        <AlertCircle size={12} className="text-amber" />
+        <AlertCircle size={12} className="text-warning" />
         <span className="text-label-sm text-ink-soft">
           本日の残りチャット: {usage.remaining} / {CHAT_FREE_LIMIT}回
         </span>

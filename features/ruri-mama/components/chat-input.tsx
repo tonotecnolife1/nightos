@@ -77,7 +77,7 @@ export function ChatInput({
         </div>
       )}
       {voice.error && !voice.recording && (
-        <div className="mb-2 text-center text-label-sm text-rose">
+        <div className="mb-2 text-center text-label-sm text-wine-deep">
           {voice.error}
         </div>
       )}

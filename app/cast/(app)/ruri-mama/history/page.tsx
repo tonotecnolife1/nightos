@@ -178,7 +178,7 @@ function SessionRow({
               e.stopPropagation();
               if (confirm("この履歴を削除しますか？")) onDelete();
             }}
-            className="w-6 h-6 rounded-full text-ink-mute hover:text-rose flex items-center justify-center shrink-0"
+            className="w-6 h-6 rounded-full text-ink-mute hover:text-wine-deep flex items-center justify-center shrink-0"
           >
             <Trash2 size={11} />
           </button>

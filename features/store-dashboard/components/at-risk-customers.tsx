@@ -24,7 +24,7 @@ export function AtRiskCustomers({ targets }: Props) {
   return (
     <Card className="p-4 space-y-3">
       <div className="flex items-center gap-2 text-ink">
-        <AlertTriangle size={14} className="text-amber" />
+        <AlertTriangle size={14} className="text-warning" />
         <span className="text-label-md font-semibold">
           連絡が必要な顧客 — {targets.length}人
         </span>

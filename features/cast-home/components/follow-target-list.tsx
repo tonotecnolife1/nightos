@@ -54,17 +54,17 @@ export function FollowTargetList({ targets }: { targets: FollowTarget[] }) {
         </div>
         <span className="text-[10px] text-ink-mute shrink-0 flex items-center gap-1">
           {allDone ? (
-            <PartyPopper size={10} className="text-emerald" />
+            <PartyPopper size={10} className="text-success" />
           ) : (
-            <Check size={10} className={doneCount > 0 ? "text-emerald" : "text-ink-mute"} />
+            <Check size={10} className={doneCount > 0 ? "text-success" : "text-ink-mute"} />
           )}
           {doneCount}/{total}
         </span>
       </div>
 
       {allDone && (
-        <div className="text-center py-2 rounded-card bg-emerald/5 border border-emerald/15">
-          <p className="text-[11px] text-emerald font-medium">
+        <div className="text-center py-2 rounded-card bg-success/5 border border-success/15">
+          <p className="text-[11px] text-success font-medium">
             全員に連絡できた！おつかれさま🌸
           </p>
         </div>

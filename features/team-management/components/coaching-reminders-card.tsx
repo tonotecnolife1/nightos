@@ -115,13 +115,13 @@ export function CoachingRemindersCard({
             reasons.push({
               icon: <MessageCircle size={10} />,
               text: "1on1未実施",
-              tone: "bg-rose/15 text-rose",
+              tone: "bg-wine/15 text-wine-deep",
             });
           } else if (r.daysSinceCoaching >= staleThresholdDays) {
             reasons.push({
               icon: <MessageCircle size={10} />,
               text: `1on1 ${r.daysSinceCoaching}日空き`,
-              tone: "bg-amber/15 text-amber",
+              tone: "bg-warning/15 text-warning",
             });
           }
           if (r.goalNoteMissing) {

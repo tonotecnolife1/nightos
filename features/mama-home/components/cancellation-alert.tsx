@@ -45,11 +45,11 @@ export function CancellationAlert({ teamCasts, threshold = 2 }: Props) {
 
   return (
     <Link href={topLink} className="block active:scale-[0.99] transition-transform">
-      <Card className="p-3 border !border-rose/30 !bg-rose/5">
+      <Card className="p-3 border !border-wine/30 !bg-wine/5">
         <div className="flex items-center gap-2">
-          <AlertTriangle size={16} className="text-rose shrink-0" />
+          <AlertTriangle size={16} className="text-wine-deep shrink-0" />
           <div className="flex-1 min-w-0">
-            <div className="text-body-sm font-medium text-rose flex items-center gap-1">
+            <div className="text-body-sm font-medium text-wine-deep flex items-center gap-1">
               <XCircle size={12} />
               同伴キャンセル多め
             </div>

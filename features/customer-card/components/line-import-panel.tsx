@@ -258,7 +258,7 @@ function SuccessState({
 }) {
   return (
     <div className="text-center py-3 space-y-3">
-      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald/20 text-emerald">
+      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-success/20 text-success">
         <Check size={22} />
       </div>
       <p className="text-body-md text-ink">
@@ -286,7 +286,7 @@ function ErrorState({
 }) {
   return (
     <div className="space-y-3">
-      <div className="flex items-start gap-2 text-rose">
+      <div className="flex items-start gap-2 text-wine-deep">
         <AlertCircle size={16} className="mt-0.5 shrink-0" />
         <p className="text-body-sm text-ink leading-relaxed">{message}</p>
       </div>
@@ -380,8 +380,8 @@ function ReviewPanel({
   return (
     <div className="space-y-4">
       {isStub && (
-        <div className="flex items-start gap-2 rounded-btn bg-amber/10 border border-amber/40 px-3 py-2 text-body-sm text-ink">
-          <AlertCircle size={14} className="mt-0.5 text-amber shrink-0" />
+        <div className="flex items-start gap-2 rounded-btn bg-warning/10 border border-warning/40 px-3 py-2 text-body-sm text-ink">
+          <AlertCircle size={14} className="mt-0.5 text-warning shrink-0" />
           <span>
             デモ応答モードのため、実際のスクショ内容は読み取られていません
           </span>
@@ -468,9 +468,9 @@ function ConfidenceBadge({
   confidence: MemoExtractionResult["confidence"];
 }) {
   const labels = {
-    high: { text: "確信度: 高", cls: "bg-emerald/15 text-emerald" },
-    medium: { text: "確信度: 中", cls: "bg-amber/15 text-amber" },
-    low: { text: "確信度: 低", cls: "bg-rose/15 text-rose" },
+    high: { text: "確信度: 高", cls: "bg-success/15 text-success" },
+    medium: { text: "確信度: 中", cls: "bg-warning/15 text-warning" },
+    low: { text: "確信度: 低", cls: "bg-wine/15 text-wine-deep" },
   };
   const { text, cls } = labels[confidence];
   return (
@@ -629,7 +629,7 @@ function ScreenshotHistoryRow({
             type="button"
             onClick={handleDelete}
             disabled={pending}
-            className="flex items-center gap-1 text-label-sm text-rose hover:underline disabled:opacity-50"
+            className="flex items-center gap-1 text-label-sm text-wine-deep hover:underline disabled:opacity-50"
           >
             <Trash2 size={12} />
             履歴から削除

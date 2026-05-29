@@ -93,7 +93,7 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
           </div>
           <div>
             <div className="text-[10px] text-ink-mute">LINE交換率</div>
-            <div className="text-body-md font-display text-emerald">
+            <div className="text-body-md font-display text-success">
               {Math.round(stats.lineExchangedRate * 100)}
               <span className="text-[10px] text-ink-mute ml-0.5">%</span>
             </div>
@@ -166,7 +166,7 @@ function CastFunnelRow({
         />
         <div className="h-full bg-emerald" style={{ width: `${lineExPct}%` }} />
       </div>
-      <span className="text-[10px] text-emerald font-medium shrink-0 w-9 text-right">
+      <span className="text-[10px] text-success font-medium shrink-0 w-9 text-right">
         {linePct}%
       </span>
     </div>

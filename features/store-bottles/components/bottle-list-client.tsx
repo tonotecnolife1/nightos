@@ -105,13 +105,13 @@ export function BottleListClient({ bottles: initial }: Props) {
                         {b.brand}
                       </span>
                       {isLow && !isEmpty && (
-                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-amber/20 text-amber text-[10px] font-medium border border-amber/40">
+                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-warning/20 text-warning text-[10px] font-medium border border-warning/40">
                           <AlertTriangle size={9} />
                           残りわずか
                         </span>
                       )}
                       {isEmpty && (
-                        <span className="px-1.5 py-0.5 rounded-badge bg-rose/15 text-rose text-[10px] font-medium">
+                        <span className="px-1.5 py-0.5 rounded-badge bg-wine/15 text-wine-deep text-[10px] font-medium">
                           空
                         </span>
                       )}
@@ -136,7 +136,7 @@ export function BottleListClient({ bottles: initial }: Props) {
                     className={cn(
                       "h-full transition-all",
                       isEmpty
-                        ? "bg-rose/50"
+                        ? "bg-wine/50"
                         : isLow
                           ? "bg-amber"
                           : "bg-gradient-rose-gold",
@@ -162,7 +162,7 @@ export function BottleListClient({ bottles: initial }: Props) {
                       handleDelete(b.id, b.brand, b.customer_name)
                     }
                     disabled={pending}
-                    className="w-9 h-9 rounded-full bg-pearl-soft text-rose flex items-center justify-center hover:bg-rose/10 active:scale-95 disabled:opacity-50"
+                    className="w-9 h-9 rounded-full bg-pearl-soft text-wine-deep flex items-center justify-center hover:bg-wine/10 active:scale-95 disabled:opacity-50"
                     aria-label="削除"
                   >
                     <Trash2 size={14} />

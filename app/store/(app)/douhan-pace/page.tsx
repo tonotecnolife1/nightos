@@ -65,21 +65,21 @@ export default function StoreDouhanPacePage() {
       <div className="px-5 pt-4 pb-6 space-y-5">
         {/* Summary */}
         <div className="grid grid-cols-2 gap-2.5">
-          <Card className="p-3 !border-rose/30 !bg-rose/5">
-            <div className="text-[10px] text-rose flex items-center gap-1">
+          <Card className="p-3 !border-wine/30 !bg-wine/5">
+            <div className="text-[10px] text-wine-deep flex items-center gap-1">
               <AlertTriangle size={10} />
               ミーティング注意
             </div>
-            <div className="text-display-sm font-display text-rose mt-0.5">
+            <div className="text-display-sm font-display text-wine-deep mt-0.5">
               {meetingRiskCount}人
             </div>
           </Card>
-          <Card className="p-3 !border-amber/30 !bg-amber/5">
-            <div className="text-[10px] text-amber flex items-center gap-1">
+          <Card className="p-3 !border-warning/30 !bg-warning/5">
+            <div className="text-[10px] text-warning flex items-center gap-1">
               <Clock size={10} />
               ペース遅れ
             </div>
-            <div className="text-display-sm font-display text-amber mt-0.5">
+            <div className="text-display-sm font-display text-warning mt-0.5">
               {behindCount}人
             </div>
           </Card>
@@ -129,8 +129,8 @@ export default function StoreDouhanPacePage() {
                   className={cn(
                     "p-3 space-y-2",
                     pace.status === "meeting_risk" &&
-                      "!border-rose/30 !bg-rose/5",
-                    pace.status === "behind" && "!border-amber/30 !bg-amber/5",
+                      "!border-wine/30 !bg-wine/5",
+                    pace.status === "behind" && "!border-warning/30 !bg-warning/5",
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -190,13 +190,13 @@ export default function StoreDouhanPacePage() {
                       />
                     </div>
                     {pace.status === "meeting_risk" && (
-                      <div className="text-[10px] text-rose mt-1">
+                      <div className="text-[10px] text-wine-deep mt-1">
                         見込み {pace.projectedMonthCount}回 (目標未達)
                         → ミーティング対象
                       </div>
                     )}
                     {pace.status === "behind" && (
-                      <div className="text-[10px] text-amber mt-1">
+                      <div className="text-[10px] text-warning mt-1">
                         見込み {pace.projectedMonthCount}回 — あと
                         {Math.max(0, pace.monthTarget - pace.thisMonthCount)}回
                         必要

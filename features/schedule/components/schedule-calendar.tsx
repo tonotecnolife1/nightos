@@ -136,7 +136,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
             key={d}
             className={cn(
               "text-center text-[11px] font-medium py-1",
-              i === 0 ? "text-rose-400" : i === 6 ? "text-sky-400" : "text-ink-mute",
+              i === 0 ? "text-wine-deep-400" : i === 6 ? "text-sky-400" : "text-ink-mute",
             )}
           >
             {d}
@@ -170,7 +170,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
                     : "hover:bg-pearl-soft text-ink",
                 isToday && !shift && "ring-2 ring-amethyst/40 ring-offset-1",
                 isPast && !shift && "opacity-50",
-                dow === 0 && !shift && "text-rose-400",
+                dow === 0 && !shift && "text-wine-deep-400",
                 dow === 6 && !shift && "text-sky-400",
               )}
             >

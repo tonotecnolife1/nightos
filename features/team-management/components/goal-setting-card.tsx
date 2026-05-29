@@ -132,10 +132,10 @@ export function GoalSettingCard({ castId, castName, goal, setterName }: Props) {
           />
 
           {error && (
-            <div className="text-rose text-body-sm">{error}</div>
+            <div className="text-wine-deep text-body-sm">{error}</div>
           )}
           {success && (
-            <div className="flex items-center gap-1.5 text-emerald text-body-sm">
+            <div className="flex items-center gap-1.5 text-success text-body-sm">
               <Check size={13} />
               目標を保存しました
             </div>

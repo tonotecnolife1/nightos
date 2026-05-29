@@ -19,13 +19,13 @@ export const STATUS_CONFIG: Record<
   vip_alert: {
     label: "大事なお客様！",
     emoji: "🔴",
-    color: "text-rose bg-rose/10 border-rose/20",
+    color: "text-wine-deep bg-wine/10 border-wine/20",
     sortOrder: 0,
   },
   at_risk: {
     label: "連絡しよう",
     emoji: "🟡",
-    color: "text-amber bg-amber/10 border-amber/20",
+    color: "text-warning bg-warning/10 border-warning/20",
     sortOrder: 1,
   },
   new: {
@@ -37,7 +37,7 @@ export const STATUS_CONFIG: Record<
   active: {
     label: "順調",
     emoji: "🟢",
-    color: "text-emerald bg-emerald/10 border-emerald/20",
+    color: "text-success bg-success/10 border-success/20",
     sortOrder: 3,
   },
   dormant: {

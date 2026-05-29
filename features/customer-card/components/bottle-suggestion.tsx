@@ -79,7 +79,7 @@ export function BottleSuggestion({ customerId }: Props) {
       <button
         type="button"
         onClick={handleClick}
-        className="w-full mt-2 h-9 rounded-btn bg-pearl-warm border border-rose/40 text-rose text-label-sm"
+        className="w-full mt-2 h-9 rounded-btn bg-pearl-warm border border-wine/40 text-wine-deep text-label-sm"
       >
         失敗しました。もう一度試す
       </button>

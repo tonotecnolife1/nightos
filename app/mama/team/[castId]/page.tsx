@@ -93,10 +93,10 @@ export default async function MamaTeamCastDetailPage({
         {/* Coaching chat link */}
         <Link
           href={`/cast/chat/${coachingRoomId}`}
-          className="flex items-center justify-between p-3 rounded-btn border border-emerald/30 bg-emerald/5 hover:bg-emerald/10 transition-colors"
+          className="flex items-center justify-between p-3 rounded-btn border border-success/30 bg-success/5 hover:bg-success/10 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <BookOpen size={15} className="text-emerald shrink-0" />
+            <BookOpen size={15} className="text-success shrink-0" />
             <div>
               <div className="text-body-sm font-medium text-ink">
                 指導ノートを開く

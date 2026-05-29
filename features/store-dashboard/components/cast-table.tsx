@@ -39,10 +39,10 @@ export function CastTable({
           >
             <div className="flex items-center gap-1 font-medium">
               {isTop && (
-                <TrendingUp size={12} className="text-emerald shrink-0" />
+                <TrendingUp size={12} className="text-success shrink-0" />
               )}
               {isBottom && stats.length > 1 && !isTop && (
-                <TrendingDown size={12} className="text-amber shrink-0" />
+                <TrendingDown size={12} className="text-warning shrink-0" />
               )}
               <span>{s.cast.name}</span>
             </div>
@@ -53,9 +53,9 @@ export function CastTable({
               className={cn(
                 "text-right",
                 s.followRate >= 0.7
-                  ? "text-emerald font-medium"
+                  ? "text-success font-medium"
                   : s.followRate < 0.5
-                    ? "text-amber"
+                    ? "text-warning"
                     : "",
               )}
             >
@@ -81,12 +81,12 @@ export function CastTable({
       {/* Legend */}
       <div className="pt-2 border-t border-pearl-soft text-label-sm text-ink-mute space-y-0.5">
         <div className="flex items-center gap-1">
-          <TrendingUp size={10} className="text-emerald" />
+          <TrendingUp size={10} className="text-success" />
           売上トップ
         </div>
         <div>
-          連絡達成率: <span className="text-emerald font-medium">緑70%↑</span>
-          /<span className="text-amber"> 黄50%↓</span>
+          連絡達成率: <span className="text-success font-medium">緑70%↑</span>
+          /<span className="text-warning"> 黄50%↓</span>
         </div>
         <div>ARPU = 月売上 ÷ 担当顧客数</div>
       </div>

@@ -82,7 +82,7 @@ export function CustomerPhotoUpload({ customerId, customerName }: Props) {
           <button
             type="button"
             onClick={removePhoto}
-            className="text-label-sm text-rose flex items-center gap-1 mt-0.5"
+            className="text-label-sm text-wine-deep flex items-center gap-1 mt-0.5"
           >
             <X size={11} />
             写真を削除

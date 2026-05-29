@@ -350,9 +350,9 @@ export function ChatRoomView({
 
       {/* Coaching banner */}
       {isCoaching && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-emerald/5 border-b border-emerald/20">
-          <BookOpen size={13} className="text-emerald shrink-0" />
-          <p className="text-[11px] text-emerald">
+        <div className="flex items-center gap-2 px-4 py-2 bg-success/5 border-b border-success/20">
+          <BookOpen size={13} className="text-success shrink-0" />
+          <p className="text-[11px] text-success">
             指導ノート — ここでのやり取りは育成記録として残ります
           </p>
         </div>
@@ -584,7 +584,7 @@ export function ChatRoomView({
               key={chip}
               type="button"
               onClick={() => setInput((prev) => (prev ? prev + "\n" + chip : chip))}
-              className="shrink-0 px-2.5 py-1 rounded-full bg-emerald/10 text-emerald text-[11px] font-medium border border-emerald/20 hover:bg-emerald/20 transition-colors"
+              className="shrink-0 px-2.5 py-1 rounded-full bg-success/10 text-success text-[11px] font-medium border border-success/20 hover:bg-success/20 transition-colors"
             >
               {chip}
             </button>
@@ -785,7 +785,7 @@ function MessageRow({
               </span>
             )}
             {isCoaching && !msg.is_bot && (
-              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-emerald/10 text-emerald border border-emerald/20">
+              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-success/10 text-success border border-success/20">
                 指導
               </span>
             )}

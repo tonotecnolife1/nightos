@@ -91,10 +91,10 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
 
   const confidenceBadge =
     result?.confidence === "high"
-      ? { label: "精度: 高", cls: "bg-emerald/10 text-emerald border-emerald/30" }
+      ? { label: "精度: 高", cls: "bg-success/10 text-success border-success/30" }
       : result?.confidence === "medium"
-        ? { label: "精度: 中", cls: "bg-amber/10 text-amber border-amber/30" }
-        : { label: "精度: 低", cls: "bg-rose/10 text-rose border-rose/30" };
+        ? { label: "精度: 中", cls: "bg-warning/10 text-warning border-warning/30" }
+        : { label: "精度: 低", cls: "bg-wine/10 text-wine-deep border-wine/30" };
 
   return (
     <Card className="p-3 !border-gold/30 !bg-champagne-soft/30 space-y-2.5">
@@ -158,7 +158,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
       )}
 
       {error && (
-        <div className="flex items-start gap-1.5 rounded-btn bg-rose/10 border border-rose/30 text-rose text-label-sm px-2.5 py-2">
+        <div className="flex items-start gap-1.5 rounded-btn bg-wine/10 border border-wine/30 text-wine-deep text-label-sm px-2.5 py-2">
           <AlertCircle size={12} className="mt-0.5 shrink-0" />
           <span>{error}</span>
         </div>
@@ -190,7 +190,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           </div>
 
           {!result.name ? (
-            <p className="text-[10px] text-rose">
+            <p className="text-[10px] text-wine-deep">
               お名前が読み取れませんでした。別の写真をお試しください。
             </p>
           ) : (

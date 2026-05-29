@@ -97,7 +97,7 @@ export function VisitListClient({ visits: initial }: Props) {
                   type="button"
                   onClick={() => handleDelete(v.id, v.customer_name)}
                   disabled={pending}
-                  className="w-9 h-9 rounded-full bg-pearl-soft text-rose flex items-center justify-center hover:bg-rose/10 active:scale-95 disabled:opacity-50"
+                  className="w-9 h-9 rounded-full bg-pearl-soft text-wine-deep flex items-center justify-center hover:bg-wine/10 active:scale-95 disabled:opacity-50"
                   aria-label="削除"
                 >
                   <Trash2 size={14} />
