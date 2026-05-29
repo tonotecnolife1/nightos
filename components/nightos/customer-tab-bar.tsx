@@ -43,7 +43,7 @@ export function CustomerTabBar() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
       <div className="mx-auto max-w-[520px] px-4 pb-safe pointer-events-auto">
-        <div className="rounded-full bg-pearl-warm/95 backdrop-blur-md border border-pearl-soft shadow-elevated-light flex items-center justify-around px-2 py-2">
+        <div className="rounded-full glass border border-ink/[0.08] shadow-warm flex items-center justify-around px-2 py-2">
           {TABS.map((tab) => {
             const active = tab.match(pathname);
             const Icon = tab.icon;
@@ -51,14 +51,26 @@ export function CustomerTabBar() {
               <Link key={tab.key} href={tab.href} className="flex-1">
                 <div
                   className={cn(
-                    "flex flex-col items-center justify-center gap-0.5 h-12 rounded-full transition-all",
+                    "relative flex flex-col items-center justify-center gap-0.5 h-12 rounded-full transition-all",
                     active
-                      ? "bg-champagne text-ink"
-                      : "text-ink-muted hover:text-ink-secondary",
+                      ? "text-roseGold-deep"
+                      : "text-ink-mute hover:text-ink-soft",
                   )}
                 >
-                  <Icon size={18} />
-                  <span className="text-[10px] font-medium tracking-wide">
+                  {active && (
+                    <span
+                      aria-hidden
+                      className="absolute top-0 w-[26px] h-[2.5px] rounded-full bg-gold-metallic"
+                      style={{ boxShadow: "0 1px 4px rgba(184,148,85,0.5)" }}
+                    />
+                  )}
+                  <Icon size={18} strokeWidth={active ? 1.8 : 1.5} />
+                  <span
+                    className={cn(
+                      "text-[10px] tracking-[0.06em]",
+                      active ? "text-ink font-medium" : "font-normal",
+                    )}
+                  >
                     {tab.label}
                   </span>
                 </div>

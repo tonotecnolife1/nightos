@@ -10,25 +10,25 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
 }
 
-// design.md §4.2 — pill 形状 + フローティング影 + hover で 1px 持ち上げ
+// v6: pill 形状 + shadow tier (matte philosophy: drop shadow only)
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-pill font-medium tracking-wide transition will-change-transform select-none hover:-translate-y-px active:translate-y-px disabled:opacity-50 disabled:pointer-events-none disabled:hover:translate-y-0";
+  "inline-flex items-center justify-center gap-2 rounded-pill font-semibold tracking-[0.04em] transition will-change-transform select-none hover:-translate-y-px active:translate-y-px disabled:opacity-50 disabled:pointer-events-none disabled:hover:translate-y-0";
 
 const variants: Record<Variant, string> = {
-  // 主要操作 — blush ソフトグラデ + フロート影
+  // 主要操作 — v6 rose-gold-deep solid + shadow-luxe
   primary:
-    "bg-gradient-blush text-ink shadow-float hover:brightness-[1.02]",
-  // 副次 — 半透明白 + 細枠
+    "bg-roseGold-deep text-pearl-light shadow-luxe hover:bg-roseGold-deep/95 active:bg-roseGold-deep",
+  // 副次 — glass-pearl + line-strong border
   secondary:
-    "bg-pearl-warm text-ink border border-ink/[0.08] shadow-soft hover:border-gold/30",
+    "glass text-roseGold-ink hover:bg-pearl-warm/70",
   // テキストリンク調
   ghost:
-    "text-ink-secondary hover:text-ink hover:bg-pearl-soft hover:translate-y-0",
-  // primary と同義（ruri は v1 名残のエイリアス。新しい画面では primary を使う）
-  ruri: "bg-gradient-blush text-ink shadow-float hover:brightness-[1.02]",
-  // outline — gold 細線
+    "text-ink-soft hover:text-ink hover:bg-pearl-soft hover:translate-y-0",
+  // primary と同義 (v1 名残のエイリアス)
+  ruri: "bg-roseGold-deep text-pearl-light shadow-luxe hover:bg-roseGold-deep/95",
+  // outline — rose-gold-deep 細線
   outline:
-    "bg-pearl-warm/80 text-ink border border-gold/30 shadow-soft hover:border-gold/50",
+    "bg-transparent text-roseGold-deep border border-roseGold-deep hover:bg-roseGold-soft/30",
 };
 
 const sizes: Record<Size, string> = {
