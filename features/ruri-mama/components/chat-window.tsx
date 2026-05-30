@@ -642,6 +642,9 @@ export function ChatWindow({
         )}
       </div>
 
+      {/* 入力欄の上のタブストリップ（他タブへの導線） */}
+      <ChatNavStrip />
+
       <ChatInput
         onSend={handleUserSend}
         disabled={isInputDisabled}

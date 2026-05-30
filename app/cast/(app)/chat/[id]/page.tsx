@@ -73,23 +73,35 @@ async function resolveRoom(
   // 新規作成された合成 DM ID（mock モード）。
   // 既存 room が無いので、ID からメンバーを復元して空ルームを生成する。
   // 合成 ID 形式: `dm_${[castId, recipientId].sort().join("_")}`
-  // cast ID は `cast-N`（_ を含まない）なので _ 区切りで安全に分解できる。
+  // cast ID 自体に "_" を含む（例: cast_help2）ため単純 split できない。
+  // 既知の cast ID の組み合わせから一致するペアを探して復元する。
   if (id.startsWith("dm_")) {
-    const memberIds = id.slice(3).split("_");
-    if (memberIds.length === 2 && memberIds.includes(castId)) {
-      const nameOf = (cid: string) =>
-        mockStoreCasts.find((c) => c.id === cid)?.name ??
-        mockCasts.find((c) => c.id === cid)?.name ??
-        "キャスト";
+    const suffix = id.slice(3);
+    const known = [
+      ...mockStoreCasts.map((c) => ({ id: c.id, name: c.name })),
+      ...mockCasts.map((c) => ({ id: c.id, name: c.name })),
+    ];
+    const partner = known.find(
+      (c) =>
+        c.id !== castId &&
+        [castId, c.id].sort().join("_") === suffix,
+    );
+    if (partner) {
+      const selfName =
+        known.find((c) => c.id === castId)?.name ?? "あなた";
+      const ordered = [
+        { id: castId, name: selfName },
+        { id: partner.id, name: partner.name },
+      ];
       const room: ChatRoom = {
         id,
+        store_id: "store1",
         type: "dm",
         name: null,
-        member_ids: memberIds,
-        member_names: memberIds.map(nameOf),
-        last_message: null,
-        last_message_at: null,
-        unread_count: 0,
+        member_ids: ordered.map((c) => c.id),
+        member_names: ordered.map((c) => c.name),
+        visible_to_seniors: false,
+        created_at: new Date().toISOString(),
       };
       return { room, messages: [] };
     }
