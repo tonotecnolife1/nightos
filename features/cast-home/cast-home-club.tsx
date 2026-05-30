@@ -48,6 +48,13 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
             icon={<UserPlus size={11} className="text-gold" />}
             tone="rose"
           />
+          <StatCard
+            label="今月の同伴数"
+            value={summary.douhanCount ?? 0}
+            unit="件"
+            icon={<Users size={11} className="text-gold" />}
+            tone="wine"
+          />
           <Link href="/cast/stats#repeat" className="block">
             <StatCard
               label="再来店率"
@@ -58,13 +65,6 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
               className="h-full cursor-pointer hover:shadow-float hover:-translate-y-px transition will-change-transform"
             />
           </Link>
-          <StatCard
-            label="同伴数"
-            value={summary.douhanCount ?? 0}
-            unit="件"
-            icon={<Users size={11} className="text-gold" />}
-            tone="wine"
-          />
         </div>
 
         <SakuraMamaCard castId={data.cast.id} />
