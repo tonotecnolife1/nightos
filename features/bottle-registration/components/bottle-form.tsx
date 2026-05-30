@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Wine } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/nightos/button";
 import { SelectInput } from "@/components/nightos/select";
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function BottleForm({ customers, initialCustomerId }: Props) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [brand, setBrand] = useState("");
   const [customerId, setCustomerId] = useState(initialCustomerId ?? customers[0]?.id ?? "");
@@ -45,7 +47,8 @@ export function BottleForm({ customers, initialCustomerId }: Props) {
         `${cust?.name ?? "顧客"}さんの${res.bottle.brand}（残 約${remainingPct}%）を登録しました`,
       );
       reset();
-      setTimeout(() => setSuccess(null), 3500);
+      // 登録後はホームではなくボトル一覧へ遷移し、登録結果を確認できるようにする
+      router.push("/store/bottles");
     });
   };
 
