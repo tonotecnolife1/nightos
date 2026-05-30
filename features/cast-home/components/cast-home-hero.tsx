@@ -330,8 +330,8 @@ export function CastHomeHero({
       <div className="relative mt-6">
         <Link
           href="/cast/schedule"
-          className="v5-cta-primary w-full h-[52px] rounded-pill inline-flex items-center justify-center gap-2 font-sans font-semibold transition active:scale-[0.99]"
-          style={{ letterSpacing: "0.08em", fontSize: 14 }}
+          className="v5-cta-primary w-full h-12 rounded-pill inline-flex items-center justify-center gap-2 font-sans font-semibold transition active:scale-[0.99]"
+          style={{ letterSpacing: "0.08em", fontSize: 13 }}
         >
           {loaded && !hasEvents
             ? "スケジュールを編集"
