@@ -91,8 +91,8 @@ export default async function CastStatsPage() {
         {/* ── さくらママ活用度 ── */}
         <AiUsageSummary />
 
-        {/* ── 再来店率の動き ── */}
-        <StatsTrendChart points={data.repeatTrend} />
+        {/* ── 再来店率の動き (月次) ── */}
+        <StatsTrendChart points={data.repeatTrendMonthly} />
 
         {/* ── 年間成績 ── */}
         <section className="flex flex-col gap-3">

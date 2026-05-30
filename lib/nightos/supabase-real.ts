@@ -42,6 +42,7 @@ import type { StoreToCastMessage, CastToStoreRequest } from "./mock-data";
 import type { TrendPoint, RepeatPoint } from "./store-mock-data";
 import type { StoreDashboardData, CastStatsData } from "./supabase-queries";
 import { selectFollowTargets } from "@/features/cast-home/data/follow-selector";
+import { buildMonthlyRepeatTrend } from "./stats-trend";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -973,6 +974,7 @@ export async function getCastStatsDataReal(
       douhanGoal: goal.douhanGoal,
     },
     repeatTrend,
+    repeatTrendMonthly: buildMonthlyRepeatTrend(cast.repeat_rate, now, 6),
     followStreakDays,
   };
 }
