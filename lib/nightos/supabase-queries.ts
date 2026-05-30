@@ -36,6 +36,7 @@ import {
   type TrendPoint,
 } from "./store-mock-data";
 import { CURRENT_STORE_ID, DEMO_CAST_IDS } from "./constants";
+import { buildMonthlyRepeatTrend } from "./stats-trend";
 import {
   consumeBottleReal,
   createBottleReal,
@@ -1013,6 +1014,8 @@ export interface CastStatsData {
   };
   /** Last 4 weeks of repeat rate for THIS cast only. */
   repeatTrend: { week: string; label: string; rate: number }[];
+  /** Last 6 months of repeat rate for THIS cast only (month-granularity chart). */
+  repeatTrendMonthly: { id: string; label: string; rate: number }[];
   /** A 0..1 follow streak score for the last 7 days. */
   followStreakDays: number;
 }
@@ -1090,6 +1093,7 @@ async function getCastStatsDataMock(castId: string): Promise<CastStatsData> {
     },
     targets,
     repeatTrend,
+    repeatTrendMonthly: buildMonthlyRepeatTrend(cast.repeat_rate, now, 6),
     followStreakDays,
   };
 }

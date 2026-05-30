@@ -1,12 +1,12 @@
 interface Props {
-  /** rate は 0..1。週次など任意の粒度。 */
-  points: { week: string; label: string; rate: number }[];
+  /** rate は 0..1。月次など任意の粒度。id は React key + 一意性に使う。 */
+  points: { id: string; label: string; rate: number }[];
 }
 
 /**
  * 再来店率の推移ライン (SVG)。
  * champagne fill + rose-gold metallic 線 + 末尾ドット。
- * (design ref: cast-stats.jsx TrendChart — 実データの週次 points に bind)
+ * (design ref: cast-stats.jsx TrendChart — 実データの月次 points に bind)
  */
 export function StatsTrendChart({ points }: Props) {
   const W = 320;
@@ -65,7 +65,7 @@ export function StatsTrendChart({ points }: Props) {
             className="font-sans text-[10px] leading-none text-ink-mute"
             style={{ letterSpacing: "0.16em" }}
           >
-            RETENTION
+            RETENTION · MONTHLY
           </div>
           <div
             className="mt-1.5 font-serif text-[16px] leading-none font-medium text-ink"
@@ -145,7 +145,7 @@ export function StatsTrendChart({ points }: Props) {
         {/* point dots */}
         {coords.map((c, i) => (
           <circle
-            key={points[i].week}
+            key={points[i].id}
             cx={c[0]}
             cy={c[1]}
             r={i === coords.length - 1 ? 3.5 : 2.5}
@@ -158,7 +158,7 @@ export function StatsTrendChart({ points }: Props) {
         {/* x labels */}
         {points.map((p, i) => (
           <text
-            key={p.week}
+            key={p.id}
             x={padL + i * xStep}
             y={H - 4}
             fill="var(--ink-mute)"
