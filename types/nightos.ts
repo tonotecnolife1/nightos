@@ -74,7 +74,13 @@ export interface Customer {
   id: string;
   store_id: string;
   cast_id: string;
+  /** フルネーム（戸籍名・名刺名）。リスト・通知の主表示はこちら。 */
   name: string;
+  /**
+   * 呼び名（ニックネーム）。カルテのサブ表示・接客時の呼びかけに使用。
+   * 入力推奨だが nullable。
+   */
+  nickname?: string | null;
   birthday: string | null; // YYYY-MM-DD
   job: string | null;
   favorite_drink: string | null;

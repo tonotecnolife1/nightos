@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Loader2, Sparkles, X } from "lucide-react";
+import { Check, Loader2, RefreshCw, X } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/nightos/card";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ interface RefreshedMemo {
 /**
  * 「最新情報でメモを更新する」ボタン。
  * タップするとアプリ内のあらゆる情報（来店履歴・ボトル・同伴・LINEスクショ）から
- * さくらママがメモを合成する。差分を確認してから適用できる。
+ * メモを再合成する。差分を確認してから適用できる。
  */
 export function RefreshMemoButton({ customerId, castId, current }: Props) {
   const [loading, setLoading] = useState(false);
@@ -99,10 +99,11 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
 
   if (preview) {
     return (
-      <Card className="p-3 !border-gold/30 !bg-champagne-soft/60/20 space-y-3">
+      <Card className="p-3 !border-gold/30 !bg-champagne-soft/40 space-y-3">
         <div className="flex items-center gap-1.5">
-          <Sparkles size={14} className="text-gold-deep" />
+          <RefreshCw size={14} className="text-gold-deep" />
           <span className="text-body-sm font-medium text-gold-deep">
+
             メモ更新プレビュー
           </span>
         </div>
@@ -146,18 +147,18 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
         "w-full flex items-center justify-center gap-1.5 h-10 rounded-btn border transition-all active:scale-[0.98]",
         loading
           ? "bg-pearl-soft text-ink-mute border-pearl-soft"
-          : "bg-champagne-soft/60 text-gold-deep border-gold/30 hover:bg-champagne-soft/60/70",
+          : "bg-champagne-soft/60 text-gold-deep border-gold/30 hover:bg-champagne-soft/80",
       )}
     >
       {loading ? (
         <>
           <Loader2 size={13} className="animate-spin" />
-          さくらママがメモを合成中…
+          メモを生成中…
         </>
       ) : (
         <>
-          <Sparkles size={13} />
-          アプリ内の全情報でメモを自動更新
+          <RefreshCw size={13} />
+          アプリ内の最新情報でメモを更新
         </>
       )}
       {error && <span className="text-wine-deep text-[10px]">{error}</span>}

@@ -45,6 +45,7 @@ export function CustomerForm({
   const defaultCastId = lockedCastId ?? casts[0]?.id ?? "";
 
   const [name, setName] = useState("");
+  const [nickname, setNickname] = useState("");
   const [birthday, setBirthday] = useState("");
   const [category, setCategory] = useState<CustomerCategory>("new");
   const [castId, setCastId] = useState(defaultCastId);
@@ -62,6 +63,7 @@ export function CustomerForm({
 
   const reset = () => {
     setName("");
+    setNickname("");
     setBirthday("");
     setCategory("new");
     setCastId(defaultCastId);
@@ -86,6 +88,7 @@ export function CustomerForm({
     startTransition(async () => {
       const res = await createCustomerAction({
         name: name.trim(),
+        nickname: nickname.trim() || null,
         birthday: birthday || null,
         job: null,
         favorite_drink: null,
@@ -125,15 +128,37 @@ export function CustomerForm({
       {/* 名刺スキャン */}
       <BusinessCardUpload onApply={applyBusinessCard} mode="new" />
 
-      {/* お名前（必須） */}
+      {/* お名前（必須）— フルネーム */}
       <TextInput
-        label="お名前"
+        label="お名前（フルネーム）"
         name="name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="例: 田中 太郎"
         required
       />
+
+      {/* 呼び名（入力推奨） */}
+      <div className="space-y-1.5">
+        <label className="text-label-md text-ink font-medium flex items-center gap-2">
+          呼び名
+          <span className="text-[10px] px-1.5 py-0.5 rounded-badge bg-wine-soft/30 text-wine-deep font-medium">
+            入力推奨
+          </span>
+        </label>
+        <input
+          type="text"
+          name="nickname"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          placeholder="例: たっちゃん"
+          style={{ fontSize: "16px" }}
+          className="w-full h-11 rounded-2xl border-[1.5px] border-dashed border-wine-deep/40 bg-wine-soft/20 px-3 text-body-md text-ink outline-none focus:border-wine-deep"
+        />
+        <p className="text-[10px] text-ink-muted pl-1">
+          接客中の呼びかけに使います（カルテ・フォロー時のサブ表示）
+        </p>
+      </div>
 
       {/* 担当キャスト */}
       <div className="space-y-1.5">

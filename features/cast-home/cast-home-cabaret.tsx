@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Bookmark, Star, Users } from "lucide-react";
 import { StatCard } from "@/components/nightos/stat-card";
 import { CastHomeHero } from "./components/cast-home-hero";
@@ -35,30 +36,38 @@ export function CastHomeCabaret({ data, storeMessages }: Props) {
       />
 
       <main className="px-5 flex flex-col gap-6">
-        {/* KPI を hero の seam にオーバーラップさせシームをブリッジ
-           (StoreMessageBanner より先に置いて橋渡しを成立させる) */}
+        {/* KPI を hero の seam にオーバーラップ。tap → /cast/stats へ */}
         <div className="-mt-9 grid grid-cols-3 gap-2.5">
-          <StatCard
-            label="指名"
-            value={data.summary.nominationCount}
-            unit="本"
-            icon={<Bookmark size={11} className="text-gold" />}
-            tone="rose"
-          />
-          <StatCard
-            label="再来店率"
-            value={repeatPct}
-            unit="%"
-            icon={<Star size={11} className="text-gold" />}
-            tone="amethyst"
-          />
-          <StatCard
-            label="新規"
-            value={data.summary.newCustomerCount}
-            unit="人"
-            icon={<Users size={11} className="text-gold" />}
-            tone="wine"
-          />
+          <Link href="/cast/stats#nominations" className="block">
+            <StatCard
+              label="指名"
+              value={data.summary.nominationCount}
+              unit="本"
+              icon={<Bookmark size={11} className="text-gold" />}
+              tone="rose"
+              className="h-full cursor-pointer hover:shadow-warm hover:-translate-y-px transition will-change-transform"
+            />
+          </Link>
+          <Link href="/cast/stats#repeat" className="block">
+            <StatCard
+              label="再来店率"
+              value={repeatPct}
+              unit="%"
+              icon={<Star size={11} className="text-gold" />}
+              tone="amethyst"
+              className="h-full cursor-pointer hover:shadow-warm hover:-translate-y-px transition will-change-transform"
+            />
+          </Link>
+          <Link href="/cast/stats#new" className="block">
+            <StatCard
+              label="新規"
+              value={data.summary.newCustomerCount}
+              unit="人"
+              icon={<Users size={11} className="text-gold" />}
+              tone="wine"
+              className="h-full cursor-pointer hover:shadow-warm hover:-translate-y-px transition will-change-transform"
+            />
+          </Link>
         </div>
 
         <StoreMessageBanner

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { History, ImageIcon } from "lucide-react";
+import { MoreMenu } from "@/components/nightos/more-menu";
 import { PageHeader } from "@/components/nightos/page-header";
 import { ChatWindow } from "@/features/ruri-mama/components/chat-window";
 import { ChatLimitBanner } from "@/features/ruri-mama/components/chat-limit-banner";
@@ -27,7 +28,7 @@ export default async function RuriMamaPage({ searchParams }: Props) {
         showBack
         tone="ruri"
         right={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <Link
               href="/cast/ruri-mama/history"
               className="flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-lg hover:bg-pearl-warm/60 text-ink-soft"
@@ -44,6 +45,7 @@ export default async function RuriMamaPage({ searchParams }: Props) {
               <ImageIcon size={16} />
               <span className="text-[9px] leading-none opacity-80">アバター</span>
             </Link>
+            <MoreMenu tone="ruri" />
           </div>
         }
       />
