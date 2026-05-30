@@ -33,11 +33,13 @@ export function EditCustomerForm({ customer, casts }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState(customer.name);
+  const [nickname, setNickname] = useState(customer.nickname ?? "");
   const [birthday, setBirthday] = useState(customer.birthday ?? "");
   const [job, setJob] = useState(customer.job ?? "");
   const [favoriteDrink, setFavoriteDrink] = useState(
     customer.favorite_drink ?? "",
   );
+  const [region, setRegion] = useState(customer.region ?? "");
   const [category, setCategory] = useState<CustomerCategory>(customer.category);
   const [castId, setCastId] = useState(customer.cast_id);
   const [storeMemo, setStoreMemo] = useState(customer.store_memo ?? "");
@@ -48,9 +50,11 @@ export function EditCustomerForm({ customer, casts }: Props) {
     startTransition(async () => {
       const res = await updateCustomerAction(customer.id, {
         name: name.trim(),
+        nickname: nickname.trim() || null,
         birthday: birthday || null,
         job: job.trim() || null,
         favorite_drink: favoriteDrink.trim() || null,
+        region: region.trim() || null,
         category,
         store_memo: storeMemo.trim() || null,
         cast_id: castId,
@@ -98,11 +102,18 @@ export function EditCustomerForm({ customer, casts }: Props) {
       <BusinessCardUpload onApply={applyBusinessCard} mode="edit" />
 
       <TextInput
-        label="お名前"
+        label="お名前（フルネーム）"
         name="name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
+      />
+      <TextInput
+        label="呼び名（任意）"
+        name="nickname"
+        value={nickname}
+        onChange={(e) => setNickname(e.target.value)}
+        placeholder="例: たっちゃん"
       />
       <BirthdayInput
         value={birthday}
@@ -119,6 +130,13 @@ export function EditCustomerForm({ customer, casts }: Props) {
         name="favorite_drink"
         value={favoriteDrink}
         onChange={(e) => setFavoriteDrink(e.target.value)}
+      />
+      <TextInput
+        label="活動エリア"
+        name="region"
+        value={region}
+        onChange={(e) => setRegion(e.target.value)}
+        placeholder="例: 東京都"
       />
       <SelectInput
         label="顧客カテゴリ"

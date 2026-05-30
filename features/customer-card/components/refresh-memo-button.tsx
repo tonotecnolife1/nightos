@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Loader2, Sparkles, X } from "lucide-react";
+import { Check, Loader2, RefreshCw, X } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/nightos/card";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ interface RefreshedMemo {
 /**
  * 「最新情報でメモを更新する」ボタン。
  * タップするとアプリ内のあらゆる情報（来店履歴・ボトル・同伴・LINEスクショ）から
- * さくらママがメモを合成する。差分を確認してから適用できる。
+ * メモを再合成する。差分を確認してから適用できる。
  */
 export function RefreshMemoButton({ customerId, castId, current }: Props) {
   const [loading, setLoading] = useState(false);
@@ -101,7 +101,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
     return (
       <Card className="p-3 !border-amethyst-border !bg-amethyst-muted/20 space-y-3">
         <div className="flex items-center gap-1.5">
-          <Sparkles size={14} className="text-amethyst-dark" />
+          <RefreshCw size={14} className="text-amethyst-dark" />
           <span className="text-body-sm font-medium text-amethyst-dark">
             メモ更新プレビュー
           </span>
@@ -152,12 +152,12 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
       {loading ? (
         <>
           <Loader2 size={13} className="animate-spin" />
-          さくらママがメモを合成中…
+          メモを生成中…
         </>
       ) : (
         <>
-          <Sparkles size={13} />
-          アプリ内の全情報でメモを自動更新
+          <RefreshCw size={13} />
+          アプリ内の最新情報でメモを更新
         </>
       )}
       {error && <span className="text-rose text-[10px]">{error}</span>}

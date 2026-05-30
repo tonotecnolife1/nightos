@@ -43,6 +43,9 @@ export function MemoSection({ customer, memo }: Props) {
 
   return (
     <MemoCard title="個人メモ">
+      <p className="text-[10px] text-blush-deep mb-2">
+        入力推奨 — このキャストだけの非公開メモです
+      </p>
       <div className="space-y-3">
         <MemoField
           label="前回の話題"

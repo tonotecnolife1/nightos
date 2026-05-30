@@ -18,8 +18,8 @@ const categoryTone = {
 
 export function CustomerHeader({ customer }: { customer: Customer }) {
   return (
-    <div className="space-y-2">
-      <div className="flex items-baseline gap-3">
+    <div className="space-y-1.5">
+      <div className="flex items-baseline gap-3 flex-wrap">
         <h1 className="text-display-lg font-display font-semibold text-ink">
           {formatCustomerName(customer.name)}
         </h1>
@@ -27,6 +27,14 @@ export function CustomerHeader({ customer }: { customer: Customer }) {
           {categoryLabel[customer.category]}
         </Badge>
       </div>
+      {customer.nickname && (
+        <p className="text-body-sm text-ink-secondary">
+          呼び名:{" "}
+          <span className="text-blush-deep font-medium">
+            {customer.nickname}
+          </span>
+        </p>
+      )}
       <div className="flex items-center gap-x-3 gap-y-1 flex-wrap text-body-sm text-ink-secondary">
         {customer.job && <span>{customer.job}</span>}
         {customer.birthday && (
