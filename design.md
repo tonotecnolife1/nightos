@@ -212,8 +212,14 @@ V5 では「matte philosophy」: drop shadow のみ、inset highlight 禁止。
   {/* 副情報 */}
   <p style={{ color: "var(--v5-ink-on-dark-soft)" }}>...</p>
 
-  {/* 主要 CTA — centered, intrinsic width, no secondary */}
-  <Link className="v5-cta-primary h-11 px-6 rounded-pill ..." />
+  {/* 主要 CTA — 案③ List terminus (gold = text-clip + hairline, 箱なし) */}
+  <Link href="..." className="relative mt-5 block w-full">
+    <span aria-hidden className="block h-px w-full" style={{ background: "linear-gradient(90deg, rgba(235,217,168,0.45), rgba(235,217,168,0.20))" }} />
+    <span className="flex h-[52px] items-center justify-between px-0.5">
+      <span className="v5-metallic font-sans font-semibold">スケジュールを見る</span>
+      <ArrowRight size={17} style={{ color: "var(--v5-gold-on-dark)" }} />
+    </span>
+  </Link>
 </section>
 ```
 
@@ -298,7 +304,9 @@ Hero は **見出し1つを最も重要な情報に当てる**。「Tonight」�
 - ホームへの戻り / dismiss など明確な意味がある
 - かつ高頻度操作 (週 1-2 回より多い)
 
-その両方を満たさない場合は副 CTA を置かず、主要 CTA を単独配置にしてその下の情報密度で視覚バランスを取る。Hero 内の主要 CTA は全幅 (`w-full`) ではなく **中央寄せ + 自動幅 (`px-6`)** を基本とし、ゴールドソリッドの面積が視覚的に重くなりすぎないようにする。本文中 (pearl 地) の主要 CTA は従来どおり全幅も可。
+その両方を満たさない場合は副 CTA を置かず、主要 CTA を単独配置にしてその下の情報密度で視覚バランスを取る。
+
+**Hero 内の主要 CTA (採用済: 案③ List terminus)**: ゴールドソリッドの pill / バーは面積が重くなるため使わない。代わりに **全幅 brass hairline (`h-px`, champagne-gold 左濃→右淡グラデ) の上に、金クリップ文字 (`.v5-metallic`) + 矢印 (`--v5-gold-on-dark`) を `justify-between` で置く「箱なし・面積ゼロ」の行**にする。これはスケジュールリストの最終 divider を兼ねるので、直後に余分な区切りを置かない。タップ域は行の高さ `h-[52px]` で確保する。本文中 (pearl 地) の主要 CTA は従来どおり `bg-wine-deep` 全幅も可。
 
 ---
 
