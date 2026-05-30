@@ -213,7 +213,7 @@ V5 では「matte philosophy」: drop shadow のみ、inset highlight 禁止。
   <p style={{ color: "var(--v5-ink-on-dark-soft)" }}>...</p>
 
   {/* 主要 CTA — full width, no secondary */}
-  <Link className="v5-cta-primary w-full h-[52px] rounded-pill ..." />
+  <Link className="v5-cta-primary w-full h-12 rounded-pill ..." />
 </section>
 ```
 
