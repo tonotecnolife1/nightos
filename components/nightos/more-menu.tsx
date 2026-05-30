@@ -108,8 +108,10 @@ export function MoreMenu({ tone = "default" }: Props) {
         aria-label="メニュー"
         className={cn(
           "w-9 h-9 rounded-full flex items-center justify-center transition",
+          // tone="ruri" のヘッダーも地は淡い pearl なので、旧 dark-hero 用の
+          // 半透明白文字だと地に溶けて見えない。wine アクセントで視認性を確保する。
           isRuri
-            ? "bg-white/15 hover:bg-white/25 text-pearl-light"
+            ? "bg-wine-deep/10 hover:bg-wine-deep/20 text-wine-deep"
             : "bg-pearl-warm/70 hover:bg-pearl-warm text-ink-soft",
         )}
       >
