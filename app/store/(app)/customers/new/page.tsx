@@ -17,7 +17,7 @@ export default async function NewCustomerPage({ searchParams }: Props) {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="顧客登録" subtitle="約2分で完了" showBack />
+      <PageHeader title="お客様登録" subtitle="約2分で完了" showBack />
       <div className="px-5 pt-4 pb-6">
         <CustomerForm
           casts={casts}

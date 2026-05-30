@@ -83,7 +83,7 @@ export default async function StoreHubPage() {
             <ShortcutCard
               href="/store/customers/new"
               icon={<UserPlus size={20} className="text-gold-deep" />}
-              label="顧客"
+              label="お客様"
             />
             <ShortcutCard
               href="/store/visits/new"
@@ -176,7 +176,7 @@ export default async function StoreHubPage() {
             <ListLink
               href="/store/customers"
               icon={<Users size={18} />}
-              label="顧客一覧"
+              label="お客様一覧"
               description="検索・編集・削除"
             />
             <ListLink

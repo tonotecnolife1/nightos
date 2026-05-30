@@ -6,7 +6,6 @@ import { SakuraMamaCard } from "./components/sakura-mama-card";
 import { FollowTargetList } from "./components/follow-target-list";
 import { StoreMessageBanner } from "./components/store-message-banner";
 import { VisitNotificationPoller } from "./components/visit-notification-poller";
-import { DouhanQuickAdd } from "./components/douhan-quick-add";
 import type { CastHomeData, Customer } from "@/types/nightos";
 
 interface Props {
@@ -20,7 +19,7 @@ function formatDateLabel(date: Date): string {
   return `${date.getMonth() + 1}月${date.getDate()}日 (${days[date.getDay()]})`;
 }
 
-export function CastHomeCabaret({ data, storeMessages, customers }: Props) {
+export function CastHomeCabaret({ data, storeMessages }: Props) {
   const repeatPct = Math.round(data.summary.repeatRate * 100);
   const dateLabel = formatDateLabel(new Date());
   const hasNotification = storeMessages.length > 0;
@@ -100,8 +99,6 @@ export function CastHomeCabaret({ data, storeMessages, customers }: Props) {
           </header>
           <FollowTargetList targets={data.targets} />
         </section>
-
-        <DouhanQuickAdd customers={customers} />
       </main>
     </div>
   );

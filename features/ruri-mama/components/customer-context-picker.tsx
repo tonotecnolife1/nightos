@@ -28,7 +28,7 @@ export function CustomerContextPicker({
       >
         <UserCircle2 size={18} className="text-gold-deep shrink-0" />
         <div className="flex-1 min-w-0">
-          <div className="text-label-sm text-ink-mute">顧客コンテキスト</div>
+          <div className="text-label-sm text-ink-mute">お客様の情報</div>
           <div className="text-body-md text-ink truncate">
             {selected ? formatCustomerName(selected.name) : "指定なしで相談"}
           </div>

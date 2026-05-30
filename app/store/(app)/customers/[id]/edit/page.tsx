@@ -19,7 +19,7 @@ export default async function EditCustomerPage({
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="顧客編集" subtitle={customer.name} showBack />
+      <PageHeader title="お客様編集" subtitle={customer.name} showBack />
       <div className="px-5 pt-4 pb-6">
         <EditCustomerForm customer={customer} casts={casts} />
       </div>

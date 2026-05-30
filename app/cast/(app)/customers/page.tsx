@@ -37,7 +37,7 @@ export default async function CastCustomerListPage() {
   return (
     <div className="animate-fade-in">
       <PageHeader
-        title="顧客リスト"
+        title="お客様リスト"
         subtitle={`${customers.length}人のお客様`}
         showBack
         right={

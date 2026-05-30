@@ -34,7 +34,7 @@ export default async function TemplatesPage({ searchParams }: Props) {
     <div className="animate-fade-in">
       <PageHeader
         title="メッセージテンプレート"
-        subtitle="顧客情報を自動で挿入"
+        subtitle="お客様情報を自動で挿入"
         showBack
       />
       <div className="px-5 pt-4 pb-6">

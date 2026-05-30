@@ -68,7 +68,7 @@ export default async function MamaTeamCastDetailPage({
             icon={<Heart size={12} className="text-wine-deep" />}
           />
           <StatCard
-            label="新規顧客"
+            label="新規のお客様"
             value={stats.monthly.newCustomerCount}
             unit="人"
             tone="amethyst"

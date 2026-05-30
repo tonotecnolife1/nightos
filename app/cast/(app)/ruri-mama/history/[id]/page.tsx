@@ -46,7 +46,7 @@ export default function SessionViewPage({
   return (
     <div className="animate-fade-in">
       <PageHeader
-        title={session.customerName ? `${session.customerName}さま` : "顧客指定なし"}
+        title={session.customerName ? `${session.customerName}さま` : "お客様指定なし"}
         subtitle={new Date(session.createdAt).toLocaleDateString("ja-JP")}
         showBack
       />

@@ -15,7 +15,7 @@ export default async function StoreCustomersPage() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="顧客一覧" subtitle="検索・編集・削除" showBack />
+      <PageHeader title="お客様一覧" subtitle="検索・編集・削除" showBack />
       <div className="px-5 pt-4 pb-6 space-y-4">
         <Link
           href="/store/customers/transfer"
