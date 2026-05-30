@@ -152,25 +152,26 @@ export async function getCurrentRole(): Promise<AccountRole | null> {
  * Falls back to "club" for mock sessions and unauthenticated users.
  */
 export async function getCurrentVenueType(): Promise<"club" | "cabaret"> {
-  // Explicit client-set override (role selector / demo / settings) wins.
-  // Lets a club show club KPIs even in mock/demo where there is no real
-  // per-store auth to resolve venue_type from.
+  const cast = await getCurrentCast();
+
+  // Real, authenticated account: the store's venue_type is authoritative.
+  // Resolve it FIRST so a real club account always shows club KPIs, even if a
+  // stale demo cookie (set while trying キャバクラ) is still in the browser.
+  if (cast && isSupabaseConfigured()) {
+    try {
+      const { getVenueTypeForCastReal } = await import("./supabase-real");
+      return await getVenueTypeForCastReal(cast.id);
+    } catch {
+      // fall through to cookie / default
+    }
+  }
+
+  // Mock / demo / role selector: honor the client-set override cookie, since
+  // there is no per-store auth to resolve venue_type from.
   const override = cookies().get(VENUE_TYPE_STORAGE_KEY)?.value;
   if (override === "club" || override === "cabaret") return override;
 
-  const cast = await getCurrentCast();
-  if (!cast) return "club";
-
-  if (!isSupabaseConfigured()) {
-    return "club";
-  }
-
-  try {
-    const { getVenueTypeForCastReal } = await import("./supabase-real");
-    return await getVenueTypeForCastReal(cast.id);
-  } catch {
-    return "club";
-  }
+  return "club";
 }
 
 /** Where the role is supposed to land after sign-in. */
