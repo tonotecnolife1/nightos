@@ -327,7 +327,7 @@ export function CastHomeHero({
             className="v5-metallic font-sans font-semibold"
             style={{ fontSize: 15, letterSpacing: "0.08em" }}
           >
-            {loaded && !hasEvents ? "スケジュールを編集" : "スケジュールを見る"}
+            スケジュールを見る
           </span>
           <ArrowRight size={17} strokeWidth={1.8} style={{ color: "var(--v5-gold-on-dark)" }} />
         </span>
