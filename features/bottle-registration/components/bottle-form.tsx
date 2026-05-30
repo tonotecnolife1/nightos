@@ -13,9 +13,15 @@ import { Stepper } from "./stepper";
 interface Props {
   customers: Customer[];
   initialCustomerId?: string;
+  /**
+   * 登録成功後に遷移する先。指定がなければ店舗のボトル一覧へ。
+   * キャストは /store/* にアクセスできない（role ガードでホームへ弾かれる）
+   * ため、キャスト導線では顧客詳細など cast 配下のパスを渡す。
+   */
+  returnTo?: string;
 }
 
-export function BottleForm({ customers, initialCustomerId }: Props) {
+export function BottleForm({ customers, initialCustomerId, returnTo }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [brand, setBrand] = useState("");
@@ -47,8 +53,9 @@ export function BottleForm({ customers, initialCustomerId }: Props) {
         `${cust?.name ?? "お客様"}さんの${res.bottle.brand}（残 約${remainingPct}%）を登録しました`,
       );
       reset();
-      // 登録後はホームではなくボトル一覧へ遷移し、登録結果を確認できるようにする
-      router.push("/store/bottles");
+      // 登録後はホームではなく、呼び出し元（顧客詳細など）か店舗のボトル
+      // 一覧へ遷移し、登録結果を確認できるようにする
+      router.push(returnTo ?? "/store/bottles");
     });
   };
 

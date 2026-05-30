@@ -65,7 +65,7 @@ export function VisitInfoSection({ context }: Props) {
           来店を記録
         </Link>
         <Link
-          href={`/store/bottles/new?customerId=${customer.id}`}
+          href={`/cast/customers/${customer.id}/bottles/new`}
           className="flex-1 flex items-center justify-center gap-1.5 h-10 rounded-pill border border-ink/[0.12] bg-pearl-soft text-body-sm text-ink-secondary hover:border-gold/40 hover:bg-pearl-warm transition"
         >
           <Wine size={14} />
