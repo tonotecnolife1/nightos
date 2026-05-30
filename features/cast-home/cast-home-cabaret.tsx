@@ -49,29 +49,38 @@ export function CastHomeCabaret({ data, storeMessages }: Props) {
           initialMessages={storeMessages}
         />
 
-        {/* ── 指名 KPI ── */}
+        {/* ── 指名 KPI ── tap → /cast/stats へ */}
         <div className="grid grid-cols-3 gap-2.5">
-          <StatCard
-            label="今月の指名"
-            value={data.summary.nominationCount}
-            unit="本"
-            icon={<Bookmark size={12} className="text-gold" />}
-            tone="rose"
-          />
-          <StatCard
-            label="再来店率"
-            value={repeatPct}
-            unit="%"
-            icon={<Star size={12} className="text-gold" />}
-            tone="rose"
-          />
-          <StatCard
-            label="今月の新規"
-            value={data.summary.newCustomerCount}
-            unit="人"
-            icon={<Users size={12} className="text-gold" />}
-            tone="amethyst"
-          />
+          <Link href="/cast/stats#nominations" className="block">
+            <StatCard
+              label="今月の指名"
+              value={data.summary.nominationCount}
+              unit="本"
+              icon={<Bookmark size={12} className="text-gold" />}
+              tone="rose"
+              className="h-full cursor-pointer hover:border-gold/30 hover:shadow-float hover:-translate-y-px transition will-change-transform"
+            />
+          </Link>
+          <Link href="/cast/stats#repeat" className="block">
+            <StatCard
+              label="再来店率"
+              value={repeatPct}
+              unit="%"
+              icon={<Star size={12} className="text-gold" />}
+              tone="rose"
+              className="h-full cursor-pointer hover:border-gold/30 hover:shadow-float hover:-translate-y-px transition will-change-transform"
+            />
+          </Link>
+          <Link href="/cast/stats#new" className="block">
+            <StatCard
+              label="今月の新規"
+              value={data.summary.newCustomerCount}
+              unit="人"
+              icon={<Users size={12} className="text-gold" />}
+              tone="amethyst"
+              className="h-full cursor-pointer hover:border-amethyst/30 hover:shadow-float hover:-translate-y-px transition will-change-transform"
+            />
+          </Link>
         </div>
 
         <MorningBriefing castId={data.cast.id} />

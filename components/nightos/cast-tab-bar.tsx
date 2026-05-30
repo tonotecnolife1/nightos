@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  CalendarDays,
   Home,
   MessageCircle,
   Sparkles,
+  TrendingUp,
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -51,11 +51,11 @@ const TABS: Tab[] = [
     match: (p) => p.startsWith("/cast/chat") || p.startsWith("/mama/chat"),
   },
   {
-    key: "schedule",
-    label: "予定",
-    href: "/cast/schedule",
-    icon: CalendarDays,
-    match: (p) => p.startsWith("/cast/schedule"),
+    key: "stats",
+    label: "成績",
+    href: "/cast/stats",
+    icon: TrendingUp,
+    match: (p) => p.startsWith("/cast/stats"),
   },
 ];
 
