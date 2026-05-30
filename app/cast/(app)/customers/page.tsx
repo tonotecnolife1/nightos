@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GitBranch, UserPlus } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { Card } from "@/components/nightos/card";
 import { PageHeader } from "@/components/nightos/page-header";
 import { StatCard } from "@/components/nightos/stat-card";
@@ -9,11 +9,7 @@ import {
   getCustomersForCast,
 } from "@/lib/nightos/supabase-queries";
 import { getCurrentCastId, getCurrentVenueType } from "@/lib/nightos/auth";
-import { mockCasts } from "@/lib/nightos/mock-data";
-import {
-  buildReferralTree,
-  calculateFunnelStats,
-} from "@/lib/nightos/referral-tree";
+import { calculateFunnelStats } from "@/lib/nightos/referral-tree";
 
 export const dynamic = "force-dynamic";
 
@@ -37,8 +33,6 @@ export default async function CastCustomerListPage() {
   const customers = isCabaret ? allCustomers : myCustomers;
 
   const funnel = calculateFunnelStats(customers);
-  const tree = buildReferralTree({ customers, casts: mockCasts });
-  const totalReferralChains = tree.filter((n) => n.children.length > 0).length;
 
   return (
     <div className="animate-fade-in">
@@ -78,16 +72,6 @@ export default async function CastCustomerListPage() {
             tone="amethyst"
           />
         </div>
-
-        <Card className="p-3.5 flex items-center justify-between">
-          <span className="text-body-sm text-ink-soft flex items-center gap-1.5">
-            <GitBranch size={13} className="text-gold-deep" />
-            お連れ様の繋がり数
-          </span>
-          <span className="font-display text-[18px] leading-none tabular-nums text-wine-deep tracking-[0.04em]">
-            {totalReferralChains}本
-          </span>
-        </Card>
 
         {customers.length === 0 ? (
           <Card className="p-8 text-center space-y-3">
