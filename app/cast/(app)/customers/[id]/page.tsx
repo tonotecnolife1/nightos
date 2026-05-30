@@ -50,7 +50,7 @@ export default async function CustomerCardPage({
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="顧客カルテ" showBack />
+      <PageHeader title="お客様カルテ" showBack />
       <div className="px-5 pt-4 pb-6 space-y-5">
         {/* ── Header ─────────────────────────────────── */}
         <CustomerHeader customer={customer} />

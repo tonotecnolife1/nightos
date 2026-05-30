@@ -118,7 +118,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
 
       {filtered.length === 0 ? (
         <Card className="p-6 text-center text-body-sm text-ink-soft">
-          該当する顧客が見つかりません
+          該当するお客様が見つかりません
         </Card>
       ) : (
         <div className="space-y-2">

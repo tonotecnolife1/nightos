@@ -151,7 +151,7 @@ export function EditCustomerForm({ customer, casts }: Props) {
         placeholder="例: 東京都"
       />
       <SelectInput
-        label="顧客カテゴリ"
+        label="お客様の種別"
         name="category"
         value={category}
         onChange={(e) => setCategory(e.target.value as CustomerCategory)}
@@ -197,7 +197,7 @@ export function EditCustomerForm({ customer, casts }: Props) {
         className="w-full flex items-center justify-center gap-1.5 h-10 mt-2 rounded-btn text-wine-deep border border-wine/30 hover:bg-wine/10 disabled:opacity-50"
       >
         <Trash2 size={14} />
-        この顧客を削除
+        このお客様を削除
       </button>
     </form>
   );

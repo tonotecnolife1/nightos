@@ -23,7 +23,7 @@ export function CustomerMapView({ customers, casts, mode }: Props) {
     return (
       <EmptyState
         icon={<User size={22} />}
-        title="表示できる顧客がいません"
+        title="表示できるお客様がいません"
         description="お客様を登録すると相関図が描かれます"
         tone="amethyst"
       />
@@ -54,7 +54,7 @@ function CustomerBasedMap({
   return (
     <div className="space-y-3">
       <div className="text-[10px] text-ink-mute px-1">
-        担当顧客グループ {tree.length}件
+        担当グループ {tree.length}件
       </div>
 
       <div className="space-y-4">

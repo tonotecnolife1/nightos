@@ -104,7 +104,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
           value={sourceCastId}
           onChange={(e) => handleSourceChange(e.target.value)}
           options={casts.map((c) => ({ value: c.id, label: `${c.name}さん` }))}
-          hint={`担当顧客 ${filtered.length}人`}
+          hint={`担当のお客様 ${filtered.length}人`}
         />
 
         <div className="flex items-center justify-center gap-2 text-ink-mute">
@@ -130,7 +130,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
             <div className="flex items-center gap-1.5">
               <Users size={14} className="text-wine-deep" />
               <h2 className="text-display-sm text-ink">
-                {sourceCast?.name ?? ""}さんの担当顧客
+                {sourceCast?.name ?? ""}さんの担当のお客様
               </h2>
             </div>
             <button
@@ -198,7 +198,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
         </section>
       ) : (
         <Card className="p-4 text-center text-body-sm text-ink-mute">
-          {sourceCastId ? "担当顧客がいません" : "移管元を選択してください"}
+          {sourceCastId ? "担当のお客様がいません" : "移管元を選択してください"}
         </Card>
       )}
 

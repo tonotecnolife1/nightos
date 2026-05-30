@@ -37,7 +37,7 @@ export default async function MamaTeamPage() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="メンバー管理" subtitle="キャスト・顧客の動き" showBack />
+      <PageHeader title="メンバー管理" subtitle="キャスト・お客様の動き" showBack />
 
       <div className="px-5 pt-4 pb-6 space-y-5">
         {/* Tonight's summary */}

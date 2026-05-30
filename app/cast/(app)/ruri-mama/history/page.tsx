@@ -54,7 +54,7 @@ export default function ChatHistoryPage() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="顧客名・キーワードで検索"
+            placeholder="お客様名・キーワードで検索"
             style={{ fontSize: "13px" }}
             className="w-full h-10 pl-8 pr-3 rounded-full bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-gold/30 placeholder:text-ink-mute"
           />
@@ -104,7 +104,7 @@ export default function ChatHistoryPage() {
                     <User size={13} className="text-gold-deep" />
                   </div>
                   <span className="text-[12px] font-semibold text-ink flex-1">
-                    {group.customerName ? `${group.customerName}さま` : "顧客指定なし"}
+                    {group.customerName ? `${group.customerName}さま` : "お客様指定なし"}
                   </span>
                   <span className="text-[10px] text-ink-mute">
                     {group.sessions.length}件

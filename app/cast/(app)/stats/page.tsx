@@ -77,7 +77,7 @@ export default async function CastStatsPage() {
         {/* ── 担当・継続 ── */}
         <div className="grid grid-cols-2 gap-2.5">
           <StatCard
-            label="担当顧客"
+            label="担当のお客様"
             value={data.monthly.totalCustomerCount}
             unit="人"
             tone="rose"

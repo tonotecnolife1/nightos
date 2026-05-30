@@ -42,7 +42,7 @@ export function BottleForm({ customers, initialCustomerId }: Props) {
       }
       const cust = customers.find((c) => c.id === customerId);
       setSuccess(
-        `${cust?.name ?? "顧客"}さんの${res.bottle.brand}（残 約${remainingPct}%）を登録しました`,
+        `${cust?.name ?? "お客様"}さんの${res.bottle.brand}（残 約${remainingPct}%）を登録しました`,
       );
       reset();
       setTimeout(() => setSuccess(null), 3500);
@@ -60,7 +60,7 @@ export function BottleForm({ customers, initialCustomerId }: Props) {
       <BrandPicker value={brand} onChange={setBrand} />
 
       <SelectInput
-        label="オーナー（顧客）"
+        label="オーナー（お客様）"
         name="customer_id"
         value={customerId}
         onChange={(e) => setCustomerId(e.target.value)}

@@ -23,7 +23,7 @@ export default async function CastNewCustomerPage() {
   return (
     <div className="animate-fade-in">
       <PageHeader
-        title="顧客を追加"
+        title="お客様を追加"
         subtitle="自分の担当として登録します"
         showBack
       />

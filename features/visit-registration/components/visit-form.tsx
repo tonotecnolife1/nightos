@@ -50,7 +50,7 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
     setError(null);
     setSuccess(null);
     if (!customerId || !castId) {
-      setError("顧客と担当キャストを選んでください");
+      setError("お客様と担当キャストを選んでください");
       return;
     }
     startTransition(async () => {
@@ -67,7 +67,7 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
       const cust = customers.find((c) => c.id === customerId);
       const cast = casts.find((c) => c.id === castId);
       setSuccess(
-        `${cust?.name ?? "顧客"}さんの来店を${cast?.name ?? "担当"}に通知しました`,
+        `${cust?.name ?? "お客様"}さんの来店を${cast?.name ?? "担当"}に通知しました`,
       );
       reset();
       setTimeout(() => setSuccess(null), 3500);

@@ -28,7 +28,7 @@ export function CustomerSearchList({ customers, value, onChange }: Props) {
 
   return (
     <div className="space-y-2">
-      <div className="text-label-md text-ink font-medium">顧客</div>
+      <div className="text-label-md text-ink font-medium">お客様</div>
       <div className="relative">
         <Search
           size={14}
