@@ -55,12 +55,12 @@ const toneClasses: Record<
 > = {
   rose: {
     bg: "bg-pearl-warm hover:bg-champagne-soft/60",
-    iconBg: "bg-rose-gold-metallic text-pearl-light-light",
+    iconBg: "bg-rose-gold-metallic text-pearl-light",
     border: "border-gold/30",
   },
   amethyst: {
     bg: "bg-pearl-light hover:bg-champagne-soft/40",
-    iconBg: "bg-gold-deep text-pearl-light-light",
+    iconBg: "bg-gold-deep text-pearl-light",
     border: "border-gold/30",
   },
   champagne: {
@@ -70,7 +70,7 @@ const toneClasses: Record<
   },
   blush: {
     bg: "bg-pearl-light hover:bg-champagne-soft/40",
-    iconBg: "bg-wine-deep text-pearl-light-light",
+    iconBg: "bg-wine-deep text-pearl-light",
     border: "border-gold/30",
   },
 };

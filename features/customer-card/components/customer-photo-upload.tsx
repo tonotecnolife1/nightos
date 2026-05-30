@@ -69,7 +69,7 @@ export function CustomerPhotoUpload({ customerId, customerName }: Props) {
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-gold-deep text-pearl-light-light flex items-center justify-center shadow-soft"
+          className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-gold-deep text-pearl-light flex items-center justify-center shadow-soft"
         >
           <Camera size={13} />
         </button>

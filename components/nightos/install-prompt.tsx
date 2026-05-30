@@ -100,7 +100,7 @@ export function InstallPrompt() {
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); void install(); }}
-          className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-pill bg-wine-deep text-pearl-light-light text-[12px] font-medium shadow-soft hover:brightness-[1.02] transition"
+          className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-pill bg-wine-deep text-pearl-light text-[12px] font-medium shadow-soft hover:brightness-[1.02] transition"
         >
           <Download size={12} />
           追加
@@ -123,7 +123,7 @@ export function InstallPrompt() {
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); void shareToInstall(); }}
-          className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-pill bg-wine-deep text-pearl-light-light text-[12px] font-medium shadow-soft hover:brightness-[1.02] transition"
+          className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-pill bg-wine-deep text-pearl-light text-[12px] font-medium shadow-soft hover:brightness-[1.02] transition"
         >
           <Share2 size={12} />
           共有

@@ -268,8 +268,8 @@ export default async function CustomerHomePage() {
 // ═══════════════ Sub-components ═══════════════
 
 const rankBadgeStyles: Record<RankTier, string> = {
-  diamond: "bg-gold-deep text-pearl-light-light",
-  platinum: "bg-wine-deep text-pearl-light-light",
+  diamond: "bg-gold-deep text-pearl-light",
+  platinum: "bg-wine-deep text-pearl-light",
   gold: "bg-champagne-deep text-ink",
   silver: "bg-pearl-soft text-ink-soft",
   bronze: "bg-pearl-soft text-ink-mute",

@@ -164,16 +164,6 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
             </div>
           </section>
 
-          {/* 成績 */}
-          <Link
-            href="/cast/stats"
-            className="flex items-center gap-3 rounded-card border border-ink/[0.06] bg-pearl-warm px-4 py-3 shadow-soft hover:border-gold/40 transition"
-          >
-            <BarChart3 size={15} className="text-ink-soft shrink-0" />
-            <span className="flex-1 text-body-sm text-ink">成績・統計</span>
-            <ChevronRight size={13} className="text-ink-mute" />
-          </Link>
-
           {/* ログアウト */}
           <button
             type="button"

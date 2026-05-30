@@ -56,10 +56,10 @@ export function FeedbackLink() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`fixed bottom-20 ${side} z-50 w-10 h-10 rounded-full bg-gold-deep text-pearl-light-light flex items-center justify-center shadow-lg active:scale-95 transition-transform`}
+        className={`fixed bottom-20 ${side} z-40 w-9 h-9 rounded-full bg-pearl-light/60 backdrop-blur-sm border border-gold/25 text-gold-deep/70 flex items-center justify-center shadow-soft hover:bg-pearl-light hover:text-gold-deep hover:border-gold/40 active:scale-95 transition-all`}
         aria-label="フィードバック"
       >
-        <MessageSquare size={18} />
+        <MessageSquare size={15} strokeWidth={1.8} />
       </button>
     );
   }
@@ -97,7 +97,7 @@ export function FeedbackLink() {
             type="button"
             onClick={handleSubmit}
             disabled={sending || !text.trim()}
-            className="w-full py-1.5 rounded-btn bg-gold-deep text-pearl-light-light text-body-sm font-medium disabled:opacity-50"
+            className="w-full py-1.5 rounded-btn bg-gold-deep text-pearl-light text-body-sm font-medium disabled:opacity-50"
           >
             {sending ? "送信中..." : "送信"}
           </button>

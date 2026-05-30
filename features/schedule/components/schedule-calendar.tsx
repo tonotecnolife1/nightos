@@ -164,7 +164,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
               className={cn(
                 "relative aspect-square flex flex-col items-center justify-center rounded-xl text-[13px] font-medium transition-all active:scale-95",
                 shift?.status === "working"
-                  ? "bg-wine-deep text-pearl-light-light shadow-luxe"
+                  ? "bg-wine-deep text-pearl-light shadow-luxe"
                   : shift?.status === "off"
                     ? "bg-pearl-soft border border-ink/[0.08] text-ink-mute"
                     : "hover:bg-pearl-soft text-ink",
@@ -260,7 +260,7 @@ function ShiftEditSheet({
                 "flex-1 h-10 rounded-2xl border text-body-sm font-medium transition-all",
                 status === s
                   ? s === "working"
-                    ? "bg-wine-deep text-pearl-light-light border-gold/40"
+                    ? "bg-wine-deep text-pearl-light border-gold/40"
                     : "bg-pearl-soft border-ink/[0.08] text-ink"
                   : "bg-pearl-warm border-ink/[0.06] text-ink-soft hover:border-wine-deep/30",
               )}
@@ -334,7 +334,7 @@ function ShiftEditSheet({
         <button
           type="button"
           onClick={() => onSave({ date: entry.date, status, startTime: status === "working" ? startTime : undefined, endTime: status === "working" ? endTime : undefined, note: note || undefined })}
-          className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light-light font-semibold tracking-[0.04em] text-body-md"
+          className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md"
         >
           保存
         </button>

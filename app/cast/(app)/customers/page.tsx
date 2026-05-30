@@ -43,7 +43,7 @@ export default async function CastCustomerListPage() {
         right={
           <Link
             href="/cast/customers/new"
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-pill bg-wine-deep text-pearl-light-light text-label-sm font-semibold tracking-[0.04em] shadow-soft hover:-translate-y-px transition"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-pill bg-wine-deep text-pearl-light text-label-sm font-semibold tracking-[0.04em] shadow-soft hover:-translate-y-px transition"
           >
             <UserPlus size={14} />
             新規
@@ -83,7 +83,7 @@ export default async function CastCustomerListPage() {
             </p>
             <Link
               href="/cast/customers/new"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-sm font-semibold tracking-[0.04em] shadow-luxe"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-pill bg-wine-deep text-pearl-light text-body-sm font-semibold tracking-[0.04em] shadow-luxe"
             >
               <UserPlus size={14} />
               最初の顧客を追加

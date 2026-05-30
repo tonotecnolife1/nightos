@@ -91,7 +91,7 @@ export default function ResetPasswordForm() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
             >
               {pending ? "送信中..." : "再設定リンクを送る"}
             </button>

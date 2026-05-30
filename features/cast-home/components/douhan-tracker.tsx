@@ -113,7 +113,7 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
         <button
           type="button"
           onClick={() => setShowForm(true)}
-          className="inline-flex items-center gap-1 h-8 px-3 rounded-pill bg-wine-deep text-pearl-light-light text-[11px] font-semibold tracking-[0.04em] active:scale-[0.97] shadow-soft hover:-translate-y-px transition"
+          className="inline-flex items-center gap-1 h-8 px-3 rounded-pill bg-wine-deep text-pearl-light text-[11px] font-semibold tracking-[0.04em] active:scale-[0.97] shadow-soft hover:-translate-y-px transition"
         >
           <Plus size={12} />
           同伴を登録
@@ -519,7 +519,7 @@ function AddForm({
         className={cn(
           "w-full h-10 rounded-pill text-label-sm font-semibold tracking-[0.04em] transition-all active:scale-[0.98]",
           canSubmit
-            ? "bg-wine-deep text-pearl-light-light shadow-luxe hover:-translate-y-px"
+            ? "bg-wine-deep text-pearl-light shadow-luxe hover:-translate-y-px"
             : "bg-pearl-soft text-ink-mute cursor-not-allowed",
         )}
       >

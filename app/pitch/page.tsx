@@ -232,8 +232,8 @@ function FeatureCard({
 }) {
   const iconBg = {
     champagne: "bg-champagne-dark text-ink",
-    rose: "bg-rose-gold-metallic text-pearl-light-light",
-    amethyst: "bg-gold-metallic text-pearl-light-light",
+    rose: "bg-rose-gold-metallic text-pearl-light",
+    amethyst: "bg-gold-metallic text-pearl-light",
   }[tone];
   return (
     <div className="flex gap-3 rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft">

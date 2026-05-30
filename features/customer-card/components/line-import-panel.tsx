@@ -449,7 +449,7 @@ function ReviewPanel({
           type="button"
           onClick={handleSave}
           disabled={pending || (updatableFields.length > 0 && selected.length === 0)}
-          className="flex-1 h-11 rounded-btn bg-wine-deep text-pearl-light-light text-label-md font-medium shadow-luxe disabled:opacity-60 active:scale-95"
+          className="flex-1 h-11 rounded-btn bg-wine-deep text-pearl-light text-label-md font-medium shadow-luxe disabled:opacity-60 active:scale-95"
         >
           {pending
             ? "保存中…"
@@ -514,7 +514,7 @@ function FieldDiff({
           className={cn(
             "w-5 h-5 rounded mt-0.5 flex items-center justify-center shrink-0 border-2",
             checked
-              ? "bg-wine-deep border-wine-deep text-pearl-light-light"
+              ? "bg-wine-deep border-wine-deep text-pearl-light"
               : "border-ink-muted",
           )}
         >

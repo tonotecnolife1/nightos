@@ -109,7 +109,7 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
       {/* V5 FAB: wine-deep solid + multi-layer champagne-gold ring */}
       <Link
         href="/cast/customers/new"
-        className="fixed bottom-24 right-5 z-50 w-[60px] h-[60px] rounded-full bg-wine-deep text-pearl-light-light flex items-center justify-center active:scale-95 transition-all"
+        className="fixed bottom-24 right-5 z-50 w-[60px] h-[60px] rounded-full bg-wine-deep text-pearl-light flex items-center justify-center active:scale-95 transition-all"
         aria-label="お客様を新規登録"
         style={{
           boxShadow:

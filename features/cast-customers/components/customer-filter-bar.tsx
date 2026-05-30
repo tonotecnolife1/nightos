@@ -99,14 +99,14 @@ export function CustomerFilterBar({
           className={cn(
             "flex items-center gap-1 h-9 px-3 rounded-full text-[11px] font-medium border transition-all active:scale-95",
             activeCount > 0
-              ? "bg-wine-deep text-pearl-light-light border-gold/40"
+              ? "bg-wine-deep text-pearl-light border-gold/40"
               : "bg-pearl-warm text-ink-soft border-pearl-soft",
           )}
         >
           <Filter size={11} />
           フィルター
           {activeCount > 0 && (
-            <span className="bg-pearl/30 text-pearl-light-light text-[9px] min-w-[16px] h-[16px] flex items-center justify-center rounded-full">
+            <span className="bg-pearl/30 text-pearl-light text-[9px] min-w-[16px] h-[16px] flex items-center justify-center rounded-full">
               {activeCount}
             </span>
           )}
@@ -275,8 +275,8 @@ function ChipButton({
 }) {
   const activeClass =
     tone === "roseGold"
-      ? "bg-wine-deep text-pearl-light-light border border-wine-deep"
-      : "bg-wine-deep text-pearl-light-light border-gold/40";
+      ? "bg-wine-deep text-pearl-light border border-wine-deep"
+      : "bg-wine-deep text-pearl-light border-gold/40";
   return (
     <button
       type="button"

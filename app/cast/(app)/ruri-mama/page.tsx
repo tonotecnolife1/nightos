@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { History, ImageIcon } from "lucide-react";
+import { History } from "lucide-react";
 import { PageHeader } from "@/components/nightos/page-header";
 import { ChatWindow } from "@/features/ruri-mama/components/chat-window";
 import { ChatLimitBanner } from "@/features/ruri-mama/components/chat-limit-banner";
@@ -27,24 +27,14 @@ export default async function RuriMamaPage({ searchParams }: Props) {
         showBack
         tone="ruri"
         right={
-          <div className="flex items-center gap-2">
-            <Link
-              href="/cast/ruri-mama/history"
-              className="flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-lg hover:bg-pearl-warm/60 text-ink-soft"
-              aria-label="相談履歴"
-            >
-              <History size={16} />
-              <span className="text-[9px] leading-none opacity-80">履歴</span>
-            </Link>
-            <Link
-              href="/cast/avatars"
-              className="flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-lg hover:bg-pearl-warm/60 text-ink-soft"
-              aria-label="イラスト変更"
-            >
-              <ImageIcon size={16} />
-              <span className="text-[9px] leading-none opacity-80">アバター</span>
-            </Link>
-          </div>
+          <Link
+            href="/cast/ruri-mama/history"
+            className="flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-lg hover:bg-pearl-warm/60 text-ink-soft"
+            aria-label="相談履歴"
+          >
+            <History size={16} />
+            <span className="text-[9px] leading-none opacity-80">履歴</span>
+          </Link>
         }
       />
       <ChatLimitBanner />

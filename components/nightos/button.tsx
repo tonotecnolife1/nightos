@@ -17,7 +17,7 @@ const base =
 const variants: Record<Variant, string> = {
   // V5 主要操作 — wine-deep solid + shadow (pearl 地で使う)
   primary:
-    "bg-wine-deep text-pearl-light-light hover:bg-wine-deep/95 active:bg-wine-deep shadow-warm",
+    "bg-wine-deep text-pearl-light hover:bg-wine-deep/95 active:bg-wine-deep shadow-warm",
   // 副次 — pearl-light + line-strong border
   secondary:
     "bg-pearl-light text-wine-deep border border-line-strong hover:border-wine-deep/50 shadow-soft",
@@ -25,7 +25,7 @@ const variants: Record<Variant, string> = {
   ghost:
     "text-ink-soft hover:text-ink hover:bg-pearl-soft hover:translate-y-0",
   // primary と同義 (v1 名残のエイリアス)
-  ruri: "bg-wine-deep text-pearl-light-light hover:bg-wine-deep/95 shadow-warm",
+  ruri: "bg-wine-deep text-pearl-light hover:bg-wine-deep/95 shadow-warm",
   // outline — wine-deep 細線
   outline:
     "bg-transparent text-wine-deep border border-wine-deep hover:bg-wine/10",

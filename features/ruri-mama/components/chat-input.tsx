@@ -158,7 +158,7 @@ export function ChatInput({
             className={cn(
               "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-95",
               voice.recording
-                ? "bg-wine-deep text-pearl-light-light shadow-luxe"
+                ? "bg-wine-deep text-pearl-light shadow-luxe"
                 : "bg-champagne-soft/60 text-gold-deep border border-gold/30 hover:bg-wine-deep hover:text-pearl-light",
               disabled && "opacity-40 cursor-not-allowed",
             )}
@@ -188,7 +188,7 @@ export function ChatInput({
           className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-95",
             (text.trim() || images.length > 0) && !disabled
-              ? "bg-wine-deep text-pearl-light-light shadow-luxe"
+              ? "bg-wine-deep text-pearl-light shadow-luxe"
               : "bg-pearl-soft text-ink-mute",
           )}
           aria-label="送信"

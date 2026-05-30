@@ -70,7 +70,7 @@ export default function AvatarPickerPage() {
                         {variant.label}
                       </span>
                       {isSelected && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-wine-deep text-pearl-light-light text-label-sm font-medium">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-wine-deep text-pearl-light text-label-sm font-medium">
                           <Check size={10} />
                           選択中
                         </span>

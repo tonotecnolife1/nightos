@@ -115,7 +115,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex-1 h-11 rounded-pill bg-wine-deep text-pearl-light-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
+            className="flex-1 h-11 rounded-pill bg-wine-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
           >
             <Camera size={16} />
             撮影
@@ -142,7 +142,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           <button
             type="button"
             onClick={reset}
-            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-ink/60 text-pearl-light-light flex items-center justify-center"
+            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-ink/60 text-pearl-light flex items-center justify-center"
             aria-label="クリア"
           >
             <X size={12} />
@@ -197,7 +197,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
             <button
               type="button"
               onClick={apply}
-              className="w-full h-10 rounded-pill bg-wine-deep text-pearl-light-light shadow-luxe inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
+              className="w-full h-10 rounded-pill bg-wine-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
             >
               <Check size={14} />
               フォームに反映する

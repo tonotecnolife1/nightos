@@ -202,7 +202,7 @@ export function FollowTargetCard({
           <button
             type="button"
             onClick={() => onToggleContacted(customer.id)}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-pill bg-wine-deep text-pearl-light-light text-[12px] font-semibold tracking-[0.06em] shadow-soft active:scale-[0.98] transition-transform"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-pill bg-wine-deep text-pearl-light text-[12px] font-semibold tracking-[0.06em] shadow-soft active:scale-[0.98] transition-transform"
           >
             <Check size={13} />
             連絡した

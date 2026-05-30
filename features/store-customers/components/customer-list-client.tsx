@@ -98,7 +98,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
         </div>
         <Link
           href="/store/customers/new"
-          className="h-10 px-3 rounded-btn bg-wine-deep text-pearl-light-light flex items-center gap-1 shadow-soft text-[11px] font-medium active:scale-95 transition-transform"
+          className="h-10 px-3 rounded-btn bg-wine-deep text-pearl-light flex items-center gap-1 shadow-soft text-[11px] font-medium active:scale-95 transition-transform"
         >
           <UserPlus size={13} />
           新規

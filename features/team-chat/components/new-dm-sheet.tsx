@@ -111,7 +111,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "dm"
-                    ? "bg-wine-deep text-pearl-light-light border-gold/40"
+                    ? "bg-wine-deep text-pearl-light border-gold/40"
                     : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
@@ -124,7 +124,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "group"
-                    ? "bg-wine-deep text-pearl-light-light border-gold/40"
+                    ? "bg-wine-deep text-pearl-light border-gold/40"
                     : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
@@ -210,7 +210,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   type="button"
                   disabled={!canCreate || pending}
                   onClick={handleCreateGroup}
-                  className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light-light text-body-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 transition active:scale-[0.98]"
+                  className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light text-body-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 transition active:scale-[0.98]"
                 >
                   <Users size={15} />
                   {selected.size > 0

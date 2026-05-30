@@ -160,7 +160,7 @@ export function TemplateWorkspace({
             <button
               type="button"
               onClick={handleGenerateAi}
-              className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
             >
               <Sparkles size={16} />
               <span className="text-label-md font-semibold tracking-[0.04em]">

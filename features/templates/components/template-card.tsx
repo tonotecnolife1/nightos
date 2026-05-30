@@ -122,8 +122,8 @@ export function TemplateCard({
             disabled || !customerId
               ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
               : copied
-                ? "bg-success text-pearl-light-light shadow-soft"
-                : "bg-wine-deep text-pearl-light-light shadow-luxe active:scale-95",
+                ? "bg-success text-pearl-light shadow-soft"
+                : "bg-wine-deep text-pearl-light shadow-luxe active:scale-95",
           )}
         >
           {copied ? (
