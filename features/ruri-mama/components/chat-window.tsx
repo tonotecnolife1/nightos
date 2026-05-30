@@ -14,6 +14,7 @@ import {
 import { ChatInput } from "./chat-input";
 import { ChipOptions } from "./chip-options";
 import { CustomerContextPill } from "./customer-context-pill";
+import { ChatNavStrip } from "./chat-nav-strip";
 import { CustomerSelectInline } from "./customer-select-inline";
 import { FeedbackButtons } from "./feedback-buttons";
 import { IntentPicker } from "./intent-picker";
