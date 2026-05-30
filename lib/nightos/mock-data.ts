@@ -447,6 +447,8 @@ export const mockCustomers: Customer[] = [
     store_id: CURRENT_STORE_ID,
     cast_id: "cast1",
     name: "田中 太郎",
+    name_kana: "たなか たろう",
+    nickname: "社長",
     birthday: "1975-09-12",
     job: "IT企業経営",
     favorite_drink: "山崎12年ロック",

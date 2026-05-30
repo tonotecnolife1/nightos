@@ -311,6 +311,8 @@ export async function getAllCustomers(): Promise<Customer[]> {
 
 export interface UpdateCustomerInput {
   name: string;
+  name_kana?: string | null;
+  nickname?: string | null;
   birthday: string | null;
   job: string | null;
   favorite_drink: string | null;
@@ -339,6 +341,14 @@ function updateCustomerMock(
   const updated: Customer = {
     ...mockCustomers[idx],
     name: input.name,
+    name_kana:
+      input.name_kana !== undefined
+        ? input.name_kana
+        : mockCustomers[idx].name_kana,
+    nickname:
+      input.nickname !== undefined
+        ? input.nickname
+        : mockCustomers[idx].nickname,
     birthday: input.birthday,
     job: input.job,
     favorite_drink: input.favorite_drink,

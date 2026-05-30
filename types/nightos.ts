@@ -75,6 +75,10 @@ export interface Customer {
   store_id: string;
   cast_id: string;
   name: string;
+  /** 氏名の読み仮名（ひらがな）。検索の予測用。任意。 */
+  name_kana?: string | null;
+  /** 通称・ニックネーム（「社長」「たかちゃん」等）。検索・表示用。任意。 */
+  nickname?: string | null;
   birthday: string | null; // YYYY-MM-DD
   job: string | null;
   favorite_drink: string | null;
