@@ -35,12 +35,12 @@ export function StatsSubHeader({ year, month }: Props) {
         className="absolute left-0 right-0 -bottom-px h-px"
         style={{ background: "var(--gold-metallic)", opacity: 0.45 }}
       />
-      <div className="flex items-start gap-1.5">
+      <div className="flex items-center gap-1.5">
         <button
           type="button"
           onClick={() => router.back()}
           aria-label="戻る"
-          className="-ml-2 -mt-0.5 w-9 h-9 rounded-full flex items-center justify-center text-ink-soft hover:bg-pearl-soft transition-colors"
+          className="-ml-2 w-9 h-9 rounded-full flex items-center justify-center text-ink-soft hover:bg-pearl-soft transition-colors"
         >
           <ChevronLeft size={20} strokeWidth={1.8} />
         </button>
@@ -51,15 +51,9 @@ export function StatsSubHeader({ year, month }: Props) {
           >
             あなたの成績
           </h1>
-          <p
-            className="mt-1 font-sans text-[12px] leading-[1.4] text-ink-soft"
-            style={{ letterSpacing: "0.06em" }}
-          >
-            今月のがんばり · {month}月
-          </p>
         </div>
         <span
-          className="mt-0.5 shrink-0 px-3 py-1.5 rounded-pill border border-ink/[0.14] text-ink-soft font-sans text-[11px] leading-none"
+          className="shrink-0 px-3 py-1.5 rounded-pill border border-ink/[0.14] text-ink-soft font-sans text-[11px] leading-none"
           style={{
             background: "rgba(253,248,240,0.85)",
             letterSpacing: "0.08em",
