@@ -326,19 +326,23 @@ export function CastHomeHero({
         </div>
       )}
 
-      {/* Primary CTA — centered, intrinsic width (not full-bleed) */}
-      <div className="relative mt-6 flex justify-center">
-        <Link
-          href="/cast/schedule"
-          className="v5-cta-primary h-11 px-6 rounded-pill inline-flex items-center justify-center gap-2 font-sans font-semibold transition active:scale-[0.99]"
-          style={{ letterSpacing: "0.08em", fontSize: 13 }}
-        >
-          {loaded && !hasEvents
-            ? "スケジュールを編集"
-            : "スケジュールを見る"}
-          <ArrowRight size={15} strokeWidth={1.8} />
-        </Link>
-      </div>
+      {/* Primary CTA — 案③ List terminus (gold = text-clip + hairline, no box) */}
+      <Link href="/cast/schedule" className="relative mt-5 block w-full">
+        <span
+          aria-hidden
+          className="block h-px w-full"
+          style={{ background: "linear-gradient(90deg, rgba(235,217,168,0.45) 0%, rgba(235,217,168,0.20) 100%)" }}
+        />
+        <span className="flex h-[52px] items-center justify-between px-0.5">
+          <span
+            className="v5-metallic font-sans font-semibold"
+            style={{ fontSize: 15, letterSpacing: "0.08em" }}
+          >
+            {loaded && !hasEvents ? "スケジュールを編集" : "スケジュールを見る"}
+          </span>
+          <ArrowRight size={17} strokeWidth={1.8} style={{ color: "var(--v5-gold-on-dark)" }} />
+        </span>
+      </Link>
     </section>
   );
 }
