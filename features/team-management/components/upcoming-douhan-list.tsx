@@ -59,7 +59,7 @@ export function UpcomingDouhanList({
     <Card className="p-3">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
-          <Calendar size={14} className="text-roseGold-dark" />
+          <Calendar size={14} className="text-wine-deep" />
           <span className="text-body-sm font-semibold text-ink">
             今週の同伴予定
           </span>

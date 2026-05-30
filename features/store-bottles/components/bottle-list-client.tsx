@@ -74,7 +74,7 @@ export function BottleListClient({ bottles: initial }: Props) {
           />
           <Link
             href="/store/bottles/new"
-            className="h-10 px-4 rounded-btn bg-wine-deep text-pearl-light flex items-center gap-1 shadow-soft text-label-md font-medium active:scale-95"
+            className="h-10 px-4 rounded-btn bg-wine-deep text-pearl-light-light flex items-center gap-1 shadow-soft text-label-md font-medium active:scale-95"
           >
             <Wine size={14} />
             新規登録

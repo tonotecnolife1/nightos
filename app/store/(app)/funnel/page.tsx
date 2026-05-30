@@ -62,7 +62,7 @@ export default function StoreFunnelPage() {
   // カテゴリ別内訳
   const CATEGORIES: { value: CustomerCategory; label: string; color: string }[] =
     [
-      { value: "vip", label: "VIP", color: "bg-roseGold-dark" },
+      { value: "vip", label: "VIP", color: "bg-wine-deep" },
       { value: "regular", label: "常連", color: "bg-gold-deep" },
       { value: "new", label: "新規", color: "bg-pearl-soft" },
     ];
@@ -111,7 +111,7 @@ export default function StoreFunnelPage() {
           <Card className="p-3 grid grid-cols-2 gap-3 text-center">
             <div>
               <div className="text-[10px] text-ink-mute">担当転換率</div>
-              <div className="text-display-sm font-display text-roseGold-dark">
+              <div className="text-display-sm font-display text-wine-deep">
                 {Math.round(overall.assignedRate * 100)}%
               </div>
             </div>
@@ -127,7 +127,7 @@ export default function StoreFunnelPage() {
         {/* Category breakdown */}
         <section className="space-y-2">
           <div className="flex items-center gap-1.5">
-            <Star size={14} className="text-roseGold-dark" />
+            <Star size={14} className="text-wine-deep" />
             <h2 className="text-display-sm text-ink">カテゴリ別ファネル</h2>
           </div>
           {categoryBreakdown.map(({ value, label, color, total, lineEx, assigned }) => (
@@ -209,7 +209,7 @@ export default function StoreFunnelPage() {
         {/* By cast */}
         <section className="space-y-2">
           <div className="flex items-center gap-1.5">
-            <TrendingUp size={14} className="text-roseGold-dark" />
+            <TrendingUp size={14} className="text-wine-deep" />
             <h2 className="text-display-sm text-ink">キャスト別</h2>
           </div>
           {byCast.map(({ cast, stats }) => (

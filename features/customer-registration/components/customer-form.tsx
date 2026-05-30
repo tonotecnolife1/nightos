@@ -179,8 +179,8 @@ export function CustomerForm({
               onClick={() => setCategory(opt.value)}
               className={`flex-1 h-10 rounded-pill border text-body-sm font-medium tracking-[0.04em] transition-all ${
                 category === opt.value
-                  ? "border-wine-deep/70 bg-roseGold-soft/40 text-wine-deep"
-                  : "border-ink/[0.08] bg-pearl-light text-ink-soft hover:border-roseGold/30"
+                  ? "border-wine-deep/70 bg-champagne-soft/40 text-wine-deep"
+                  : "border-ink/[0.08] bg-pearl-light text-ink-soft hover:border-gold/30"
               }`}
             >
               {opt.label}

@@ -23,7 +23,7 @@ export function TableGrid({ value, onChange }: Props) {
               className={cn(
                 "h-16 rounded-btn border text-center transition-all active:scale-95",
                 active
-                  ? "bg-rose-gold-metallic text-pearl border-roseGold shadow-luxe"
+                  ? "bg-rose-gold-metallic text-wine-deep border border-gold/30 shadow-luxe"
                   : "bg-pearl-warm border-pearl-soft text-ink hover:border-champagne-dark",
               )}
             >

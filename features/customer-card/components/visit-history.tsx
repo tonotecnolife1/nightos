@@ -35,7 +35,7 @@ export function VisitHistory({ visits, limit = 5 }: Props) {
               <div className="relative flex flex-col items-center">
                 <span
                   className={`w-2 h-2 rounded-full ${
-                    idx === 0 ? "bg-roseGold" : "bg-pearl-soft"
+                    idx === 0 ? "bg-wine-deep" : "bg-pearl-soft"
                   }`}
                 />
               </div>
@@ -50,7 +50,7 @@ export function VisitHistory({ visits, limit = 5 }: Props) {
                     {formatDate(visit.visited_at)}
                   </span>
                   {idx === 0 && (
-                    <span className="text-label-sm text-roseGold-dark">
+                    <span className="text-label-sm text-wine-deep">
                       最新
                     </span>
                   )}
@@ -63,7 +63,7 @@ export function VisitHistory({ visits, limit = 5 }: Props) {
               </div>
 
               {visit.is_nominated ? (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-roseGold-muted text-roseGold-dark text-label-sm font-medium border border-roseGold-border">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-champagne-soft/60 text-wine-deep text-label-sm font-medium border border-gold/30">
                   <Sparkles size={10} />
                   指名
                 </span>

@@ -142,7 +142,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           <button
             type="button"
             onClick={reset}
-            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-ink/60 text-pearl-light flex items-center justify-center"
+            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-ink/60 text-pearl-light-light flex items-center justify-center"
             aria-label="クリア"
           >
             <X size={12} />

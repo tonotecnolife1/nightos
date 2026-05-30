@@ -98,7 +98,7 @@ export function TemplateEditor({ category, onChange }: Props) {
     <Card className="!bg-pearl-warm !border-pearl-soft p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <Pencil size={14} className="text-roseGold-dark" />
+          <Pencil size={14} className="text-wine-deep" />
           <h3 className="text-label-md text-ink font-semibold">
             マイテンプレート
           </h3>
@@ -110,7 +110,7 @@ export function TemplateEditor({ category, onChange }: Props) {
           <button
             type="button"
             onClick={startNew}
-            className="flex items-center gap-1 text-label-sm text-roseGold-dark"
+            className="flex items-center gap-1 text-label-sm text-wine-deep"
           >
             <Plus size={12} />
             新規作成
@@ -131,7 +131,7 @@ export function TemplateEditor({ category, onChange }: Props) {
                 setEditor({ ...editor, label: e.target.value })
               }
               placeholder="例: 渡辺さん専用お礼"
-              className="w-full h-9 px-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink text-body-sm outline-none focus:border-roseGold-border"
+              className="w-full h-9 px-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink text-body-sm outline-none focus:border-gold/30"
             />
           </div>
           <div>
@@ -145,7 +145,7 @@ export function TemplateEditor({ category, onChange }: Props) {
               }
               placeholder="{姓}さん、お礼...."
               rows={4}
-              className="w-full px-3 py-2 rounded-btn bg-pearl-warm border border-pearl-soft text-ink text-body-sm outline-none focus:border-roseGold-border resize-none"
+              className="w-full px-3 py-2 rounded-btn bg-pearl-warm border border-pearl-soft text-ink text-body-sm outline-none focus:border-gold/30 resize-none"
             />
           </div>
           <div>
@@ -159,7 +159,7 @@ export function TemplateEditor({ category, onChange }: Props) {
                 setEditor({ ...editor, description: e.target.value })
               }
               placeholder="例: VIP向け、競馬の話題"
-              className="w-full h-9 px-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink text-body-sm outline-none focus:border-roseGold-border"
+              className="w-full h-9 px-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink text-body-sm outline-none focus:border-gold/30"
             />
           </div>
           <div className="flex gap-2 justify-end pt-1">
@@ -178,7 +178,7 @@ export function TemplateEditor({ category, onChange }: Props) {
               className={cn(
                 "inline-flex items-center gap-1 h-9 px-5 rounded-pill text-label-sm font-semibold tracking-[0.04em]",
                 editor.body.trim()
-                  ? "bg-wine-deep text-pearl-light shadow-luxe"
+                  ? "bg-wine-deep text-pearl-light-light shadow-luxe"
                   : "bg-pearl-soft text-ink-mute",
               )}
             >

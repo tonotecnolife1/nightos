@@ -122,7 +122,7 @@ export function CastListShell({
             className={cn(
               "px-3 py-1 rounded-pill text-[11px] font-medium tracking-[0.04em] border whitespace-nowrap transition-colors",
               sort === opt.key
-                ? "bg-roseGold-soft/60 text-wine-deep border-roseGold/30"
+                ? "bg-champagne-soft/60 text-wine-deep border-gold/30"
                 : "bg-pearl-light text-ink-mute border-ink/[0.08]",
             )}
           >
@@ -203,7 +203,7 @@ function CastCard({ cast, customerCount, pace }: CastCardProps) {
 
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-btn bg-pearl-soft py-1.5 text-center">
-            <div className="font-display text-body-md text-roseGold-dark">
+            <div className="font-display text-body-md text-wine-deep">
               {(cast.monthly_sales / 10000).toFixed(0)}
             </div>
             <div className="text-[9px] text-ink-mute">万円</div>

@@ -20,8 +20,8 @@ const toneConfig = {
     iconBg: "bg-champagne-soft/60 text-gold-deep",
   },
   rose: {
-    bg: "bg-pearl-light/85 backdrop-blur-md border-roseGold/30",
-    iconBg: "bg-roseGold-soft/60 text-roseGold-deep",
+    bg: "bg-pearl-light/85 backdrop-blur-md border-gold/30",
+    iconBg: "bg-champagne-soft/60 text-wine-deep",
   },
 };
 

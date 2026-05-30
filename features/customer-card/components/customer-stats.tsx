@@ -31,7 +31,7 @@ export function CustomerStats({ context }: { context: CustomerContext }) {
         label="使ってくれた金額"
         value={formatCurrency(estimatedSales).replace("¥", "")}
         unit="円"
-        icon={<Coins size={12} className="text-roseGold-dark" />}
+        icon={<Coins size={12} className="text-wine-deep" />}
         tone="rose"
       />
     </div>

@@ -16,9 +16,9 @@ const STYLE_TONE: Record<
   { bg: string; border: string; text: string; selectedBg: string; selectedText: string }
 > = {
   safe: {
-    bg: "bg-roseGold-muted",
-    border: "border-roseGold-border",
-    text: "text-roseGold-dark",
+    bg: "bg-champagne-soft/60",
+    border: "border-gold/30",
+    text: "text-wine-deep",
     selectedBg: "bg-rose-gold-metallic",
     selectedText: "text-pearl-light",
   },

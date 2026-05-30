@@ -193,7 +193,7 @@ function DiffRow({
       <div
         className={cn(
           "text-[11px] break-words pl-2 border-l-2",
-          changed ? "text-ink border-amethyst" : "text-ink-soft border-pearl-soft",
+          changed ? "text-ink border-gold/40" : "text-ink-soft border-pearl-soft",
         )}
       >
         {after ?? "(なし)"}

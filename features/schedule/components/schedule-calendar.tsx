@@ -16,7 +16,7 @@ import type { Customer, Douhan } from "@/types/nightos";
 const DOW = ["日", "月", "火", "水", "木", "金", "土"];
 
 const STATUS_STYLE: Record<ShiftStatus, { bg: string; text: string; label: string }> = {
-  working: { bg: "bg-roseGold-deep", text: "text-pearl-light", label: "出勤" },
+  working: { bg: "bg-wine-deep", text: "text-pearl-light", label: "出勤" },
   off: { bg: "bg-pearl-soft border border-ink/[0.08]", text: "text-ink-mute", label: "公休" },
   unknown: { bg: "", text: "", label: "" },
 };
@@ -164,7 +164,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
               className={cn(
                 "relative aspect-square flex flex-col items-center justify-center rounded-xl text-[13px] font-medium transition-all active:scale-95",
                 shift?.status === "working"
-                  ? "bg-wine-deep text-pearl-light shadow-luxe"
+                  ? "bg-wine-deep text-pearl-light-light shadow-luxe"
                   : shift?.status === "off"
                     ? "bg-pearl-soft border border-ink/[0.08] text-ink-mute"
                     : "hover:bg-pearl-soft text-ink",
@@ -191,7 +191,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
       {/* Legend */}
       <div className="flex items-center gap-4 px-1 text-[10px] text-ink-mute">
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded bg-roseGold-deep inline-block" />
+          <span className="w-3 h-3 rounded bg-wine-deep inline-block" />
           出勤
         </span>
         <span className="flex items-center gap-1">
@@ -260,7 +260,7 @@ function ShiftEditSheet({
                 "flex-1 h-10 rounded-2xl border text-body-sm font-medium transition-all",
                 status === s
                   ? s === "working"
-                    ? "bg-wine-deep text-pearl-light border-amethyst"
+                    ? "bg-wine-deep text-pearl-light-light border-gold/40"
                     : "bg-pearl-soft border-ink/[0.08] text-ink"
                   : "bg-pearl-warm border-ink/[0.06] text-ink-soft hover:border-wine-deep/30",
               )}
@@ -334,7 +334,7 @@ function ShiftEditSheet({
         <button
           type="button"
           onClick={() => onSave({ date: entry.date, status, startTime: status === "working" ? startTime : undefined, endTime: status === "working" ? endTime : undefined, note: note || undefined })}
-          className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md"
+          className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light-light font-semibold tracking-[0.04em] text-body-md"
         >
           保存
         </button>

@@ -45,7 +45,7 @@ const categoryLabel: Record<string, { text: string; cls: string }> = {
   },
   new: {
     text: "新規",
-    cls: "bg-roseGold-soft/60 text-wine-deep border border-roseGold/30",
+    cls: "bg-champagne-soft/60 text-wine-deep border border-gold/30",
   },
   regular: {
     text: "常連",
@@ -202,7 +202,7 @@ export function FollowTargetCard({
           <button
             type="button"
             onClick={() => onToggleContacted(customer.id)}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-pill bg-wine-deep text-pearl-light text-[12px] font-semibold tracking-[0.06em] shadow-soft active:scale-[0.98] transition-transform"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-pill bg-wine-deep text-pearl-light-light text-[12px] font-semibold tracking-[0.06em] shadow-soft active:scale-[0.98] transition-transform"
           >
             <Check size={13} />
             連絡した

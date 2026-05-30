@@ -37,7 +37,7 @@ export function ApprovalLink() {
                 承認キュー
               </span>
               {count > 0 && (
-                <span className="text-[10px] bg-amber text-pearl px-1.5 py-0.5 rounded-badge font-semibold">
+                <span className="text-[10px] bg-warning text-pearl-light px-1.5 py-0.5 rounded-badge font-semibold">
                   {count}
                 </span>
               )}

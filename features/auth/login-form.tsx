@@ -99,7 +99,7 @@ export default function LoginForm({ app }: Props) {
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light text-body-md font-semibold tracking-[0.08em] hover:-translate-y-px active:translate-y-px transition shadow-warm will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-md font-semibold tracking-[0.08em] hover:-translate-y-px active:translate-y-px transition shadow-warm will-change-transform disabled:opacity-50"
             >
               {pending ? "ログイン中..." : "ログイン"}
             </button>

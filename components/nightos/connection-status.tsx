@@ -27,13 +27,13 @@ export function ConnectionStatus() {
     issues.push({
       icon: <Database size={12} />,
       text: "モックデータで動作中",
-      tone: "text-amber",
+      tone: "text-warning",
     });
   } else if (status.supabase === "error") {
     issues.push({
       icon: <AlertTriangle size={12} />,
       text: "DB接続エラー（モックに退避）",
-      tone: "text-rose",
+      tone: "text-wine-deep",
     });
   }
 
@@ -48,7 +48,7 @@ export function ConnectionStatus() {
   if (issues.length === 0) return null;
 
   return (
-    <div className="bg-amber/10 border-b border-amber/20 px-4 py-1.5 flex items-center justify-between text-[11px]">
+    <div className="bg-warning/10 border-b border-warning/20 px-4 py-1.5 flex items-center justify-between text-[11px]">
       <div className="flex items-center gap-3 flex-wrap">
         {issues.map((issue, i) => (
           <span

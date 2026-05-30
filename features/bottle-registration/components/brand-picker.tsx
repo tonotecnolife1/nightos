@@ -56,7 +56,7 @@ export function BrandPicker({ value, onChange }: Props) {
             setAddingNew(true);
             onChange("");
           }}
-          className="flex items-center gap-1 text-label-sm text-roseGold-dark"
+          className="flex items-center gap-1 text-label-sm text-wine-deep"
         >
           <Plus size={12} />
           新規追加

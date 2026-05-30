@@ -61,7 +61,7 @@ export function GoalSettingCard({ castId, castName, goal, setterName }: Props) {
     <Card
       className={cn(
         "overflow-hidden transition-all",
-        open && "!border-roseGold/40",
+        open && "!border-gold/40",
       )}
     >
       {/* Header row */}
@@ -71,7 +71,7 @@ export function GoalSettingCard({ castId, castName, goal, setterName }: Props) {
         className="w-full flex items-center justify-between p-3"
       >
         <div className="flex items-center gap-2">
-          <Target size={14} className="text-roseGold-dark shrink-0" />
+          <Target size={14} className="text-wine-deep shrink-0" />
           <span className="text-body-sm font-medium text-ink">
             今月の目標
           </span>
@@ -79,7 +79,7 @@ export function GoalSettingCard({ castId, castName, goal, setterName }: Props) {
         <div className="flex items-center gap-3">
           <div className="text-right">
             <div className="text-[10px] text-ink-mute">売上</div>
-            <div className="text-body-sm font-display text-roseGold-dark">
+            <div className="text-body-sm font-display text-wine-deep">
               {formatCurrency(goal.salesGoal)}
             </div>
           </div>

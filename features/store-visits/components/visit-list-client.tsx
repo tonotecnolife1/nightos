@@ -53,7 +53,7 @@ export function VisitListClient({ visits: initial }: Props) {
           />
           <Link
             href="/store/visits/new"
-            className="h-10 px-4 rounded-btn bg-wine-deep text-pearl-light flex items-center gap-1 shadow-soft text-label-md font-medium active:scale-95 transition-transform"
+            className="h-10 px-4 rounded-btn bg-wine-deep text-pearl-light-light flex items-center gap-1 shadow-soft text-label-md font-medium active:scale-95 transition-transform"
           >
             <CalendarPlus size={14} />
             新規来店
@@ -76,7 +76,7 @@ export function VisitListClient({ visits: initial }: Props) {
                       {v.customer_name}
                     </span>
                     {v.is_nominated ? (
-                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-roseGold-muted text-roseGold-dark text-[10px] font-medium border border-roseGold-border">
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-champagne-soft/60 text-wine-deep text-[10px] font-medium border border-gold/30">
                         <Sparkles size={9} />
                         指名
                       </span>

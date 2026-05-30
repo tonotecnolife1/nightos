@@ -370,7 +370,7 @@ function CastBucket({
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-left hover:bg-pearl-soft"
       >
-        <Users size={11} className="text-roseGold-dark shrink-0" />
+        <Users size={11} className="text-wine-deep shrink-0" />
         <span className="text-[11px] font-medium text-ink flex-1 truncate">
           {castLabel}
         </span>
@@ -411,7 +411,7 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
         : "常連";
   const categoryStyle =
     customer.category === "vip"
-      ? "bg-roseGold-muted text-roseGold-dark border-roseGold-border"
+      ? "bg-champagne-soft/60 text-wine-deep border-gold/30"
       : customer.category === "new"
         ? "bg-champagne-soft/60/50 text-gold-deep border-gold/30"
         : "bg-pearl-soft text-ink-soft border-pearl-soft";

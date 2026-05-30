@@ -64,7 +64,7 @@ export function MemoCard({
     <section className={cn("memo-dashed px-5 py-4", className)}>
       <header className="flex items-center justify-between mb-3">
         <h3 className="text-label-md text-ink font-semibold">{title}</h3>
-        <span className="text-label-sm px-2.5 py-1 rounded-badge bg-roseGold-soft text-roseGold-deep">
+        <span className="text-label-sm px-2.5 py-1 rounded-badge bg-champagne-soft/60 text-wine-deep">
           編集OK
         </span>
       </header>

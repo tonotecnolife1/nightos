@@ -184,7 +184,7 @@ export default function PitchPage() {
       <section className="px-6 pt-4 pb-12 text-center">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-8 h-14 rounded-btn bg-roseGold-deep text-pearl shadow-luxe text-label-md font-medium active:scale-95 transition-transform"
+          className="inline-flex items-center gap-2 px-8 h-14 rounded-btn bg-wine-deep text-pearl-light shadow-luxe text-label-md font-medium active:scale-95 transition-transform"
         >
           デモを見る
           <ArrowRight size={16} />
@@ -232,8 +232,8 @@ function FeatureCard({
 }) {
   const iconBg = {
     champagne: "bg-champagne-dark text-ink",
-    rose: "bg-rose-gold-metallic text-pearl-light",
-    amethyst: "bg-gold-metallic text-pearl-light",
+    rose: "bg-rose-gold-metallic text-pearl-light-light",
+    amethyst: "bg-gold-metallic text-pearl-light-light",
   }[tone];
   return (
     <div className="flex gap-3 rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft">
@@ -293,7 +293,7 @@ function StepCard({
 }) {
   return (
     <div className="flex gap-3">
-      <div className="w-8 h-8 rounded-full bg-rose-gold-metallic text-pearl flex items-center justify-center shrink-0 font-display text-body-lg font-semibold">
+      <div className="w-8 h-8 rounded-full bg-rose-gold-metallic text-pearl-light flex items-center justify-center shrink-0 font-display text-body-lg font-semibold">
         {step}
       </div>
       <div className="flex-1 pt-0.5">

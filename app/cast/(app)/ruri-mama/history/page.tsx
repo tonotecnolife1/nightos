@@ -78,7 +78,7 @@ export default function ChatHistoryPage() {
               !query && (
                 <Link
                   href="/cast/ruri-mama"
-                  className="inline-block h-10 px-5 rounded-btn bg-wine-deep text-pearl-light text-label-md font-medium active:scale-[0.98]"
+                  className="inline-block h-10 px-5 rounded-btn bg-wine-deep text-pearl-light-light text-label-md font-medium active:scale-[0.98]"
                 >
                   さくらママに相談する
                 </Link>

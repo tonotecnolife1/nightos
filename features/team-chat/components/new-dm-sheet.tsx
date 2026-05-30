@@ -111,7 +111,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "dm"
-                    ? "bg-wine-deep text-pearl-light border-amethyst"
+                    ? "bg-wine-deep text-pearl-light-light border-gold/40"
                     : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
@@ -124,7 +124,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "group"
-                    ? "bg-wine-deep text-pearl-light border-amethyst"
+                    ? "bg-wine-deep text-pearl-light-light border-gold/40"
                     : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
@@ -172,7 +172,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                           className="w-full flex items-center gap-3 px-3 py-3.5 rounded-card hover:bg-pearl-soft active:bg-pearl-soft transition text-left disabled:opacity-50"
                         >
                           {/* Avatar */}
-                          <div className="w-10 h-10 rounded-full bg-roseGold-soft/60 border border-blush/30 flex items-center justify-center shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-champagne-soft/60 border border-gold/30 flex items-center justify-center shrink-0">
                             <span className="text-body-sm font-medium text-wine-deep">
                               {cast.name.charAt(0)}
                             </span>
@@ -188,7 +188,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                               className={cn(
                                 "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition",
                                 isChecked
-                                  ? "bg-roseGold-deep border-wine-deep"
+                                  ? "bg-wine-deep border-wine-deep"
                                   : "border-ink/20",
                               )}
                             >
@@ -210,7 +210,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   type="button"
                   disabled={!canCreate || pending}
                   onClick={handleCreateGroup}
-                  className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light text-body-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 transition active:scale-[0.98]"
+                  className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light-light text-body-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 transition active:scale-[0.98]"
                 >
                   <Users size={15} />
                   {selected.size > 0

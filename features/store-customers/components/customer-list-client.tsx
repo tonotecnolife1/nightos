@@ -98,7 +98,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
         </div>
         <Link
           href="/store/customers/new"
-          className="h-10 px-3 rounded-btn bg-wine-deep text-pearl-light flex items-center gap-1 shadow-soft text-[11px] font-medium active:scale-95 transition-transform"
+          className="h-10 px-3 rounded-btn bg-wine-deep text-pearl-light-light flex items-center gap-1 shadow-soft text-[11px] font-medium active:scale-95 transition-transform"
         >
           <UserPlus size={13} />
           新規
@@ -167,7 +167,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
                 {/* Quick: visit registration */}
                 <Link
                   href={`/store/visits/new?customerId=${c.id}`}
-                  className="flex items-center gap-1 px-2.5 h-7 rounded-full text-[10px] font-medium border border-roseGold-border bg-roseGold-muted text-roseGold-dark active:scale-95"
+                  className="flex items-center gap-1 px-2.5 h-7 rounded-full text-[10px] font-medium border border-gold/30 bg-champagne-soft/60 text-wine-deep active:scale-95"
                 >
                   <CalendarPlus size={10} />
                   来店登録

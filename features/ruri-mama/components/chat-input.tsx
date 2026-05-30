@@ -70,8 +70,8 @@ export function ChatInput({
       {voice.recording && (
         <div className="mb-2 flex items-center justify-center gap-2 text-wine-deep">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-roseGold-deep opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-roseGold-deep" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-wine-deep opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-wine-deep" />
           </span>
           <span className="text-label-sm font-medium">話してください…</span>
         </div>
@@ -101,7 +101,7 @@ export function ChatInput({
               <button
                 type="button"
                 onClick={() => removeImage(i)}
-                className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 text-pearl flex items-center justify-center"
+                className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 text-pearl-light flex items-center justify-center"
                 aria-label="画像を削除"
               >
                 <X size={11} />
@@ -158,7 +158,7 @@ export function ChatInput({
             className={cn(
               "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-95",
               voice.recording
-                ? "bg-wine-deep text-pearl-light shadow-luxe"
+                ? "bg-wine-deep text-pearl-light-light shadow-luxe"
                 : "bg-champagne-soft/60 text-gold-deep border border-gold/30 hover:bg-wine-deep hover:text-pearl-light",
               disabled && "opacity-40 cursor-not-allowed",
             )}
@@ -188,7 +188,7 @@ export function ChatInput({
           className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-95",
             (text.trim() || images.length > 0) && !disabled
-              ? "bg-wine-deep text-pearl-light shadow-luxe"
+              ? "bg-wine-deep text-pearl-light-light shadow-luxe"
               : "bg-pearl-soft text-ink-mute",
           )}
           aria-label="送信"

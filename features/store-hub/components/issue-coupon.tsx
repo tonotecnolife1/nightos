@@ -81,7 +81,7 @@ export function IssueCoupon({ customers }: Props) {
           type="button"
           onClick={handleIssue}
           disabled={pending}
-          className="w-full h-9 rounded-btn bg-gold-metallic text-pearl text-[11px] font-medium shadow-soft disabled:opacity-50 active:scale-95 flex items-center justify-center gap-1"
+          className="w-full h-9 rounded-btn bg-gold-metallic text-pearl-light text-[11px] font-medium shadow-soft disabled:opacity-50 active:scale-95 flex items-center justify-center gap-1"
         >
           <Gift size={12} />
           {pending ? "発行中…" : "クーポンを発行"}

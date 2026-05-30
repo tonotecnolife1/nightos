@@ -150,7 +150,7 @@ export function EditCustomerForm({ customer, casts }: Props) {
       )}
       {success && (
         <div className="flex items-center gap-2 rounded-btn bg-champagne border border-champagne-dark text-ink text-body-sm px-3 py-2">
-          <Check size={16} className="text-roseGold-dark" />
+          <Check size={16} className="text-wine-deep" />
           {success}
         </div>
       )}

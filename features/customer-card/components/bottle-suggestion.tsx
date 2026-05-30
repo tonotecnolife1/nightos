@@ -113,7 +113,7 @@ export function BottleSuggestion({ customerId }: Props) {
 
 function RecommendationCard({ rec }: { rec: BottleRecommendation }) {
   const tierStyles: Record<BottleRecommendation["tier"], string> = {
-    premium: "bg-rose-gold-metallic text-pearl border-roseGold",
+    premium: "bg-rose-gold-metallic text-wine-deep border border-gold/30",
     standard: "bg-champagne text-ink border-champagne-dark",
     entry: "bg-pearl-warm text-ink border-pearl-soft",
   };
@@ -125,7 +125,7 @@ function RecommendationCard({ rec }: { rec: BottleRecommendation }) {
   return (
     <div className="rounded-btn border border-pearl-soft bg-pearl-warm p-2.5">
       <div className="flex items-center gap-2 mb-1">
-        <Wine size={12} className="text-roseGold-dark shrink-0" />
+        <Wine size={12} className="text-wine-deep shrink-0" />
         <span className="text-body-sm font-semibold text-ink flex-1">
           {rec.brand}
         </span>

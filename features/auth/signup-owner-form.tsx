@@ -115,7 +115,7 @@ export default function SignupOwnerForm() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
             >
               {pending ? "登録中..." : "店舗を開く"}
             </button>
@@ -165,8 +165,8 @@ function Choice({ active, onClick, label }: { active: boolean; onClick: () => vo
       className={cn(
         "py-3 rounded-pill text-body-sm font-semibold tracking-[0.04em] border transition",
         active
-          ? "border-wine-deep bg-wine-deep text-pearl-light shadow-luxe"
-          : "border-ink/[0.08] bg-pearl-light text-ink-soft hover:border-roseGold/30 hover:-translate-y-px shadow-soft",
+          ? "border-wine-deep bg-wine-deep text-pearl-light-light shadow-luxe"
+          : "border-ink/[0.08] bg-pearl-light text-ink-soft hover:border-gold/30 hover:-translate-y-px shadow-soft",
       )}
     >
       {label}

@@ -102,7 +102,7 @@ export default async function CustomerCardPage({
         <div className="flex gap-2">
           <Link
             href={`/store/visits/new?customerId=${customer.id}`}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-pill border border-wine-deep/70 bg-transparent text-body-sm font-medium text-wine-deep hover:bg-roseGold-soft/30 active:scale-[0.98] transition"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-pill border border-wine-deep/70 bg-transparent text-body-sm font-medium text-wine-deep hover:bg-champagne-soft/30 active:scale-[0.98] transition"
           >
             <CalendarPlus size={14} />
             来店を記録

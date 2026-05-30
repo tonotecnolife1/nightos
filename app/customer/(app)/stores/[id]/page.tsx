@@ -52,7 +52,7 @@ export default async function CustomerStoreDetailPage({
           <div className="relative overflow-hidden rounded-hero bg-pearl-light/85 backdrop-blur-md border border-ink/[0.08] shadow-soft px-3 py-3 text-center">
             <span aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-rose-gold-metallic opacity-60" />
             <Coins size={14} className="mx-auto text-wine-deep mb-1" />
-            <div className="font-display text-[1rem] leading-none font-medium tabular-nums text-roseGold-ink">
+            <div className="font-display text-[1rem] leading-none font-medium tabular-nums text-wine-deep">
               {formatCurrency(store.total_spent_estimate)}
             </div>
             <div className="text-label-xs tracking-luxe text-ink-mute mt-1">累計利用</div>
@@ -72,7 +72,7 @@ export default async function CustomerStoreDetailPage({
           <section className="space-y-2">
             <h2 className="relative font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5 pl-3.5">
               <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
-              <User size={16} className="text-roseGold-dark" />
+              <User size={16} className="text-wine-deep" />
               担当キャスト
             </h2>
             <Card className="p-4">
@@ -102,7 +102,7 @@ export default async function CustomerStoreDetailPage({
         {/* Bottles */}
         <section className="space-y-2">
           <h2 className="relative font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5 pl-3.5"><span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
-            <Wine size={16} className="text-roseGold-dark" />
+            <Wine size={16} className="text-wine-deep" />
             キープボトル
             <span className="text-label-sm text-ink-mute">
               {store.bottles.length}本

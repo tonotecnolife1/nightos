@@ -128,7 +128,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
         <section className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Users size={14} className="text-roseGold-dark" />
+              <Users size={14} className="text-wine-deep" />
               <h2 className="text-display-sm text-ink">
                 {sourceCast?.name ?? ""}さんの担当顧客
               </h2>
@@ -159,7 +159,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
                   <div
                     className={`w-4 h-4 rounded-sm border flex items-center justify-center shrink-0 transition-colors ${
                       isSelected
-                        ? "bg-roseGold-deep border-wine-deep"
+                        ? "bg-wine-deep border-wine-deep"
                         : "border-pearl-soft bg-white"
                     }`}
                   >
@@ -209,7 +209,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
       )}
       {success && (
         <div className="flex items-center gap-2 rounded-btn bg-champagne border border-champagne-dark text-ink text-body-sm px-3 py-2">
-          <Check size={16} className="text-roseGold-dark" />
+          <Check size={16} className="text-wine-deep" />
           {success}
         </div>
       )}

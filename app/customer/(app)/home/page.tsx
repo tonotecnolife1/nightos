@@ -155,7 +155,7 @@ export default async function CustomerHomePage() {
             label="キープボトル"
             value={totalBottles}
             unit="本"
-            icon={<Wine size={12} className="text-roseGold-dark" />}
+            icon={<Wine size={12} className="text-wine-deep" />}
             tone="rose"
           />
           <StatCard
@@ -268,8 +268,8 @@ export default async function CustomerHomePage() {
 // ═══════════════ Sub-components ═══════════════
 
 const rankBadgeStyles: Record<RankTier, string> = {
-  diamond: "bg-gold-deep text-pearl-light",
-  platinum: "bg-wine-deep text-pearl-light",
+  diamond: "bg-gold-deep text-pearl-light-light",
+  platinum: "bg-wine-deep text-pearl-light-light",
   gold: "bg-champagne-deep text-ink",
   silver: "bg-pearl-soft text-ink-soft",
   bronze: "bg-pearl-soft text-ink-mute",
@@ -314,7 +314,7 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
             <div className="text-[9px] text-ink-mute">来店</div>
           </div>
           <div className="rounded-btn bg-pearl-soft py-1.5">
-            <div className="font-display text-body-md text-roseGold-dark">
+            <div className="font-display text-body-md text-wine-deep">
               {o.bottles.length}
             </div>
             <div className="text-[9px] text-ink-mute">ボトル</div>
@@ -349,7 +349,7 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
 
         {o.bottles.length > 0 && (
           <div className="flex items-center gap-2 text-label-sm text-ink-soft overflow-hidden">
-            <Wine size={12} className="text-roseGold-dark shrink-0" />
+            <Wine size={12} className="text-wine-deep shrink-0" />
             <span className="truncate">
               {o.bottles.map((b) => b.brand).join(" · ")}
             </span>

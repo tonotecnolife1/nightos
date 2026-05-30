@@ -41,7 +41,7 @@ export function ChatLimitBanner() {
               </p>
               <button
                 type="button"
-                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-btn bg-roseGold-deep text-pearl text-label-sm font-medium"
+                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-btn bg-wine-deep text-pearl-light text-label-sm font-medium"
               >
                 <Zap size={13} />
                 プレミアムにアップグレード

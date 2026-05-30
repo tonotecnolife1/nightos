@@ -16,7 +16,7 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
               {message.images!.map((img, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl overflow-hidden border border-roseGold-border"
+                  className="rounded-2xl overflow-hidden border border-gold/30"
                 >
                   <Image
                     src={img}
@@ -31,7 +31,7 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
             </div>
           )}
           {message.content && (
-            <div className="rounded-2xl px-4 py-3 text-body-md whitespace-pre-wrap leading-relaxed shadow-soft bg-wine-deep text-pearl-light rounded-br-sm">
+            <div className="rounded-2xl px-4 py-3 text-body-md whitespace-pre-wrap leading-relaxed shadow-soft bg-wine-deep text-pearl-light-light rounded-br-sm">
               {message.content}
             </div>
           )}
