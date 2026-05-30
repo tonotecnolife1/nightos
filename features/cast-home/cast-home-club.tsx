@@ -70,9 +70,9 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
           </Link>
         </div>
 
-        <DouhanTracker customers={customers} />
-
         <SakuraMamaCard castId={data.cast.id} />
+
+        <DouhanTracker customers={customers} />
 
         <StoreMessageBanner
           castId={data.cast.id}
