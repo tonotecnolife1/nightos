@@ -41,7 +41,7 @@ export default function SignupPicker() {
             既にアカウントをお持ちの方は{" "}
             <Link
               href="/cast/auth/login"
-              className="text-roseGold-deep underline-offset-2 hover:underline"
+              className="text-wine-deep underline-offset-2 hover:underline"
             >
               ログイン
             </Link>

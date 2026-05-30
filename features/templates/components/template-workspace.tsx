@@ -147,7 +147,7 @@ export function TemplateWorkspace({
           <div className="flex items-center gap-2.5">
             <RuriMamaAvatar size={36} />
             <div className="flex-1">
-              <div className="text-label-xs tracking-luxe text-roseGold-deep mb-1">
+              <div className="text-label-xs tracking-luxe text-wine-deep mb-1">
                 さくらママに専用文面を作ってもらう
               </div>
               <div className="text-label-sm text-ink-soft">
@@ -160,7 +160,7 @@ export function TemplateWorkspace({
             <button
               type="button"
               onClick={handleGenerateAi}
-              className="w-full h-11 rounded-pill bg-roseGold-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
             >
               <Sparkles size={16} />
               <span className="text-label-md font-semibold tracking-[0.04em]">
@@ -170,7 +170,7 @@ export function TemplateWorkspace({
           )}
 
           {loading && (
-            <div className="flex items-center justify-center gap-2 h-11 text-roseGold-deep">
+            <div className="flex items-center justify-center gap-2 h-11 text-wine-deep">
               <Loader2 size={16} className="animate-spin" />
               <span className="text-body-sm">さくらママが考え中…</span>
             </div>

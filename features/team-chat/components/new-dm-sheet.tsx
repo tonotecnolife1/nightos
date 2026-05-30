@@ -111,7 +111,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "dm"
-                    ? "bg-roseGold-deep text-pearl-light border-amethyst"
+                    ? "bg-wine-deep text-pearl-light border-amethyst"
                     : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
@@ -124,7 +124,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "group"
-                    ? "bg-roseGold-deep text-pearl-light border-amethyst"
+                    ? "bg-wine-deep text-pearl-light border-amethyst"
                     : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
@@ -142,7 +142,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
                   maxLength={40}
-                  className="w-full h-10 px-3 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-roseGold-deep transition"
+                  className="w-full h-10 px-3 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep transition"
                 />
               </div>
             )}
@@ -173,7 +173,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                         >
                           {/* Avatar */}
                           <div className="w-10 h-10 rounded-full bg-roseGold-soft/60 border border-blush/30 flex items-center justify-center shrink-0">
-                            <span className="text-body-sm font-medium text-roseGold-deep">
+                            <span className="text-body-sm font-medium text-wine-deep">
                               {cast.name.charAt(0)}
                             </span>
                           </div>
@@ -188,7 +188,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                               className={cn(
                                 "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition",
                                 isChecked
-                                  ? "bg-roseGold-deep border-roseGold-deep"
+                                  ? "bg-roseGold-deep border-wine-deep"
                                   : "border-ink/20",
                               )}
                             >
@@ -210,7 +210,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   type="button"
                   disabled={!canCreate || pending}
                   onClick={handleCreateGroup}
-                  className="w-full h-11 rounded-pill bg-roseGold-deep text-pearl-light text-body-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 transition active:scale-[0.98]"
+                  className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light text-body-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 transition active:scale-[0.98]"
                 >
                   <Users size={15} />
                   {selected.size > 0

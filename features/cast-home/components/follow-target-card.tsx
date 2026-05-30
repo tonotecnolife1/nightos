@@ -45,7 +45,7 @@ const categoryLabel: Record<string, { text: string; cls: string }> = {
   },
   new: {
     text: "新規",
-    cls: "bg-roseGold-soft/60 text-roseGold-deep border border-roseGold/30",
+    cls: "bg-roseGold-soft/60 text-wine-deep border border-roseGold/30",
   },
   regular: {
     text: "常連",
@@ -81,15 +81,15 @@ export function FollowTargetCard({
         contacted && "opacity-50",
       )}
     >
-      {/* 優先度リボン (左端 rose-gold-metallic) */}
+      {/* V5: 優先度リボン (左端 champagne-gold metallic) */}
       <span
         aria-hidden
-        className={cn(
-          "absolute left-0 top-0 bottom-0 w-1",
-          isTop
-            ? "bg-rose-gold-metallic"
-            : "bg-gradient-to-b from-roseGold-soft to-champagne-soft",
-        )}
+        className="absolute left-0 top-0 bottom-0 w-1"
+        style={{
+          background: isTop
+            ? "var(--v5-champ-gold)"
+            : "linear-gradient(180deg, rgba(212,168,168,0.45), rgba(232,210,170,0.55))",
+        }}
       />
 
       {/* ── Contacted banner ── */}
@@ -115,15 +115,17 @@ export function FollowTargetCard({
         className="block pl-5 pr-3.5 pt-3 pb-2.5"
       >
         <div className="flex items-start gap-3">
-          {/* Avatar (champagne metallic) */}
+          {/* V5: champagne-gold metallic frame + pearl center */}
           <div
-            className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-serif text-[16px] leading-none font-medium tracking-[0.02em] text-ink border border-white/70"
-            style={{
-              background: "var(--champagne-metallic)",
-              boxShadow: "inset 0 0 0 1px rgba(168,117,96,0.18)",
-            }}
+            className="w-10 h-10 rounded-full flex-shrink-0 p-[1.5px]"
+            style={{ background: "var(--v5-champ-gold)" }}
           >
-            {initial}
+            <div
+              className="w-full h-full rounded-full flex items-center justify-center font-serif text-[16px] leading-none font-medium tracking-[0.04em] text-ink"
+              style={{ background: "var(--pearl-light)" }}
+            >
+              {initial}
+            </div>
           </div>
 
           {/* Body */}
@@ -200,7 +202,7 @@ export function FollowTargetCard({
           <button
             type="button"
             onClick={() => onToggleContacted(customer.id)}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-pill bg-roseGold-deep text-pearl-light text-[12px] font-semibold tracking-[0.04em] shadow-soft active:scale-[0.98] transition-transform"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-pill bg-wine-deep text-pearl-light text-[12px] font-semibold tracking-[0.06em] shadow-soft active:scale-[0.98] transition-transform"
           >
             <Check size={13} />
             連絡した
@@ -210,7 +212,7 @@ export function FollowTargetCard({
         )}
         <Link
           href={`/cast/templates?customerId=${customer.id}`}
-          className="inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-pill text-[12px] font-medium border border-roseGold-deep/70 bg-transparent text-roseGold-deep active:scale-[0.98] transition-transform"
+          className="inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-pill text-[12px] font-medium tracking-[0.06em] border border-wine-deep bg-transparent text-wine-deep active:scale-[0.98] transition-transform"
           onClick={(e) => e.stopPropagation()}
         >
           <MessageCircle size={12} />

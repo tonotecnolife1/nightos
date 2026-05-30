@@ -16,20 +16,20 @@ export function TeamOverviewBanner({ teamCasts, teamCustomerCount }: Props) {
     <Link href="/mama/team" className="block active:scale-[0.99] transition-transform">
       <GemCard className="p-5">
         <div className="relative">
-          <div className="inline-flex items-center gap-1.5 mb-3 text-label-xs tracking-luxe text-roseGold-deep">
+          <div className="inline-flex items-center gap-1.5 mb-3 text-label-xs tracking-luxe text-wine-deep">
             <Crown size={11} strokeWidth={1.8} />
             メンバーの状況
           </div>
           <div className="flex items-center justify-between">
             <div>
               <div className="font-serif text-[22px] leading-tight font-medium tracking-[0.02em] text-ink">
-                メンバー <span className="font-display text-[26px] text-roseGold-deep">{teamCasts.length}</span>人
+                メンバー <span className="font-display text-[26px] text-wine-deep">{teamCasts.length}</span>人
               </div>
               <div className="text-body-sm text-ink-soft mt-0.5">
                 {teamCustomerCount}人のお客様を担当
               </div>
             </div>
-            <ChevronRight size={18} className="text-roseGold-deep" />
+            <ChevronRight size={18} className="text-wine-deep" />
           </div>
 
           <div className="mt-3 pt-3 border-t border-line">

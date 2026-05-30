@@ -70,7 +70,7 @@ export default function SignupOwnerForm() {
                 required
                 maxLength={80}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -83,7 +83,7 @@ export default function SignupOwnerForm() {
                 required
                 maxLength={40}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -95,7 +95,7 @@ export default function SignupOwnerForm() {
                 placeholder="email@example.com"
                 required
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -107,7 +107,7 @@ export default function SignupOwnerForm() {
                 required
                 minLength={8}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink shadow-soft focus:outline-none focus:border-roseGold-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -115,7 +115,7 @@ export default function SignupOwnerForm() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-roseGold-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
             >
               {pending ? "登録中..." : "店舗を開く"}
             </button>
@@ -123,11 +123,11 @@ export default function SignupOwnerForm() {
           </form>
 
           <p className="text-body-sm text-ink-soft text-center">
-            <Link href="/store/auth/signup-staff" className="text-roseGold-deep underline-offset-2 hover:underline">
+            <Link href="/store/auth/signup-staff" className="text-wine-deep underline-offset-2 hover:underline">
               既存の店舗にスタッフとして参加
             </Link>
             {"  ·  "}
-            <Link href="/store/auth/login" className="text-roseGold-deep underline-offset-2 hover:underline">
+            <Link href="/store/auth/login" className="text-wine-deep underline-offset-2 hover:underline">
               ログイン
             </Link>
           </p>
@@ -165,7 +165,7 @@ function Choice({ active, onClick, label }: { active: boolean; onClick: () => vo
       className={cn(
         "py-3 rounded-pill text-body-sm font-semibold tracking-[0.04em] border transition",
         active
-          ? "border-roseGold-deep bg-roseGold-deep text-pearl-light shadow-luxe"
+          ? "border-wine-deep bg-wine-deep text-pearl-light shadow-luxe"
           : "border-ink/[0.08] bg-pearl-light text-ink-soft hover:border-roseGold/30 hover:-translate-y-px shadow-soft",
       )}
     >

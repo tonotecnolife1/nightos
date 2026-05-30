@@ -107,7 +107,7 @@ export function MorningBriefing({ castId }: Props) {
       <div className="relative">
         <div className="inline-flex items-center gap-2 mb-3">
           <RuriMamaAvatar size={28} />
-          <span className="text-label-xs tracking-luxe text-roseGold-deep">
+          <span className="text-label-xs tracking-luxe text-wine-deep">
             今朝のさくらママから
           </span>
         </div>
@@ -129,7 +129,7 @@ export function MorningBriefing({ castId }: Props) {
           <button
             type="button"
             onClick={() => void fetchBriefing(true)}
-            className="mt-3 inline-flex items-center gap-1 text-[12px] text-ink-soft hover:text-roseGold-deep underline underline-offset-2 transition-colors"
+            className="mt-3 inline-flex items-center gap-1 text-[12px] text-ink-soft hover:text-wine-deep underline underline-offset-2 transition-colors"
           >
             <RefreshCw size={11} />
             別のメッセージで書き直す

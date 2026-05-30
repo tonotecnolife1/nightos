@@ -98,7 +98,7 @@ export function MemoSection({ customer, memo }: Props) {
               <button
                 type="button"
                 onClick={() => setEditing(true)}
-                className="flex items-center gap-1 h-9 px-3 rounded-btn text-label-sm text-roseGold-deep bg-roseGold-soft/60 hover:bg-roseGold-deep"
+                className="flex items-center gap-1 h-9 px-3 rounded-btn text-label-sm text-wine-deep bg-roseGold-soft/60 hover:bg-wine-deep"
               >
                 <Pencil size={14} />
                 編集する
@@ -126,7 +126,7 @@ function MemoField({
 }) {
   return (
     <div>
-      <div className="text-label-sm text-roseGold-deep mb-1">{label}</div>
+      <div className="text-label-sm text-wine-deep mb-1">{label}</div>
       {editing ? (
         <textarea
           value={value}

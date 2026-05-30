@@ -33,7 +33,7 @@ export function GoalProgress({
         <span
           className={cn(
             "font-display text-[2.5rem] leading-none font-normal tabular-nums tracking-[0.01em]",
-            pct >= 1 ? "text-success" : "text-roseGold-deep",
+            pct >= 1 ? "text-success" : "text-wine-deep",
           )}
         >
           {fmt(current)}

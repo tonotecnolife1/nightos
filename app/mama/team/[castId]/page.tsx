@@ -65,7 +65,7 @@ export default async function MamaTeamCastDetailPage({
             value={Math.round(cast.repeat_rate * 100)}
             unit="%"
             tone="rose"
-            icon={<Heart size={12} className="text-roseGold-deep" />}
+            icon={<Heart size={12} className="text-wine-deep" />}
           />
           <StatCard
             label="新規顧客"

@@ -57,7 +57,7 @@ export function BottleSuggestion({ customerId }: Props) {
       <button
         type="button"
         onClick={handleClick}
-        className="w-full mt-2 inline-flex items-center justify-center gap-1.5 px-3 h-9 rounded-btn bg-champagne-soft/60 border border-gold/30 text-gold-deep text-label-sm font-medium active:scale-95 hover:bg-roseGold-deep hover:text-pearl-light transition-colors"
+        className="w-full mt-2 inline-flex items-center justify-center gap-1.5 px-3 h-9 rounded-btn bg-champagne-soft/60 border border-gold/30 text-gold-deep text-label-sm font-medium active:scale-95 hover:bg-wine-deep hover:text-pearl-light transition-colors"
       >
         <Sparkles size={12} />
         さくらママに次のボトル候補を聞く

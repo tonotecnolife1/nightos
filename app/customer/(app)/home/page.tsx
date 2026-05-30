@@ -49,26 +49,46 @@ export default async function CustomerHomePage() {
 
   return (
     <div>
-      <header
-        className="relative overflow-hidden px-5 pt-12 pb-8"
-        style={{
-          background:
-            "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
-            "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
-            "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
-        }}
-      >
-        <div className="text-label-xs tracking-luxe text-roseGold-deep mb-2">
+      <header className="v5-hero px-5 pt-12 pb-10">
+        <div
+          className="font-sans font-medium mb-3"
+          style={{
+            fontSize: 11,
+            lineHeight: 1,
+            letterSpacing: "0.32em",
+            color: "var(--v5-gold-mid)",
+          }}
+        >
           NIGHTOS · WELCOME
         </div>
-        <p className="text-body-sm text-ink-soft mb-1">
+        <p
+          className="font-sans mb-2"
+          style={{
+            fontSize: 13,
+            lineHeight: 1.6,
+            color: "var(--v5-ink-on-dark-soft)",
+            letterSpacing: "0.02em",
+          }}
+        >
           おかえりなさい
         </p>
-        <h1 className="font-serif text-[2rem] leading-[1.15] font-medium tracking-[0.02em] t-metallic">
+        <h1
+          className="font-serif font-normal v5-metallic"
+          style={{
+            fontSize: "2.25rem",
+            lineHeight: 1.1,
+            letterSpacing: "0.05em",
+          }}
+        >
           {customer?.name ?? "ゲスト"}さん
         </h1>
+        <span
+          aria-hidden
+          className="v5-brass-line"
+          style={{ width: "26ch", maxWidth: "55%", margin: "10px 0 12px" }}
+        />
         {customer && (
-          <div className="flex items-center gap-2 mt-3">
+          <div className="flex items-center gap-2">
             <Badge
               tone={
                 customer.category === "vip"
@@ -84,7 +104,14 @@ export default async function CustomerHomePage() {
                   ? "新規"
                   : "常連"}
             </Badge>
-            <span className="text-[11px] text-ink-mute">
+            <span
+              className="font-sans"
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.06em",
+                color: "var(--v5-ink-on-dark-mute)",
+              }}
+            >
               {overviews.length}店舗を利用中
             </span>
           </div>
@@ -200,7 +227,7 @@ export default async function CustomerHomePage() {
               </h2>
               <Link
                 href="/customer/coupons"
-                className="text-[12px] text-roseGold-deep flex items-center gap-0.5"
+                className="text-[12px] text-wine-deep flex items-center gap-0.5"
               >
                 すべて見る
                 <ChevronRight size={12} />
@@ -242,7 +269,7 @@ export default async function CustomerHomePage() {
 
 const rankBadgeStyles: Record<RankTier, string> = {
   diamond: "bg-gold-deep text-pearl-light",
-  platinum: "bg-roseGold-deep text-pearl-light",
+  platinum: "bg-wine-deep text-pearl-light",
   gold: "bg-champagne-deep text-ink",
   silver: "bg-pearl-soft text-ink-soft",
   bronze: "bg-pearl-soft text-ink-mute",

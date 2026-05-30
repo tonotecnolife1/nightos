@@ -108,7 +108,7 @@ export function CastListShell({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="名前で検索"
-          className="w-full pl-8 pr-3 py-2 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-roseGold-deep transition"
+          className="w-full pl-8 pr-3 py-2 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep transition"
         />
       </div>
 
@@ -122,7 +122,7 @@ export function CastListShell({
             className={cn(
               "px-3 py-1 rounded-pill text-[11px] font-medium tracking-[0.04em] border whitespace-nowrap transition-colors",
               sort === opt.key
-                ? "bg-roseGold-soft/60 text-roseGold-deep border-roseGold/30"
+                ? "bg-roseGold-soft/60 text-wine-deep border-roseGold/30"
                 : "bg-pearl-light text-ink-mute border-ink/[0.08]",
             )}
           >

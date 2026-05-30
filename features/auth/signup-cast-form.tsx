@@ -52,7 +52,7 @@ export default function SignupCastForm() {
                 required
                 maxLength={40}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -66,7 +66,7 @@ export default function SignupCastForm() {
                 maxLength={8}
                 disabled={pending}
                 autoCapitalize="characters"
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep tracking-[0.2em] font-mono uppercase"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep tracking-[0.2em] font-mono uppercase"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -78,7 +78,7 @@ export default function SignupCastForm() {
                 placeholder="email@example.com"
                 required
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -90,7 +90,7 @@ export default function SignupCastForm() {
                 required
                 minLength={8}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink shadow-soft focus:outline-none focus:border-roseGold-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -98,7 +98,7 @@ export default function SignupCastForm() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-roseGold-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
             >
               {pending ? "登録中..." : "登録する"}
             </button>
@@ -113,7 +113,7 @@ export default function SignupCastForm() {
             既にアカウントをお持ちの方は{" "}
             <Link
               href="/cast/auth/login"
-              className="text-roseGold-deep underline-offset-2 hover:underline"
+              className="text-wine-deep underline-offset-2 hover:underline"
             >
               ログイン
             </Link>

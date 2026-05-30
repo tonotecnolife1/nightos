@@ -55,7 +55,7 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
     <div>
       {/* Search bar */}
       <div className="px-5 pt-3">
-        <label className="flex items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 shadow-soft focus-within:border-roseGold-deep transition">
+        <label className="flex items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 shadow-soft focus-within:border-wine-deep transition">
           <Search size={14} className="text-ink-mute shrink-0" />
           <input
             value={query}
@@ -89,7 +89,7 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
               tab === t
                 ? t === "coaching"
                   ? "bg-success/15 text-success border border-success/25"
-                  : "bg-roseGold-soft/60 text-roseGold-deep border border-roseGold/30"
+                  : "bg-roseGold-soft/60 text-wine-deep border border-roseGold/30"
                 : "text-ink-mute hover:text-ink-soft border border-transparent",
             )}
           >
@@ -166,7 +166,7 @@ function RoomRow({
         className={cn(
           "w-12 h-12 rounded-full flex items-center justify-center shrink-0 border",
           room.type === "channel"
-            ? "border-roseGold/30 text-roseGold-deep"
+            ? "border-roseGold/30 text-wine-deep"
             : room.type === "coaching"
             ? "bg-success/15 border-success/25 text-success"
             : "border-gold/35 text-ink",

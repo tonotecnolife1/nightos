@@ -2,7 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Sparkles } from "lucide-react";
 
-// v6: Pearl Glass · Wordmark entry. radial halo + rose-gold metallic headline.
+// V5 Bordeaux Salon — dark bordeaux surface (Hero と地続き)。
+// 写真は champagne-gold metallic フレームに包む。
 export function RuriMamaEntryCard() {
   return (
     <Link
@@ -10,44 +11,74 @@ export function RuriMamaEntryCard() {
       className="block hover:-translate-y-px transition will-change-transform"
     >
       <div
-        className="relative overflow-hidden rounded-hero border border-ink/[0.08] shadow-warm p-5 flex flex-col gap-4"
-        style={{
-          background:
-            "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
-            "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
-            "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
-        }}
+        className="v5-sakura-surface rounded-hero p-5 flex flex-col gap-4"
       >
         <div className="relative flex items-center gap-3.5">
+          {/* Champagne-gold metallic frame around photo */}
           <div
-            className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 border border-gold/35"
+            className="w-14 h-14 rounded-full flex-shrink-0 p-[2px]"
             style={{
-              boxShadow:
-                "0 6px 18px rgba(168,117,96,0.18), inset 0 0 0 1px rgba(255,255,255,0.6)",
+              background: "var(--v5-champ-gold)",
+              boxShadow: "0 6px 18px rgba(140,111,68,0.30)",
             }}
           >
-            <Image
-              src="/cast/sakura-mama.jpg"
-              alt="さくらママ"
-              width={56}
-              height={56}
-              className="w-full h-full object-cover"
-            />
+            <div
+              className="w-full h-full rounded-full overflow-hidden"
+              style={{ border: "1px solid #3A1F1F" }}
+            >
+              <Image
+                src="/cast/sakura-mama.jpg"
+                alt="さくらママ"
+                width={56}
+                height={56}
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="inline-flex items-center gap-1.5 text-label-xs tracking-luxe text-roseGold-deep mb-1.5">
+            <div
+              className="inline-flex items-center gap-1.5 mb-1.5 font-sans font-medium"
+              style={{
+                fontSize: 11,
+                lineHeight: 1,
+                letterSpacing: "0.32em",
+                color: "var(--v5-gold-mid)",
+              }}
+            >
               <Sparkles size={11} strokeWidth={1.8} />
               <span>AIアシスタント</span>
             </div>
-            <div className="font-display text-[1.5rem] leading-[1.15] font-medium tracking-[0.02em] t-metallic">
+            <div
+              className="font-serif font-normal v5-metallic"
+              style={{
+                fontSize: 26,
+                lineHeight: 1.15,
+                letterSpacing: "0.05em",
+              }}
+            >
               さくらママに相談する
             </div>
           </div>
-          <span className="font-display text-[2rem] leading-none font-light text-roseGold-deep">
+          <span
+            className="font-display font-light"
+            style={{
+              fontSize: 32,
+              lineHeight: 1,
+              color: "var(--v5-gold-on-dark)",
+            }}
+          >
             ›
           </span>
         </div>
-        <p className="m-0 font-serif text-[0.9rem] leading-[1.75] font-medium tracking-[0.01em] text-ink">
+        <p
+          className="m-0 font-serif font-medium"
+          style={{
+            fontSize: 14.5,
+            lineHeight: 1.75,
+            letterSpacing: "0.02em",
+            color: "var(--v5-ink-on-dark)",
+          }}
+        >
           LINE文面・接客・ボトル提案、何でも聞いてね。
         </p>
       </div>

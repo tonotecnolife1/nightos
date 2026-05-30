@@ -86,13 +86,14 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
           <header className="relative flex items-baseline justify-between pl-3.5 pr-0.5">
             <span
               aria-hidden
-              className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic"
+              className="absolute left-0 top-1 bottom-1 w-[3px] rounded"
+              style={{ background: "var(--v5-champ-gold)" }}
             />
             <div className="flex items-baseline gap-2.5">
-              <h2 className="m-0 font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">
+              <h2 className="m-0 font-serif text-[19px] leading-[1.3] font-medium tracking-[0.04em] text-ink">
                 今日連絡したいお客様
               </h2>
-              <span className="font-display text-[18px] leading-none tracking-[0.04em] text-roseGold-deep">
+              <span className="font-display text-[18px] leading-none tabular-nums tracking-[0.04em] text-wine-deep">
                 {data.targets.length} 名
               </span>
             </div>
@@ -104,11 +105,15 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
         </section>
       </main>
 
-      {/* FAB: 顧客新規登録 (v6 rose-gold-deep solid + shadow-luxe) */}
+      {/* V5 FAB: wine-deep solid + multi-layer champagne-gold ring */}
       <Link
         href="/cast/customers/new"
-        className="fixed bottom-24 right-5 z-50 w-[60px] h-[60px] rounded-full bg-roseGold-deep text-pearl-light shadow-luxe flex items-center justify-center hover:bg-roseGold-deep active:scale-95 transition-all border border-white/20"
+        className="fixed bottom-24 right-5 z-50 w-[60px] h-[60px] rounded-full bg-wine-deep text-pearl-light flex items-center justify-center active:scale-95 transition-all"
         aria-label="お客様を新規登録"
+        style={{
+          boxShadow:
+            "0 0 0 1px rgba(235,217,168,0.65), 0 0 0 4px #5e3838, 0 0 0 5px rgba(235,217,168,0.40), var(--v5-shadow-luxe)",
+        }}
       >
         <UserPlus size={24} strokeWidth={1.8} />
       </Link>

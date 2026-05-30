@@ -29,7 +29,7 @@ export default function Error({
         <button
           type="button"
           onClick={reset}
-          className="px-6 py-3 rounded-pill bg-roseGold-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform"
+          className="px-6 py-3 rounded-pill bg-wine-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform"
         >
           もう一度試す
         </button>

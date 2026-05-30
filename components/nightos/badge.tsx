@@ -14,14 +14,14 @@ interface Props extends HTMLAttributes<HTMLSpanElement> {
   tone?: Tone;
 }
 
-// v6: rose-gold + champagne + gold + wine の 4 色セット。
-// VIP は gold hairline (塗りなし)、新規/誕生日は wine 系、常連は champagne。
+// V5 Bordeaux Salon: wine + champagne + gold の 3 色軸。
+// VIP は champagne-gold メタリック細枠 (塗りなし)、誕生日は wine、その他は champagne / pearl。
 const toneStyles: Record<Tone, string> = {
-  vip: "bg-transparent text-gold-deep border border-gold/55",
+  vip: "v5-ring-gold bg-transparent text-gold-deep",
   regular: "bg-champagne-soft/60 text-ink-soft border border-line-strong",
-  new: "bg-roseGold-soft/60 text-roseGold-deep border border-roseGold/30",
+  new: "bg-wine-soft/40 text-wine-deep border border-wine/25",
   interval: "bg-pearl-soft text-ink-soft border border-line-strong",
-  birthday: "bg-[#f5dcd8] text-wine-deep border border-wine/25",
+  birthday: "bg-wine-soft/50 text-wine-deep border border-wine/25",
   nomination: "bg-[rgba(184,148,85,0.16)] text-gold-deep border border-gold/30",
   neutral: "bg-pearl-soft text-ink-soft border border-line",
 };

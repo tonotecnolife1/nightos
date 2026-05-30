@@ -44,7 +44,7 @@ export default function StoreSignupPage() {
 
           <p className="text-body-sm text-ink-soft text-center pt-4">
             既にアカウントをお持ちの方は{" "}
-            <Link href="/store/auth/login" className="text-roseGold-deep underline-offset-2 hover:underline">
+            <Link href="/store/auth/login" className="text-wine-deep underline-offset-2 hover:underline">
               ログイン
             </Link>
           </p>

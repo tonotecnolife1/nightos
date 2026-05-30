@@ -51,7 +51,7 @@ export default async function CustomerStoreDetailPage({
           </div>
           <div className="relative overflow-hidden rounded-hero bg-pearl-light/85 backdrop-blur-md border border-ink/[0.08] shadow-soft px-3 py-3 text-center">
             <span aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-rose-gold-metallic opacity-60" />
-            <Coins size={14} className="mx-auto text-roseGold-deep mb-1" />
+            <Coins size={14} className="mx-auto text-wine-deep mb-1" />
             <div className="font-display text-[1rem] leading-none font-medium tabular-nums text-roseGold-ink">
               {formatCurrency(store.total_spent_estimate)}
             </div>
@@ -202,7 +202,7 @@ export default async function CustomerStoreDetailPage({
 
 const tierColors: Record<RankTier, { bg: string; border: string; text: string }> = {
   diamond: { bg: "bg-gold-metallic", border: "border-gold", text: "text-pearl-light" },
-  platinum: { bg: "bg-rose-gold-metallic", border: "border-roseGold-deep", text: "text-pearl-light" },
+  platinum: { bg: "bg-rose-gold-metallic", border: "border-wine-deep", text: "text-pearl-light" },
   gold: { bg: "bg-champagne-metallic", border: "border-gold", text: "text-ink" },
   silver: { bg: "bg-pearl-light", border: "border-line-strong", text: "text-ink" },
   bronze: { bg: "bg-pearl-light", border: "border-line-strong", text: "text-ink-soft" },

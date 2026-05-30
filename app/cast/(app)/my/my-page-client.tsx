@@ -30,37 +30,66 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
 
   return (
     <main className="min-h-dvh bg-pearl flex flex-col">
-      {/* Hero — v6 pearl glass with rose-gold halo */}
-      <div
-        className="relative px-6 pt-12 pb-8 overflow-hidden"
-        style={{
-          background:
-            "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
-            "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
-            "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
-        }}
-      >
-        <div className="max-w-sm mx-auto">
+      {/* V5 Bordeaux Salon Hero — dark wine + champagne-gold metallic */}
+      <div className="v5-hero px-6 pt-12 pb-10">
+        <div className="max-w-sm mx-auto relative">
           <Link
             href="/cast/home"
-            className="inline-flex items-center gap-1 text-[12px] text-ink-mute hover:text-ink-soft mb-4"
+            className="inline-flex items-center gap-1 text-[12px] mb-4 transition"
+            style={{ color: "var(--v5-ink-on-dark-mute)" }}
           >
             <ArrowLeft size={14} /> ホームに戻る
           </Link>
 
-          <div className="text-label-xs tracking-luxe text-roseGold-deep mb-2">
+          <div
+            className="font-sans font-medium mb-3"
+            style={{
+              fontSize: 11,
+              lineHeight: 1,
+              letterSpacing: "0.32em",
+              color: "var(--v5-gold-mid)",
+            }}
+          >
             NIGHTOS · MY PAGE
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full glass flex items-center justify-center shrink-0 shadow-soft">
-              <UserCircle size={32} className="text-ink-soft" />
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 p-[2px]"
+              style={{
+                background: "var(--v5-champ-gold)",
+                boxShadow: "0 6px 18px rgba(140,111,68,0.30)",
+              }}
+            >
+              <div
+                className="w-full h-full rounded-full flex items-center justify-center"
+                style={{
+                  background: "#3A1F1F",
+                  color: "var(--v5-gold-on-dark)",
+                }}
+              >
+                <UserCircle size={28} strokeWidth={1.4} />
+              </div>
             </div>
             <div>
-              <p className="font-serif text-[26px] leading-tight font-medium tracking-[0.02em] t-metallic">
+              <p
+                className="font-serif font-normal v5-metallic"
+                style={{
+                  fontSize: 28,
+                  lineHeight: 1.15,
+                  letterSpacing: "0.05em",
+                }}
+              >
                 {castName}
               </p>
-              <p className="text-[12px] text-ink-mute mt-1">
+              <p
+                className="font-sans mt-1.5"
+                style={{
+                  fontSize: 12,
+                  letterSpacing: "0.06em",
+                  color: "var(--v5-ink-on-dark-mute)",
+                }}
+              >
                 {ROLE_LABEL[userRole]}
               </p>
             </div>

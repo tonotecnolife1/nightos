@@ -161,7 +161,7 @@ function NominationOption({
       className={cn(
         "h-12 rounded-pill border flex items-center justify-center gap-1.5 text-label-md font-medium tracking-[0.04em] transition-all active:scale-95",
         active
-          ? "bg-roseGold-deep text-pearl-light border-roseGold-deep shadow-luxe"
+          ? "bg-wine-deep text-pearl-light border-wine-deep shadow-luxe"
           : "bg-pearl-light border-ink/[0.08] text-ink-soft hover:border-roseGold/30 shadow-soft",
       )}
     >

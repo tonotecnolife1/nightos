@@ -58,7 +58,7 @@ export function StoreDashboardClub({ data, customers, allTargets }: Props) {
 
           {/* ── 今夜のアクション ── */}
           <section>
-            <h2 className="text-label-xs tracking-luxe text-roseGold-deep uppercase mb-2">今夜のアクション</h2>
+            <h2 className="text-label-xs tracking-luxe text-wine-deep uppercase mb-2">今夜のアクション</h2>
             <AtRiskCustomers targets={allTargets} />
           </section>
 

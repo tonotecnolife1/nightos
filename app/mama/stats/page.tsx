@@ -44,7 +44,7 @@ export default async function MamaStatsPage() {
               value={Math.round(data.monthly.repeatRate * 100)}
               unit="%"
               tone="rose"
-              icon={<Heart size={12} className="text-roseGold-deep" />}
+              icon={<Heart size={12} className="text-wine-deep" />}
             />
           </div>
           <StatCard
@@ -127,10 +127,10 @@ export default async function MamaStatsPage() {
                 boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.6)",
               }}
             >
-              <Award size={18} className="text-roseGold-deep" />
+              <Award size={18} className="text-wine-deep" />
             </div>
             <div className="flex-1">
-              <div className="inline-flex items-center gap-1.5 text-label-xs tracking-luxe text-roseGold-deep mb-2">
+              <div className="inline-flex items-center gap-1.5 text-label-xs tracking-luxe text-wine-deep mb-2">
                 <Sparkles size={11} strokeWidth={1.8} />
                 <span>{data.cast.name}さんへ</span>
               </div>

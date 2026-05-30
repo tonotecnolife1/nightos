@@ -74,13 +74,14 @@ export function CastHomeCabaret({ data, storeMessages }: Props) {
           <header className="relative flex items-baseline justify-between pl-3.5 pr-0.5">
             <span
               aria-hidden
-              className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic"
+              className="absolute left-0 top-1 bottom-1 w-[3px] rounded"
+              style={{ background: "var(--v5-champ-gold)" }}
             />
             <div className="flex items-baseline gap-2.5">
-              <h2 className="m-0 font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">
+              <h2 className="m-0 font-serif text-[19px] leading-[1.3] font-medium tracking-[0.04em] text-ink">
                 今日連絡したいお客様
               </h2>
-              <span className="font-display text-[18px] leading-none tracking-[0.04em] text-roseGold-deep">
+              <span className="font-display text-[18px] leading-none tabular-nums tracking-[0.04em] text-wine-deep">
                 {data.targets.length} 名
               </span>
             </div>

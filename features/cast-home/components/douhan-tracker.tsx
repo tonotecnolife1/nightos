@@ -113,7 +113,7 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
         <button
           type="button"
           onClick={() => setShowForm(true)}
-          className="inline-flex items-center gap-1 h-8 px-3 rounded-pill bg-roseGold-deep text-pearl-light text-[11px] font-semibold tracking-[0.04em] active:scale-[0.97] shadow-soft hover:-translate-y-px transition"
+          className="inline-flex items-center gap-1 h-8 px-3 rounded-pill bg-wine-deep text-pearl-light text-[11px] font-semibold tracking-[0.04em] active:scale-[0.97] shadow-soft hover:-translate-y-px transition"
         >
           <Plus size={12} />
           同伴を登録
@@ -134,7 +134,7 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
         <div className="flex items-center justify-between mb-2">
           <span className="text-body-sm text-ink font-medium">
             今月{" "}
-            <span className="font-display text-[18px] tabular-nums text-roseGold-deep">
+            <span className="font-display text-[18px] tabular-nums text-wine-deep">
               {completedCount}
             </span>{" "}
             / {monthlyGoal} 回
@@ -338,7 +338,7 @@ function EntryCard({
                 className={cn(
                   "text-[10px] h-6 px-2 rounded-full border transition-all active:scale-95",
                   cancelReason === preset
-                    ? "bg-roseGold-soft/60 text-roseGold-deep border-blush"
+                    ? "bg-roseGold-soft/60 text-wine-deep border-blush"
                     : "bg-pearl text-ink-soft border-pearl-soft hover:border-ink-muted",
                 )}
               >
@@ -352,7 +352,7 @@ function EntryCard({
             onChange={(e) => setCancelReason(e.target.value)}
             placeholder="または自由入力"
             style={{ fontSize: "14px" }}
-            className="w-full h-8 rounded-2xl border border-ink/[0.06] bg-pearl-light px-2 text-[12px] text-ink placeholder:text-ink-mute outline-none focus:border-roseGold-deep"
+            className="w-full h-8 rounded-2xl border border-ink/[0.06] bg-pearl-light px-2 text-[12px] text-ink placeholder:text-ink-mute outline-none focus:border-wine-deep"
           />
           <div className="flex items-center gap-1.5">
             <button
@@ -481,7 +481,7 @@ function AddForm({
         <select
           value={customerId}
           onChange={(e) => setCustomerId(e.target.value)}
-          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-roseGold-deep"
+          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-wine-deep"
           style={{ fontSize: "16px" }}
         >
           <option value="" disabled>
@@ -498,7 +498,7 @@ function AddForm({
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-roseGold-deep"
+          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-wine-deep"
           style={{ fontSize: "16px" }}
         />
 
@@ -507,7 +507,7 @@ function AddForm({
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder="場所やメモ（任意）"
-          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-light px-3 text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-roseGold-deep"
+          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-light px-3 text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep"
           style={{ fontSize: "16px" }}
         />
       </div>
@@ -519,7 +519,7 @@ function AddForm({
         className={cn(
           "w-full h-10 rounded-pill text-label-sm font-semibold tracking-[0.04em] transition-all active:scale-[0.98]",
           canSubmit
-            ? "bg-roseGold-deep text-pearl-light shadow-luxe hover:-translate-y-px"
+            ? "bg-wine-deep text-pearl-light shadow-luxe hover:-translate-y-px"
             : "bg-pearl-soft text-ink-mute cursor-not-allowed",
         )}
       >

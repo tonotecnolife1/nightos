@@ -48,7 +48,7 @@ export default function UpdatePasswordForm({ email }: Props) {
                 required
                 minLength={8}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink shadow-soft focus:outline-none focus:border-roseGold-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </label>
@@ -56,7 +56,7 @@ export default function UpdatePasswordForm({ email }: Props) {
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-roseGold-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
             >
               {pending ? "更新中..." : "パスワードを更新"}
             </button>

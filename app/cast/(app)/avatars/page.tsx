@@ -52,7 +52,7 @@ export default function AvatarPickerPage() {
                 className={cn(
                   "w-full text-left rounded-hero border p-4 transition-all active:scale-[0.99]",
                   isSelected
-                    ? "border-roseGold-deep bg-roseGold-soft/40 shadow-warm"
+                    ? "border-wine-deep bg-roseGold-soft/40 shadow-warm"
                     : "border-ink/[0.08] bg-pearl-light hover:border-roseGold/30 shadow-soft",
                 )}
               >
@@ -70,7 +70,7 @@ export default function AvatarPickerPage() {
                         {variant.label}
                       </span>
                       {isSelected && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-roseGold-deep text-pearl-light text-label-sm font-medium">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-wine-deep text-pearl-light text-label-sm font-medium">
                           <Check size={10} />
                           選択中
                         </span>

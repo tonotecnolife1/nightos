@@ -15,20 +15,20 @@ const base =
   "inline-flex items-center justify-center gap-2 rounded-pill font-semibold tracking-[0.04em] transition will-change-transform select-none hover:-translate-y-px active:translate-y-px disabled:opacity-50 disabled:pointer-events-none disabled:hover:translate-y-0";
 
 const variants: Record<Variant, string> = {
-  // 主要操作 — v6 rose-gold-deep solid + shadow-luxe
+  // V5 主要操作 — wine-deep solid + shadow (pearl 地で使う)
   primary:
-    "bg-roseGold-deep text-pearl-light shadow-luxe hover:bg-roseGold-deep/95 active:bg-roseGold-deep",
-  // 副次 — glass-pearl + line-strong border
+    "bg-wine-deep text-pearl-light hover:bg-wine-deep/95 active:bg-wine-deep shadow-warm",
+  // 副次 — pearl-light + line-strong border
   secondary:
-    "glass text-roseGold-ink hover:bg-pearl-warm/70",
+    "bg-pearl-light text-wine-deep border border-line-strong hover:border-wine-deep/50 shadow-soft",
   // テキストリンク調
   ghost:
     "text-ink-soft hover:text-ink hover:bg-pearl-soft hover:translate-y-0",
   // primary と同義 (v1 名残のエイリアス)
-  ruri: "bg-roseGold-deep text-pearl-light shadow-luxe hover:bg-roseGold-deep/95",
-  // outline — rose-gold-deep 細線
+  ruri: "bg-wine-deep text-pearl-light hover:bg-wine-deep/95 shadow-warm",
+  // outline — wine-deep 細線
   outline:
-    "bg-transparent text-roseGold-deep border border-roseGold-deep hover:bg-roseGold-soft/30",
+    "bg-transparent text-wine-deep border border-wine-deep hover:bg-wine/10",
 };
 
 const sizes: Record<Size, string> = {

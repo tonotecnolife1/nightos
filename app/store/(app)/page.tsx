@@ -32,23 +32,45 @@ export default async function StoreHubPage() {
 
   return (
     <div>
-      <header
-        className="relative overflow-hidden px-5 pt-12 pb-8"
-        style={{
-          background:
-            "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
-            "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
-            "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
-        }}
-      >
-        <div className="text-label-xs tracking-luxe text-roseGold-deep mb-2">
+      <header className="v5-hero px-5 pt-12 pb-10">
+        <div
+          className="font-sans font-medium mb-3"
+          style={{
+            fontSize: 11,
+            lineHeight: 1,
+            letterSpacing: "0.32em",
+            color: "var(--v5-gold-mid)",
+          }}
+        >
           NIGHTOS · STORE HUB
         </div>
-        <p className="text-body-sm text-ink-soft mb-1">店舗管理</p>
-        <h1 className="font-serif text-[1.75rem] leading-[1.15] font-medium tracking-[0.02em] t-metallic">
+        <p
+          className="font-sans mb-2"
+          style={{
+            fontSize: 13,
+            lineHeight: 1.6,
+            color: "var(--v5-ink-on-dark-soft)",
+            letterSpacing: "0.02em",
+          }}
+        >
+          店舗管理
+        </p>
+        <h1
+          className="font-serif font-normal v5-metallic"
+          style={{
+            fontSize: "2rem",
+            lineHeight: 1.1,
+            letterSpacing: "0.05em",
+          }}
+        >
           CLUB NIGHTOS 銀座本店
         </h1>
-        <div className="mt-3">
+        <span
+          aria-hidden
+          className="v5-brass-line"
+          style={{ width: "32ch", maxWidth: "60%", margin: "10px 0 14px" }}
+        />
+        <div>
           <StorePermissionBadge />
         </div>
       </header>

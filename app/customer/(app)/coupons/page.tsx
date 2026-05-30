@@ -47,7 +47,7 @@ export default async function CustomerCouponsPage() {
                 className="relative flex items-center gap-1.5 pl-3.5 font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink"
               >
                 <span aria-hidden className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded bg-rose-gold-metallic" />
-                <MapPin size={14} className="text-roseGold-deep" />
+                <MapPin size={14} className="text-wine-deep" />
                 {group.storeName}
               </Link>
               {group.coupons.map((coupon) => (

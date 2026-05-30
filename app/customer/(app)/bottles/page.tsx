@@ -90,7 +90,7 @@ function BottleCard({ bv }: { bv: CustomerBottleView }) {
           </div>
         </div>
         <div className="text-right">
-          <div className="font-display text-[1.75rem] leading-none font-normal tabular-nums text-roseGold-deep">
+          <div className="font-display text-[1.75rem] leading-none font-normal tabular-nums text-wine-deep">
             {formatBottleRemainingPct(b.remaining_glasses, b.total_glasses)}
           </div>
         </div>

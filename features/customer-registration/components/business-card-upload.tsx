@@ -115,7 +115,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex-1 h-11 rounded-pill bg-roseGold-deep text-pearl-light-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
+            className="flex-1 h-11 rounded-pill bg-wine-deep text-pearl-light-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
           >
             <Camera size={16} />
             撮影
@@ -123,7 +123,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           <button
             type="button"
             onClick={() => galleryInputRef.current?.click()}
-            className="flex-1 h-11 rounded-pill border border-roseGold-deep/70 bg-transparent text-roseGold-deep inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-medium"
+            className="flex-1 h-11 rounded-pill border border-wine-deep/70 bg-transparent text-wine-deep inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-medium"
           >
             <Images size={16} />
             カメラロール
@@ -197,7 +197,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
             <button
               type="button"
               onClick={apply}
-              className="w-full h-10 rounded-pill bg-roseGold-deep text-pearl-light-light shadow-luxe inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
+              className="w-full h-10 rounded-pill bg-wine-deep text-pearl-light-light shadow-luxe inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
             >
               <Check size={14} />
               フォームに反映する

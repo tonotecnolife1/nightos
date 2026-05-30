@@ -8,7 +8,7 @@ interface HeroScheduleLine {
 }
 
 interface Props {
-  /** Eyebrow date label e.g. "5月20日 (火)" */
+  /** Eyebrow date label e.g. "5月23日 (金)" */
   dateLabel?: string;
   /** Hero metallic headline */
   title: string;
@@ -20,8 +20,7 @@ interface Props {
   hasNotification?: boolean;
 }
 
-// v6 Hero — Pearl + rose-gold/champagne radial halos,
-// metallic serif headline, glass utility buttons, CTAs at the foot.
+// V5 Bordeaux Salon Hero — dark wine/nocturne base + champagne-gold metallic accents.
 export function CastHomeHero({
   dateLabel,
   title,
@@ -30,23 +29,24 @@ export function CastHomeHero({
   hasNotification = false,
 }: Props) {
   return (
-    <section
-      className="relative overflow-hidden px-5 pt-12 pb-14"
-      style={{
-        background:
-          "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
-          "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
-          "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
-      }}
-    >
+    <section className="v5-hero px-5 pt-12 pb-14">
       {/* Top row — eyebrow + utility icons */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-baseline gap-2.5">
-          <span className="text-label-xs tracking-luxe text-roseGold-deep">
+      <div className="relative flex items-center justify-between mb-5">
+        <div className="flex items-baseline gap-3">
+          <span
+            className="font-sans text-[11px] leading-none font-medium uppercase"
+            style={{ letterSpacing: "0.32em", color: "var(--v5-gold-mid)" }}
+          >
             NIGHTOS
           </span>
           {dateLabel && (
-            <span className="font-display text-[12px] leading-none tracking-[0.08em] text-ink-mute">
+            <span
+              className="font-display text-[13px] leading-none"
+              style={{
+                color: "var(--v5-ink-on-dark-mute)",
+                letterSpacing: "0.06em",
+              }}
+            >
               {dateLabel}
             </span>
           )}
@@ -55,69 +55,134 @@ export function CastHomeHero({
           <Link
             href="/cast/schedule"
             aria-label="スケジュール"
-            className="w-9 h-9 rounded-full glass flex items-center justify-center text-ink-soft hover:bg-pearl-warm/80 transition"
+            className="w-9 h-9 rounded-full v5-ring-gold flex items-center justify-center hover:bg-white/10 transition"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              color: "rgba(253,252,249,0.85)",
+            }}
           >
             <CalendarDays size={17} strokeWidth={1.6} />
           </Link>
           <Link
             href="/cast/my"
             aria-label="マイページ"
-            className="w-9 h-9 rounded-full glass flex items-center justify-center text-ink-soft hover:bg-pearl-warm/80 transition"
+            className="w-9 h-9 rounded-full v5-ring-gold flex items-center justify-center hover:bg-white/10 transition"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              color: "rgba(253,252,249,0.85)",
+            }}
           >
             <UserCircle size={20} strokeWidth={1.6} />
           </Link>
           <button
             type="button"
             aria-label="通知"
-            className="relative w-9 h-9 rounded-full glass flex items-center justify-center text-ink-soft"
+            className="relative w-9 h-9 rounded-full v5-ring-gold flex items-center justify-center"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              color: "rgba(253,252,249,0.85)",
+            }}
           >
             <Bell size={17} strokeWidth={1.6} />
             {hasNotification && (
               <span
-                className="absolute top-1.5 right-1.5 w-[7px] h-[7px] rounded-full bg-roseGold-deep"
-                style={{ border: "1.5px solid var(--pearl-light)" }}
+                className="absolute top-1.5 right-1.5 w-[7px] h-[7px] rounded-full"
+                style={{
+                  background: "var(--v5-gold-mid)",
+                  border: "1.5px solid #2D1818",
+                }}
               />
             )}
           </button>
         </div>
       </div>
 
-      {/* Metallic headline */}
-      <h1 className="m-0 mb-1 font-serif text-[2.25rem] leading-[1.15] font-medium tracking-[0.02em] t-metallic">
+      {/* Champagne-gold foil headline */}
+      <h1
+        className="relative m-0 font-serif font-normal v5-metallic"
+        style={{
+          fontSize: "2.375rem",
+          lineHeight: 1.1,
+          letterSpacing: "0.05em",
+          marginBottom: 8,
+        }}
+      >
         {title}
       </h1>
+
+      {/* Brass plate hairline */}
+      <span
+        aria-hidden
+        className="v5-brass-line"
+        style={{ width: "32ch", maxWidth: "60%", marginBottom: 14 }}
+      />
+
       {subtitle && (
-        <p className="m-0 mb-3 font-sans text-[13px] leading-[1.6] text-ink-soft max-w-[32ch]">
+        <p
+          className="relative m-0 font-sans text-[13px] leading-[1.7]"
+          style={{
+            color: "var(--v5-ink-on-dark-soft)",
+            maxWidth: "32ch",
+            letterSpacing: "0.02em",
+            marginBottom: 14,
+          }}
+        >
           {subtitle}
         </p>
       )}
 
       {/* Schedule */}
       {scheduleLines && scheduleLines.length > 0 && (
-        <div className="mt-2">
+        <div className="relative">
           {scheduleLines.map((line, i) => (
             <div
               key={`${line.time}-${i}`}
-              className="flex items-baseline gap-4 py-3.5"
+              className={
+                i === scheduleLines.length - 1 ? "" : "v5-line-divider"
+              }
               style={{
-                borderBottom:
-                  i === scheduleLines.length - 1
-                    ? "none"
-                    : "1px solid var(--line)",
+                display: "flex",
+                alignItems: "baseline",
+                gap: 16,
+                padding: "14px 0",
               }}
             >
               <div
-                className="font-display text-[26px] leading-none font-normal tracking-[0.02em] tabular-nums text-roseGold-deep"
-                style={{ minWidth: 76 }}
+                className="font-display tabular-nums"
+                style={{
+                  fontSize: 26,
+                  lineHeight: 1,
+                  fontWeight: 400,
+                  letterSpacing: "0.04em",
+                  color: "var(--v5-gold-on-dark)",
+                  minWidth: 76,
+                }}
               >
                 {line.time}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-serif text-[22px] leading-[1.25] font-medium tracking-[0.02em] text-ink">
+                <div
+                  className="font-serif"
+                  style={{
+                    fontSize: 22,
+                    lineHeight: 1.25,
+                    fontWeight: 500,
+                    letterSpacing: "0.02em",
+                    color: "var(--v5-ink-on-dark)",
+                  }}
+                >
                   {line.table}
                 </div>
                 {line.venue && (
-                  <div className="mt-0.5 font-sans text-[11.5px] leading-[1.3] tracking-[0.04em] text-ink-mute">
+                  <div
+                    className="font-sans mt-0.5"
+                    style={{
+                      fontSize: 11.5,
+                      lineHeight: 1.3,
+                      letterSpacing: "0.06em",
+                      color: "var(--v5-ink-on-dark-mute)",
+                    }}
+                  >
                     {line.venue}
                   </div>
                 )}
@@ -127,19 +192,20 @@ export function CastHomeHero({
         </div>
       )}
 
-      {/* CTAs */}
-      <div className="mt-5 flex gap-2.5">
+      {/* CTAs — champagne-gold solid + ghost gold border */}
+      <div className="relative mt-5 flex gap-2.5">
         <Link
           href="/cast/schedule"
-          className="flex-1 h-[50px] rounded-pill bg-roseGold-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-2 font-sans text-[14px] font-semibold tracking-[0.04em] active:scale-[0.98] transition"
+          className="v5-cta-primary flex-1 h-[50px] rounded-pill inline-flex items-center justify-center gap-2 font-sans font-semibold transition active:scale-[0.98]"
+          style={{ letterSpacing: "0.08em", fontSize: 14 }}
         >
           スケジュールを見る
           <ArrowRight size={15} strokeWidth={1.8} />
         </Link>
         <button
           type="button"
-          className="h-[50px] px-[22px] rounded-pill glass text-roseGold-ink font-sans text-[14px] font-medium tracking-[0.04em] whitespace-nowrap"
-          style={{ borderColor: "var(--line-strong)" }}
+          className="v5-cta-ghost h-[50px] px-[22px] rounded-pill font-sans font-medium whitespace-nowrap"
+          style={{ letterSpacing: "0.06em", fontSize: 14 }}
         >
           あとで
         </button>

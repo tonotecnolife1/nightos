@@ -30,21 +30,12 @@ export function PageHeader({
     <header
       className={cn(
         "sticky top-0 z-50 px-5 py-4 backdrop-blur-md border-b",
-        isRuri
-          ? "border-roseGold/20"
-          : "bg-pearl-light/80 border-ink/[0.08]",
+        isRuri ? "border-[rgba(140,111,68,0.18)]" : "border-[rgba(140,111,68,0.18)]",
         className,
       )}
-      style={
-        isRuri
-          ? {
-              background:
-                "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
-                "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
-                "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
-            }
-          : undefined
-      }
+      style={{
+        background: "rgba(247,238,221,0.92)",
+      }}
     >
       <div className="flex items-center gap-3">
         {showBack && (
@@ -59,7 +50,7 @@ export function PageHeader({
         )}
         {isRuri && <RuriMamaAvatar size={44} withGlow />}
         <div className="flex-1 min-w-0">
-          <h1 className="font-serif text-[20px] leading-tight font-medium tracking-[0.02em] text-ink">
+          <h1 className="font-serif text-[20px] leading-tight font-medium tracking-[0.04em] text-ink">
             {title}
           </h1>
           {subtitle && (

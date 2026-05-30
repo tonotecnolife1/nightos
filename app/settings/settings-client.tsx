@@ -201,7 +201,7 @@ export default function SettingsClient({
                     aria-label="新しい店舗の招待コード"
                     disabled={pending}
                     autoCapitalize="characters"
-                    className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep tracking-[0.2em] font-mono uppercase"
+                    className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep tracking-[0.2em] font-mono uppercase"
                     style={{ fontSize: "16px" }}
                   />
                   <div className="flex gap-2">
@@ -221,7 +221,7 @@ export default function SettingsClient({
                       type="button"
                       onClick={handleChangeStore}
                       disabled={newInviteCode.length !== 8 || pending}
-                      className="flex-1 px-4 py-2.5 rounded-pill bg-roseGold-deep text-pearl-light-light text-body-sm font-semibold tracking-[0.04em] shadow-luxe hover:-translate-y-px transition disabled:opacity-50 disabled:hover:translate-y-0"
+                      className="flex-1 px-4 py-2.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-sm font-semibold tracking-[0.04em] shadow-luxe hover:-translate-y-px transition disabled:opacity-50 disabled:hover:translate-y-0"
                     >
                       {pending ? "変更中..." : "変更を確定"}
                     </button>

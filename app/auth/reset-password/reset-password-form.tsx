@@ -83,7 +83,7 @@ export default function ResetPasswordForm() {
                 placeholder="email@example.com"
                 required
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-roseGold-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </label>
@@ -91,7 +91,7 @@ export default function ResetPasswordForm() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-roseGold-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
             >
               {pending ? "送信中..." : "再設定リンクを送る"}
             </button>
@@ -103,7 +103,7 @@ export default function ResetPasswordForm() {
           <p className="text-body-sm text-ink-soft text-center">
             <Link
               href="/auth/login"
-              className="text-roseGold-deep underline-offset-2 hover:underline"
+              className="text-wine-deep underline-offset-2 hover:underline"
             >
               ログイン画面に戻る
             </Link>

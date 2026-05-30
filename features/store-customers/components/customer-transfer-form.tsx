@@ -159,7 +159,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
                   <div
                     className={`w-4 h-4 rounded-sm border flex items-center justify-center shrink-0 transition-colors ${
                       isSelected
-                        ? "bg-roseGold-deep border-roseGold-deep"
+                        ? "bg-roseGold-deep border-wine-deep"
                         : "border-pearl-soft bg-white"
                     }`}
                   >

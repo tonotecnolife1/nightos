@@ -468,7 +468,7 @@ export function ChatRoomView({
                   className={cn(
                     "shrink-0 mb-1 p-2 rounded-full transition-colors",
                     input.trim() && !sending
-                      ? "bg-roseGold-deep text-pearl-light"
+                      ? "bg-wine-deep text-pearl-light"
                       : "bg-pearl-soft text-ink-mute",
                   )}
                   aria-label="送信"
@@ -637,7 +637,7 @@ export function ChatRoomView({
               className={cn(
                 "shrink-0 mb-1 p-2 rounded-full transition-colors",
                 input.trim() && !sending
-                  ? "bg-roseGold-deep text-pearl-light"
+                  ? "bg-wine-deep text-pearl-light"
                   : "bg-pearl-soft text-ink-mute",
               )}
               aria-label="送信"
@@ -734,7 +734,7 @@ function MessageRow({
         msg.sender_role === "mama"
           ? "bg-champagne-soft text-ink"
           : msg.sender_role === "oneesan"
-            ? "bg-roseGold-soft/60 text-roseGold-deep"
+            ? "bg-roseGold-soft/60 text-wine-deep"
             : "bg-pearl-soft text-ink-soft",
       )}
     >
@@ -813,7 +813,7 @@ function MessageRow({
               }}
               autoFocus
               rows={2}
-              className="w-full resize-none rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 text-body-md text-ink focus:outline-none focus:border-roseGold-deep"
+              className="w-full resize-none rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 text-body-md text-ink focus:outline-none focus:border-wine-deep"
               style={{ fontSize: "16px" }}
             />
             <div className="flex items-center gap-2">
@@ -824,7 +824,7 @@ function MessageRow({
                 className={cn(
                   "inline-flex items-center gap-1 px-3 py-1 rounded-full text-label-sm font-medium",
                   editDraft.trim()
-                    ? "bg-roseGold-deep text-pearl-light"
+                    ? "bg-wine-deep text-pearl-light"
                     : "bg-pearl-soft text-ink-mute",
                 )}
               >
@@ -847,7 +847,7 @@ function MessageRow({
             className={cn(
               "px-3.5 py-2 text-body-md leading-relaxed whitespace-pre-wrap break-words",
               isMe
-                ? "bg-roseGold-deep text-pearl-light rounded-2xl rounded-br-sm shadow-luxe"
+                ? "bg-wine-deep text-pearl-light rounded-2xl rounded-br-sm shadow-luxe"
                 : "bg-pearl-light border border-ink/[0.08] text-ink rounded-2xl rounded-bl-sm shadow-soft",
             )}
           >
@@ -1018,7 +1018,7 @@ function ChatTextarea({
       }}
       placeholder={placeholder}
       rows={1}
-      className="w-full resize-none rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 text-body-md text-ink placeholder:text-ink-mute focus:outline-none focus:border-roseGold-deep"
+      className="w-full resize-none rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 text-body-md text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep"
       style={{ fontSize: "16px", maxHeight: "160px" }}
     />
   );

@@ -24,7 +24,7 @@ export function CategoryTabs({ value, onChange }: Props) {
             className={cn(
               "h-9 rounded-pill text-label-sm font-medium tracking-[0.04em] transition-all active:scale-95",
               active
-                ? "bg-roseGold-deep text-pearl-light shadow-luxe"
+                ? "bg-wine-deep text-pearl-light shadow-luxe"
                 : "text-ink-soft hover:text-ink",
             )}
           >

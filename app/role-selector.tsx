@@ -61,25 +61,45 @@ export function RoleSelector() {
   };
 
   return (
-    <main className="min-h-dvh bg-pearl flex flex-col">
-      {/* ── Hero ── */}
-      <div
-        className="relative overflow-hidden px-6 pt-14 pb-12"
-        style={{
-          background:
-            "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
-            "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
-            "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
-        }}
-      >
-        <div className="max-w-sm mx-auto">
-          <div className="text-label-xs tracking-luxe text-roseGold-deep mb-2">
+    <main className="min-h-dvh flex flex-col">
+      {/* V5 Bordeaux Salon Hero — dark wine + champagne-gold */}
+      <div className="v5-hero px-6 pt-14 pb-12">
+        <div className="max-w-sm mx-auto relative">
+          <div
+            className="font-sans font-medium mb-3"
+            style={{
+              fontSize: 11,
+              lineHeight: 1,
+              letterSpacing: "0.32em",
+              color: "var(--v5-gold-mid)",
+            }}
+          >
             NIGHTOS · WELCOME
           </div>
-          <h1 className="font-serif text-[2rem] leading-[1.15] font-medium tracking-[0.02em] t-metallic">
+          <h1
+            className="font-serif font-normal v5-metallic"
+            style={{
+              fontSize: "2.25rem",
+              lineHeight: 1.1,
+              letterSpacing: "0.05em",
+            }}
+          >
             {step === "venue" ? "業態を選ぶ" : "役割を選ぶ"}
           </h1>
-          <p className="mt-2 text-body-sm text-ink-soft">
+          <span
+            aria-hidden
+            className="v5-brass-line"
+            style={{ width: "26ch", maxWidth: "55%", margin: "10px 0 14px" }}
+          />
+          <p
+            className="font-sans"
+            style={{
+              fontSize: 13,
+              lineHeight: 1.6,
+              letterSpacing: "0.02em",
+              color: "var(--v5-ink-on-dark-soft)",
+            }}
+          >
             {step === "venue"
               ? "あなたのお店の業態に合わせます"
               : `${venue === "club" ? "クラブ" : "キャバクラ"}でのあなたの立場`}
@@ -223,7 +243,7 @@ function BigCard({
         </div>
         <ChevronRight
           size={18}
-          className="text-ink-mute shrink-0 group-hover:text-roseGold-deep transition-colors"
+          className="text-ink-mute shrink-0 group-hover:text-wine-deep transition-colors"
         />
       </div>
     </button>

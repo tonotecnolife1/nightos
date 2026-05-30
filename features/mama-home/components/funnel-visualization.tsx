@@ -115,7 +115,7 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
         {/* Footer link */}
         <Link
           href="/mama/customers"
-          className="flex items-center justify-between pt-2 border-t border-line text-[11px] text-roseGold-deep"
+          className="flex items-center justify-between pt-2 border-t border-line text-[11px] text-wine-deep"
         >
           <span>顧客リストで見る</span>
           <ChevronRight size={12} />

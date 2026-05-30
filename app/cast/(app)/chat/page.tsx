@@ -24,7 +24,7 @@ export default async function ChatListPage() {
     <div className="animate-fade-in">
       <div className="flex items-center justify-between px-5 pt-10 pb-3">
         <div>
-          <div className="text-label-xs tracking-luxe text-roseGold-deep mb-1.5">
+          <div className="text-label-xs tracking-luxe text-wine-deep mb-1.5">
             NIGHTOS
           </div>
           <h1 className="font-serif text-[28px] leading-[1.2] font-medium tracking-[0.02em] text-ink">

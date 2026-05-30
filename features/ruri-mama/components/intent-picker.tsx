@@ -70,7 +70,7 @@ const toneClasses: Record<
   },
   blush: {
     bg: "bg-pearl-light hover:bg-roseGold-soft/40",
-    iconBg: "bg-roseGold-deep text-pearl-light",
+    iconBg: "bg-wine-deep text-pearl-light",
     border: "border-roseGold/30",
   },
 };
@@ -82,7 +82,7 @@ interface Props {
 export function IntentPicker({ onPick }: Props) {
   return (
     <div className="space-y-2.5 animate-fade-in pt-1">
-      <p className="text-label-xs tracking-luxe text-roseGold-deep text-center uppercase">
+      <p className="text-label-xs tracking-luxe text-wine-deep text-center uppercase">
         どんな相談から始める？
       </p>
       <div className="space-y-2">

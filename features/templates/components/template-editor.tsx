@@ -178,7 +178,7 @@ export function TemplateEditor({ category, onChange }: Props) {
               className={cn(
                 "inline-flex items-center gap-1 h-9 px-5 rounded-pill text-label-sm font-semibold tracking-[0.04em]",
                 editor.body.trim()
-                  ? "bg-roseGold-deep text-pearl-light shadow-luxe"
+                  ? "bg-wine-deep text-pearl-light shadow-luxe"
                   : "bg-pearl-soft text-ink-mute",
               )}
             >
