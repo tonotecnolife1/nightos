@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plus, X, Check } from "lucide-react";
 import type { Customer, Douhan } from "@/types/nightos";
 import { upsertDouhan } from "@/lib/nightos/douhan-store";
-import { getCurrentCastId } from "@/lib/nightos/auth";
+import { useCastId } from "@/lib/nightos/cast-context";
 
 function todayStr(): string {
   const d = new Date();
@@ -16,22 +16,12 @@ function todayStr(): string {
  * Opens a bottom sheet with a minimal form (customer / date / note).
  */
 export function DouhanQuickAdd({ customers }: { customers: Customer[] }) {
+  const castId = useCastId();
   const [open, setOpen] = useState(false);
-  const [castId, setCastId] = useState("");
   const [customerId, setCustomerId] = useState("");
   const [date, setDate] = useState(todayStr());
   const [note, setNote] = useState("");
   const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-    void getCurrentCastId().then((id) => {
-      if (mounted) setCastId(id);
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const canSubmit = customerId !== "" && date !== "";
 

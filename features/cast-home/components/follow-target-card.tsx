@@ -5,10 +5,11 @@ import {
   Cake,
   Check,
   Clock,
-  MessageCircle,
+  Sparkles,
   TrendingUp,
   Wine,
 } from "lucide-react";
+import { useState } from "react";
 import { cn, formatBottleRemainingPct, formatCustomerName } from "@/lib/utils";
 import type { FollowReason, FollowTarget } from "@/types/nightos";
 
@@ -68,6 +69,7 @@ export function FollowTargetCard({
 }: Props) {
   const { icon: ReasonIcon, color, bg, border } = reasonConfig[target.reason];
   const { customer, bottle, lastTopic } = target;
+  const [confirming, setConfirming] = useState(false);
   const cat = categoryLabel[customer.category] ?? categoryLabel.regular;
   const isTop = rank <= 2;
 
@@ -197,35 +199,55 @@ export function FollowTargetCard({
       </Link>
 
       {/* ── Action bar ── */}
-      <div className="flex items-stretch gap-1.5 pl-5 pr-3.5 pb-3 pt-2 border-t border-ink/[0.06]">
-        {!contacted ? (
-          <button
-            type="button"
-            onClick={() => onToggleContacted(customer.id)}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-pill bg-wine-deep text-pearl-light text-[12px] font-semibold tracking-[0.06em] shadow-soft active:scale-[0.98] transition-transform"
-          >
-            <Check size={13} />
-            連絡した
-          </button>
+      <div className="pl-5 pr-3.5 pb-3 pt-2 border-t border-ink/[0.06]">
+        {confirming ? (
+          <div className="flex items-center gap-2 rounded-btn border border-wine-deep/20 bg-wine-deep/[0.05] px-3 py-2">
+            <span className="flex-1 text-[12px] text-ink leading-snug">
+              {formatCustomerName(customer.name)}に連絡しましたか？
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                onToggleContacted(customer.id);
+                setConfirming(false);
+              }}
+              className="inline-flex items-center gap-1 h-8 px-3.5 rounded-pill bg-wine-deep text-pearl-light text-[12px] font-semibold active:scale-[0.98] transition-transform"
+            >
+              <Check size={12} />
+              はい
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              className="h-8 px-3 rounded-pill border border-ink/15 bg-transparent text-ink-soft text-[12px] font-medium active:scale-[0.98] transition-transform"
+            >
+              やめる
+            </button>
+          </div>
         ) : (
-          <div className="flex-1" />
+          <div className="flex items-stretch gap-1.5">
+            {!contacted ? (
+              <button
+                type="button"
+                onClick={() => setConfirming(true)}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-pill bg-wine-deep text-pearl-light text-[12px] font-semibold tracking-[0.06em] shadow-soft active:scale-[0.98] transition-transform"
+              >
+                <Check size={13} />
+                連絡した
+              </button>
+            ) : (
+              <div className="flex-1" />
+            )}
+            <Link
+              href={`/cast/ruri-mama?customerId=${customer.id}`}
+              className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-pill text-[12px] font-medium tracking-[0.04em] border border-wine-deep bg-transparent text-wine-deep active:scale-[0.98] transition-transform"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Sparkles size={12} />
+              文面を作る
+            </Link>
+          </div>
         )}
-        <Link
-          href={`/cast/templates?customerId=${customer.id}`}
-          className="inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-pill text-[12px] font-medium tracking-[0.06em] border border-wine-deep bg-transparent text-wine-deep active:scale-[0.98] transition-transform"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MessageCircle size={12} />
-          LINE文面
-        </Link>
-        <Link
-          href={`/cast/ruri-mama?customerId=${customer.id}`}
-          className="inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-pill text-[12px] font-medium border border-gold/40 bg-champagne-soft/60 text-gold-deep active:scale-[0.98] transition-transform"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MessageCircle size={12} />
-          相談
-        </Link>
       </div>
     </div>
   );

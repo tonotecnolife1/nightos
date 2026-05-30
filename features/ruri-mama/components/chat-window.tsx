@@ -126,6 +126,10 @@ export function ChatWindow({
   const [selectedCustomerId, setSelectedCustomerId] = useState<
     string | undefined
   >(initialCustomerId);
+  // 顧客選択（または「指定なし」）が済むまで相談種別を出さない（順次表示）
+  const [customerChosen, setCustomerChosen] = useState(
+    initialCustomerId != null,
+  );
   const [stubMode, setStubMode] = useState(initialIsStubMode);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [currentSessionId] = useState(() => newSessionId());
@@ -556,7 +560,10 @@ export function ChatWindow({
                     customers={customers}
                     helpCastNames={helpCastNames}
                     selectedId={selectedCustomerId}
-                    onSelect={setSelectedCustomerId}
+                    onSelect={(id) => {
+                      setSelectedCustomerId(id);
+                      setCustomerChosen(true);
+                    }}
                   />
                 )}
 
@@ -585,9 +592,14 @@ export function ChatWindow({
           );
         })}
 
-        {phase.name === "intent-pick" && (
-          <IntentPicker onPick={handleIntentPick} />
-        )}
+        {phase.name === "intent-pick" &&
+          (customerChosen ? (
+            <IntentPicker onPick={handleIntentPick} />
+          ) : (
+            <p className="text-center text-[11px] tracking-luxe text-ink-mute px-4 py-2">
+              まずは上でお客様を選んでね（「指定なしで相談する」でもOK）
+            </p>
+          ))}
 
         {currentHearingStep && (
           <ChipOptions

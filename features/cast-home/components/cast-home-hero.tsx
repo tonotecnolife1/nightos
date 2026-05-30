@@ -123,7 +123,7 @@ export function CastHomeHero({
   const noEventNextDate = nextWorkingDate ? formatDate(nextWorkingDate) : null;
 
   return (
-    <section className="v5-hero px-5 pt-12 pb-10">
+    <section className="v5-hero px-5 pt-12 pb-16">
       {/* Top row — eyebrow + utility icons */}
       <div className="relative flex items-center justify-between mb-5">
         <div className="flex items-baseline gap-3">

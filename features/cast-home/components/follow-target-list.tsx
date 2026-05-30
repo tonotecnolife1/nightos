@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarCheck, Check, PartyPopper } from "lucide-react";
+import { CalendarCheck, Check, ChevronDown, PartyPopper } from "lucide-react";
 import { EmptyState } from "@/components/nightos/empty-state";
 import type { FollowTarget } from "@/types/nightos";
 import { loadContactedToday, toggleContacted } from "../lib/contacted-store";
 import { FollowTargetCard } from "./follow-target-card";
 
+const VISIBLE_LIMIT = 3;
+
 export function FollowTargetList({ targets }: { targets: FollowTarget[] }) {
   const [contacted, setContacted] = useState<Set<string>>(new Set());
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     setContacted(loadContactedToday());
@@ -41,6 +44,9 @@ export function FollowTargetList({ targets }: { targets: FollowTarget[] }) {
     const bD = contacted.has(b.customer.id) ? 1 : 0;
     return aD - bD;
   });
+
+  const visible = expanded ? sorted : sorted.slice(0, VISIBLE_LIMIT);
+  const hiddenCount = sorted.length - visible.length;
 
   return (
     <div className="space-y-2.5">

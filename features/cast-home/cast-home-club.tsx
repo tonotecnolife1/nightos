@@ -8,6 +8,7 @@ import { MorningBriefing } from "./components/morning-briefing";
 import { StoreMessageBanner } from "./components/store-message-banner";
 import { VisitNotificationPoller } from "./components/visit-notification-poller";
 import { DouhanTracker } from "./components/douhan-tracker";
+import { DouhanQuickAdd } from "./components/douhan-quick-add";
 import type { CastHomeData, Customer } from "@/types/nightos";
 
 interface Props {
@@ -71,14 +72,14 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
           </Link>
         </div>
 
+        <DouhanTracker customers={customers} />
+
+        <RuriMamaEntryCard />
+
         <StoreMessageBanner
           castId={data.cast.id}
           initialMessages={storeMessages}
         />
-
-        <DouhanTracker customers={customers} />
-
-        <RuriMamaEntryCard />
 
         <MorningBriefing castId={data.cast.id} />
 
@@ -104,6 +105,8 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
           </header>
           <FollowTargetList targets={data.targets} />
         </section>
+
+        <DouhanQuickAdd customers={customers} />
       </main>
 
       {/* V5 FAB: wine-deep solid + multi-layer champagne-gold ring */}

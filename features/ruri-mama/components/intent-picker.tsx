@@ -54,23 +54,23 @@ const toneClasses: Record<
   { bg: string; iconBg: string; border: string }
 > = {
   rose: {
-    bg: "bg-pearl-warm hover:bg-champagne-soft/60",
-    iconBg: "bg-rose-gold-metallic text-pearl-light",
+    bg: "bg-pearl-light hover:bg-champagne-soft/50",
+    iconBg: "bg-wine-deep text-pearl-light",
     border: "border-gold/30",
   },
   amethyst: {
-    bg: "bg-pearl-light hover:bg-champagne-soft/40",
+    bg: "bg-pearl-light hover:bg-champagne-soft/50",
     iconBg: "bg-gold-deep text-pearl-light",
     border: "border-gold/30",
   },
   champagne: {
-    bg: "bg-pearl-light hover:bg-champagne-soft/60",
-    iconBg: "bg-champagne-deep text-ink",
+    bg: "bg-pearl-light hover:bg-champagne-soft/50",
+    iconBg: "bg-wine text-pearl-light",
     border: "border-gold/30",
   },
   blush: {
-    bg: "bg-pearl-light hover:bg-champagne-soft/40",
-    iconBg: "bg-wine-deep text-pearl-light",
+    bg: "bg-pearl-light hover:bg-champagne-soft/50",
+    iconBg: "bg-gold-deep text-pearl-light",
     border: "border-gold/30",
   },
 };

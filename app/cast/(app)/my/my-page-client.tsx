@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
-import { ArrowLeft, BarChart3, Building2, ChevronRight, Crown, Settings, UserCircle, Users } from "lucide-react";
+import { ArrowLeft, Building2, ChevronRight, Crown, Settings, UserCircle, Users } from "lucide-react";
 import { mockLogout } from "@/app/auth/actions";
 import { InstallAppSection } from "@/components/nightos/install-app-section";
 import type { CastUserRole } from "@/types/nightos";

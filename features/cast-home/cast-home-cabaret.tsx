@@ -6,11 +6,13 @@ import { FollowTargetList } from "./components/follow-target-list";
 import { MorningBriefing } from "./components/morning-briefing";
 import { StoreMessageBanner } from "./components/store-message-banner";
 import { VisitNotificationPoller } from "./components/visit-notification-poller";
-import type { CastHomeData } from "@/types/nightos";
+import { DouhanQuickAdd } from "./components/douhan-quick-add";
+import type { CastHomeData, Customer } from "@/types/nightos";
 
 interface Props {
   data: CastHomeData;
   storeMessages: { id: string; message: string; sent_at: string }[];
+  customers: Customer[];
 }
 
 function formatDateLabel(date: Date): string {
@@ -18,7 +20,7 @@ function formatDateLabel(date: Date): string {
   return `${date.getMonth() + 1}月${date.getDate()}日 (${days[date.getDay()]})`;
 }
 
-export function CastHomeCabaret({ data, storeMessages }: Props) {
+export function CastHomeCabaret({ data, storeMessages, customers }: Props) {
   const repeatPct = Math.round(data.summary.repeatRate * 100);
   const dateLabel = formatDateLabel(new Date());
   const hasNotification = storeMessages.length > 0;
@@ -61,14 +63,14 @@ export function CastHomeCabaret({ data, storeMessages }: Props) {
           />
         </div>
 
+        <MorningBriefing castId={data.cast.id} />
+
+        <RuriMamaEntryCard />
+
         <StoreMessageBanner
           castId={data.cast.id}
           initialMessages={storeMessages}
         />
-
-        <MorningBriefing castId={data.cast.id} />
-
-        <RuriMamaEntryCard />
 
         {/* ── Priority Stack ── */}
         <section className="flex flex-col gap-3.5">
@@ -92,6 +94,8 @@ export function CastHomeCabaret({ data, storeMessages }: Props) {
           </header>
           <FollowTargetList targets={data.targets} />
         </section>
+
+        <DouhanQuickAdd customers={customers} />
       </main>
     </div>
   );
