@@ -99,19 +99,6 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
           <FollowTargetList targets={data.targets} />
         </section>
       </main>
-
-      {/* V5 FAB: wine-deep solid + multi-layer champagne-gold ring */}
-      <Link
-        href="/cast/customers/new"
-        className="fixed bottom-24 right-5 z-50 w-[60px] h-[60px] rounded-full bg-wine-deep text-pearl-light flex items-center justify-center active:scale-95 transition-all"
-        aria-label="お客様を新規登録"
-        style={{
-          boxShadow:
-            "0 0 0 1px rgba(235,217,168,0.65), 0 0 0 4px #5e3838, 0 0 0 5px rgba(235,217,168,0.40), var(--v5-shadow-luxe)",
-        }}
-      >
-        <UserPlus size={24} strokeWidth={1.8} />
-      </Link>
     </div>
   );
 }
