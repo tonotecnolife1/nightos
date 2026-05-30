@@ -50,6 +50,8 @@ export function EditCustomerForm({ customer, casts }: Props) {
     startTransition(async () => {
       const res = await updateCustomerAction(customer.id, {
         name: name.trim(),
+        name_kana: nameKana.trim() || null,
+        nickname: nickname.trim() || null,
         birthday: birthday || null,
         job: job.trim() || null,
         favorite_drink: favoriteDrink.trim() || null,
@@ -68,6 +70,7 @@ export function EditCustomerForm({ customer, casts }: Props) {
 
   const applyBusinessCard = (fields: ExtractedBusinessCard) => {
     if (fields.name) setName(fields.name);
+    if (fields.name_kana) setNameKana(fields.name_kana);
     if (fields.job) setJob(fields.job);
     if (fields.store_memo) {
       setStoreMemo((prev) =>
@@ -105,6 +108,21 @@ export function EditCustomerForm({ customer, casts }: Props) {
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
+      />
+      <TextInput
+        label="読み仮名（ひらがな）"
+        name="name_kana"
+        value={nameKana}
+        onChange={(e) => setNameKana(e.target.value)}
+        placeholder="例: たなか たろう"
+        hint="ひらがなで検索・予測するために使います"
+      />
+      <TextInput
+        label="ニックネーム（任意）"
+        name="nickname"
+        value={nickname}
+        onChange={(e) => setNickname(e.target.value)}
+        placeholder="例: 社長・たかちゃん"
       />
       <BirthdayInput
         value={birthday}
