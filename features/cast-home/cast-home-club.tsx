@@ -60,7 +60,7 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
           </Link>
           <StatCard
             label="同伴数"
-            value={summary.douhanCount}
+            value={summary.douhanCount ?? 0}
             unit="件"
             icon={<Users size={11} className="text-gold" />}
             tone="wine"
