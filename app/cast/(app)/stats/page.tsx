@@ -9,7 +9,7 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import { Card } from "@/components/nightos/card";
+import { Card, GemCard } from "@/components/nightos/card";
 import { PageHeader } from "@/components/nightos/page-header";
 import { StatCard } from "@/components/nightos/stat-card";
 import {
@@ -100,9 +100,10 @@ export default async function CastStatsPage() {
           <header className="relative flex items-baseline justify-between pl-3.5 mb-3">
             <span
               aria-hidden
-              className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic"
+              className="absolute left-0 top-1 bottom-1 w-[3px] rounded"
+              style={{ background: "var(--v5-champ-gold)" }}
             />
-            <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">
+            <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.04em] text-ink">
               再来店率の動き
             </h2>
             <span className="text-label-xs tracking-luxe text-ink-mute uppercase">
@@ -119,10 +120,11 @@ export default async function CastStatsPage() {
           <header className="relative flex items-baseline gap-2 pl-3.5 mb-3">
             <span
               aria-hidden
-              className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic"
+              className="absolute left-0 top-1 bottom-1 w-[3px] rounded"
+              style={{ background: "var(--v5-champ-gold)" }}
             />
             <Calendar size={16} className="text-ink-soft" />
-            <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">
+            <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.04em] text-ink">
               年間成績
             </h2>
           </header>
@@ -156,15 +158,7 @@ export default async function CastStatsPage() {
         </section>
 
         {/* ── さくらママからの励まし ── */}
-        <div
-          className="rounded-hero shadow-warm relative overflow-hidden border border-ink/[0.08] p-5"
-          style={{
-            background:
-              "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
-              "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
-              "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
-          }}
-        >
+        <GemCard className="p-5">
           <div className="flex items-start gap-3">
             <div className="w-11 h-11 rounded-full border border-gold/35 flex items-center justify-center shrink-0"
               style={{
@@ -184,7 +178,7 @@ export default async function CastStatsPage() {
               </p>
             </div>
           </div>
-        </div>
+        </GemCard>
       </div>
     </div>
   );
