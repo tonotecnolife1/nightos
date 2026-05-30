@@ -70,7 +70,7 @@ export function FollowTargetList({ targets }: { targets: FollowTarget[] }) {
         </div>
       )}
 
-      {sorted.map((t, i) => (
+      {visible.map((t, i) => (
         <FollowTargetCard
           key={t.customer.id}
           target={t}
@@ -79,6 +79,17 @@ export function FollowTargetList({ targets }: { targets: FollowTarget[] }) {
           rank={i + 1}
         />
       ))}
+
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="w-full inline-flex items-center justify-center gap-1.5 h-10 rounded-pill border border-wine-deep/30 bg-transparent text-wine-deep text-[12px] font-medium tracking-[0.04em] active:scale-[0.99] transition"
+        >
+          <ChevronDown size={14} />
+          残り{hiddenCount}名を表示
+        </button>
+      )}
     </div>
   );
 }
