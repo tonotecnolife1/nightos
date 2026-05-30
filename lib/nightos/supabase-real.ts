@@ -345,6 +345,8 @@ export async function recordFollowLogReal(args: {
 export async function createCustomerReal(input: {
   storeId: string;
   name: string;
+  name_kana?: string | null;
+  nickname?: string | null;
   birthday: string | null;
   job: string | null;
   favorite_drink: string | null;
@@ -367,6 +369,8 @@ export async function createCustomerReal(input: {
       store_id: input.storeId,
       cast_id: input.cast_id,
       name: input.name,
+      name_kana: input.name_kana ?? null,
+      nickname: input.nickname ?? null,
       birthday: input.birthday,
       job: input.job,
       favorite_drink: input.favorite_drink,
@@ -547,11 +551,14 @@ export async function updateCustomerReal(
   id: string,
   input: {
     name: string;
+    name_kana?: string | null;
+    nickname?: string | null;
     birthday: string | null;
     job: string | null;
     favorite_drink: string | null;
     category: CustomerCategory;
     store_memo: string | null;
+    region: string | null;
     cast_id: string;
   },
 ): Promise<Customer | null> {
@@ -560,11 +567,14 @@ export async function updateCustomerReal(
     .from("customers")
     .update({
       name: input.name,
+      name_kana: input.name_kana ?? null,
+      nickname: input.nickname ?? null,
       birthday: input.birthday,
       job: input.job,
       favorite_drink: input.favorite_drink,
       category: input.category,
       store_memo: input.store_memo,
+      region: input.region,
       cast_id: input.cast_id,
     })
     .eq("id", id)
@@ -1007,6 +1017,8 @@ function rowToCustomer(row: any): Customer {
     store_id: row.store_id,
     cast_id: row.cast_id,
     name: row.name,
+    name_kana: row.name_kana ?? null,
+    nickname: row.nickname ?? null,
     birthday: row.birthday,
     job: row.job,
     favorite_drink: row.favorite_drink,

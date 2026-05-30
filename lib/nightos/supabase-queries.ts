@@ -318,6 +318,7 @@ export interface UpdateCustomerInput {
   favorite_drink: string | null;
   category: CustomerCategory;
   store_memo: string | null;
+  region: string | null;
   cast_id: string;
 }
 
@@ -354,6 +355,7 @@ function updateCustomerMock(
     favorite_drink: input.favorite_drink,
     category: input.category,
     store_memo: input.store_memo,
+    region: input.region,
     cast_id: input.cast_id,
   };
   mockCustomers[idx] = updated;
@@ -757,7 +759,9 @@ function recordFollowLogMock(args: {
 
 export interface CreateCustomerInput {
   name: string;
+  /** 氏名の読み仮名（ひらがな）。検索の予測用。任意。 */
   name_kana?: string | null;
+  /** 呼び名（任意・入力推奨）。カルテのサブ表示等に使用。 */
   nickname?: string | null;
   birthday: string | null;
   job: string | null;

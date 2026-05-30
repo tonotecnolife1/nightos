@@ -74,10 +74,14 @@ export interface Customer {
   id: string;
   store_id: string;
   cast_id: string;
+  /** フルネーム（戸籍名・名刺名）。リスト・通知の主表示はこちら。 */
   name: string;
   /** 氏名の読み仮名（ひらがな）。検索の予測用。任意。 */
   name_kana?: string | null;
-  /** 通称・ニックネーム（「社長」「たかちゃん」等）。検索・表示用。任意。 */
+  /**
+   * 呼び名（ニックネーム）。カルテのサブ表示・接客時の呼びかけに使用。
+   * フルネームの横に表示し、検索でもヒットする。入力推奨だが nullable。
+   */
   nickname?: string | null;
   birthday: string | null; // YYYY-MM-DD
   job: string | null;

@@ -40,6 +40,7 @@ export function EditCustomerForm({ customer, casts }: Props) {
   const [favoriteDrink, setFavoriteDrink] = useState(
     customer.favorite_drink ?? "",
   );
+  const [region, setRegion] = useState(customer.region ?? "");
   const [category, setCategory] = useState<CustomerCategory>(customer.category);
   const [castId, setCastId] = useState(customer.cast_id);
   const [storeMemo, setStoreMemo] = useState(customer.store_memo ?? "");
@@ -55,6 +56,7 @@ export function EditCustomerForm({ customer, casts }: Props) {
         birthday: birthday || null,
         job: job.trim() || null,
         favorite_drink: favoriteDrink.trim() || null,
+        region: region.trim() || null,
         category,
         store_memo: storeMemo.trim() || null,
         cast_id: castId,
@@ -103,7 +105,7 @@ export function EditCustomerForm({ customer, casts }: Props) {
       <BusinessCardUpload onApply={applyBusinessCard} mode="edit" />
 
       <TextInput
-        label="お名前"
+        label="お名前（フルネーム）"
         name="name"
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -118,11 +120,12 @@ export function EditCustomerForm({ customer, casts }: Props) {
         hint="ひらがなで検索・予測するために使います"
       />
       <TextInput
-        label="ニックネーム（任意）"
+        label="呼び名（任意）"
         name="nickname"
         value={nickname}
         onChange={(e) => setNickname(e.target.value)}
-        placeholder="例: 社長・たかちゃん"
+        placeholder="例: 社長・たっちゃん"
+        hint="フルネームの横に表示され、検索でもヒットします"
       />
       <BirthdayInput
         value={birthday}
@@ -139,6 +142,13 @@ export function EditCustomerForm({ customer, casts }: Props) {
         name="favorite_drink"
         value={favoriteDrink}
         onChange={(e) => setFavoriteDrink(e.target.value)}
+      />
+      <TextInput
+        label="活動エリア"
+        name="region"
+        value={region}
+        onChange={(e) => setRegion(e.target.value)}
+        placeholder="例: 東京都"
       />
       <SelectInput
         label="顧客カテゴリ"

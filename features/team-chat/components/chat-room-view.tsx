@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { MoreMenu } from "@/components/nightos/more-menu";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
 import { SAKURA_MAMA_CHAT_NAME } from "@/lib/nightos/constants";
 import type { ChatMessage, ChatRoom } from "../types";
@@ -298,23 +299,27 @@ export function ChatRoomView({
           </div>
           <div className="text-label-sm text-ink-mute">{memberCount}人</div>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setSearchOpen((v) => {
-              const next = !v;
-              if (!next) setSearchQuery("");
-              return next;
-            });
-          }}
-          aria-label={searchOpen ? "検索を閉じる" : "検索"}
-          className={cn(
-            "w-14 shrink-0 flex items-center justify-end text-ink-soft",
-            searchOpen && "text-gold-deep",
-          )}
-        >
-          {searchOpen ? <X size={18} /> : <Search size={18} />}
-        </button>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              setSearchOpen((v) => {
+                const next = !v;
+                if (!next) setSearchQuery("");
+                return next;
+              });
+            }}
+            aria-label={searchOpen ? "検索を閉じる" : "検索"}
+            className={cn(
+              "w-9 h-9 rounded-full flex items-center justify-center text-ink-soft hover:bg-pearl-soft",
+              searchOpen && "text-gold-deep bg-champagne-soft/60",
+            )}
+          >
+            {searchOpen ? <X size={18} /> : <Search size={18} />}
+          </button>
+          <MoreMenu />
+        </div>
+
       </header>
 
       {searchOpen && (

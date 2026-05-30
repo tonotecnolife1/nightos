@@ -1,15 +1,22 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { ArrowLeft, CalendarDays } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { MoreMenu } from "./more-menu";
 import { RuriMamaAvatar } from "./ruri-mama-avatar";
 
 interface Props {
   title: string;
   subtitle?: string;
   showBack?: boolean;
+  /**
+   * Right-side actions. When omitted, the default
+   * `[予定 icon][☰ menu]` cluster is shown so navigation is reachable
+   * from every page.
+   */
   right?: ReactNode;
   className?: string;
   tone?: "default" | "ruri";
@@ -59,8 +66,39 @@ export function PageHeader({
             </p>
           )}
         </div>
-        {right}
+        {right ?? <DefaultRightActions tone={tone} />}
       </div>
     </header>
+  );
+}
+
+/**
+ * Default right-side actions for cast-area headers.
+ * Always-on access to 予定 (1 タップ) and the ☰ menu (全タブ + 設定).
+ *
+ * `/store/*` `/mama/*` 配下は別ナビなので、`/cast/*` のときだけ自動付与する
+ * （他ロールへの誤導線を防ぐ）。
+ */
+function DefaultRightActions({ tone }: { tone: "default" | "ruri" }) {
+  const pathname = usePathname() ?? "";
+  if (!pathname.startsWith("/cast")) return null;
+
+  const isRuri = tone === "ruri";
+  return (
+    <div className="flex items-center gap-1.5">
+      <Link
+        href="/cast/schedule"
+        aria-label="予定"
+        className={cn(
+          "w-9 h-9 rounded-full flex items-center justify-center transition",
+          isRuri
+            ? "bg-white/15 hover:bg-white/25 text-pearl-light"
+            : "bg-pearl-warm/70 hover:bg-pearl-warm text-ink-soft",
+        )}
+      >
+        <CalendarDays size={17} />
+      </Link>
+      <MoreMenu tone={tone} />
+    </div>
   );
 }
