@@ -212,8 +212,8 @@ V5 では「matte philosophy」: drop shadow のみ、inset highlight 禁止。
   {/* 副情報 */}
   <p style={{ color: "var(--v5-ink-on-dark-soft)" }}>...</p>
 
-  {/* 主要 CTA — full width, no secondary */}
-  <Link className="v5-cta-primary w-full h-12 rounded-pill ..." />
+  {/* 主要 CTA — centered, intrinsic width, no secondary */}
+  <Link className="v5-cta-primary h-11 px-6 rounded-pill ..." />
 </section>
 ```
 
@@ -294,11 +294,11 @@ Hero は **見出し1つを最も重要な情報に当てる**。「Tonight」�
 
 ### 副 CTA の扱い
 
-主要 CTA のみ全幅で配置するのを基本。副 CTA を置くのは:
+主要 CTA は単独で配置するのを基本 (副 CTA を並べない)。副 CTA を置くのは:
 - ホームへの戻り / dismiss など明確な意味がある
 - かつ高頻度操作 (週 1-2 回より多い)
 
-その両方を満たさない場合は副 CTA を置かず、主要 CTA を全幅にしてその下の情報密度で視覚バランスを取る。
+その両方を満たさない場合は副 CTA を置かず、主要 CTA を単独配置にしてその下の情報密度で視覚バランスを取る。Hero 内の主要 CTA は全幅 (`w-full`) ではなく **中央寄せ + 自動幅 (`px-6`)** を基本とし、ゴールドソリッドの面積が視覚的に重くなりすぎないようにする。本文中 (pearl 地) の主要 CTA は従来どおり全幅も可。
 
 ---
 

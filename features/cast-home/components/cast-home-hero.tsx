@@ -326,11 +326,11 @@ export function CastHomeHero({
         </div>
       )}
 
-      {/* Single full-width primary CTA */}
-      <div className="relative mt-6">
+      {/* Primary CTA — centered, intrinsic width (not full-bleed) */}
+      <div className="relative mt-6 flex justify-center">
         <Link
           href="/cast/schedule"
-          className="v5-cta-primary w-full h-12 rounded-pill inline-flex items-center justify-center gap-2 font-sans font-semibold transition active:scale-[0.99]"
+          className="v5-cta-primary h-11 px-6 rounded-pill inline-flex items-center justify-center gap-2 font-sans font-semibold transition active:scale-[0.99]"
           style={{ letterSpacing: "0.08em", fontSize: 13 }}
         >
           {loaded && !hasEvents
