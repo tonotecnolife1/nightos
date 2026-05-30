@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NIGHTOS — /cast/stats</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<style>
+  html, body { background: #1a1311; min-height: 100vh; }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px 0; gap: 56px;
+    background:
+      radial-gradient(ellipse 50% 40% at 50% 30%, rgba(94,56,56,0.30) 0%, transparent 60%),
+      #15100e;
+  }
+  .meta { color: #e8d7c4; max-width: 250px; font: 400 13px/1.7 var(--font-sans); }
+  .meta .eyebrow {
+    font: 500 10px/1 var(--font-sans); letter-spacing: 0.28em;
+    color: var(--rose-gold); display: block; margin-bottom: 12px;
+  }
+  .meta h2 {
+    font: 500 26px/1.2 var(--font-serif); margin: 0 0 12px;
+    color: #fdfcf9; letter-spacing: 0.02em;
+  }
+  .meta hr { border: none; height: 1px; background: linear-gradient(90deg, var(--gold), transparent); margin: 20px 0; }
+  .meta ul { margin: 6px 0; padding-left: 18px; }
+  .meta strong { color: #fdfcf9; font-weight: 500; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <aside class="meta">
+    <span class="eyebrow">NIGHTOS · MOCK</span>
+    <h2>/cast/stats</h2>
+    <p>月次/年次 成績ダッシュボード。SubHeader → Goal ×2 → 月次 KPI ×3 → 担当継続 ×2 → AI 利用 → 折れ線トレンド → 年間 2×2 → ママからの応援 → TabBar。Luxury Lady Night (v3) 準拠。</p>
+    <hr/>
+    <strong>セクション</strong>
+    <ul>
+      <li>SubHeader (戻る + あなたの成績 + 2026/05 chip)</li>
+      <li>Goal card ×2 (売上 / 同伴, progress bar + 残量)</li>
+      <li>月次 KPI: 再来店 / 達成率 / 新規</li>
+      <li>担当継続: 担当顧客 / 連続連絡 (amber 炎 icon)</li>
+      <li>AI 利用 234/1000 + champagne→gold バー</li>
+      <li>Trend chart (30 日 SVG, champ fill + rose-gold-metallic 線)</li>
+      <li>年間 2×2: 売上 / 再来店 / 新規 / 同伴</li>
+      <li>Encouragement (champagne band, trophy avatar + ママから)</li>
+    </ul>
+    <hr/>
+    <strong>ヒント</strong>
+    <ul style="font-size:12px;">
+      <li>進捗バー: 内側 inset highlight (1px pearl)</li>
+      <li>chart: x軸 5日刻み, y軸 50/60/70/80</li>
+    </ul>
+  </aside>
+
+  <div id="root"></div>
+
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="cast-stats.jsx"></script>
+  <script type="text/babel" data-presets="react">
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      <IOSDevice width={392} height={844}>
+        <StatsScreen />
+      </IOSDevice>
+    );
+  </script>
+</body>
+</html>

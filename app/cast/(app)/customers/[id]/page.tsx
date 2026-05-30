@@ -59,13 +59,13 @@ export default async function CustomerCardPage({
         <div className="flex items-center gap-2 flex-wrap">
           <FunnelBadge stage={customer.funnel_stage ?? "store_only"} />
           {referrer && (
-            <span className="text-[10px] text-ink-muted">
+            <span className="text-[10px] text-ink-mute">
               ご本人: {referrer.name}さま
             </span>
           )}
           <a
             href={`/store/customers/new?referrer=${customer.id}`}
-            className="ml-auto text-[10px] text-amethyst-dark underline underline-offset-2"
+            className="ml-auto text-[10px] text-wine-deep underline underline-offset-2"
           >
             + この方のお連れ様として登録
           </a>
@@ -78,7 +78,7 @@ export default async function CustomerCardPage({
 
         {/* Manager / change button (club only) */}
         {!isCabaret && (
-          <div className="flex items-center gap-2 flex-wrap text-[11px] text-ink-secondary">
+          <div className="flex items-center gap-2 flex-wrap text-[11px] text-ink-soft">
             <span>
               管理:{" "}
               <span className="text-ink font-medium">
@@ -104,7 +104,7 @@ export default async function CustomerCardPage({
         )}
 
         {/* ── §1 顧客情報 ─────────────────────────────── */}
-        <div className="border-t border-ink/[0.06] pt-4">
+        <div className="border-t border-line pt-4">
           <CustomerInfoSection customer={customer} />
         </div>
 

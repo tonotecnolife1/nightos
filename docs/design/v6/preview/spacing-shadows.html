@@ -1,0 +1,87 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css">
+<style>
+  .card { width: 740px; padding: 26px 28px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 18px; }
+  .tile { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .tile .swatch { width: 100%; height: 76px; background: var(--pearl-light); border-radius: 16px; }
+  .tile .name { font: 500 12px/1.2 var(--font-sans); color: var(--ink); }
+  .tile .blurs { font: 400 10px/1.2 var(--font-display); color: var(--ink-soft); letter-spacing: 0.06em; }
+  .sw-soft  { box-shadow: var(--shadow-soft); }
+  .sw-float { box-shadow: var(--shadow-float); }
+  .sw-warm  { box-shadow: var(--shadow-warm); }
+  .sw-luxe  { box-shadow: var(--shadow-luxe); }
+
+  .map { width: 100%; border-collapse: collapse; font: 400 12px/1.6 var(--font-sans); color: var(--ink-soft); margin-top: 6px; }
+  .map th, .map td { text-align: left; padding: 8px 10px; border-bottom: 1px dashed var(--line); }
+  .map th { font-weight: 500; color: var(--ink); font-size: 11px; letter-spacing: 0.04em; }
+  .map td b { color: var(--ink); font-weight: 500; }
+  .map code { font:400 11px var(--font-mono); color: var(--gold-deep); background: var(--pearl-soft); padding:1px 5px; border-radius:4px; }
+
+  .specs { padding: 14px 16px; border-radius: 12px; background: var(--pearl-soft); border: 1px solid var(--line); margin-top: 14px; }
+  .specs h4 { font:500 11px/1 var(--font-sans); letter-spacing:0.18em; color:var(--rose-gold-deep); margin: 0 0 8px; }
+  .specs p  { font:400 12px/1.6 var(--font-sans); color: var(--ink-soft); margin: 0; }
+  .specs p b { color: var(--ink); }
+
+  .ng { padding: 12px 14px; border-radius: 12px; background: rgba(154,93,93,0.06); border: 1px dashed rgba(154,93,93,0.4); margin-top: 10px; }
+  .ng h4 { font:500 11px/1 var(--font-sans); letter-spacing:0.18em; color:var(--wine); margin: 0 0 8px; }
+  .ng ul { margin: 0; padding-left: 16px; font:400 11px/1.6 var(--font-sans); color: var(--wine-deep); }
+  .ng b { color: var(--wine); }
+</style>
+</head><body>
+<div class="card">
+
+  <!-- 4-tier swatches -->
+  <div class="grid">
+    <div class="tile">
+      <div class="swatch sw-soft"></div>
+      <div class="name">soft</div>
+      <div class="blurs">2 + 6/14</div>
+    </div>
+    <div class="tile">
+      <div class="swatch sw-float"></div>
+      <div class="name">float</div>
+      <div class="blurs">4 + 16</div>
+    </div>
+    <div class="tile">
+      <div class="swatch sw-warm"></div>
+      <div class="name">warm</div>
+      <div class="blurs">8 + 24/48</div>
+    </div>
+    <div class="tile">
+      <div class="swatch sw-luxe" style="border-radius:999px; height:76px; width:76px; margin: 0 auto;"></div>
+      <div class="name">luxe</div>
+      <div class="blurs">6 + 24/48 · FAB</div>
+    </div>
+  </div>
+
+  <!-- Mapping table -->
+  <div class="specs">
+    <h4>用途マッピング</h4>
+    <table class="map">
+      <tr><th>Shadow</th><th>Blur 構成</th><th>用途</th></tr>
+      <tr><td><b>shadow-soft</b></td><td><code>0 2px 4px / 0 6px 14px</code></td><td>リスト行・通常カード・インラインボタン・KPI 細カード</td></tr>
+      <tr><td><b>shadow-float</b></td><td><code>0 4px 12px / 0 16px 32px</code></td><td>主要 active card · hover 強調</td></tr>
+      <tr><td><b>shadow-warm</b></td><td><code>0 8px 24px / 0 24px 48px</code></td><td>Hero CTA · Bottom Sheet CTA · BottomSheet 本体 · 重要モーダル</td></tr>
+      <tr><td><b>shadow-luxe</b></td><td><code>0 6px 16px / 0 24px 48px</code></td><td><b>FAB のみ</b>（円形に深い影で「机に置かれた金属球」）</td></tr>
+    </table>
+  </div>
+
+  <!-- Concept note -->
+  <div class="specs">
+    <h4>哲学</h4>
+    <p>机から少し浮いた質感を <b>2 段重ねの drop shadow</b> で表現。色は <code>rgba(168,117,96)</code> / <code>rgba(201,141,128)</code> / <code>rgba(184,148,85)</code> / <code>rgba(61,46,42)</code> の warm 系のみ。</p>
+    <p style="margin-top:6px;"><b>注:</b> Glass stage は <code>backdrop-filter: blur(16px)</code> で表現する <b>別レイヤー</b>。shadow とは混同しない — Glass = 透明度＋ぼかし、Shadow = 浮き感。</p>
+  </div>
+
+  <!-- NG list -->
+  <div class="ng">
+    <h4>禁止 (Matte 哲学準拠)</h4>
+    <ul>
+      <li><b>✕ shadow-glow-*</b> — ハロー浮きすぎ</li>
+      <li><b>✕ shadow-elevated-light</b> — 浮きすぎ</li>
+      <li><b>✕ inset highlight</b> — Matte 哲学に反する (旧 luxe の <code>inset 0 1px 0 rgba(255,255,255,.6)</code> は削除済み)</li>
+      <li><b>✕ 釉薬グラデ</b> — Matte 哲学に反する (bg は solid のみ、影で階層を出す)</li>
+    </ul>
+  </div>
+
+</div></body></html>

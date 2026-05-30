@@ -41,7 +41,7 @@ export function Stepper({
           <span className="font-display text-[2rem] leading-none text-ink">
             {value}
           </span>
-          {unit && <span className="ml-1 text-body-sm text-ink-secondary">{unit}</span>}
+          {unit && <span className="ml-1 text-body-sm text-ink-soft">{unit}</span>}
         </div>
         <button
           type="button"

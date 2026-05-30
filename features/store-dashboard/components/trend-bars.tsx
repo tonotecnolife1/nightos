@@ -36,11 +36,11 @@ export function NominationTrendBars({ points }: Props) {
                 style={{ height: `${heightPct}%` }}
               >
                 <div
-                  className="w-full bg-gradient-rose-gold"
+                  className="w-full bg-rose-gold-metallic"
                   style={{ height: `${cast1Pct}%` }}
                 />
                 <div
-                  className="w-full bg-gradient-amethyst"
+                  className="w-full bg-gold-metallic"
                   style={{ height: `${100 - cast1Pct}%` }}
                 />
               </div>
@@ -53,7 +53,7 @@ export function NominationTrendBars({ points }: Props) {
         {points.map((p, i) => (
           <div
             key={p.date}
-            className="flex-1 text-center text-[9px] text-ink-muted"
+            className="flex-1 text-center text-[9px] text-ink-mute"
           >
             {i % 3 === 0 ? p.date.slice(-5) : ""}
           </div>
@@ -61,12 +61,12 @@ export function NominationTrendBars({ points }: Props) {
       </div>
       {/* Legend */}
       <div className="flex items-center gap-4 mt-3 text-label-sm">
-        <div className="flex items-center gap-1.5 text-ink-secondary">
-          <span className="w-2.5 h-2.5 rounded-sm bg-gradient-rose-gold" />
+        <div className="flex items-center gap-1.5 text-ink-soft">
+          <span className="w-2.5 h-2.5 rounded-sm bg-rose-gold-metallic" />
           あかり
         </div>
-        <div className="flex items-center gap-1.5 text-ink-secondary">
-          <span className="w-2.5 h-2.5 rounded-sm bg-gradient-amethyst" />
+        <div className="flex items-center gap-1.5 text-ink-soft">
+          <span className="w-2.5 h-2.5 rounded-sm bg-gold-metallic" />
           ゆき
         </div>
       </div>

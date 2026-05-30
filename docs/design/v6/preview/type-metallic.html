@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"></head><body>
+<div class="card">
+
+  <!-- ① Dark bg · 日本語 serif → solid + 微ハロー -->
+  <div style="border-radius:22px; padding:24px 24px 22px; background:radial-gradient(ellipse at top, #5a4540 0%, #3d2e2a 60%, #2d211e 100%); box-shadow:var(--shadow-luxe);">
+    <div style="font:500 11px/1 var(--font-sans); letter-spacing:0.22em; color:#f8e0cc; margin-bottom:10px;">TONIGHT · solid rose-gold-soft</div>
+    <div style="font:500 30px/1.25 var(--font-serif); letter-spacing:0.02em; color:#fce4d4; text-shadow:0 0 24px rgba(252,228,212,0.18);">おかえりなさい、ゆりさん</div>
+    <div style="font:400 12px/1.5 var(--font-sans); color:rgba(252,240,224,0.75); margin-top:8px;">
+      solid <b>#fce4d4</b> · weight <b>500</b> · letter-spacing <b>0.02em</b> · text-shadow <b>0 0 24px rgba(252,228,212,.18)</b>（キャンドル光）
+    </div>
+  </div>
+
+  <!-- ② Dark bg · 英字 serif → metallic clip-text OK -->
+  <div style="margin-top:12px; border-radius:22px; padding:24px 24px 22px; background:radial-gradient(ellipse at top, #5a4540 0%, #3d2e2a 60%, #2d211e 100%); box-shadow:var(--shadow-luxe);">
+    <div class="t-metallic--light" style="font:500 30px/1.2 var(--font-serif); letter-spacing:0.02em;">Luxury Lady Night</div>
+    <div style="font:400 12px/1.5 var(--font-sans); color:rgba(252,240,224,0.75); margin-top:8px;">
+      英字 serif は metallic-light の clip-text を許可。明色レンジ #ffeede → #f3d8c8 で全域明るい。
+    </div>
+  </div>
+
+  <!-- ③ Light bg · 標準 metallic は現状維持 -->
+  <div style="margin-top:12px; padding:18px 22px; border-radius:18px; background:var(--pearl-light); border:1px solid var(--line);">
+    <div class="t-metallic" style="font:500 30px/1.2 var(--font-serif); letter-spacing:0.02em;">Luxury Lady Night</div>
+    <div style="font:400 12px/1.5 var(--font-sans); color:var(--ink-soft); margin-top:6px;">
+      明背景 + 英字 → 標準 metallic (deep stop あり)。weight 500 / 0.02em のまま。
+    </div>
+  </div>
+
+  <!-- ④ NG example — JP serif × clip-text -->
+  <div style="margin-top:12px; border-radius:18px; padding:16px 18px; background:radial-gradient(ellipse at top, #5a4540 0%, #3d2e2a 60%, #2d211e 100%); border:1px dashed rgba(154,93,93,0.6);">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <span style="font:500 10px/1 var(--font-sans); letter-spacing:0.18em; padding:3px 9px; border-radius:999px; background:rgba(154,93,93,0.20); color:#f3d8c8;">NG</span>
+      <span style="font:400 11px/1.4 var(--font-sans); color:rgba(252,240,224,0.7);">日本語 serif × clip-text gradient は原則禁止</span>
+    </div>
+    <div class="t-metallic--light" style="font:500 26px/1.2 var(--font-serif); letter-spacing:0.02em;">おかえりなさい、ゆりさん</div>
+    <div style="font:400 11px/1.5 var(--font-sans); color:rgba(252,240,224,0.6); margin-top:6px;">↑ 線が痩せて読めない。太らせると明朝の品が消える。</div>
+  </div>
+
+  <!-- ⑤ Rule strip -->
+  <div style="margin-top:14px; padding:14px; border-radius:14px; background:var(--pearl-soft); border:1px solid var(--line);">
+    <div style="font:500 11px/1 var(--font-sans); letter-spacing:0.18em; color:var(--rose-gold-deep); margin-bottom:8px;">運用ルール</div>
+    <ul style="margin:0; padding-left:18px; font:400 12px/1.7 var(--font-sans); color:var(--ink-soft);">
+      <li>暗背景の<b>日本語見出し</b>: solid <code style="font:400 11px var(--font-mono); background:var(--pearl-deep); padding:1px 5px; border-radius:4px;">#fce4d4</code> · weight 500 · ls 0.02em · text-shadow 微量</li>
+      <li>暗背景の<b>英字見出し</b>: metallic-light の clip-text OK</li>
+      <li><b>日本語 serif × clip-text gradient は原則 NG</b>（線が痩せる／太らせると品が消える）</li>
+      <li>明背景の英字 → 標準 metallic OK。明背景の日本語 → solid ink で十分</li>
+    </ul>
+  </div>
+
+</div></body></html>

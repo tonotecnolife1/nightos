@@ -13,7 +13,7 @@ interface Props {
 
 export function CategoryTabs({ value, onChange }: Props) {
   return (
-    <div className="grid grid-cols-4 gap-1.5 p-1 rounded-full bg-pearl-soft border border-pearl-warm">
+    <div className="grid grid-cols-4 gap-1.5 p-1 rounded-pill bg-pearl-soft border border-line-strong">
       {TEMPLATE_CATEGORIES.map((cat) => {
         const active = cat.value === value;
         return (
@@ -22,10 +22,10 @@ export function CategoryTabs({ value, onChange }: Props) {
             type="button"
             onClick={() => onChange(cat.value)}
             className={cn(
-              "h-9 rounded-full text-label-sm font-medium transition-all active:scale-95",
+              "h-9 rounded-pill text-label-sm font-medium tracking-[0.04em] transition-all active:scale-95",
               active
-                ? "rose-gradient text-pearl shadow-soft-card"
-                : "text-ink-secondary hover:text-ink",
+                ? "bg-wine-deep text-pearl-light-light shadow-luxe"
+                : "text-ink-soft hover:text-ink",
             )}
           >
             {cat.label}

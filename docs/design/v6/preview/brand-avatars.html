@@ -1,0 +1,63 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"></head><body>
+<div class="card">
+
+  <!-- Canonical avatar (photo) -->
+  <div style="display:flex; gap:20px; align-items:center;">
+    <div style="width:120px; height:120px; border-radius:999px; overflow:hidden; border:2px solid var(--gold-soft); box-shadow:var(--shadow-luxe); background:var(--pearl-soft); flex-shrink:0;">
+      <img src="../assets/ruri-mama-photo.jpg" alt="さくらママ" style="width:100%; height:100%; object-fit:cover;">
+    </div>
+    <div>
+      <div style="font:400 11px/1 var(--font-display); letter-spacing:0.22em; color:var(--rose-gold-deep);">CANONICAL · 1 種固定</div>
+      <div style="font:500 24px/1.2 var(--font-serif); letter-spacing:0.02em; color:var(--ink); margin-top:8px;">さくらママ</div>
+      <div style="font:400 12px/1.5 var(--font-sans); color:var(--ink-soft); margin-top:6px;">
+        銀座で 30 年。白い着物 · 油絵調 · 暖色トーン。<br/>
+        全画面 (Cast Home · 相談 chat · Briefing card 等) で <b>共通</b>。
+      </div>
+      <div style="font:400 11px/1 var(--font-mono); color:var(--gold-deep); background:var(--pearl-light); padding:4px 10px; border-radius:6px; margin-top:10px; display:inline-block;">/assets/ruri-mama-photo.jpg</div>
+    </div>
+  </div>
+
+  <!-- Admin-only rule -->
+  <div style="margin-top:18px; padding:14px 16px; border-radius:12px; background:var(--pearl-soft); border:1px solid var(--line);">
+    <div style="font:500 11px/1 var(--font-sans); letter-spacing:0.18em; color:var(--rose-gold-deep); margin-bottom:8px;">運用ルール</div>
+    <ul style="margin:0; padding-left:18px; font:400 12px/1.7 var(--font-sans); color:var(--ink-soft);">
+      <li>アバターは <b>アプリ管理側 (admin) でのみ差し替え可</b>。キャスト側 UI に切替メニューは出さない。</li>
+      <li>旧 <code style="font:400 11px var(--font-mono); color:var(--gold-deep); background:var(--pearl-light); padding:1px 5px; border-radius:4px;">/cast/avatars</code> の選択画面は <b>撤去</b>。</li>
+      <li>変更時は admin が photo / illustration A〜D のいずれかを 1 種選んで全 cast に配信。</li>
+      <li>localStorage への variant 保存ロジック (旧 <code style="font:400 11px var(--font-mono); color:var(--gold-deep); background:var(--pearl-light); padding:1px 5px; border-radius:4px;">nightos.avatar-variant</code>) は不要。</li>
+    </ul>
+  </div>
+
+  <!-- Admin-side alternates (for reference only) -->
+  <div style="margin-top:14px; padding:14px 16px; border-radius:12px; background:var(--pearl-light); border:1px solid var(--line);">
+    <div style="font:500 11px/1 var(--font-sans); letter-spacing:0.18em; color:var(--ink-mute); margin-bottom:10px;">ADMIN 切替候補 (cast には非公開)</div>
+    <div style="display:flex; gap:14px; align-items:flex-end;">
+      <div style="text-align:center; opacity:0.85;">
+        <div style="width:54px; height:54px; border-radius:999px; overflow:hidden; border:1px solid var(--line); background:var(--pearl-soft);">
+          <img src="../assets/ruri-mama.svg" style="width:100%; height:100%; object-fit:cover;" alt="">
+        </div>
+        <div style="font:400 10px/1.3 var(--font-sans); color:var(--ink-mute); margin-top:6px;">illust-a<br/>親しみ系</div>
+      </div>
+      <div style="text-align:center; opacity:0.85;">
+        <div style="width:54px; height:54px; border-radius:999px; overflow:hidden; border:1px solid var(--line); background:var(--pearl-soft);">
+          <img src="../assets/ruri-mama-b.svg" style="width:100%; height:100%; object-fit:cover;" alt="">
+        </div>
+        <div style="font:400 10px/1.3 var(--font-sans); color:var(--ink-mute); margin-top:6px;">illust-b<br/>大人系</div>
+      </div>
+      <div style="text-align:center; opacity:0.85;">
+        <div style="width:54px; height:54px; border-radius:999px; overflow:hidden; border:1px solid var(--line); background:var(--pearl-soft);">
+          <img src="../assets/ruri-mama-c.svg" style="width:100%; height:100%; object-fit:cover;" alt="">
+        </div>
+        <div style="font:400 10px/1.3 var(--font-sans); color:var(--ink-mute); margin-top:6px;">silhouette<br/>横顔・無顔</div>
+      </div>
+      <div style="text-align:center; opacity:0.85;">
+        <div style="width:54px; height:54px; border-radius:999px; overflow:hidden; border:1px solid var(--line); background:var(--pearl-soft);">
+          <img src="../assets/ruri-mama-d.svg" style="width:100%; height:100%; object-fit:cover;" alt="">
+        </div>
+        <div style="font:400 10px/1.3 var(--font-sans); color:var(--ink-mute); margin-top:6px;">camellia<br/>椿モノグラム</div>
+      </div>
+      <div style="font:400 11px/1.5 var(--font-sans); color:var(--ink-soft); margin-left:8px;">↑ 4 種のアセットは admin 側で保管<br/>キャスト UI からは見えない</div>
+    </div>
+  </div>
+
+</div></body></html>

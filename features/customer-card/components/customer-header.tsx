@@ -20,7 +20,8 @@ export function CustomerHeader({ customer }: { customer: Customer }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline gap-3 flex-wrap">
-        <h1 className="text-display-lg font-display font-semibold text-ink">
+        <h1 className="font-serif text-[2rem] leading-[1.15] font-medium tracking-[0.02em] text-ink">
+
           {formatCustomerName(customer.name)}
         </h1>
         <Badge tone={categoryTone[customer.category]}>
@@ -28,29 +29,30 @@ export function CustomerHeader({ customer }: { customer: Customer }) {
         </Badge>
       </div>
       {customer.nickname && (
-        <p className="text-body-sm text-ink-secondary">
+        <p className="text-body-sm text-ink-soft">
           呼び名:{" "}
-          <span className="text-blush-deep font-medium">
+          <span className="text-wine-deep font-medium">
             {customer.nickname}
           </span>
         </p>
       )}
-      <div className="flex items-center gap-x-3 gap-y-1 flex-wrap text-body-sm text-ink-secondary">
+      <div className="flex items-center gap-x-3 gap-y-1 flex-wrap text-body-sm text-ink-soft">
+
         {customer.job && <span>{customer.job}</span>}
         {customer.birthday && (
           <>
-            <span className="text-ink-muted">•</span>
+            <span className="text-ink-mute">•</span>
             <span>誕生日 {formatBirthday(customer.birthday)}</span>
           </>
         )}
         {customer.region && (
           <>
-            <span className="text-ink-muted">•</span>
+            <span className="text-ink-mute">•</span>
             <span className="inline-flex items-center gap-1">
-              <MapPin size={11} className="text-amethyst-dark" />
+              <MapPin size={11} className="text-gold-deep" />
               {customer.region}
               {findRegion(customer.region) && (
-                <span className="text-ink-muted text-[10px]">
+                <span className="text-ink-mute text-[10px]">
                   （{findRegion(customer.region)?.label}）
                 </span>
               )}

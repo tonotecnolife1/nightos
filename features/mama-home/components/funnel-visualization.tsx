@@ -30,13 +30,14 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
 
   return (
     <section className="space-y-2.5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-display-sm text-ink flex items-center gap-1.5">
-          <TrendingUp size={16} className="text-amethyst-dark" />
+      <header className="relative flex items-center justify-between pl-3.5">
+        <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+        <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5">
+          <TrendingUp size={16} className="text-gold-deep" />
           顧客ファネル
         </h2>
-        <span className="text-[10px] text-ink-muted">全{stats.total}人</span>
-      </div>
+        <span className="text-label-xs tracking-luxe text-ink-mute uppercase">全{stats.total}人</span>
+      </header>
 
       <Card className="p-3 space-y-3">
         {/* Stacked bar */}
@@ -65,7 +66,7 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
             )}
           </div>
           {/* Legend with counts */}
-          <div className="flex items-center justify-between text-[10px] text-ink-secondary">
+          <div className="flex items-center justify-between text-[10px] text-ink-soft">
             <div className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-pearl-soft border border-ink-muted" />
               店舗のみ {stats.storeOnly}
@@ -84,17 +85,17 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
         {/* Conversion rates */}
         <div className="grid grid-cols-2 gap-2 pt-2 border-t border-pearl-soft">
           <div>
-            <div className="text-[10px] text-ink-muted">担当化率</div>
+            <div className="text-[10px] text-ink-mute">担当化率</div>
             <div className="text-body-md font-display text-champagne-dark">
               {Math.round(stats.assignedRate * 100)}
-              <span className="text-[10px] text-ink-muted ml-0.5">%</span>
+              <span className="text-[10px] text-ink-mute ml-0.5">%</span>
             </div>
           </div>
           <div>
-            <div className="text-[10px] text-ink-muted">LINE交換率</div>
-            <div className="text-body-md font-display text-emerald">
+            <div className="text-[10px] text-ink-mute">LINE交換率</div>
+            <div className="text-body-md font-display text-success">
               {Math.round(stats.lineExchangedRate * 100)}
-              <span className="text-[10px] text-ink-muted ml-0.5">%</span>
+              <span className="text-[10px] text-ink-mute ml-0.5">%</span>
             </div>
           </div>
         </div>
@@ -102,7 +103,7 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
         {/* Top 3 casts by line rate */}
         {topCasts.length > 0 && (
           <div className="space-y-1.5 pt-2 border-t border-pearl-soft">
-            <div className="text-[10px] text-ink-muted font-medium uppercase tracking-wider">
+            <div className="text-[10px] text-ink-mute font-medium uppercase tracking-wider">
               LINE交換率 TOP{topCasts.length}
             </div>
             {topCasts.map((item, idx) => (
@@ -114,7 +115,7 @@ export function FunnelVisualization({ customers, teamCasts }: Props) {
         {/* Footer link */}
         <Link
           href="/mama/customers"
-          className="flex items-center justify-between pt-2 border-t border-pearl-soft text-[11px] text-amethyst-dark"
+          className="flex items-center justify-between pt-2 border-t border-line text-[11px] text-wine-deep"
         >
           <span>顧客リストで見る</span>
           <ChevronRight size={12} />
@@ -143,10 +144,10 @@ function CastFunnelRow({
         className={cn(
           "w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center shrink-0",
           rank === 1
-            ? "bg-roseGold text-pearl"
+            ? "bg-wine-deep text-pearl-light-light"
             : rank === 2
               ? "bg-champagne-dark text-ink"
-              : "bg-pearl-soft text-ink-secondary",
+              : "bg-pearl-soft text-ink-soft",
         )}
       >
         {rank}
@@ -165,7 +166,7 @@ function CastFunnelRow({
         />
         <div className="h-full bg-emerald" style={{ width: `${lineExPct}%` }} />
       </div>
-      <span className="text-[10px] text-emerald font-medium shrink-0 w-9 text-right">
+      <span className="text-[10px] text-success font-medium shrink-0 w-9 text-right">
         {linePct}%
       </span>
     </div>

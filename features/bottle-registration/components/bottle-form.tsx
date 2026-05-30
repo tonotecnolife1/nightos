@@ -79,22 +79,22 @@ export function BottleForm({ customers, initialCustomerId }: Props) {
         unit="%"
         onChange={setRemainingPct}
       />
-      <p className="text-[10px] text-ink-muted -mt-3">
+      <p className="text-[10px] text-ink-mute -mt-3">
         新ボトル = 100% / 半分 = 50% / 残りわずか = 10〜20%
       </p>
 
-      <div className="text-label-sm text-ink-muted">
+      <div className="text-label-sm text-ink-mute">
         キープ日: 今日（{new Date().toLocaleDateString("ja-JP")}）
       </div>
 
       {error && (
-        <div className="rounded-btn bg-rose/10 border border-rose/30 text-rose text-body-sm px-3 py-2">
+        <div className="rounded-card bg-wine/10 border border-wine/30 text-wine-deep text-body-sm px-3 py-2">
           {error}
         </div>
       )}
       {success && (
-        <div className="flex items-center gap-2 rounded-btn bg-champagne border border-champagne-dark text-ink text-body-sm px-3 py-2">
-          <Check size={16} className="text-roseGold-dark" />
+        <div className="flex items-center gap-2 rounded-card bg-champagne-soft border border-gold/30 text-ink text-body-sm px-3 py-2">
+          <Check size={16} className="text-gold-deep" />
           {success}
         </div>
       )}

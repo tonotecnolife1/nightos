@@ -43,7 +43,7 @@ export function MemoSection({ customer, memo }: Props) {
 
   return (
     <MemoCard title="個人メモ">
-      <p className="text-[10px] text-blush-deep mb-2">
+      <p className="text-[10px] text-wine-deep mb-2">
         入力推奨 — このキャストだけの非公開メモです
       </p>
       <div className="space-y-3">
@@ -76,7 +76,7 @@ export function MemoSection({ customer, memo }: Props) {
                 type="button"
                 onClick={cancel}
                 disabled={pending}
-                className="flex items-center gap-1 h-9 px-3 rounded-btn text-label-sm text-ink-secondary bg-pearl-soft hover:bg-pearl-warm"
+                className="flex items-center gap-1 h-9 px-3 rounded-btn text-label-sm text-ink-soft bg-pearl-soft hover:bg-pearl-warm"
               >
                 <X size={14} />
                 キャンセル
@@ -85,7 +85,7 @@ export function MemoSection({ customer, memo }: Props) {
                 type="button"
                 onClick={save}
                 disabled={pending}
-                className="flex items-center gap-1 h-9 px-4 rounded-btn text-label-sm text-pearl rose-gradient shadow-soft-card disabled:opacity-60"
+                className="flex items-center gap-1 h-9 px-4 rounded-btn text-label-sm text-pearl-light bg-wine-deep shadow-soft disabled:opacity-60"
               >
                 <Check size={14} />
                 {pending ? "保存中…" : "保存"}
@@ -94,14 +94,14 @@ export function MemoSection({ customer, memo }: Props) {
           ) : (
             <>
               {savedAt && (
-                <span className="text-label-sm text-amethyst-dark">
+                <span className="text-label-sm text-gold-deep">
                   保存しました
                 </span>
               )}
               <button
                 type="button"
                 onClick={() => setEditing(true)}
-                className="flex items-center gap-1 h-9 px-3 rounded-btn text-label-sm text-blush-dark bg-blush-light hover:bg-blush"
+                className="flex items-center gap-1 h-9 px-3 rounded-btn text-label-sm text-wine-deep bg-champagne-soft/60 hover:bg-wine-deep"
               >
                 <Pencil size={14} />
                 編集する
@@ -129,7 +129,7 @@ function MemoField({
 }) {
   return (
     <div>
-      <div className="text-label-sm text-blush-dark mb-1">{label}</div>
+      <div className="text-label-sm text-wine-deep mb-1">{label}</div>
       {editing ? (
         <textarea
           value={value}
@@ -137,11 +137,11 @@ function MemoField({
           placeholder={placeholder}
           rows={3}
           style={{ fontSize: "16px" }}
-          className="w-full max-h-40 rounded-btn border border-blush-light bg-pearl-warm px-3 py-2 text-ink outline-none focus:border-blush resize-none leading-relaxed"
+          className="w-full max-h-40 rounded-btn border border-gold/40 bg-pearl-warm px-3 py-2 text-ink outline-none focus:border-wine-deep resize-none leading-relaxed"
         />
       ) : (
         <div className="text-body-md text-ink leading-relaxed min-h-[1.5rem] max-h-32 overflow-y-auto whitespace-pre-wrap break-words">
-          {value || <span className="text-ink-muted">未記入</span>}
+          {value || <span className="text-ink-mute">未記入</span>}
         </div>
       )}
     </div>

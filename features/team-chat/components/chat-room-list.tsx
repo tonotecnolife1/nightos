@@ -55,20 +55,20 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
     <div>
       {/* Search bar */}
       <div className="px-5 pt-3">
-        <label className="flex items-center gap-2 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 py-2">
-          <Search size={14} className="text-ink-muted shrink-0" />
+        <label className="flex items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 shadow-soft focus-within:border-wine-deep transition">
+          <Search size={14} className="text-ink-mute shrink-0" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="トーク・相手を検索..."
-            className="flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-muted focus:outline-none"
+            className="flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
             style={{ fontSize: "16px" }}
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="text-ink-muted shrink-0"
+              className="text-ink-mute shrink-0"
               aria-label="検索をクリア"
             >
               <X size={14} />
@@ -78,19 +78,19 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
       </div>
 
       {/* Filter tabs */}
-      <div className="flex gap-1 px-5 py-3 border-b border-ink/[0.06]">
+      <div className="flex gap-1 px-5 py-3 border-b border-ink/[0.08]">
         {(["all", "channels", "dm", "coaching"] as FilterTab[]).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
             className={cn(
-              "px-3 py-1.5 rounded-full text-label-sm font-medium transition-colors whitespace-nowrap",
+              "px-3 py-1.5 rounded-pill text-label-sm font-medium transition-colors whitespace-nowrap tracking-[0.04em]",
               tab === t
                 ? t === "coaching"
-                  ? "bg-emerald/10 text-emerald"
-                  : "bg-amethyst-muted text-amethyst-dark"
-                : "text-ink-muted hover:text-ink-secondary",
+                  ? "bg-success/15 text-success border border-success/25"
+                  : "bg-champagne-soft/60 text-wine-deep border border-gold/30"
+                : "text-ink-mute hover:text-ink-soft border border-transparent",
             )}
           >
             {t === "all"
@@ -164,13 +164,18 @@ function RoomRow({
       {/* Avatar / icon */}
       <div
         className={cn(
-          "w-12 h-12 rounded-full flex items-center justify-center shrink-0",
+          "w-12 h-12 rounded-full flex items-center justify-center shrink-0 border",
           room.type === "channel"
-            ? "bg-amethyst-muted text-amethyst-dark"
+            ? "border-gold/30 text-wine-deep"
             : room.type === "coaching"
-            ? "bg-emerald/10 text-emerald"
-            : "bg-pearl-soft text-ink-secondary",
+            ? "bg-success/15 border-success/25 text-success"
+            : "border-gold/35 text-ink",
         )}
+        style={
+          room.type !== "coaching"
+            ? { background: "var(--champagne-metallic)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.6)" }
+            : undefined
+        }
       >
         {room.type === "channel" ? (
           <Hash size={20} />
@@ -179,7 +184,7 @@ function RoomRow({
         ) : memberCount > 2 ? (
           <Users size={20} />
         ) : (
-          <div className="text-body-lg font-medium text-ink">
+          <div className="font-serif text-[18px] leading-none font-medium tracking-[0.02em] text-ink">
             {displayName.charAt(0)}
           </div>
         )}
@@ -189,18 +194,18 @@ function RoomRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline justify-between">
           <div className="flex items-center gap-1.5">
-            <span className="text-body-md font-medium text-ink truncate">
+            <span className="font-serif text-[15px] leading-[1.2] font-medium tracking-[0.01em] text-ink truncate">
               {displayName}
             </span>
           </div>
           {timeStr && (
-            <span className="text-label-sm text-ink-muted shrink-0 ml-2">
+            <span className="text-label-sm text-ink-mute shrink-0 ml-2 font-display tracking-[0.04em]">
               {timeStr}
             </span>
           )}
         </div>
         {lastMsg && (
-          <p className="text-body-sm text-ink-secondary truncate mt-0.5">
+          <p className="text-body-sm text-ink-soft truncate mt-0.5">
             {lastMsg.sender_name}: {lastMsg.content}
           </p>
         )}

@@ -81,12 +81,12 @@ export function CoachingRemindersCard({
     return (
       <Card className="p-3">
         <div className="flex items-center gap-1.5 mb-1">
-          <Target size={14} className="text-amethyst-dark" />
+          <Target size={14} className="text-gold-deep" />
           <span className="text-body-sm font-semibold text-ink">
             育成リマインダ
           </span>
         </div>
-        <p className="text-[11px] text-ink-muted pt-1">
+        <p className="text-[11px] text-ink-mute pt-1">
           1on1・目標ともに追いついています
         </p>
       </Card>
@@ -97,12 +97,12 @@ export function CoachingRemindersCard({
     <Card className="p-3">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
-          <Target size={14} className="text-amethyst-dark" />
+          <Target size={14} className="text-gold-deep" />
           <span className="text-body-sm font-semibold text-ink">
             育成リマインダ
           </span>
         </div>
-        <span className="text-[10px] text-ink-muted">
+        <span className="text-[10px] text-ink-mute">
           要対応 {reminders.length}件
         </span>
       </div>
@@ -115,20 +115,20 @@ export function CoachingRemindersCard({
             reasons.push({
               icon: <MessageCircle size={10} />,
               text: "1on1未実施",
-              tone: "bg-rose/15 text-rose",
+              tone: "bg-wine/15 text-wine-deep",
             });
           } else if (r.daysSinceCoaching >= staleThresholdDays) {
             reasons.push({
               icon: <MessageCircle size={10} />,
               text: `1on1 ${r.daysSinceCoaching}日空き`,
-              tone: "bg-amber/15 text-amber",
+              tone: "bg-warning/15 text-warning",
             });
           }
           if (r.goalNoteMissing) {
             reasons.push({
               icon: <Target size={10} />,
               text: "目標ノート未",
-              tone: "bg-amethyst-muted text-amethyst-dark",
+              tone: "bg-champagne-soft/60 text-gold-deep",
             });
           }
           return (
@@ -154,7 +154,7 @@ export function CoachingRemindersCard({
               </div>
               <Link
                 href={`/mama/team/${r.cast.id}`}
-                className="flex items-center gap-0.5 text-[10px] text-amethyst-dark font-medium shrink-0"
+                className="flex items-center gap-0.5 text-[10px] text-gold-deep font-medium shrink-0"
               >
                 開く
                 <ChevronRight size={12} />

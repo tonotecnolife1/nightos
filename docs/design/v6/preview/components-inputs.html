@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"></head><body>
+<div class="card">
+  <div style="display:flex; flex-direction:column; gap:10px;">
+    <!-- Text input -->
+    <div>
+      <label style="font:500 12px/1 var(--font-sans); color:var(--ink); display:block; margin-bottom:6px;">源氏名</label>
+      <input style="width:100%; height:44px; padding:0 14px; border-radius:14px; background:var(--pearl-light); color:var(--ink); border:1px solid var(--pearl-soft); font:400 16px/1.4 var(--font-sans); outline:none;" value="あかり" />
+      <div style="font:400 11px/1.5 var(--font-sans); color:var(--ink-mute); margin-top:4px;">お店で呼ばれている名前を入力</div>
+    </div>
+    <!-- Textarea -->
+    <div>
+      <label style="font:500 12px/1 var(--font-sans); color:var(--ink); display:block; margin-bottom:6px;">個人メモ</label>
+      <textarea style="width:100%; height:64px; padding:10px 14px; border-radius:14px; background:var(--pearl-light); color:var(--ink); border:1px solid var(--pearl-soft); font:400 14px/1.6 var(--font-sans); outline:none; resize:none; box-sizing:border-box;">来週、田中さんに新しい焼酎を提案する。</textarea>
+    </div>
+    <!-- Focus state -->
+    <div>
+      <label style="font:500 12px/1 var(--font-sans); color:var(--ink); display:block; margin-bottom:6px;">電話番号 <span style="color:var(--rose-gold-deep);">·focus</span></label>
+      <input style="width:100%; height:44px; padding:0 14px; border-radius:14px; background:#fff; color:var(--ink); border:1.5px solid var(--rose-gold-deep); font:400 16px/1.4 var(--font-sans); outline:none;" value="090-1234-5678" />
+    </div>
+  </div>
+  <div style="font:400 11px/1.5 var(--font-sans); color:var(--ink-soft); margin-top:12px;">
+    フォントサイズは <b>16px</b> 必須（モバイル zoom 防止）。focus は rose-gold-deep の細線。
+  </div>
+</div></body></html>

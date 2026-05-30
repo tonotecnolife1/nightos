@@ -28,20 +28,20 @@ export function ChatLimitBanner() {
   if (atLimit) {
     return (
       <div className="px-4 py-3 bg-pearl-warm border-b border-pearl-soft">
-        <Card className="p-4 !border-amber !bg-amber/5">
+        <Card className="p-4 !border-amber !bg-warning/5">
           <div className="flex items-start gap-3">
-            <Lock size={18} className="text-amber shrink-0 mt-0.5" />
+            <Lock size={18} className="text-warning shrink-0 mt-0.5" />
             <div>
               <div className="text-body-md font-semibold text-ink">
                 今日の無料チャット回数に達しました
               </div>
-              <p className="text-body-sm text-ink-secondary mt-1">
+              <p className="text-body-sm text-ink-soft mt-1">
                 1日{CHAT_FREE_LIMIT}回まで無料でご利用いただけます。
                 明日にリセットされます。
               </p>
               <button
                 type="button"
-                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-btn ruri-gradient text-pearl text-label-sm font-medium"
+                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-btn bg-wine-deep text-pearl-light text-label-sm font-medium"
               >
                 <Zap size={13} />
                 プレミアムにアップグレード
@@ -56,8 +56,8 @@ export function ChatLimitBanner() {
   if (usage.remaining <= 3) {
     return (
       <div className="px-4 py-2 flex items-center justify-center gap-2 bg-pearl-warm border-b border-pearl-soft">
-        <AlertCircle size={12} className="text-amber" />
-        <span className="text-label-sm text-ink-secondary">
+        <AlertCircle size={12} className="text-warning" />
+        <span className="text-label-sm text-ink-soft">
           本日の残りチャット: {usage.remaining} / {CHAT_FREE_LIMIT}回
         </span>
       </div>
@@ -66,8 +66,8 @@ export function ChatLimitBanner() {
 
   return (
     <div className="px-4 py-1.5 flex items-center justify-center gap-2 bg-pearl-warm border-b border-pearl-soft">
-      <Sparkles size={10} className="text-amethyst-dark" />
-      <span className="text-label-sm text-ink-muted">
+      <Sparkles size={10} className="text-gold-deep" />
+      <span className="text-label-sm text-ink-mute">
         無料チャット: {usage.remaining}回 残り
       </span>
     </div>

@@ -16,8 +16,8 @@ import type { Customer, Douhan } from "@/types/nightos";
 const DOW = ["日", "月", "火", "水", "木", "金", "土"];
 
 const STATUS_STYLE: Record<ShiftStatus, { bg: string; text: string; label: string }> = {
-  working: { bg: "bg-amethyst", text: "text-pearl", label: "出勤" },
-  off: { bg: "bg-pearl-soft border border-ink/[0.08]", text: "text-ink-muted", label: "公休" },
+  working: { bg: "bg-wine-deep", text: "text-pearl-light", label: "出勤" },
+  off: { bg: "bg-pearl-soft border border-ink/[0.08]", text: "text-ink-mute", label: "公休" },
   unknown: { bg: "", text: "", label: "" },
 };
 
@@ -113,18 +113,18 @@ export function ScheduleCalendar({ castId, customers }: Props) {
     <div className="space-y-4">
       {/* Month nav */}
       <div className="flex items-center justify-between px-1">
-        <button type="button" onClick={prevMonth} className="p-2 rounded-full hover:bg-pearl-soft text-ink-secondary">
+        <button type="button" onClick={prevMonth} className="p-2 rounded-full hover:bg-pearl-soft text-ink-soft">
           <ChevronLeft size={18} />
         </button>
         <div className="text-center">
-          <div className="font-display text-[20px] font-medium text-ink">
+          <div className="font-serif text-[22px] leading-tight font-medium tracking-[0.02em] text-ink">
             {viewYear}年{viewMonth + 1}月
           </div>
-          <div className="text-[11px] text-ink-muted">
+          <div className="text-label-xs tracking-luxe text-ink-mute uppercase mt-0.5">
             出勤 {workingCount}日
           </div>
         </div>
-        <button type="button" onClick={nextMonth} className="p-2 rounded-full hover:bg-pearl-soft text-ink-secondary">
+        <button type="button" onClick={nextMonth} className="p-2 rounded-full hover:bg-pearl-soft text-ink-soft">
           <ChevronRight size={18} />
         </button>
       </div>
@@ -136,7 +136,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
             key={d}
             className={cn(
               "text-center text-[11px] font-medium py-1",
-              i === 0 ? "text-rose-400" : i === 6 ? "text-sky-400" : "text-ink-muted",
+              i === 0 ? "text-wine-deep-400" : i === 6 ? "text-sky-400" : "text-ink-mute",
             )}
           >
             {d}
@@ -164,13 +164,13 @@ export function ScheduleCalendar({ castId, customers }: Props) {
               className={cn(
                 "relative aspect-square flex flex-col items-center justify-center rounded-xl text-[13px] font-medium transition-all active:scale-95",
                 shift?.status === "working"
-                  ? "bg-amethyst text-pearl shadow-soft"
+                  ? "bg-wine-deep text-pearl-light-light shadow-luxe"
                   : shift?.status === "off"
-                    ? "bg-pearl-soft border border-ink/[0.08] text-ink-muted"
+                    ? "bg-pearl-soft border border-ink/[0.08] text-ink-mute"
                     : "hover:bg-pearl-soft text-ink",
                 isToday && !shift && "ring-2 ring-amethyst/40 ring-offset-1",
                 isPast && !shift && "opacity-50",
-                dow === 0 && !shift && "text-rose-400",
+                dow === 0 && !shift && "text-wine-deep-400",
                 dow === 6 && !shift && "text-sky-400",
               )}
             >
@@ -189,9 +189,9 @@ export function ScheduleCalendar({ castId, customers }: Props) {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 px-1 text-[10px] text-ink-muted">
+      <div className="flex items-center gap-4 px-1 text-[10px] text-ink-mute">
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded bg-amethyst inline-block" />
+          <span className="w-3 h-3 rounded bg-wine-deep inline-block" />
           出勤
         </span>
         <span className="flex items-center gap-1">
@@ -243,8 +243,8 @@ function ShiftEditSheet({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-sm animate-fade-in">
       <div className="w-full max-w-[520px] bg-pearl rounded-t-3xl p-5 pb-safe space-y-4 shadow-warm animate-slide-up">
         <div className="flex items-center justify-between">
-          <h3 className="font-display text-[18px] font-medium text-ink">{label}</h3>
-          <button type="button" onClick={onCancel} className="w-8 h-8 rounded-full bg-pearl-soft flex items-center justify-center text-ink-secondary">
+          <h3 className="font-serif text-[18px] leading-tight font-medium tracking-[0.02em] text-ink">{label}</h3>
+          <button type="button" onClick={onCancel} className="w-8 h-8 rounded-full bg-pearl-soft flex items-center justify-center text-ink-soft">
             <X size={16} />
           </button>
         </div>
@@ -260,9 +260,9 @@ function ShiftEditSheet({
                 "flex-1 h-10 rounded-2xl border text-body-sm font-medium transition-all",
                 status === s
                   ? s === "working"
-                    ? "bg-amethyst text-pearl border-amethyst"
+                    ? "bg-wine-deep text-pearl-light-light border-gold/40"
                     : "bg-pearl-soft border-ink/[0.08] text-ink"
-                  : "bg-pearl-warm border-ink/[0.06] text-ink-secondary hover:border-amethyst/20",
+                  : "bg-pearl-warm border-ink/[0.06] text-ink-soft hover:border-wine-deep/30",
               )}
             >
               {STATUS_STYLE[s].label}
@@ -271,7 +271,7 @@ function ShiftEditSheet({
           <button
             type="button"
             onClick={() => onSave({ ...entry, status: "unknown" })}
-            className="px-3 h-10 rounded-2xl border border-ink/[0.06] text-body-sm text-ink-muted hover:bg-pearl-soft"
+            className="px-3 h-10 rounded-2xl border border-ink/[0.06] text-body-sm text-ink-mute hover:bg-pearl-soft"
           >
             削除
           </button>
@@ -281,7 +281,7 @@ function ShiftEditSheet({
         {status === "working" && (
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <label className="text-label-sm text-ink-secondary">開始時間</label>
+              <label className="text-label-sm text-ink-soft">開始時間</label>
               <input
                 type="time"
                 value={startTime}
@@ -291,7 +291,7 @@ function ShiftEditSheet({
               />
             </div>
             <div className="space-y-1">
-              <label className="text-label-sm text-ink-secondary">終了時間</label>
+              <label className="text-label-sm text-ink-soft">終了時間</label>
               <input
                 type="time"
                 value={endTime}
@@ -305,13 +305,13 @@ function ShiftEditSheet({
 
         {/* Note */}
         <div className="space-y-1">
-          <label className="text-label-sm text-ink-secondary">メモ（任意）</label>
+          <label className="text-label-sm text-ink-soft">メモ（任意）</label>
           <input
             type="text"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="例: 早上がり予定"
-            className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink placeholder:text-ink-muted"
+            className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink placeholder:text-ink-mute"
             style={{ fontSize: "16px" }}
           />
         </div>
@@ -319,7 +319,7 @@ function ShiftEditSheet({
         {/* Douhan on this day */}
         {douhans.length > 0 && (
           <div className="rounded-2xl bg-champagne-soft/60 px-3 py-2.5 space-y-1">
-            <p className="text-[11px] font-medium text-ink-secondary">この日の同伴</p>
+            <p className="text-[11px] font-medium text-ink-soft">この日の同伴</p>
             {douhans.map((d) => {
               const cust = customers.find((c) => c.id === d.customer_id);
               return (
@@ -334,7 +334,7 @@ function ShiftEditSheet({
         <button
           type="button"
           onClick={() => onSave({ date: entry.date, status, startTime: status === "working" ? startTime : undefined, endTime: status === "working" ? endTime : undefined, note: note || undefined })}
-          className="w-full h-12 rounded-2xl bg-amethyst text-pearl font-medium text-body-md"
+          className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light-light font-semibold tracking-[0.04em] text-body-md"
         >
           保存
         </button>

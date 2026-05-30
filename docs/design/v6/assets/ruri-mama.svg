@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#f7e6d8"></stop>
+      <stop offset="50%" stop-color="#e4a3b0"></stop>
+      <stop offset="100%" stop-color="#9a7bbb"></stop>
+    </radialGradient>
+    <linearGradient id="kimono" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fdfcf9"></stop>
+      <stop offset="100%" stop-color="#f5efe6"></stop>
+    </linearGradient>
+    <linearGradient id="obi" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a6695c"></stop>
+      <stop offset="50%" stop-color="#c98d80"></stop>
+      <stop offset="100%" stop-color="#a6695c"></stop>
+    </linearGradient>
+    <linearGradient id="hair" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3d2f3a"></stop>
+      <stop offset="100%" stop-color="#2b232a"></stop>
+    </linearGradient>
+    <radialGradient id="cheek" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e4a3b0" stop-opacity="0.6"></stop>
+      <stop offset="100%" stop-color="#e4a3b0" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+
+  
+  <circle cx="100" cy="100" r="100" fill="url(#bg)"></circle>
+
+  
+  <g opacity="0.4" fill="#fdfcf9">
+    <circle cx="35" cy="40" r="1.5"></circle>
+    <circle cx="170" cy="55" r="1"></circle>
+    <circle cx="160" cy="120" r="1.2"></circle>
+    <circle cx="30" cy="130" r="1"></circle>
+    <circle cx="50" cy="170" r="1.5"></circle>
+    <circle cx="155" cy="170" r="1"></circle>
+  </g>
+
+  
+  <path d="M 45 200 L 55 130 Q 60 115 75 110 L 100 130 L 125 110 Q 140 115 145 130 L 155 200 Z" fill="url(#kimono)" stroke="#d9c7a8" stroke-width="0.8"></path>
+
+  
+  <rect x="55" y="155" width="90" height="14" fill="url(#obi)"></rect>
+  <line x1="55" y1="158" x2="145" y2="158" stroke="#a6695c" stroke-width="0.5" opacity="0.5"></line>
+  <line x1="55" y1="166" x2="145" y2="166" stroke="#a6695c" stroke-width="0.5" opacity="0.5"></line>
+
+  
+  <g fill="#e4a3b0" opacity="0.55">
+    <circle cx="72" cy="140" r="2.2"></circle>
+    <circle cx="74" cy="142" r="1.5"></circle>
+    <circle cx="128" cy="145" r="2"></circle>
+    <circle cx="80" cy="180" r="1.8"></circle>
+    <circle cx="120" cy="178" r="2"></circle>
+    <circle cx="100" cy="190" r="1.5"></circle>
+  </g>
+
+  
+  <path d="M 90 110 L 90 122 L 110 122 L 110 110 Z" fill="#fdf3eb"></path>
+
+  
+  <path d="M 60 70 Q 55 100 70 125 L 85 120 Q 75 95 78 70 Z" fill="url(#hair)"></path>
+  <path d="M 140 70 Q 145 100 130 125 L 115 120 Q 125 95 122 70 Z" fill="url(#hair)"></path>
+
+  
+  <ellipse cx="100" cy="85" rx="24" ry="29" fill="#fdf3eb"></ellipse>
+
+  
+  <circle cx="84" cy="93" r="6" fill="url(#cheek)"></circle>
+  <circle cx="116" cy="93" r="6" fill="url(#cheek)"></circle>
+
+  
+  <path d="M 76 70 Q 85 55 100 56 Q 115 55 124 70 Q 122 78 100 75 Q 78 78 76 70 Z" fill="url(#hair)"></path>
+
+  
+  <ellipse cx="100" cy="48" rx="14" ry="11" fill="url(#hair)"></ellipse>
+  
+  <g transform="translate(115 45)">
+    <circle cx="0" cy="0" r="3.5" fill="#e4a3b0"></circle>
+    <circle cx="-2.5" cy="-1.5" r="2.2" fill="#f2c9d1"></circle>
+    <circle cx="2.5" cy="-1.5" r="2.2" fill="#f2c9d1"></circle>
+    <circle cx="0" cy="2.5" r="2.2" fill="#f2c9d1"></circle>
+    <circle cx="0" cy="0" r="1" fill="#c98d80"></circle>
+  </g>
+
+  
+  <path d="M 86 88 Q 89 91 92 88" stroke="#2b232a" stroke-width="2" stroke-linecap="round" fill="none"></path>
+  <path d="M 108 88 Q 111 91 114 88" stroke="#2b232a" stroke-width="2" stroke-linecap="round" fill="none"></path>
+
+  
+  <line x1="86" y1="86" x2="85" y2="84" stroke="#2b232a" stroke-width="0.8" stroke-linecap="round"></line>
+  <line x1="92" y1="86" x2="93" y2="84" stroke="#2b232a" stroke-width="0.8" stroke-linecap="round"></line>
+  <line x1="108" y1="86" x2="107" y2="84" stroke="#2b232a" stroke-width="0.8" stroke-linecap="round"></line>
+  <line x1="114" y1="86" x2="115" y2="84" stroke="#2b232a" stroke-width="0.8" stroke-linecap="round"></line>
+
+  
+  <path d="M 99 95 Q 100 100 101 95" stroke="#c98d80" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.6"></path>
+
+  
+  <path d="M 95 104 Q 100 108 105 104" stroke="#a6695c" stroke-width="1.8" stroke-linecap="round" fill="none"></path>
+  
+  <path d="M 96 105 Q 100 107 104 105" stroke="#c98d80" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.7"></path>
+</svg>

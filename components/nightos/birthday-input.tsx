@@ -78,12 +78,12 @@ export function BirthdayInput({ value, onChange, label = "誕生日" }: Props) {
   const days = month ? Array.from({ length: maxDays(parseInt(month, 10)) }, (_, i) => i + 1) : Array.from({ length: 31 }, (_, i) => i + 1);
 
   const selectClass =
-    "h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink focus:outline-none focus:border-amethyst-border focus:ring-1 focus:ring-amethyst-border/30 transition appearance-none cursor-pointer";
+    "h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink focus:outline-none focus:border-gold/30 focus:ring-1 focus:ring-amethyst-border/30 transition appearance-none cursor-pointer";
 
   return (
     <div className="space-y-1.5">
       <div className="flex items-center gap-1.5">
-        <Cake size={13} className="text-amethyst-dark" />
+        <Cake size={13} className="text-gold-deep" />
         <label className="text-label-md text-ink font-medium">{label}</label>
       </div>
 

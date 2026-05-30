@@ -32,12 +32,45 @@ export default async function StoreHubPage() {
 
   return (
     <div>
-      <header className="bg-gradient-hero px-5 pt-12 pb-6">
-        <p className="text-body-sm text-ink-secondary mb-1">店舗管理</p>
-        <h1 className="font-display text-[26px] leading-[1.2] font-medium tracking-wide text-ink">
+      <header className="v5-hero px-5 pt-12 pb-10">
+        <div
+          className="font-sans font-medium mb-3"
+          style={{
+            fontSize: 11,
+            lineHeight: 1,
+            letterSpacing: "0.32em",
+            color: "var(--v5-gold-mid)",
+          }}
+        >
+          NIGHTOS · STORE HUB
+        </div>
+        <p
+          className="font-sans mb-2"
+          style={{
+            fontSize: 13,
+            lineHeight: 1.6,
+            color: "var(--v5-ink-on-dark-soft)",
+            letterSpacing: "0.02em",
+          }}
+        >
+          店舗管理
+        </p>
+        <h1
+          className="font-serif font-normal v5-metallic"
+          style={{
+            fontSize: "2rem",
+            lineHeight: 1.1,
+            letterSpacing: "0.05em",
+          }}
+        >
           CLUB NIGHTOS 銀座本店
         </h1>
-        <div className="mt-2">
+        <span
+          aria-hidden
+          className="v5-brass-line"
+          style={{ width: "32ch", maxWidth: "60%", margin: "10px 0 14px" }}
+        />
+        <div>
           <StorePermissionBadge />
         </div>
       </header>
@@ -45,7 +78,7 @@ export default async function StoreHubPage() {
       <div className="px-5 pt-5 pb-8 space-y-5">
         {/* Registration shortcuts — 最頻使用アクションを最上部に */}
         <section className="space-y-2.5">
-          <h2 className="text-body-sm text-ink-secondary px-1">登録</h2>
+          <h2 className="text-body-sm text-ink-soft px-1">登録</h2>
           <div className="grid grid-cols-3 gap-2">
             <ShortcutCard
               href="/store/customers/new"
@@ -109,7 +142,7 @@ export default async function StoreHubPage() {
               </span>
               <div className="flex-1 min-w-0">
                 <div className="text-body-md font-medium text-ink">キャストがまだ登録されていません</div>
-                <div className="text-[11px] text-ink-muted mt-0.5">
+                <div className="text-[11px] text-ink-mute mt-0.5">
                   メンバーを追加すると、売上管理・連絡フォロー・メッセージ送信などの機能が使えるようになります。
                 </div>
               </div>
@@ -136,7 +169,7 @@ export default async function StoreHubPage() {
 
         {/* Data management (both staff and owner) */}
         <section className="space-y-2.5">
-          <h2 className="text-body-sm text-ink-secondary px-1">
+          <h2 className="text-body-sm text-ink-soft px-1">
             データ確認・編集
           </h2>
           <div className="space-y-2">
@@ -164,7 +197,7 @@ export default async function StoreHubPage() {
         {/* Owner-only management section */}
         <OwnerOnly>
           <section className="space-y-2.5">
-            <h2 className="text-body-sm text-ink-secondary flex items-center gap-1.5 px-1">
+            <h2 className="text-body-sm text-ink-soft flex items-center gap-1.5 px-1">
               オーナー管理
               <StorePermissionBadge />
             </h2>
@@ -242,9 +275,9 @@ function ListLink({
           </span>
           <div className="flex-1 min-w-0">
             <div className="text-body-md font-medium text-ink">{label}</div>
-            <div className="text-[11px] text-ink-muted">{description}</div>
+            <div className="text-[11px] text-ink-mute">{description}</div>
           </div>
-          <ArrowRight size={14} className="text-ink-muted shrink-0" />
+          <ArrowRight size={14} className="text-ink-mute shrink-0" />
         </div>
       </div>
     </Link>

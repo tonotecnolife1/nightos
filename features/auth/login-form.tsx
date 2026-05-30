@@ -30,13 +30,44 @@ export default function LoginForm({ app }: Props) {
   };
 
   return (
-    <main className="min-h-dvh bg-pearl flex flex-col">
-      <div className="bg-gradient-hero px-6 pt-14 pb-12">
-        <div className="max-w-sm mx-auto">
-          <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
+    <main className="min-h-dvh flex flex-col">
+      <div className="v5-hero px-6 pt-14 pb-12">
+        <div className="max-w-sm mx-auto relative">
+          <div
+            className="font-sans font-medium mb-3"
+            style={{
+              fontSize: 11,
+              lineHeight: 1,
+              letterSpacing: "0.32em",
+              color: "var(--v5-gold-mid)",
+            }}
+          >
+            NIGHTOS · {app.toUpperCase()}
+          </div>
+          <h1
+            className="font-serif font-normal v5-metallic"
+            style={{
+              fontSize: "2.25rem",
+              lineHeight: 1.1,
+              letterSpacing: "0.05em",
+            }}
+          >
             ログイン
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <span
+            aria-hidden
+            className="v5-brass-line"
+            style={{ width: "20ch", maxWidth: "50%", margin: "10px 0 14px" }}
+          />
+          <p
+            className="font-sans"
+            style={{
+              fontSize: 13,
+              lineHeight: 1.6,
+              letterSpacing: "0.02em",
+              color: "var(--v5-ink-on-dark-soft)",
+            }}
+          >
             {APP_LABEL[app]}としてサインイン
           </p>
         </div>
@@ -52,7 +83,7 @@ export default function LoginForm({ app }: Props) {
               aria-label="メールアドレス"
               required
               disabled={pending}
-              className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink placeholder:text-ink-muted shadow-soft focus:outline-none focus:border-blush-deep"
+              className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep transition"
               style={{ fontSize: "16px" }}
             />
             <input
@@ -62,60 +93,60 @@ export default function LoginForm({ app }: Props) {
               aria-label="パスワード"
               required
               disabled={pending}
-              className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink placeholder:text-ink-muted shadow-soft focus:outline-none focus:border-blush-deep"
+              className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep transition"
               style={{ fontSize: "16px" }}
             />
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-gradient-blush text-ink text-body-md font-medium tracking-wide hover:brightness-[1.02] hover:-translate-y-px active:translate-y-px transition shadow-float will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-md font-semibold tracking-[0.08em] hover:-translate-y-px active:translate-y-px transition shadow-warm will-change-transform disabled:opacity-50"
             >
               {pending ? "ログイン中..." : "ログイン"}
             </button>
             {error && (
-              <p className="text-[12px] text-[#c2575b] text-center">{error}</p>
+              <p className="text-[12px] text-danger text-center">{error}</p>
             )}
           </form>
 
           <div className="space-y-2 text-body-sm text-center">
             <Link
               href={signupHref(app)}
-              className="block text-blush-deep underline-offset-2 hover:underline"
+              className="block text-wine-deep underline-offset-2 hover:underline"
             >
               新規登録はこちら
             </Link>
             <Link
               href="/auth/reset-password"
-              className="block text-[12px] text-ink-secondary hover:text-ink"
+              className="block text-[12px] text-ink-soft hover:text-ink"
             >
               パスワードを忘れた
             </Link>
           </div>
 
-          <div className="pt-4 flex items-center justify-center gap-3 text-[11px] text-ink-muted">
-            <Link href="/legal/terms" className="hover:text-ink-secondary">利用規約</Link>
+          <div className="pt-4 flex items-center justify-center gap-3 text-[11px] text-ink-mute">
+            <Link href="/legal/terms" className="hover:text-ink-soft">利用規約</Link>
             <span>·</span>
-            <Link href="/legal/privacy" className="hover:text-ink-secondary">プライバシー</Link>
+            <Link href="/legal/privacy" className="hover:text-ink-soft">プライバシー</Link>
             <span>·</span>
-            <Link href="/legal/tokutei" className="hover:text-ink-secondary">特商法表記</Link>
+            <Link href="/legal/tokutei" className="hover:text-ink-soft">特商法表記</Link>
           </div>
 
-          <div className="text-[11px] text-ink-muted text-center">
+          <div className="text-[11px] text-ink-mute text-center">
             別のアプリの方は{" "}
             {app !== "cast" && (
-              <Link href="/cast/auth/login" className="underline underline-offset-2 hover:text-ink-secondary">
+              <Link href="/cast/auth/login" className="underline underline-offset-2 hover:text-ink-soft">
                 キャスト
               </Link>
             )}
             {app !== "cast" && app !== "store" && " / "}
             {app !== "store" && (
-              <Link href="/store/auth/login" className="underline underline-offset-2 hover:text-ink-secondary">
+              <Link href="/store/auth/login" className="underline underline-offset-2 hover:text-ink-soft">
                 店舗
               </Link>
             )}
             {app !== "customer" && app !== "store" && " / "}
             {app !== "customer" && (
-              <Link href="/customer/auth/login" className="underline underline-offset-2 hover:text-ink-secondary">
+              <Link href="/customer/auth/login" className="underline underline-offset-2 hover:text-ink-soft">
                 来店客
               </Link>
             )}

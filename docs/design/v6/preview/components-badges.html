@@ -1,0 +1,109 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css">
+<style>
+  .card { width: 700px; padding: 26px 24px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 999px; font: 500 11px/1.2 var(--font-sans); letter-spacing: 0.02em; }
+  .badge svg { width: 11px; height: 11px; }
+  /* Status */
+  .vip    { padding: 4px 12px; border: 1px solid var(--gold); color: var(--gold-deep); font: 400 11px/1.2 var(--font-display); letter-spacing: 0.1em; background: transparent; }
+  .new    { background: #f3d8c8; color: #6e4736; }
+  .reg    { background: #e6cda5; color: var(--ink); }
+  /* Event */
+  .bday   { background: #d4a8a8; color: #5e3838; }
+  /* Priority */
+  .gap    { background: var(--pearl-soft); color: var(--ink); border: 1px solid var(--gold-soft); }
+  .chance { background: #bf9d6e; color: var(--ink); }
+  .high   { background: var(--wine); color: #fdfcf9; }
+  /* Done */
+  .done   { background: rgba(122,148,119,0.18); color: var(--success); }
+
+  .group { margin-bottom: 14px; }
+  .glabel { font: 500 10px/1 var(--font-sans); letter-spacing: 0.18em; color: var(--rose-gold-deep); margin-bottom: 8px; }
+
+  .specs { margin-top: 14px; padding: 14px 16px; border-radius: 12px; background: var(--pearl-soft); border: 1px solid var(--line); }
+  .specs h4 { font:500 11px/1 var(--font-sans); letter-spacing:0.18em; color:var(--rose-gold-deep); margin: 0 0 10px; }
+  table { width: 100%; border-collapse: collapse; font: 400 11px/1.5 var(--font-sans); color: var(--ink-soft); }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px dashed var(--line); }
+  th { font-weight: 500; color: var(--ink); }
+  td.sw { white-space: nowrap; }
+  td.sw .chip { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
+  code { font:400 11px var(--font-mono); color: var(--gold-deep); background: var(--pearl-light); padding:1px 5px; border-radius:4px; }
+  .ng { margin-top: 12px; padding: 10px 14px; border-radius: 10px; background: rgba(154,93,93,0.08); border: 1px dashed rgba(154,93,93,0.4); font:400 11px/1.6 var(--font-sans); color: var(--wine-deep); }
+  .ng b { color: var(--wine-deep); }
+</style>
+</head><body>
+<div class="card">
+
+  <!-- Status group -->
+  <div class="group">
+    <div class="glabel">STATUS · 顧客の属性</div>
+    <div class="row">
+      <span class="badge vip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 17 14 19 21 12 17 5 21 7 14 2 9 9 9 12 2"/></svg>
+        VIP
+      </span>
+      <span class="badge new">新規</span>
+      <span class="badge reg">常連</span>
+    </div>
+  </div>
+
+  <!-- Event group -->
+  <div class="group">
+    <div class="glabel">EVENT · 祝事</div>
+    <div class="row">
+      <span class="badge bday">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="11" rx="1.5"/><line x1="3" y1="13" x2="21" y2="13"/><line x1="12" y1="9" x2="12" y2="20"/><path d="M8 9c-1-2 0-4 2-4s2 2 2 2-1-2 1-2 3 2 2 4"/></svg>
+        誕生日
+      </span>
+    </div>
+  </div>
+
+  <!-- Priority group -->
+  <div class="group">
+    <div class="glabel">PRIORITY · アクション促進</div>
+    <div class="row">
+      <span class="badge gap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>
+        間隔空き
+      </span>
+      <span class="badge chance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>
+        指名化チャンス
+      </span>
+      <span class="badge high">重要</span>
+    </div>
+  </div>
+
+  <!-- Done group -->
+  <div class="group">
+    <div class="glabel">DONE</div>
+    <div class="row">
+      <span class="badge done">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        連絡済み
+      </span>
+    </div>
+  </div>
+
+  <!-- Hue / value matrix -->
+  <div class="specs">
+    <h4>色相分布チェック · 全 8 種で被りなし</h4>
+    <table>
+      <tr><th>バッジ</th><th>色相</th><th>飽和度</th><th>明度</th><th>役割</th><th>サンプル</th></tr>
+      <tr><td>VIP</td><td>gold (line)</td><td>高</td><td>中</td><td>外周線のみ</td><td class="sw"><span class="chip" style="background:transparent; border:1px solid var(--gold);"></span><code>--gold #b89455</code></td></tr>
+      <tr><td>新規</td><td>rose-gold</td><td>中</td><td>高</td><td>ピンク系</td><td class="sw"><span class="chip" style="background:#f3d8c8;"></span><code>#f3d8c8 + #6e4736</code></td></tr>
+      <tr><td>常連</td><td>champagne</td><td>中</td><td>高</td><td>ベージュ系</td><td class="sw"><span class="chip" style="background:#e6cda5;"></span><code>#e6cda5 + ink</code></td></tr>
+      <tr><td>間隔空き</td><td>pearl</td><td>低</td><td>最高</td><td>中立アラート</td><td class="sw"><span class="chip" style="background:var(--pearl-soft); border:1px solid var(--gold-soft);"></span><code>#f5efe6 + ink</code></td></tr>
+      <tr><td>誕生日</td><td>wine-soft</td><td>中</td><td>中</td><td>祝事=温かい赤</td><td class="sw"><span class="chip" style="background:#d4a8a8;"></span><code>#d4a8a8 + #5e3838</code></td></tr>
+      <tr><td>指名化チャンス</td><td>champagne-deep</td><td>高</td><td>中</td><td>押し出しアラート</td><td class="sw"><span class="chip" style="background:#bf9d6e;"></span><code>#bf9d6e + ink</code></td></tr>
+      <tr><td>重要</td><td>wine</td><td>高</td><td>低</td><td>強アラート</td><td class="sw"><span class="chip" style="background:var(--wine);"></span><code>#9a5d5d + cream</code></td></tr>
+      <tr><td>連絡済み</td><td>success</td><td>中</td><td>中</td><td>完了</td><td class="sw"><span class="chip" style="background:rgba(122,148,119,0.18);"></span><code>success-soft + #7a9477</code></td></tr>
+    </table>
+  </div>
+
+  <div class="ng">
+    <b>削除した要素 (NG リスト追記):</b>
+    ✕ 顔アイコン (😊) — Luxury Lady Night と矛盾 · ✕ Sparkles ✨ · ✕ 新規 = 誕生日の blush-soft 重複 · ✕ 常連 = 指名化チャンスの champagne-soft 重複 · ✕ emoji ベースの 🎂 → Lucide Gift outline に差し替え
+  </div>
+
+</div></body></html>

@@ -78,27 +78,27 @@ function NicknameRow({
     <button
       type="button"
       onClick={onEdit}
-      className="w-full text-left rounded-card border-[1.5px] border-dashed border-blush-deep/60 bg-blush-soft/30 px-4 py-3 hover:bg-blush-soft/50 transition"
+      className="w-full text-left rounded-card border-[1.5px] border-dashed border-wine-deep/40 bg-wine-soft/20 px-4 py-3 hover:bg-wine-soft/30 transition"
     >
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-label-sm font-semibold text-blush-deep">
+            <span className="text-label-sm font-semibold text-wine-deep">
               呼び名
             </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-badge bg-blush-soft text-blush-deep font-medium">
+            <span className="text-[10px] px-1.5 py-0.5 rounded-badge bg-wine-soft/30 text-wine-deep font-medium">
               入力推奨
             </span>
           </div>
           {nickname ? (
             <p className="text-body-md text-ink font-medium">{nickname}</p>
           ) : (
-            <p className="text-body-sm text-blush-deep/80">
+            <p className="text-body-sm text-wine-deep/80">
               未入力 — タップして登録
             </p>
           )}
         </div>
-        <Pencil size={14} className="text-blush-deep shrink-0" />
+        <Pencil size={14} className="text-wine-deep shrink-0" />
       </div>
     </button>
   );
@@ -167,10 +167,10 @@ function StoreSharedInfoCard({ customer }: { customer: Customer }) {
   if (!customer.store_memo) return null;
   return (
     <StoreInfoCard title="店舗からの共有情報">
-      <div className="flex gap-2.5 rounded-2xl bg-amber/10 border border-amber/40 px-3 py-2.5">
-        <AlertTriangle size={15} className="text-amber shrink-0 mt-0.5" />
+      <div className="flex gap-2.5 rounded-2xl bg-warning/15 border border-warning/30 px-3 py-2.5">
+        <AlertTriangle size={15} className="text-warning shrink-0 mt-0.5" />
         <div>
-          <p className="text-label-sm font-semibold text-amber mb-1">
+          <p className="text-label-sm font-semibold text-warning mb-1">
             気をつけること
           </p>
           <p className="text-body-sm text-ink leading-relaxed whitespace-pre-wrap">
@@ -198,7 +198,7 @@ function LegendChip({
 }) {
   const cls =
     color === "blush"
-      ? "border-blush-deep/60 bg-blush-soft/40 text-blush-deep"
+      ? "border-wine-deep/40 bg-wine-soft/25 text-wine-deep"
       : color === "beige"
         ? "border-beige-border bg-beige text-ink-secondary"
         : "border-ink/[0.08] bg-pearl-warm text-ink-secondary";

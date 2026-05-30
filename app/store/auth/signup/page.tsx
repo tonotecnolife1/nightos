@@ -15,7 +15,7 @@ export default function StoreSignupPage() {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             新規登録（店舗）
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <p className="mt-1.5 text-body-sm text-ink-soft">
             ご自身の立場を選んでください
           </p>
         </div>
@@ -28,7 +28,7 @@ export default function StoreSignupPage() {
             className="block px-5 py-4 rounded-card border border-ink/[0.06] bg-pearl-warm hover:border-gold/40 hover:-translate-y-px transition shadow-soft"
           >
             <div className="text-body-md font-medium text-ink">店舗オーナー</div>
-            <p className="text-[11px] text-ink-muted mt-0.5 leading-relaxed">
+            <p className="text-[11px] text-ink-mute mt-0.5 leading-relaxed">
               新しく店舗を開く。登録後にキャスト/スタッフ用の招待コードが発行されます。
             </p>
           </Link>
@@ -37,14 +37,14 @@ export default function StoreSignupPage() {
             className="block px-5 py-4 rounded-card border border-ink/[0.06] bg-pearl-warm hover:border-gold/40 hover:-translate-y-px transition shadow-soft"
           >
             <div className="text-body-md font-medium text-ink">店舗スタッフ</div>
-            <p className="text-[11px] text-ink-muted mt-0.5 leading-relaxed">
+            <p className="text-[11px] text-ink-mute mt-0.5 leading-relaxed">
               既存の店舗に参加。オーナーから受け取った 8 文字の招待コードが必要です。
             </p>
           </Link>
 
-          <p className="text-body-sm text-ink-secondary text-center pt-4">
+          <p className="text-body-sm text-ink-soft text-center pt-4">
             既にアカウントをお持ちの方は{" "}
-            <Link href="/store/auth/login" className="text-blush-deep underline-offset-2 hover:underline">
+            <Link href="/store/auth/login" className="text-wine-deep underline-offset-2 hover:underline">
               ログイン
             </Link>
           </p>

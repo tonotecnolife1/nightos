@@ -23,8 +23,8 @@ export function GoalProgress({
   return (
     <Card className="p-4 space-y-2">
       <div className="flex items-baseline justify-between">
-        <span className="text-label-md text-ink-secondary">{label}</span>
-        <span className="text-label-sm text-ink-muted">
+        <span className="text-label-md text-ink-soft">{label}</span>
+        <span className="text-label-xs tracking-luxe text-ink-mute uppercase">
           目標 {fmt(goal)}
           {unit}
         </span>
@@ -32,26 +32,26 @@ export function GoalProgress({
       <div className="flex items-baseline gap-1">
         <span
           className={cn(
-            "font-display text-[2.4rem] leading-none font-semibold",
-            pct >= 1 ? "text-emerald" : "text-roseGold-dark",
+            "font-display text-[2.5rem] leading-none font-normal tabular-nums tracking-[0.01em]",
+            pct >= 1 ? "text-success" : "text-wine-deep",
           )}
         >
           {fmt(current)}
         </span>
-        <span className="text-body-sm text-ink-secondary">{unit}</span>
+        <span className="text-body-sm text-ink-soft pb-0.5">{unit}</span>
       </div>
-      <div className="h-2.5 rounded-full bg-pearl-soft overflow-hidden">
+      <div className="h-2 rounded-full bg-pearl-soft overflow-hidden">
         <div
           className={cn(
             "h-full transition-all",
-            pct >= 1 ? "bg-emerald" : "bg-gradient-rose-gold",
+            pct >= 1 ? "bg-success" : "bg-rose-gold-metallic",
           )}
           style={{ width: `${Math.round(pct * 100)}%` }}
         />
       </div>
-      <div className="text-label-sm text-ink-muted">
+      <div className="text-label-sm text-ink-mute">
         {pct >= 1 ? (
-          <span className="text-emerald font-medium">目標達成 ✨</span>
+          <span className="text-success font-medium">目標達成 ✨</span>
         ) : (
           <>
             あと {fmt(remaining)}

@@ -72,7 +72,7 @@ export function NewDmSheet({ storeCasts }: Props) {
       <button
         type="button"
         onClick={openSheet}
-        className="w-10 h-10 rounded-full bg-amethyst-muted text-amethyst-dark flex items-center justify-center"
+        className="w-10 h-10 rounded-full bg-champagne-soft/60 text-gold-deep flex items-center justify-center"
         aria-label="新しいチャットを作成"
       >
         <Plus size={20} />
@@ -96,7 +96,7 @@ export function NewDmSheet({ storeCasts }: Props) {
               <button
                 type="button"
                 onClick={closeSheet}
-                className="w-8 h-8 rounded-full text-ink-muted hover:bg-pearl-soft flex items-center justify-center"
+                className="w-8 h-8 rounded-full text-ink-mute hover:bg-pearl-soft flex items-center justify-center"
                 aria-label="閉じる"
               >
                 <X size={16} />
@@ -111,8 +111,8 @@ export function NewDmSheet({ storeCasts }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "dm"
-                    ? "bg-amethyst text-pearl border-amethyst"
-                    : "bg-transparent text-ink-secondary border-ink/[0.12] hover:border-ink/20",
+                    ? "bg-wine-deep text-pearl-light-light border-gold/40"
+                    : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
                 <MessageCircle size={13} />
@@ -124,8 +124,8 @@ export function NewDmSheet({ storeCasts }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "group"
-                    ? "bg-amethyst text-pearl border-amethyst"
-                    : "bg-transparent text-ink-secondary border-ink/[0.12] hover:border-ink/20",
+                    ? "bg-wine-deep text-pearl-light-light border-gold/40"
+                    : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
                 <Users size={13} />
@@ -142,7 +142,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
                   maxLength={40}
-                  className="w-full h-10 px-3 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-amethyst/40 transition"
+                  className="w-full h-10 px-3 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep transition"
                 />
               </div>
             )}
@@ -152,7 +152,7 @@ export function NewDmSheet({ storeCasts }: Props) {
             {/* Cast list */}
             <div className="overflow-y-auto max-h-[50vh]">
               {storeCasts.length === 0 ? (
-                <p className="px-5 py-8 text-center text-body-sm text-ink-muted">
+                <p className="px-5 py-8 text-center text-body-sm text-ink-mute">
                   同じ店舗のキャストが見つかりません
                 </p>
               ) : (
@@ -172,8 +172,8 @@ export function NewDmSheet({ storeCasts }: Props) {
                           className="w-full flex items-center gap-3 px-3 py-3.5 rounded-card hover:bg-pearl-soft active:bg-pearl-soft transition text-left disabled:opacity-50"
                         >
                           {/* Avatar */}
-                          <div className="w-10 h-10 rounded-full bg-blush-soft border border-blush/30 flex items-center justify-center shrink-0">
-                            <span className="text-body-sm font-medium text-blush-deep">
+                          <div className="w-10 h-10 rounded-full bg-champagne-soft/60 border border-gold/30 flex items-center justify-center shrink-0">
+                            <span className="text-body-sm font-medium text-wine-deep">
                               {cast.name.charAt(0)}
                             </span>
                           </div>
@@ -188,11 +188,11 @@ export function NewDmSheet({ storeCasts }: Props) {
                               className={cn(
                                 "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition",
                                 isChecked
-                                  ? "bg-amethyst border-amethyst"
+                                  ? "bg-wine-deep border-wine-deep"
                                   : "border-ink/20",
                               )}
                             >
-                              {isChecked && <Check size={11} className="text-pearl" strokeWidth={3} />}
+                              {isChecked && <Check size={11} className="text-pearl-light" strokeWidth={3} />}
                             </div>
                           )}
                         </button>
@@ -210,7 +210,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   type="button"
                   disabled={!canCreate || pending}
                   onClick={handleCreateGroup}
-                  className="w-full h-11 rounded-pill bg-amethyst text-pearl text-body-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 transition active:scale-[0.98]"
+                  className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light-light text-body-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 transition active:scale-[0.98]"
                 >
                   <Users size={15} />
                   {selected.size > 0

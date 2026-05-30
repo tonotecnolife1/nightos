@@ -484,8 +484,8 @@ export function ChatWindow({
     <div className="flex flex-col h-dvh">
       {stubMode && (
         <div className="px-4 pt-3">
-          <div className="flex items-start gap-2 rounded-btn bg-amber/10 border border-amber/40 text-ink px-3 py-2 text-body-sm">
-            <Info size={14} className="mt-0.5 text-amber shrink-0" />
+          <div className="flex items-start gap-2 rounded-card bg-warning/10 border border-warning/40 text-ink px-3 py-2 text-body-sm">
+            <Info size={14} className="mt-0.5 text-warning shrink-0" />
             <div className="leading-relaxed">
               <span className="font-semibold">デモ応答モード</span>です。
               本物のさくらママ（Claude AI）を有効にするには、Vercel の
@@ -599,8 +599,8 @@ export function ChatWindow({
         )}
 
         {phase.name === "loading" && (
-          <div className="flex items-center gap-2 text-ink-muted text-body-sm pl-2">
-            <Sparkles size={14} className="text-amethyst animate-shimmer" />
+          <div className="flex items-center gap-2 text-ink-mute text-body-sm pl-2">
+            <Sparkles size={14} className="text-gold-deep animate-shimmer" />
             さくらママが考え中…
           </div>
         )}
@@ -610,7 +610,7 @@ export function ChatWindow({
             <button
               type="button"
               onClick={handleNewConsultation}
-              className="flex items-center gap-1.5 px-5 h-10 rounded-full bg-pearl-warm border border-amethyst-border text-amethyst-dark text-label-md font-medium shadow-soft-card active:scale-95 hover:bg-amethyst-muted"
+              className="inline-flex items-center gap-1.5 px-5 h-10 rounded-pill bg-pearl-light border border-gold/30 text-gold-deep text-label-md font-medium tracking-[0.04em] shadow-soft active:scale-95 hover:bg-champagne-soft/60 transition"
             >
               <Plus size={14} />
               新しい相談を始める
@@ -619,7 +619,7 @@ export function ChatWindow({
               <button
                 type="button"
                 onClick={handleClearHistory}
-                className="flex items-center gap-1 text-label-sm text-ink-muted hover:text-rose underline underline-offset-2"
+                className="flex items-center gap-1 text-label-sm text-ink-mute hover:text-wine-deep underline underline-offset-2"
               >
                 <Trash2 size={11} />
                 履歴を全部クリアする

@@ -63,13 +63,13 @@ export function StoreBriefing() {
     <Card className="!bg-gradient-champagne !border-champagne-dark p-4">
       <div className="flex items-center gap-2 mb-2">
         <RuriMamaAvatar size={28} />
-        <span className="text-label-sm text-ink-secondary font-medium uppercase tracking-wider">
+        <span className="text-label-sm text-ink-soft font-medium uppercase tracking-wider">
           <Sparkles size={11} className="inline mr-1" />
           今夜の重点ポイント
         </span>
       </div>
       {loading ? (
-        <div className="flex items-center gap-2 text-ink-secondary text-body-sm py-1">
+        <div className="flex items-center gap-2 text-ink-soft text-body-sm py-1">
           <Loader2 size={14} className="animate-spin" />
           さくらママが今夜の準備メモを書いてます…
         </div>
@@ -81,7 +81,7 @@ export function StoreBriefing() {
           <button
             type="button"
             onClick={() => void fetchBriefing(true)}
-            className="mt-2 inline-flex items-center gap-1 text-label-sm text-ink-secondary hover:text-ink underline underline-offset-2"
+            className="mt-2 inline-flex items-center gap-1 text-label-sm text-ink-soft hover:text-ink underline underline-offset-2"
           >
             <RefreshCw size={11} />
             書き直す

@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <radialGradient id="bgD" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#3d2f3a"></stop>
+      <stop offset="60%" stop-color="#2b232a"></stop>
+      <stop offset="100%" stop-color="#1a1118"></stop>
+    </radialGradient>
+    <linearGradient id="petal" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e4a3b0"></stop>
+      <stop offset="50%" stop-color="#c98d80"></stop>
+      <stop offset="100%" stop-color="#a6695c"></stop>
+    </linearGradient>
+    <linearGradient id="goldText" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e8d28a"></stop>
+      <stop offset="50%" stop-color="#c9a84c"></stop>
+      <stop offset="100%" stop-color="#a6800f"></stop>
+    </linearGradient>
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fdfcf9" stop-opacity="0.3"></stop>
+      <stop offset="100%" stop-color="#fdfcf9" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+
+  
+  <circle cx="100" cy="100" r="100" fill="url(#bgD)"></circle>
+  <circle cx="100" cy="100" r="100" fill="url(#centerGlow)"></circle>
+
+  
+  <circle cx="100" cy="100" r="92" fill="none" stroke="#c9a84c" stroke-width="0.7" opacity="0.5"></circle>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#c9a84c" stroke-width="0.4" opacity="0.3"></circle>
+
+  
+  <g transform="translate(100 60)">
+    
+    <g transform="rotate(0)">
+      <ellipse cx="0" cy="-12" rx="8" ry="11" fill="url(#petal)"></ellipse>
+    </g>
+    <g transform="rotate(72)">
+      <ellipse cx="0" cy="-12" rx="8" ry="11" fill="url(#petal)"></ellipse>
+    </g>
+    <g transform="rotate(144)">
+      <ellipse cx="0" cy="-12" rx="8" ry="11" fill="url(#petal)"></ellipse>
+    </g>
+    <g transform="rotate(216)">
+      <ellipse cx="0" cy="-12" rx="8" ry="11" fill="url(#petal)"></ellipse>
+    </g>
+    <g transform="rotate(288)">
+      <ellipse cx="0" cy="-12" rx="8" ry="11" fill="url(#petal)"></ellipse>
+    </g>
+    
+    <g transform="rotate(36)">
+      <ellipse cx="0" cy="-7" rx="4" ry="6" fill="#f2c9d1"></ellipse>
+    </g>
+    <g transform="rotate(108)">
+      <ellipse cx="0" cy="-7" rx="4" ry="6" fill="#f2c9d1"></ellipse>
+    </g>
+    <g transform="rotate(180)">
+      <ellipse cx="0" cy="-7" rx="4" ry="6" fill="#f2c9d1"></ellipse>
+    </g>
+    <g transform="rotate(252)">
+      <ellipse cx="0" cy="-7" rx="4" ry="6" fill="#f2c9d1"></ellipse>
+    </g>
+    <g transform="rotate(324)">
+      <ellipse cx="0" cy="-7" rx="4" ry="6" fill="#f2c9d1"></ellipse>
+    </g>
+    
+    <circle cx="0" cy="0" r="4" fill="#c9a84c"></circle>
+    <circle cx="0" cy="0" r="2.2" fill="#e8d28a"></circle>
+    
+    <circle cx="-1.5" cy="-0.8" r="0.5" fill="#fdfcf9"></circle>
+    <circle cx="1.5" cy="-0.8" r="0.5" fill="#fdfcf9"></circle>
+    <circle cx="0" cy="1.4" r="0.5" fill="#fdfcf9"></circle>
+  </g>
+
+  
+  <text x="100" y="148" text-anchor="middle" font-family="&#39;Cormorant Garamond&#39;, &#39;Times New Roman&#39;, serif" font-size="56" font-weight="500" font-style="italic" fill="url(#goldText)">
+    R
+  </text>
+
+  
+  <text x="100" y="172" text-anchor="middle" font-family="&#39;Cormorant Garamond&#39;, &#39;Times New Roman&#39;, serif" font-size="9" font-weight="400" letter-spacing="3" fill="#c9a84c" opacity="0.85">
+    RURI MAMA
+  </text>
+
+  
+  <g opacity="0.5">
+    <g transform="translate(35 110) rotate(20)">
+      <ellipse cx="0" cy="0" rx="2.5" ry="3.5" fill="#e4a3b0"></ellipse>
+    </g>
+    <g transform="translate(165 95) rotate(-30)">
+      <ellipse cx="0" cy="0" rx="2" ry="3" fill="#e4a3b0"></ellipse>
+    </g>
+    <g transform="translate(40 150) rotate(45)">
+      <ellipse cx="0" cy="0" rx="1.8" ry="2.5" fill="#f2c9d1"></ellipse>
+    </g>
+    <g transform="translate(160 145) rotate(-15)">
+      <ellipse cx="0" cy="0" rx="2" ry="3" fill="#f2c9d1"></ellipse>
+    </g>
+  </g>
+</svg>

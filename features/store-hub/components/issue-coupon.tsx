@@ -39,7 +39,7 @@ export function IssueCoupon({ customers }: Props) {
   return (
     <Card className="!bg-pearl-warm !border-pearl-soft p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <Ticket size={14} className="text-amethyst-dark" />
+        <Ticket size={14} className="text-gold-deep" />
         <h3 className="text-label-md text-ink font-semibold">クーポン発行</h3>
       </div>
 
@@ -62,8 +62,8 @@ export function IssueCoupon({ customers }: Props) {
             onClick={() => setSelectedPreset(i)}
             className={`flex-1 text-center py-2 rounded-btn text-[10px] font-medium border transition-all active:scale-95 ${
               selectedPreset === i
-                ? "bg-amethyst-muted border-amethyst-border text-amethyst-dark"
-                : "bg-pearl-warm border-pearl-soft text-ink-secondary"
+                ? "bg-champagne-soft/60 border-gold/30 text-gold-deep"
+                : "bg-pearl-warm border-pearl-soft text-ink-soft"
             }`}
           >
             {preset.label}
@@ -72,7 +72,7 @@ export function IssueCoupon({ customers }: Props) {
       </div>
 
       {success ? (
-        <div className="flex items-center gap-1.5 text-[11px] text-emerald font-medium">
+        <div className="flex items-center gap-1.5 text-[11px] text-success font-medium">
           <Check size={12} />
           {success}
         </div>
@@ -81,7 +81,7 @@ export function IssueCoupon({ customers }: Props) {
           type="button"
           onClick={handleIssue}
           disabled={pending}
-          className="w-full h-9 rounded-btn bg-gradient-amethyst text-pearl text-[11px] font-medium shadow-soft-card disabled:opacity-50 active:scale-95 flex items-center justify-center gap-1"
+          className="w-full h-9 rounded-btn bg-gold-metallic text-pearl-light text-[11px] font-medium shadow-soft disabled:opacity-50 active:scale-95 flex items-center justify-center gap-1"
         >
           <Gift size={12} />
           {pending ? "発行中…" : "クーポンを発行"}

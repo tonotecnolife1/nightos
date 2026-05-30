@@ -1,145 +1,157 @@
-# CLAUDE.md
+# Claude Code Instructions — NIGHTOS
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは Claude Code が自動で読み込むプロジェクト指示書です。UI / デザイン関連の作業をする前に必ず参照してください。
 
-NIGHTOS is a Next.js 14 (App Router) workspace MVP for night-entertainment venues
-(キャバクラ / ラウンジ / クラブ). Data flows: **store inputs → mama/oneesan coaches →
-cast uses it**. The README is the authoritative product/deploy doc (in Japanese);
-this file is the architecture map for code changes.
+---
 
-## Commands
+## 1. UI / デザイン
 
-```bash
-npm run dev          # next dev — local app at http://localhost:3000
-npm run build        # next build (production)
-npm run lint         # next lint (ESLint)
-npm test             # vitest run — unit tests in tests/
-npm run test:watch   # vitest watch mode
+### 1.1 必ず参照する
 
-# Run a single unit test
-npx vitest run tests/validation.test.ts
-npx vitest run -t "name of test"   # filter by test name
+- **`design.md`** — V5 Bordeaux Salon の正典。新規 UI 実装 / UI 変更時は最初に読むこと
+- **`docs/design/TOKENS.md`** — どのクラスをいつ使うかの早見表
+- **`docs/design/v6/cast-home-v5.jsx`** — Claude Design のリファレンス実装 (V5 ソース)
+- **`app/globals.css`** の `:root` 内 `--v5-*` トークンと `.v5-*` ユーティリティ
 
-# E2E (Playwright is NOT in package.json — install on demand)
-npm install -D @playwright/test && npx playwright install chromium
-npx playwright test                # needs `npm run dev` up, or it starts one
-PLAYWRIGHT_BASE_URL=<url> npx playwright test   # target a preview/staging URL
+### 1.2 デザイン原則
+
+**V5 Bordeaux Salon (2026-05-30 採用)**:
+- ベース: dark wine #2D1818 → #1A0F0F の Hero + champagne-tinted pearl #f3eadb のページ地
+- アクセント: champagne-gold metallic (`--v5-champ-gold`) を**クリップ / ribbon / hairline で使う、塗りには使わない**
+- 主要 CTA (本文): `bg-wine-deep text-pearl-light` + shadow-warm
+- 主要 CTA (Hero 内): `.v5-cta-primary` (champagne-gold solid + dark text、反転)
+- 見出し: `font-serif` (Noto Serif JP) + `v5-metallic` クリップ
+- 数字: `font-display` (Cormorant Garamond) + `tabular-nums`
+- eyebrow: `tracking-luxe` 以上 + `--v5-gold-mid` or `text-wine-deep`
+
+### 1.3 禁止事項
+
+以下のクラスは本番コードから排除済み。新規追加禁止 (tailwind config に互換 alias は残置している):
+
+```
+✗ bg-roseGold-* / text-roseGold-* / border-roseGold-*
+✗ bg-blush-* / text-blush-*
+✗ bg-amethyst-* / text-amethyst-*
+✗ bg-bg / text-text-*
+✗ bg-gradient-rose-gold / bg-gradient-amethyst
+✗ shadow-glow-* / shadow-soft-card / shadow-elevated-light
+✗ rose-gradient / ruri-gradient (CSS class)
+✗ text-rose / bg-rose/* / text-amber / bg-amber/* / text-emerald / bg-emerald/*
 ```
 
-There is no typecheck script; `npm run build` is the TypeScript gate (strict mode).
-`@/*` resolves to the repo root (see `tsconfig.json`). Note `tsconfig.json` and
-`vitest.config.ts` **exclude** `_archive/`, `demo/`, and `e2e/` — `_archive/` is
-dead code kept for reference; don't edit it expecting it to ship.
+state 色は v6 semantic token を使う:
+```
+✓ text-success / bg-success/* / border-success/*  (dusty sage #7a9477)
+✓ text-warning / bg-warning/* / border-warning/*  (#c8a063)
+✓ text-wine-deep / bg-wine/* / border-wine/*       (#5e3838) — error / VIP
+```
 
-## The central architecture: 3 modes, 3-layer fallback
+### 1.4 Hero 設計ルール
 
-The single most important concept. The app runs in three modes selected purely by
-environment variables, and **the UI is identical in all three** — the mode is decided
-at the data-access boundary, not in components:
+- "Tonight" / "Welcome" のような汎用挨拶を見出しに置かない
+- 「いってらっしゃい」など内容ゼロの励まし禁止
+- 副 CTA に機能がない「あとで」を置かない
+- 主要 CTA だけで足りる場合は全幅にして、副情報 (eyebrow + brass hairline + リスト等) で視覚バランスを取る
+- 採用済 Hero パターン: `features/cast-home/components/cast-home-hero.tsx` (案 A — 今夜のスケジュール)
 
-| Mode | Trigger | Behavior |
-|------|---------|----------|
-| Mock | no env vars | in-memory seed data (`lib/nightos/mock-data.ts`) |
-| Supabase | `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY` | real Postgres |
-| AI | `ANTHROPIC_API_KEY` (combinable with above) | real Claude responses |
+### 1.5 自動検査
 
-Every fallback degrades instead of crashing: no env → mock; Supabase throws → mock;
-Claude throws/missing key → canned stub response.
+UI 変更後は必ず実行:
 
-**`lib/nightos/supabase-queries.ts` is the mode boundary.** Every public query goes
-through `withFallback(name, realFn, mockFn)`, which:
-1. returns the mock immediately if Supabase is not configured, then
-2. tries the real impl (`lib/nightos/supabase-real.ts`), falling back to mock on any throw.
+```bash
+npm run check:design   # legacy class 検知
+npm run build          # 型 / Tailwind 解決
+npm test               # vitest
+```
 
-CRITICAL: always check env vars **before** constructing a Supabase client —
-`createServerSupabaseClient()` (`lib/supabase/server.ts`) uses non-null assertions on
-the URL/key and throws at runtime if they're undefined. `withFallback` already guards
-this; preserve that ordering in new code. When adding a query, add it to BOTH
-`supabase-queries.ts` (the wrapper + mock) and `supabase-real.ts` (the real impl).
+### 1.6 design.md の更新義務
 
-## Auth: dual system (mock cookie + Supabase)
+UI ガイドラインに該当する変更を加えた場合、**コードと同じ PR で `design.md` も更新**すること。トークン追加 / 削除、コンポーネントレシピ変更、Hero パターン採用 → 必ず反映。
 
-`lib/nightos/auth.ts` is the only place that resolves "who is logged in." Two schemes
-coexist:
+---
 
-- **Mock auth (dev/demo):** the role selector sets an httpOnly cookie
-  `nightos.mock-cast-id`; `getMockCast()` looks the persona up in `mockCasts`.
-- **Real auth:** Supabase email/password; `getCastByAuthUserId()` maps the auth user
-  to a `nightos_casts` row.
+## 2. 一般的なコーディング規約
 
-`getCurrentCast()` prefers a real Supabase session and falls back to the mock cookie.
-`getCurrentCastId()` / `getCurrentManagerId()` add hardcoded fallback IDs from
-`constants.ts` (`CURRENT_CAST_ID = "cast1"`, etc.) so server components always have an ID.
+### 2.1 Git
 
-**Production safety flag:** `NIGHTOS_DISABLE_MOCK_AUTH=true` must be set in prod — it
-hides the demo login UI, makes `mockLogin` throw, and stops both `middleware.ts` and
-`auth.ts` from honoring the mock cookie. Helper: `isMockAuthDisabled()` in `env.ts`.
-`middleware.ts` redirects unauthenticated users to the role-appropriate login and
-refreshes the Supabase session cookie on every request.
+- **作業ブランチ**: 機能ごとに `claude/<feature>` でブランチを切る (一人開発でも履歴の単位として有用)
+- マージ先は `main`
+- コミットメッセージは日本語可、`feat(scope): ...` / `fix(scope): ...` / `chore(...)` / `docs(...)` を推奨
+- **PR は任意** — 一人開発でデプロイ前確認 (Vercel preview) を活用したい場合のみ
 
-**Account-bound role enforcement (migration 008):** route-group layouts under
-`app/<role>/(app)/layout.tsx` re-check `getCurrentRole()` server-side and `redirect()`
-wrong roles to their own home — you can't URL-poke into another role's area. When adding
-a role-scoped route, place it inside that role's `(app)` group so it inherits the guard.
+### 2.2 検証
 
-## CastProvider: server resolves identity, client consumes it
+コミット前に最低限:
 
-No prop-drilling of the current cast. The `(app)` layout resolves the cast/manager IDs
-server-side, then wraps children in `<CastProvider>` (`lib/nightos/cast-context.tsx`).
-Client components read it via `useCastId()` / `useCast()` / `useManagerId()`. Server
-components call the `auth.ts` helpers directly. Prefer Server Components; mark only
-interactive leaves `"use client"`. Form mutations are Server Actions (`actions.ts`
-files, `"use server"`) that call queries and `revalidatePath`.
+```bash
+npm run build
+npm test
+```
 
-## Feature module layout
+両方が緑であること。
 
-UI is organized by feature in `features/<feature>/`, not by file type. A typical
-feature has `components/`, `data/` (selectors, static content), `lib/` (client-side
-stores), and `actions.ts` (Server Actions). `app/` holds thin route files that compose
-features. Shared UI primitives: `components/nightos/` (app-specific kit) and
-`components/ui/` (generic). The AI assistant feature lives in `features/ruri-mama/`
-(legacy dir name) but is displayed to users as **さくらママ** — see
-`SAKURA_MAMA_DISPLAY_NAME` in `constants.ts`; don't rename user-facing strings to "ruri".
+### 2.3 依存
 
-## API routes (`app/api/*/route.ts`)
+- **Next.js 14 (App Router)**
+- **React 18.3 / TypeScript 5**
+- **Tailwind CSS 3.4** (config: `tailwind.config.ts`)
+- **Supabase** (`@supabase/ssr` + `@supabase/supabase-js`)
+- **Anthropic SDK** (`@anthropic-ai/sdk`) — さくらママ AI 機能
+- **Lucide React** アイコン
+- 新規依存追加は最小限。代替が標準ライブラリにあるなら追加しない
 
-All Claude-backed endpoints follow the same shape (see `api/ruri-mama/route.ts`):
-validate input with a shared Zod schema via `parseBody(req, schema)` from
-`lib/nightos/validation.ts` (returns a `NextResponse` on failure — early-return it),
-then branch: no `ANTHROPIC_API_KEY` → return a stub; live call wrapped in try/catch →
-stub on any failure. Add new request schemas to `validation.ts` to keep limits/patterns
-centralized. Claude model is pinned in `constants.ts` (`SAKURA_MAMA_MODEL`,
-currently `claude-haiku-4-5-20251001`).
+### 2.4 データ層
 
-**Gated setup endpoints:** `/setup`, `/api/setup`, `/api/setup-auth` are guarded by
-`lib/nightos/admin-gate.ts`. They 404 unless `NIGHTOS_SETUP_SECRET` (≥16 chars) is set
-**and** the request's `?secret=` matches (constant-time compare). Correct production
-state is to leave `NIGHTOS_SETUP_SECRET` **unset** so these endpoints vanish.
+- Mock データ: `lib/nightos/mock-data.ts`
+- localStorage ストア: `lib/nightos/{schedule,douhan,contacted}-store.ts` 等
+- Supabase クエリ: `lib/nightos/supabase-queries.ts`
+- 認証: `lib/nightos/auth.ts`
 
-## Database / migrations
+クライアントコンポーネントから localStorage を読むときは `typeof window !== 'undefined'` ガードを書く (SSR 対策)。
 
-`supabase/migrations/` run in numeric order (see `supabase/MIGRATE.md`). All are
-idempotent (`if [not] exists`). Key evolution to be aware of: migrations **006/007
-disabled RLS** for MVP speed, and **010 re-enables RLS** with `auth.uid()`-scoped
-policies and revokes anon writes. So the README's "RLS off" instructions reflect an
-earlier state — for a secure deployment, 010 is the current intent. If a Supabase-mode
-feature suddenly returns empty rows or 401s, suspect RLS policy scope.
+### 2.5 命名
 
-Convention: **all table primary keys are TEXT**, so a mock ID and its DB row share the
-same value — this is what lets the same code path work across mock and Supabase modes.
+- ルート: `kebab-case` (例: `app/cast/customers/new/page.tsx`)
+- コンポーネント: `kebab-case.tsx` 内に `PascalCase` の関数を export
+- フック / 型: `PascalCase` (`useCastId`, `CastHomeData`)
+- 顧客の敬称: 「{name}さま」(顧客向け文面) / 「{name}さん」(キャスト/スタッフ間)
 
-## Conventions & gotchas
+---
 
-- Error logging goes through `reportError` / `reportWarning` (`lib/nightos/error-reporter.ts`),
-  which emit structured `[nightos:error]` / `[nightos:warn]` JSON lines that Vercel scrapes.
-  Grep those tags when debugging prod. The shim is vendor-agnostic by design.
-- `MOCK_TODAY` (`mock-data.ts`) is the fixed "today" for the demo so seeded dates and
-  stats stay consistent; code uses real `new Date()` only in Supabase mode.
-- Two role/venue axes exist: **venue type** (`club` | `cabaret`) and **club role**
-  (`mama` | `oneesan` | `help`) plus account `user_role` (`cast` | `store_*` | `customer`).
-  `cast-home`, for example, has separate `-club` / `-cabaret` variants.
-- Tailwind uses a custom palette (pearl / champagne / rose-gold / amethyst / blush) in
-  `tailwind.config.ts`; mobile-first, layouts cap width ~520px.
-- Unit tests cover pure logic only (CSV, validation, follow-selector, demo-data
-  integrity). Anything browser/route-level belongs in Playwright `e2e/` (includes a
-  security suite: route protection, IDOR, RLS bypass, XSS/CSRF).
+## 3. ロール / 業態
+
+このアプリは 4 ロール × 2 業態の組み合わせを扱う:
+
+| ロール | URL prefix |
+|---|---|
+| Cast (キャスト) | `/cast/...` |
+| Customer (来店客) | `/customer/...` |
+| Store (店舗オーナー / スタッフ) | `/store/...` |
+| Mama (ママ / 姉さん) | `/mama/...` |
+
+業態:
+- **Club**: 担当制。同伴と継続来店を重視 (`venueType === "club"`)
+- **Cabaret**: 指名制。指名化と来店頻度を重視 (`venueType === "cabaret"`)
+
+`getCurrentVenueType()` で判定し、画面を切り替える (例: `cast-home-club.tsx` / `cast-home-cabaret.tsx`)。
+
+---
+
+## 4. AI 機能 (さくらママ)
+
+- ブランド名は「**さくらママ**」(コード内変数 / route は `ruri-mama` のまま、UI 表示だけ「さくらママ」)
+- 定数: `SAKURA_MAMA_DISPLAY_NAME` / `SAKURA_MAMA_CHAT_NAME` (`lib/nightos/constants.ts`)
+- アバター: `/public/cast/sakura-mama.jpg` (V5 ヒーロー用) / `/public/ruri-mama-*.svg` (バリエーション)
+- API キー: `ANTHROPIC_API_KEY` (未設定時は stub モード)
+
+---
+
+## 5. デプロイ
+
+- 本番: Vercel (URL: `nightos-*.vercel.app`)
+- main ブランチへの push で自動デプロイ
+- preview deployment は PR ごと
+
+---
+
+最終更新: 2026-05-30 (V5 Bordeaux Salon 採用に伴い新規作成)

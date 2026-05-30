@@ -54,7 +54,7 @@ export function TodayFollowStatus({
   return (
     <Card className="p-4 space-y-3">
       <h3 className="text-label-md font-semibold text-ink flex items-center gap-1.5">
-        <CheckCircle2 size={14} className="text-emerald" />
+        <CheckCircle2 size={14} className="text-success" />
         今日の連絡状況
       </h3>
       <div className="space-y-2.5">
@@ -71,7 +71,7 @@ export function TodayFollowStatus({
                 <span
                   className={cn(
                     "font-semibold",
-                    isDone ? "text-emerald" : pct > 0 ? "text-amber" : "text-ink-muted",
+                    isDone ? "text-success" : pct > 0 ? "text-warning" : "text-ink-mute",
                   )}
                 >
                   {isDone ? "✅ 完了" : `${s.contactedCount}/${s.targetCount}人`}

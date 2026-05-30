@@ -26,7 +26,7 @@ export function SendStoreRequest({ castId, castName }: Props) {
   };
 
   return (
-    <div className="rounded-card bg-pearl-warm border border-pearl-soft shadow-soft-card overflow-hidden">
+    <div className="rounded-card bg-pearl-warm border border-pearl-soft shadow-soft overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -36,13 +36,13 @@ export function SendStoreRequest({ castId, castName }: Props) {
           <span className="text-[11px]">📋</span>
           <span className="text-[11px] font-medium text-ink">店舗へリクエスト</span>
         </div>
-        {open ? <ChevronUp size={12} className="text-ink-muted" /> : <ChevronDown size={12} className="text-ink-muted" />}
+        {open ? <ChevronUp size={12} className="text-ink-mute" /> : <ChevronDown size={12} className="text-ink-mute" />}
       </button>
 
       {open && (
         <div className="px-4 pb-3 pt-1">
           {success ? (
-            <div className="flex items-center gap-1.5 text-[11px] text-emerald font-medium py-1">
+            <div className="flex items-center gap-1.5 text-[11px] text-success font-medium py-1">
               <Check size={12} />
               送信しました
             </div>
@@ -53,7 +53,7 @@ export function SendStoreRequest({ castId, castName }: Props) {
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="VIPルーム準備、シャンパン用意 など"
                 style={{ fontSize: "13px" }}
-                className="flex-1 h-9 px-3 rounded-full bg-pearl-soft border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-muted"
+                className="flex-1 h-9 px-3 rounded-full bg-pearl-soft border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-mute"
                 onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
               />
               <button

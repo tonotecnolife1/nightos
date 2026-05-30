@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NIGHTOS Cast UI Kit — /cast/home (Luxury Lady Night v3)</title>
+<link rel="stylesheet" href="../../colors_and_type.css" />
+<style>
+  body { background: #2b232a; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 0; }
+  .stage { display: flex; gap: 48px; align-items: flex-start; }
+  .meta {
+    color: #f3d8c8; max-width: 280px;
+    font: 400 13px/1.7 var(--font-sans);
+  }
+  .meta h2 { font: 500 22px/1.2 var(--font-serif); margin: 0 0 8px; color: #fdfcf9; letter-spacing: 0.02em; }
+  .meta .eyebrow { font: 400 11px/1 var(--font-display); letter-spacing: 0.22em; color: #dba98e; margin-bottom: 8px; display: block; }
+  .meta hr { border: none; height: 1px; background: linear-gradient(90deg, #b89455, transparent); margin: 18px 0; }
+  .meta ul { margin: 8px 0; padding-left: 16px; }
+  .meta a { color: #f3d8c8; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="stage">
+  <div class="meta">
+    <span class="eyebrow">NIGHTOS · UI KIT</span>
+    <h2>/cast/home</h2>
+    <p>キャストホームを Luxury Lady Night (v3) パレットで再構成。元 repo の cast-home-cabaret.tsx を忠実にトレースしつつ、blush → rose-gold メタリックに差し替え。</p>
+    <hr/>
+    <strong style="color:#fdfcf9;">タップ操作</strong>
+    <ul>
+      <li>顧客カード → 詳細画面</li>
+      <li>「さくらママに相談する」 → AI チャット</li>
+      <li>「連絡した」→ 完了マーク (再タップで戻す)</li>
+      <li>FAB · 通知ベル · タブバー</li>
+    </ul>
+    <hr/>
+    <strong style="color:#fdfcf9;">構成要素</strong>
+    <ul style="font-size:12px;">
+      <li>Hero (ピアル→シャンパンのグラデ + metallic 見出し)</li>
+      <li>StatCards (Cormorant 数値 × 3)</li>
+      <li>MorningBriefing (nocturne ガラス)</li>
+      <li>RuriMamaEntryCard (rose-gold-light)</li>
+      <li>FollowTargetCard × 4 + 進捗バー</li>
+      <li>FAB · Floating TabBar</li>
+    </ul>
+  </div>
+
+  <div id="root" data-screen-label="01 Cast Home"></div>
+</div>
+
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="cast-home.jsx"></script>
+<script type="text/babel" src="sub-screens.jsx"></script>
+<script type="text/babel" data-presets="react">
+const { useState } = React;
+
+// ─── Mock data ────────────────────────────────────────────
+const SUMMARY = { nominations: 18, repeatPct: 72, newCustomers: 3 };
+
+const TARGETS = [
+  {
+    id: 'cust1', name: '田中 太郎', job: '社長 · IT', category: 'vip',
+    reason: 'interval', reasonDetail: '12日経過 · 同伴狙い',
+    bottle: '山崎12年（残 30%）', lastTopic: 'お子さんの面接の話',
+    visits: 14, totalSpend: '48.2万', daysSinceVisit: 12, bottleRemaining: 4,
+    storeInfo: '前回来店時、「次は山崎を飲みたい」と発言。誕生日は 6/12 (お子さん同じ日)。',
+    personalMemo: '面接の結果フォロー必須。次回は山崎の話で繋ぐ。',
+  },
+  {
+    id: 'cust2', name: '渡辺 美咲', job: 'デザイナー', category: 'new',
+    reason: 'birthday', reasonDetail: '来週 火曜が誕生日',
+    bottle: 'モエ (キープなし)', lastTopic: '京都旅行の写真',
+    visits: 2, totalSpend: '3.8万', daysSinceVisit: 5, bottleRemaining: 0,
+    storeInfo: '初回 5/10 · 紹介 = 田中さん。会社員ではなくフリー。',
+    personalMemo: 'お祝いメッセージを早めに送る。短く・絵文字は使わない。',
+  },
+  {
+    id: 'cust3', name: '高橋 健', job: '弁護士', category: 'regular',
+    reason: 'nomination', reasonDetail: '3 回連続来店 · 指名化チャンス',
+    bottle: '響17年（残 60%）', lastTopic: '六本木のジャズバー',
+    visits: 6, totalSpend: '18.8万', daysSinceVisit: 3, bottleRemaining: 8,
+    storeInfo: '本指名 0 · 場内のみ。次回入ったらクロージング。',
+    personalMemo: '「次の同伴」を匂わせる。ジャズの話で。',
+  },
+  {
+    id: 'cust4', name: '佐藤 健一', job: '医師', category: 'regular',
+    reason: 'interval', reasonDetail: '18日経過 · 軽く一報',
+    bottle: 'ボウモア (残 10%)', lastTopic: 'マラソンの大会',
+    visits: 9, totalSpend: '21.2万', daysSinceVisit: 18, bottleRemaining: 1,
+    storeInfo: '残ボトル要連絡。次回ボトル提案 OK。',
+    personalMemo: 'まずはマラソン応援 → 数日後に来店誘導。',
+  },
+];
+
+const BRIEFING = '今日も一日、おつかれさま。\n田中さんと渡辺さん、忘れずに一声。あと、自分のごはんも忘れないでね。';
+
+// ─── Root ────────────────────────────────────────────────
+function App() {
+  const [screen, setScreen] = useState({ name: 'home' });
+  const [activeTab, setActiveTab] = useState('home');
+  const [contacted, setContacted] = useState(new Set());
+
+  const toggleContacted = (id) => {
+    setContacted(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const goHome = () => setScreen({ name: 'home' });
+  const openCustomer = (cust) => setScreen({ name: 'cust', customer: cust });
+  const openMama = () => setScreen({ name: 'mama' });
+
+  // Wrap FollowTargetCard so tapping it opens detail (in addition to the "連絡した" button)
+  const HomeScreen = (
+    <div style={{ position: 'relative', minHeight: '100%', background: C.pearl, paddingBottom: 110 }}>
+      <Hero name="あかり" notifCount={2} />
+      <div style={{ padding: '18px 18px 0', display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <StatCards summary={SUMMARY} />
+        <MorningBriefing message={BRIEFING} />
+        <RuriMamaEntryCard onClick={openMama} />
+
+        <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <SectionHead title="今日連絡したいお客様" sub={`${TARGETS.length} 名`} />
+
+          {/* Progress + cards */}
+          {(() => {
+            const done = TARGETS.filter(t => contacted.has(t.id)).length;
+            const total = TARGETS.length;
+            const pct = Math.round((done / total) * 100);
+            const sorted = [...TARGETS].sort((a, b) =>
+              (contacted.has(a.id) ? 1 : 0) - (contacted.has(b.id) ? 1 : 0)
+            );
+            return (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ flex: 1, height: 4, borderRadius: 999, background: C.pearlSoft, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${pct}%`, background: C.metal, transition: 'width .4s' }} />
+                  </div>
+                  <span style={{ font: `400 14px/1 ${C.display}`, color: done === total ? C.success : C.inkMute, letterSpacing: '0.04em' }}>
+                    {done}/{total}
+                  </span>
+                </div>
+                {done === total && <AllDoneBanner />}
+                {sorted.map(t => (
+                  <div key={t.id} onClick={(e) => {
+                    // Only navigate if user didn't click a button inside
+                    if (e.target.closest('button')) return;
+                    openCustomer(t);
+                  }}>
+                    <FollowTargetCard target={t} contacted={contacted.has(t.id)} onToggle={toggleContacted} />
+                  </div>
+                ))}
+              </>
+            );
+          })()}
+        </section>
+      </div>
+
+      <FAB />
+      <TabBar active={activeTab} onChange={setActiveTab} />
+    </div>
+  );
+
+  let body;
+  if (screen.name === 'home') body = HomeScreen;
+  else if (screen.name === 'cust') body = (
+    <div style={{ position: 'relative', minHeight: '100%', background: C.pearl }}>
+      <CustomerDetailScreen customer={screen.customer} onBack={goHome} />
+    </div>
+  );
+  else if (screen.name === 'mama') body = (
+    <div style={{ position: 'relative', minHeight: '100%', background: C.pearl }}>
+      <SakuraMamaScreen onBack={goHome} />
+    </div>
+  );
+
+  return (
+    <IOSDevice width={392} height={844}>
+      {body}
+    </IOSDevice>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

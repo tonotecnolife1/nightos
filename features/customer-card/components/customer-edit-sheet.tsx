@@ -124,7 +124,7 @@ export function CustomerEditSheet({ customer, isOpen, onClose }: Props) {
           <div className="space-y-1.5">
             <label className="text-label-md text-ink font-medium flex items-center gap-2">
               呼び名
-              <span className="text-[10px] px-1.5 py-0.5 rounded-badge bg-blush-soft text-blush-deep font-medium">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-badge bg-wine-soft/30 text-wine-deep font-medium">
                 入力推奨
               </span>
             </label>
@@ -134,7 +134,7 @@ export function CustomerEditSheet({ customer, isOpen, onClose }: Props) {
               onChange={(e) => setNickname(e.target.value)}
               placeholder="例: たっちゃん"
               style={{ fontSize: "16px" }}
-              className="w-full h-11 rounded-2xl border-[1.5px] border-dashed border-blush-deep/60 bg-blush-soft/30 px-3 text-body-md text-ink outline-none focus:border-blush-deep"
+              className="w-full h-11 rounded-2xl border-[1.5px] border-dashed border-wine-deep/40 bg-wine-soft/20 px-3 text-body-md text-ink outline-none focus:border-wine-deep"
             />
             <p className="text-[10px] text-ink-muted pl-1">
               接客中の呼びかけに使います
@@ -187,7 +187,7 @@ export function CustomerEditSheet({ customer, isOpen, onClose }: Props) {
           </div>
 
           {error && (
-            <div className="rounded-2xl bg-rose/10 border border-rose/30 text-rose text-body-sm px-3 py-2">
+            <div className="rounded-2xl bg-wine/10 border border-wine/25 text-wine-deep text-body-sm px-3 py-2">
               {error}
             </div>
           )}
@@ -204,7 +204,7 @@ export function CustomerEditSheet({ customer, isOpen, onClose }: Props) {
             <button
               type="submit"
               disabled={pending || !name.trim()}
-              className="flex-1 h-11 rounded-pill bg-gradient-blush text-ink font-medium shadow-float disabled:opacity-60 active:translate-y-[1px] transition"
+              className="flex-1 h-11 rounded-pill bg-rose-gold-metallic text-ink font-medium shadow-float disabled:opacity-60 active:translate-y-[1px] transition"
             >
               <Check size={14} className="inline mr-1" />
               {pending ? "保存中…" : "保存する"}

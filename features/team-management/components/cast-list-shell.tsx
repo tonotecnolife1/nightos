@@ -90,24 +90,25 @@ export function CastListShell({
 
   return (
     <section className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-display-sm text-ink">
+      <header className="relative flex items-center justify-between pl-3.5">
+        <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+        <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">
           キャスト一覧（{teamCasts.length}人）
         </h2>
-      </div>
+      </header>
 
       {/* Search */}
       <div className="relative">
         <Search
           size={14}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute"
         />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="名前で検索"
-          className="w-full pl-8 pr-3 py-2 rounded-btn border border-pearl-soft bg-pearl-warm text-body-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-amethyst-border"
+          className="w-full pl-8 pr-3 py-2 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep transition"
         />
       </div>
 
@@ -119,10 +120,10 @@ export function CastListShell({
             type="button"
             onClick={() => setSort(opt.key)}
             className={cn(
-              "px-3 py-1 rounded-badge text-[11px] font-medium border whitespace-nowrap transition-colors",
+              "px-3 py-1 rounded-pill text-[11px] font-medium tracking-[0.04em] border whitespace-nowrap transition-colors",
               sort === opt.key
-                ? "bg-amethyst-muted text-amethyst-dark border-amethyst-border"
-                : "bg-pearl-warm text-ink-muted border-pearl-soft",
+                ? "bg-champagne-soft/60 text-wine-deep border-gold/30"
+                : "bg-pearl-light text-ink-mute border-ink/[0.08]",
             )}
           >
             {opt.label}
@@ -132,7 +133,7 @@ export function CastListShell({
 
       {/* Cast list */}
       {filtered.length === 0 ? (
-        <Card className="p-6 text-center text-body-sm text-ink-muted">
+        <Card className="p-6 text-center text-body-sm text-ink-mute">
           該当するキャストがいません
         </Card>
       ) : (
@@ -171,8 +172,8 @@ function CastCard({ cast, customerCount, pace }: CastCardProps) {
       <Card
         className={cn(
           "p-3",
-          pace?.status === "meeting_risk" && "!border-rose/30 !bg-rose/5",
-          pace?.status === "behind" && "!border-amber/30 !bg-amber/5",
+          pace?.status === "meeting_risk" && "!border-wine/30 !bg-wine/5",
+          pace?.status === "behind" && "!border-warning/30 !bg-warning/5",
         )}
       >
         <div className="flex items-start justify-between mb-2">
@@ -193,25 +194,25 @@ function CastCard({ cast, customerCount, pace }: CastCardProps) {
                 </span>
               )}
             </div>
-            <div className="text-[10px] text-ink-muted mt-0.5">
+            <div className="text-[10px] text-ink-mute mt-0.5">
               {customerCount}人担当
             </div>
           </div>
-          <ChevronRight size={14} className="text-ink-muted shrink-0 mt-1" />
+          <ChevronRight size={14} className="text-ink-mute shrink-0 mt-1" />
         </div>
 
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-btn bg-pearl-soft py-1.5 text-center">
-            <div className="font-display text-body-md text-roseGold-dark">
+            <div className="font-display text-body-md text-wine-deep">
               {(cast.monthly_sales / 10000).toFixed(0)}
             </div>
-            <div className="text-[9px] text-ink-muted">万円</div>
+            <div className="text-[9px] text-ink-mute">万円</div>
           </div>
           <div className="rounded-btn bg-pearl-soft py-1.5 text-center">
-            <div className="font-display text-body-md text-amethyst-dark">
+            <div className="font-display text-body-md text-gold-deep">
               {repeatPct}
             </div>
-            <div className="text-[9px] text-ink-muted">% 再来店</div>
+            <div className="text-[9px] text-ink-mute">% 再来店</div>
           </div>
         </div>
       </Card>

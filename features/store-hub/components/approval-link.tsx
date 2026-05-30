@@ -23,11 +23,11 @@ export function ApprovalLink() {
       className="block active:scale-[0.99] transition-transform"
     >
       <Card
-        className={`p-3 ${count > 0 ? "!border-amber/30 !bg-amber/5" : "!border-pearl-soft"}`}
+        className={`p-3 ${count > 0 ? "!border-warning/30 !bg-warning/5" : "!border-pearl-soft"}`}
       >
         <div className="flex items-center gap-2.5">
           <div
-            className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${count > 0 ? "bg-amber/20 text-amber" : "bg-pearl-soft text-ink-muted"}`}
+            className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${count > 0 ? "bg-warning/20 text-warning" : "bg-pearl-soft text-ink-mute"}`}
           >
             <UserCog size={16} />
           </div>
@@ -37,18 +37,18 @@ export function ApprovalLink() {
                 承認キュー
               </span>
               {count > 0 && (
-                <span className="text-[10px] bg-amber text-pearl px-1.5 py-0.5 rounded-badge font-semibold">
+                <span className="text-[10px] bg-warning text-pearl-light px-1.5 py-0.5 rounded-badge font-semibold">
                   {count}
                 </span>
               )}
             </div>
-            <div className="text-[10px] text-ink-secondary mt-0.5">
+            <div className="text-[10px] text-ink-soft mt-0.5">
               {count > 0
                 ? `${count}件の管理者変更申請が承認待ちです`
                 : "未処理の申請はありません"}
             </div>
           </div>
-          <ChevronRight size={14} className="text-ink-muted" />
+          <ChevronRight size={14} className="text-ink-mute" />
         </div>
       </Card>
     </Link>

@@ -92,7 +92,7 @@ function BottleRow({ bottle }: { bottle: Bottle }) {
         <span
           className={cn(
             "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-badge text-[10px] font-medium",
-            "bg-amber/20 text-amber border border-amber/40",
+            "bg-warning/20 text-warning border border-warning/30",
           )}
         >
           <AlertTriangle size={9} />

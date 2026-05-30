@@ -59,7 +59,7 @@ export function ApprovalQueue() {
         const dateStr = `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
         return (
           <Card key={req.id} className="p-3 space-y-2">
-            <div className="flex items-center gap-1.5 text-[10px] text-ink-muted">
+            <div className="flex items-center gap-1.5 text-[10px] text-ink-mute">
               <Clock size={10} />
               <span>{dateStr}</span>
               <span>·</span>
@@ -67,24 +67,24 @@ export function ApprovalQueue() {
             </div>
 
             <div className="flex items-center gap-1.5">
-              <UserCog size={13} className="text-amethyst-dark shrink-0" />
+              <UserCog size={13} className="text-gold-deep shrink-0" />
               <span className="text-body-sm font-medium text-ink">
                 {req.customerName}さま
               </span>
             </div>
 
             <div className="flex items-center gap-2 text-body-sm bg-pearl-soft rounded-btn px-3 py-2">
-              <span className="text-ink-secondary">
+              <span className="text-ink-soft">
                 {req.fromManagerName ?? "未割り当て"}
               </span>
-              <ArrowRight size={12} className="text-ink-muted shrink-0" />
+              <ArrowRight size={12} className="text-ink-mute shrink-0" />
               <span className="text-ink font-medium">
                 {req.toManagerName ?? "未割り当て"}
               </span>
             </div>
 
             {req.reason && (
-              <div className="text-[11px] text-ink-secondary bg-pearl-warm rounded-btn px-2 py-1.5">
+              <div className="text-[11px] text-ink-soft bg-pearl-warm rounded-btn px-2 py-1.5">
                 理由: {req.reason}
               </div>
             )}
@@ -93,7 +93,7 @@ export function ApprovalQueue() {
               <button
                 type="button"
                 onClick={() => approve(req.id)}
-                className="flex-1 h-9 rounded-btn bg-emerald/10 text-emerald border border-emerald/25 text-label-sm font-medium active:scale-[0.98] flex items-center justify-center gap-1"
+                className="flex-1 h-9 rounded-btn bg-success/10 text-success border border-success/25 text-label-sm font-medium active:scale-[0.98] flex items-center justify-center gap-1"
               >
                 <Check size={12} />
                 承認する
@@ -101,7 +101,7 @@ export function ApprovalQueue() {
               <button
                 type="button"
                 onClick={() => reject(req.id)}
-                className="h-9 px-4 rounded-btn bg-pearl-soft text-ink-secondary text-label-sm active:scale-[0.98] flex items-center gap-1"
+                className="h-9 px-4 rounded-btn bg-pearl-soft text-ink-soft text-label-sm active:scale-[0.98] flex items-center gap-1"
               >
                 <X size={12} />
                 却下

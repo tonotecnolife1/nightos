@@ -38,9 +38,9 @@ export function AiUsageSummary() {
   if (!loaded || stats.total === 0) return null;
 
   return (
-    <Card className="p-3 !bg-amethyst-muted/30 !border-amethyst-border">
+    <Card className="p-3 !bg-champagne-soft/60/30 !border-gold/30">
       <div className="flex items-center gap-1.5 mb-2">
-        <Sparkles size={13} className="text-amethyst-dark" />
+        <Sparkles size={13} className="text-gold-deep" />
         <span className="text-body-sm font-semibold text-ink">
           さくらママ活用度
         </span>
@@ -49,13 +49,13 @@ export function AiUsageSummary() {
         <div>
           <div className="text-display-sm font-display text-ink leading-none">
             {stats.total}
-            <span className="text-[11px] text-ink-muted ml-1">回相談</span>
+            <span className="text-[11px] text-ink-mute ml-1">回相談</span>
           </div>
         </div>
         {stats.topStyle && (
           <div className="text-right">
-            <div className="text-[10px] text-ink-muted">よく選ぶスタイル</div>
-            <div className="text-body-sm text-amethyst-dark font-medium">
+            <div className="text-[10px] text-ink-mute">よく選ぶスタイル</div>
+            <div className="text-body-sm text-gold-deep font-medium">
               {STYLE_LABELS[stats.topStyle]}
             </div>
           </div>

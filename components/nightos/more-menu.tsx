@@ -109,8 +109,8 @@ export function MoreMenu({ tone = "default" }: Props) {
         className={cn(
           "w-9 h-9 rounded-full flex items-center justify-center transition",
           isRuri
-            ? "bg-white/15 hover:bg-white/25 text-pearl"
-            : "bg-pearl-warm/70 hover:bg-pearl-warm text-ink-secondary",
+            ? "bg-white/15 hover:bg-white/25 text-pearl-light"
+            : "bg-pearl-warm/70 hover:bg-pearl-warm text-ink-soft",
         )}
       >
         <Menu size={18} />
@@ -150,7 +150,7 @@ export function MoreMenu({ tone = "default" }: Props) {
                       className={cn(
                         "flex items-center gap-3 px-4 py-3 rounded-card border transition",
                         active
-                          ? "border-amethyst/30 bg-amethyst-muted/70 text-amethyst-dark"
+                          ? "border-gold/30 bg-champagne-soft/60 text-gold-deep"
                           : "border-transparent text-ink hover:bg-pearl-soft",
                       )}
                     >

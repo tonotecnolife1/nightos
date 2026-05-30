@@ -91,20 +91,20 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
 
   const confidenceBadge =
     result?.confidence === "high"
-      ? { label: "精度: 高", cls: "bg-emerald/10 text-emerald border-emerald/30" }
+      ? { label: "精度: 高", cls: "bg-success/10 text-success border-success/30" }
       : result?.confidence === "medium"
-        ? { label: "精度: 中", cls: "bg-amber/10 text-amber border-amber/30" }
-        : { label: "精度: 低", cls: "bg-rose/10 text-rose border-rose/30" };
+        ? { label: "精度: 中", cls: "bg-warning/10 text-warning border-warning/30" }
+        : { label: "精度: 低", cls: "bg-wine/10 text-wine-deep border-wine/30" };
 
   return (
-    <Card className="p-3 !border-amethyst-border !bg-amethyst-muted/20 space-y-2.5">
+    <Card className="p-3 !border-gold/30 !bg-champagne-soft/30 space-y-2.5">
       <div className="flex items-center gap-1.5">
-        <ScanLine size={14} className="text-amethyst-dark" />
+        <ScanLine size={14} className="text-gold-deep" />
         <span className="text-label-md text-ink font-medium">
           名刺で入力を簡単に
         </span>
         {mode === "edit" && (
-          <span className="ml-auto text-[9px] text-ink-muted">
+          <span className="ml-auto text-[9px] text-ink-mute">
             既存値は上書きされます
           </span>
         )}
@@ -115,7 +115,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex-1 h-11 rounded-btn bg-amethyst text-pearl shadow-soft-card flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-medium"
+            className="flex-1 h-11 rounded-pill bg-wine-deep text-pearl-light-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
           >
             <Camera size={16} />
             撮影
@@ -123,7 +123,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           <button
             type="button"
             onClick={() => galleryInputRef.current?.click()}
-            className="flex-1 h-11 rounded-btn border border-amethyst-border bg-pearl-warm text-amethyst-dark flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-medium"
+            className="flex-1 h-11 rounded-pill border border-wine-deep/70 bg-transparent text-wine-deep inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-label-md font-medium"
           >
             <Images size={16} />
             カメラロール
@@ -142,7 +142,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           <button
             type="button"
             onClick={reset}
-            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-ink/60 text-pearl flex items-center justify-center"
+            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-ink/60 text-pearl-light-light flex items-center justify-center"
             aria-label="クリア"
           >
             <X size={12} />
@@ -151,14 +151,14 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
       )}
 
       {loading && (
-        <div className="flex items-center gap-2 text-body-sm text-amethyst-dark py-2">
+        <div className="flex items-center gap-2 text-body-sm text-gold-deep py-2">
           <Loader2 size={14} className="animate-spin" />
           名刺を読み取り中…
         </div>
       )}
 
       {error && (
-        <div className="flex items-start gap-1.5 rounded-btn bg-rose/10 border border-rose/30 text-rose text-label-sm px-2.5 py-2">
+        <div className="flex items-start gap-1.5 rounded-btn bg-wine/10 border border-wine/30 text-wine-deep text-label-sm px-2.5 py-2">
           <AlertCircle size={12} className="mt-0.5 shrink-0" />
           <span>{error}</span>
         </div>
@@ -167,7 +167,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
       {result && !loading && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-label-sm text-ink-secondary">
+            <span className="text-label-sm text-ink-soft">
               抽出された情報
             </span>
             <span
@@ -179,7 +179,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
               {confidenceBadge.label}
             </span>
             {isStub && (
-              <span className="text-[9px] text-ink-muted">（デモ応答）</span>
+              <span className="text-[9px] text-ink-mute">（デモ応答）</span>
             )}
           </div>
 
@@ -190,14 +190,14 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           </div>
 
           {!result.name ? (
-            <p className="text-[10px] text-rose">
+            <p className="text-[10px] text-wine-deep">
               お名前が読み取れませんでした。別の写真をお試しください。
             </p>
           ) : (
             <button
               type="button"
               onClick={apply}
-              className="w-full h-10 rounded-btn bg-amethyst text-pearl shadow-soft-card flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-medium"
+              className="w-full h-10 rounded-pill bg-wine-deep text-pearl-light-light shadow-luxe inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
             >
               <Check size={14} />
               フォームに反映する
@@ -230,11 +230,11 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
 function ResultRow({ label, value }: { label: string; value: string | null }) {
   return (
     <div className="flex gap-2">
-      <span className="text-[10px] text-ink-muted shrink-0 w-16 pt-0.5">
+      <span className="text-[10px] text-ink-mute shrink-0 w-16 pt-0.5">
         {label}
       </span>
       <span className="text-ink flex-1 break-words">
-        {value ?? <span className="text-ink-muted">—</span>}
+        {value ?? <span className="text-ink-mute">—</span>}
       </span>
     </div>
   );

@@ -142,7 +142,7 @@ export function CustomerForm({
       <div className="space-y-1.5">
         <label className="text-label-md text-ink font-medium flex items-center gap-2">
           呼び名
-          <span className="text-[10px] px-1.5 py-0.5 rounded-badge bg-blush-soft text-blush-deep font-medium">
+          <span className="text-[10px] px-1.5 py-0.5 rounded-badge bg-wine-soft/30 text-wine-deep font-medium">
             入力推奨
           </span>
         </label>
@@ -153,7 +153,7 @@ export function CustomerForm({
           onChange={(e) => setNickname(e.target.value)}
           placeholder="例: たっちゃん"
           style={{ fontSize: "16px" }}
-          className="w-full h-11 rounded-2xl border-[1.5px] border-dashed border-blush-deep/60 bg-blush-soft/30 px-3 text-body-md text-ink outline-none focus:border-blush-deep"
+          className="w-full h-11 rounded-2xl border-[1.5px] border-dashed border-wine-deep/40 bg-wine-soft/20 px-3 text-body-md text-ink outline-none focus:border-wine-deep"
         />
         <p className="text-[10px] text-ink-muted pl-1">
           接客中の呼びかけに使います（カルテ・フォロー時のサブ表示）
@@ -178,7 +178,7 @@ export function CustomerForm({
       {/* 管理者 */}
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5">
-          <Crown size={13} className="text-amethyst-dark" />
+          <Crown size={13} className="text-gold-deep" />
           <label className="text-label-md text-ink font-medium">管理者</label>
         </div>
         <select
@@ -202,10 +202,10 @@ export function CustomerForm({
               key={opt.value}
               type="button"
               onClick={() => setCategory(opt.value)}
-              className={`flex-1 h-10 rounded-2xl border text-body-sm font-medium transition-all ${
+              className={`flex-1 h-10 rounded-pill border text-body-sm font-medium tracking-[0.04em] transition-all ${
                 category === opt.value
-                  ? "border-amethyst/40 bg-amethyst-muted text-amethyst-dark"
-                  : "border-ink/[0.06] bg-pearl-warm text-ink-secondary hover:border-amethyst/20"
+                  ? "border-wine-deep/70 bg-champagne-soft/40 text-wine-deep"
+                  : "border-ink/[0.08] bg-pearl-light text-ink-soft hover:border-gold/30"
               }`}
             >
               {opt.label}
@@ -215,9 +215,9 @@ export function CustomerForm({
       </div>
 
       {/* AI補完ヒント */}
-      <div className="flex items-start gap-2 px-3 py-2.5 rounded-2xl bg-emerald/5 border border-emerald/20">
-        <Bot size={14} className="text-emerald mt-0.5 shrink-0" />
-        <p className="text-[11px] text-ink-secondary leading-relaxed">
+      <div className="flex items-start gap-2 px-3 py-2.5 rounded-2xl bg-success/5 border border-success/20">
+        <Bot size={14} className="text-success mt-0.5 shrink-0" />
+        <p className="text-[11px] text-ink-soft leading-relaxed">
           職業・好みのお酒・話題などはルリママとのチャットから自動で補完されます。
         </p>
       </div>
@@ -226,7 +226,7 @@ export function CustomerForm({
       <button
         type="button"
         onClick={() => setShowOptional((v) => !v)}
-        className="w-full flex items-center justify-between px-3 py-2.5 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink-secondary hover:bg-pearl-warm transition"
+        className="w-full flex items-center justify-between px-3 py-2.5 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink-soft hover:bg-pearl-warm transition"
       >
         <span>{showOptional ? "追加情報を閉じる" : "追加情報を入力する（任意）"}</span>
         {showOptional ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
@@ -243,7 +243,7 @@ export function CustomerForm({
           {referrerOptions.length > 0 && (
             <div className="space-y-1.5">
               <div className="flex items-center gap-1.5">
-                <Users size={13} className="text-amethyst-dark" />
+                <Users size={13} className="text-gold-deep" />
                 <label className="text-label-md text-ink font-medium">どなたのご紹介？</label>
               </div>
               <select

@@ -45,24 +45,24 @@ export function CancellationAlert({ teamCasts, threshold = 2 }: Props) {
 
   return (
     <Link href={topLink} className="block active:scale-[0.99] transition-transform">
-      <Card className="p-3 border !border-rose/30 !bg-rose/5">
+      <Card className="p-3 border !border-wine/30 !bg-wine/5">
         <div className="flex items-center gap-2">
-          <AlertTriangle size={16} className="text-rose shrink-0" />
+          <AlertTriangle size={16} className="text-wine-deep shrink-0" />
           <div className="flex-1 min-w-0">
-            <div className="text-body-sm font-medium text-rose flex items-center gap-1">
+            <div className="text-body-sm font-medium text-wine-deep flex items-center gap-1">
               <XCircle size={12} />
               同伴キャンセル多め
             </div>
-            <div className="text-[11px] text-ink-secondary mt-0.5">
+            <div className="text-[11px] text-ink-soft mt-0.5">
               今月{threshold}件以上: {alerts
                 .map((a) => `${a.cast.name}さん(${a.count}件)`)
                 .join("・")}
             </div>
-            <div className="text-[10px] text-ink-muted mt-0.5">
+            <div className="text-[10px] text-ink-mute mt-0.5">
               タップで理由を確認
             </div>
           </div>
-          <ChevronRight size={14} className="text-ink-muted shrink-0" />
+          <ChevronRight size={14} className="text-ink-mute shrink-0" />
         </div>
       </Card>
     </Link>

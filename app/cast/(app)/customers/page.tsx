@@ -49,7 +49,7 @@ export default async function CastCustomerListPage() {
         right={
           <Link
             href="/cast/customers/new"
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amethyst-muted text-amethyst-dark text-label-sm font-medium border border-amethyst-border hover:bg-amethyst hover:text-pearl transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-pill bg-wine-deep text-pearl-light-light text-label-sm font-semibold tracking-[0.04em] shadow-soft hover:-translate-y-px transition"
           >
             <UserPlus size={14} />
             新規
@@ -79,12 +79,12 @@ export default async function CastCustomerListPage() {
           />
         </div>
 
-        <Card className="p-3 flex items-center justify-between">
-          <span className="text-body-sm text-ink-secondary flex items-center gap-1.5">
-            <GitBranch size={13} className="text-amethyst-dark" />
+        <Card className="p-3.5 flex items-center justify-between">
+          <span className="text-body-sm text-ink-soft flex items-center gap-1.5">
+            <GitBranch size={13} className="text-gold-deep" />
             お連れ様の繋がり数
           </span>
-          <span className="text-body-md text-ink font-medium">
+          <span className="font-display text-[18px] leading-none tabular-nums text-wine-deep tracking-[0.04em]">
             {totalReferralChains}本
           </span>
         </Card>
@@ -94,12 +94,12 @@ export default async function CastCustomerListPage() {
             <p className="text-body-md text-ink">
               まだ顧客が登録されていません
             </p>
-            <p className="text-body-sm text-ink-secondary">
+            <p className="text-body-sm text-ink-soft">
               担当のお客様を追加すると、ここから来店履歴やボトル、メモを管理できます。
             </p>
             <Link
               href="/cast/customers/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-btn bg-amethyst text-pearl text-body-sm font-semibold"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-sm font-semibold tracking-[0.04em] shadow-luxe"
             >
               <UserPlus size={14} />
               最初の顧客を追加

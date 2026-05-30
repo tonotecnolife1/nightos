@@ -65,21 +65,21 @@ export default function StoreDouhanPacePage() {
       <div className="px-5 pt-4 pb-6 space-y-5">
         {/* Summary */}
         <div className="grid grid-cols-2 gap-2.5">
-          <Card className="p-3 !border-rose/30 !bg-rose/5">
-            <div className="text-[10px] text-rose flex items-center gap-1">
+          <Card className="p-3 !border-wine/30 !bg-wine/5">
+            <div className="text-[10px] text-wine-deep flex items-center gap-1">
               <AlertTriangle size={10} />
               ミーティング注意
             </div>
-            <div className="text-display-sm font-display text-rose mt-0.5">
+            <div className="text-display-sm font-display text-wine-deep mt-0.5">
               {meetingRiskCount}人
             </div>
           </Card>
-          <Card className="p-3 !border-amber/30 !bg-amber/5">
-            <div className="text-[10px] text-amber flex items-center gap-1">
+          <Card className="p-3 !border-warning/30 !bg-warning/5">
+            <div className="text-[10px] text-warning flex items-center gap-1">
               <Clock size={10} />
               ペース遅れ
             </div>
-            <div className="text-display-sm font-display text-amber mt-0.5">
+            <div className="text-display-sm font-display text-warning mt-0.5">
               {behindCount}人
             </div>
           </Card>
@@ -87,7 +87,7 @@ export default function StoreDouhanPacePage() {
 
         {/* Role filter */}
         <div className="flex items-center gap-1.5 overflow-x-auto scroll-x">
-          <Filter size={12} className="text-ink-muted shrink-0" />
+          <Filter size={12} className="text-ink-mute shrink-0" />
           {FILTERS.map((f) => (
             <button
               key={f.value}
@@ -97,7 +97,7 @@ export default function StoreDouhanPacePage() {
                 "px-3 h-7 rounded-full text-[11px] font-medium shrink-0 transition-colors",
                 roleFilter === f.value
                   ? "bg-champagne text-ink"
-                  : "bg-pearl-soft text-ink-secondary",
+                  : "bg-pearl-soft text-ink-soft",
               )}
             >
               {f.label}
@@ -108,7 +108,7 @@ export default function StoreDouhanPacePage() {
         {/* Cast list */}
         <section className="space-y-2">
           {filtered.length === 0 ? (
-            <Card className="p-4 text-center text-body-sm text-ink-muted">
+            <Card className="p-4 text-center text-body-sm text-ink-mute">
               該当するキャストがいません
             </Card>
           ) : (
@@ -129,8 +129,8 @@ export default function StoreDouhanPacePage() {
                   className={cn(
                     "p-3 space-y-2",
                     pace.status === "meeting_risk" &&
-                      "!border-rose/30 !bg-rose/5",
-                    pace.status === "behind" && "!border-amber/30 !bg-amber/5",
+                      "!border-wine/30 !bg-wine/5",
+                    pace.status === "behind" && "!border-warning/30 !bg-warning/5",
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -139,7 +139,7 @@ export default function StoreDouhanPacePage() {
                         {pace.castName}
                       </span>
                       {cast?.club_role && (
-                        <span className="text-[10px] text-ink-muted">
+                        <span className="text-[10px] text-ink-mute">
                           {cast.club_role === "mama" ? "店長" : "キャスト"}
                         </span>
                       )}
@@ -158,14 +158,14 @@ export default function StoreDouhanPacePage() {
                   {/* Week progress */}
                   <div>
                     <div className="flex items-center justify-between text-[10px] mb-0.5">
-                      <span className="text-ink-muted">今週</span>
+                      <span className="text-ink-mute">今週</span>
                       <span className="text-ink">
                         {pace.thisWeekCount} / {pace.weekTarget} 回
                       </span>
                     </div>
                     <div className="h-1.5 bg-pearl-soft rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-rose-gold rounded-full transition-all"
+                        className="h-full bg-rose-gold-metallic rounded-full transition-all"
                         style={{ width: `${weekPct}%` }}
                       />
                     </div>
@@ -174,7 +174,7 @@ export default function StoreDouhanPacePage() {
                   {/* Month progress */}
                   <div>
                     <div className="flex items-center justify-between text-[10px] mb-0.5">
-                      <span className="text-ink-muted flex items-center gap-1">
+                      <span className="text-ink-mute flex items-center gap-1">
                         <Calendar size={9} />
                         今月
                       </span>
@@ -185,18 +185,18 @@ export default function StoreDouhanPacePage() {
                     </div>
                     <div className="h-1.5 bg-pearl-soft rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-amethyst rounded-full transition-all"
+                        className="h-full bg-gold-metallic rounded-full transition-all"
                         style={{ width: `${monthPct}%` }}
                       />
                     </div>
                     {pace.status === "meeting_risk" && (
-                      <div className="text-[10px] text-rose mt-1">
+                      <div className="text-[10px] text-wine-deep mt-1">
                         見込み {pace.projectedMonthCount}回 (目標未達)
                         → ミーティング対象
                       </div>
                     )}
                     {pace.status === "behind" && (
-                      <div className="text-[10px] text-amber mt-1">
+                      <div className="text-[10px] text-warning mt-1">
                         見込み {pace.projectedMonthCount}回 — あと
                         {Math.max(0, pace.monthTarget - pace.thisMonthCount)}回
                         必要

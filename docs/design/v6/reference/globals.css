@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base ── */
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* Light-mode scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(43, 35, 42, 0.12);
+    border-radius: 4px;
+  }
+
+  /* Tap highlight off */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* ── Utilities ── */
+@layer utilities {
+  /* Horizontal scroll snap (if needed) */
+  .scroll-x {
+    @apply flex overflow-x-auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .scroll-x::-webkit-scrollbar {
+    display: none;
+  }
+  .scroll-x > * {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  /* Display font is already applied via Tailwind's `font-display` utility
+     which resolves to Cormorant Garamond (see tailwind.config.ts). */
+
+  /* Pink dashed border for personal memo sections (v2: blush-deep) */
+  .memo-dashed {
+    border: 1.5px dashed theme("colors.blush.deep");
+    border-radius: 18px;
+    background: linear-gradient(
+      180deg,
+      rgba(244, 212, 207, 0.30) 0%,
+      rgba(244, 212, 207, 0.10) 100%
+    );
+  }
+
+  /* v2: legacy ruri-gradient kept for backward-compat. Now uses
+     blush-deep → roseGold-dark so text-pearl callsites stay readable
+     while the new screens use bg-gradient-blush directly. */
+  .ruri-gradient {
+    background-image: linear-gradient(
+      135deg,
+      #c98d80 0%,
+      #b89455 50%,
+      #8a6e3d 100%
+    );
+  }
+
+  /* v2: legacy rose-gradient → softer blush gradient. */
+  .rose-gradient {
+    background-image: linear-gradient(
+      135deg,
+      #e8b9a5 0%,
+      #c98d80 55%,
+      #a6695c 100%
+    );
+  }
+
+  /* iOS safe-area padding — keeps fixed bottom UI clear of the
+     iPhone home indicator while keeping a 1rem minimum on devices
+     without a safe area. */
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .pt-safe {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  /* Simple pearl background — no gradients that break on
+     full-page screenshots or fixed positioning hacks. */
+  .pearl-sheen {
+    background-color: #faf7f2;
+  }
+}
