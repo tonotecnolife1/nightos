@@ -38,7 +38,7 @@ export function AiUsageSummary() {
   if (!loaded || stats.total === 0) return null;
 
   return (
-    <Card className="p-3 !bg-champagne-soft/60/30 !border-gold/30">
+    <Card className="p-3 !bg-champagne-soft/40 !border-gold/30">
       <div className="flex items-center gap-1.5 mb-2">
         <Sparkles size={13} className="text-gold-deep" />
         <span className="text-body-sm font-semibold text-ink">
@@ -47,7 +47,7 @@ export function AiUsageSummary() {
       </div>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <div className="text-display-sm font-display text-ink leading-none">
+          <div className="text-display-sm font-display tabular-nums text-wine-deep leading-none">
             {stats.total}
             <span className="text-[11px] text-ink-mute ml-1">回相談</span>
           </div>
