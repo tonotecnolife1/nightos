@@ -1,4 +1,4 @@
-import { Award, Sparkles } from "lucide-react";
+import Image from "next/image";
 
 interface Props {
   /** 宛名 (キャスト名)。「{name}さんへ」と表示。 */
@@ -34,7 +34,7 @@ export function StatsEncouragement({ name, message }: Props) {
             "linear-gradient(90deg, transparent 0%, rgba(235,217,168,0.50) 15%, rgba(235,217,168,0.50) 85%, transparent 100%)",
         }}
       />
-      {/* avatar — champagne-gold metallic frame */}
+      {/* avatar — champagne-gold metallic frame + さくらママ photo */}
       <span
         className="w-11 h-11 rounded-full p-0.5 shrink-0 block"
         style={{
@@ -43,24 +43,19 @@ export function StatsEncouragement({ name, message }: Props) {
         }}
       >
         <span
-          className="w-full h-full rounded-full flex items-center justify-center"
-          style={{
-            background: "linear-gradient(135deg, #5E3838 0%, #3A1F1F 100%)",
-            border: "1px solid #3A1F1F",
-            color: "#EBD9A8",
-          }}
+          className="w-full h-full rounded-full overflow-hidden block"
+          style={{ border: "1px solid #3A1F1F" }}
         >
-          <Award size={19} strokeWidth={1.7} />
+          <Image
+            src="/cast/sakura-mama.jpg"
+            alt="さくらママ"
+            width={44}
+            height={44}
+            className="w-full h-full object-cover"
+          />
         </span>
       </span>
       <div className="flex-1 min-w-0">
-        <div
-          className="inline-flex items-center gap-1.5 font-sans text-[10px] leading-none mb-[7px]"
-          style={{ letterSpacing: "0.18em", color: "#C8A672" }}
-        >
-          <Sparkles size={10} strokeWidth={1.8} />
-          さくらママから
-        </div>
         <div
           className="font-serif text-[16px] leading-[1.2] mb-2 inline-block v5-metallic"
           style={{ letterSpacing: "0.04em" }}
