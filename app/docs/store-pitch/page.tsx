@@ -89,11 +89,11 @@ export default function StorePitchDoc() {
             <div className="rounded-2xl bg-gradient-to-br from-[#f7f0de] to-[#f0e4cc] p-6 border border-[#c9a84c]/20">
               <h3 className="text-lg font-bold text-[#a08050] mb-4">🌟 After（NIGHTOS）</h3>
               <ul className="space-y-3 text-sm text-[#2b232a]">
-                <li className="flex gap-2"><span className="text-emerald-500">✓</span> AIが「今日連絡すべき人」を自動選定</li>
-                <li className="flex gap-2"><span className="text-emerald-500">✓</span> テンプレートに名前・話題が自動挿入</li>
-                <li className="flex gap-2"><span className="text-emerald-500">✓</span> 店舗登録 → カルテに自動反映</li>
-                <li className="flex gap-2"><span className="text-emerald-500">✓</span> 来店登録 → 30秒でキャストに通知</li>
-                <li className="flex gap-2"><span className="text-emerald-500">✓</span> ダッシュボードでリアルタイム可視化</li>
+                <li className="flex gap-2"><span className="text-success-500">✓</span> AIが「今日連絡すべき人」を自動選定</li>
+                <li className="flex gap-2"><span className="text-success-500">✓</span> テンプレートに名前・話題が自動挿入</li>
+                <li className="flex gap-2"><span className="text-success-500">✓</span> 店舗登録 → カルテに自動反映</li>
+                <li className="flex gap-2"><span className="text-success-500">✓</span> 来店登録 → 30秒でキャストに通知</li>
+                <li className="flex gap-2"><span className="text-success-500">✓</span> ダッシュボードでリアルタイム可視化</li>
               </ul>
             </div>
           </div>
@@ -155,10 +155,10 @@ export default function StorePitchDoc() {
             <div>
               <h3 className="text-lg font-bold mb-4">お店にお願いすること</h3>
               <ul className="space-y-3 text-sm">
-                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-emerald-500 mt-0.5 shrink-0" /> 毎日の来店登録（15秒/件）</li>
-                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-emerald-500 mt-0.5 shrink-0" /> キャスト2〜3名にアプリ利用</li>
-                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-emerald-500 mt-0.5 shrink-0" /> 週1回15分のフィードバック</li>
-                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-emerald-500 mt-0.5 shrink-0" /> 主要顧客10〜20名の初期登録</li>
+                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-success-500 mt-0.5 shrink-0" /> 毎日の来店登録（15秒/件）</li>
+                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-success-500 mt-0.5 shrink-0" /> キャスト2〜3名にアプリ利用</li>
+                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-success-500 mt-0.5 shrink-0" /> 週1回15分のフィードバック</li>
+                <li className="flex items-start gap-2"><CheckCircle2 size={16} className="text-success-500 mt-0.5 shrink-0" /> 主要顧客10〜20名の初期登録</li>
               </ul>
             </div>
             <div>

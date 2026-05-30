@@ -14,9 +14,9 @@ export function CategoryBreakdown({ customers }: Props) {
   const newC = customers.filter((c) => c.category === "new").length;
 
   const segments = [
-    { label: "VIP", count: vip, pct: Math.round((vip / total) * 100), color: "bg-gradient-rose-gold" },
+    { label: "VIP", count: vip, pct: Math.round((vip / total) * 100), color: "bg-rose-gold-metallic" },
     { label: "常連", count: regular, pct: Math.round((regular / total) * 100), color: "bg-champagne-dark" },
-    { label: "新規", count: newC, pct: Math.round((newC / total) * 100), color: "bg-blush" },
+    { label: "新規", count: newC, pct: Math.round((newC / total) * 100), color: "bg-wine-deep" },
   ];
 
   return (
@@ -40,16 +40,16 @@ export function CategoryBreakdown({ customers }: Props) {
         {segments.map((seg) => (
           <div key={seg.label} className="flex items-center gap-1.5">
             <span className={`w-2.5 h-2.5 rounded-sm ${seg.color}`} />
-            <span className="text-ink-secondary">
+            <span className="text-ink-soft">
               {seg.label} {seg.count}人
             </span>
-            <span className="text-ink-muted">({seg.pct}%)</span>
+            <span className="text-ink-mute">({seg.pct}%)</span>
           </div>
         ))}
       </div>
 
       {/* Insight */}
-      <div className="text-label-sm text-ink-muted">
+      <div className="text-label-sm text-ink-mute">
         全{total}人
         {vip > 0 && regular > 0 && (
           <>

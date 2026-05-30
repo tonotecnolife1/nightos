@@ -15,6 +15,7 @@ interface Props {
   tone?: "default" | "ruri";
 }
 
+// v6: sticky header — glass-pearl + serif title。tone="ruri" は rose-gold halo。
 export function PageHeader({
   title,
   subtitle,
@@ -28,12 +29,13 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 px-5 py-4 backdrop-blur-md",
-        isRuri
-          ? "bg-gradient-blush text-ink shadow-soft"
-          : "bg-pearl-warm/85 border-b border-ink/[0.06]",
+        "sticky top-0 z-50 px-5 py-4 backdrop-blur-md border-b",
+        isRuri ? "border-[rgba(140,111,68,0.18)]" : "border-[rgba(140,111,68,0.18)]",
         className,
       )}
+      style={{
+        background: "rgba(247,238,221,0.92)",
+      }}
     >
       <div className="flex items-center gap-3">
         {showBack && (
@@ -48,11 +50,11 @@ export function PageHeader({
         )}
         {isRuri && <RuriMamaAvatar size={44} withGlow />}
         <div className="flex-1 min-w-0">
-          <h1 className="font-display text-[20px] leading-tight font-medium tracking-wide text-ink">
+          <h1 className="font-serif text-[20px] leading-tight font-medium tracking-[0.04em] text-ink">
             {title}
           </h1>
           {subtitle && (
-            <p className="text-body-sm text-ink-secondary">
+            <p className="text-body-sm text-ink-soft">
               {subtitle}
             </p>
           )}

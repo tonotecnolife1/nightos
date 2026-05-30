@@ -33,7 +33,7 @@ export function SummaryCards({ summary }: { summary: CastHomeSummary }) {
           unit="人"
           icon={<MessageCircle size={12} className="text-gold" />}
           tone="amethyst"
-          className="h-full cursor-pointer hover:border-amethyst/30 hover:shadow-float hover:-translate-y-px transition will-change-transform"
+          className="h-full cursor-pointer hover:border-wine-deep/30 hover:shadow-float hover:-translate-y-px transition will-change-transform"
         />
       </Link>
     </div>

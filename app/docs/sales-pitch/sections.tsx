@@ -270,7 +270,7 @@ function FeatureList({ items }: { items: string[] }) {
     <ul className="space-y-2">
       {items.map((item, i) => (
         <li key={i} className="flex items-start gap-2 text-sm">
-          <CheckCircle2 size={16} className="text-emerald-500 mt-0.5 shrink-0" />
+          <CheckCircle2 size={16} className="text-success-500 mt-0.5 shrink-0" />
           {item}
         </li>
       ))}
@@ -307,7 +307,7 @@ function BeforeAfter({ title, isDark, items }: { title: string; isDark: boolean;
       <ul className="space-y-2.5 text-sm">
         {items.map((item, i) => (
           <li key={i} className="flex gap-2">
-            <span className={isDark ? "text-[#c98d80]" : "text-emerald-500"}>{isDark ? "✕" : "✓"}</span>
+            <span className={isDark ? "text-[#c98d80]" : "text-success-500"}>{isDark ? "✕" : "✓"}</span>
             <span className={isDark ? "text-[#675d66]" : "text-[#2b232a] font-medium"}>{item}</span>
           </li>
         ))}

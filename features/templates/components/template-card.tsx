@@ -96,17 +96,17 @@ export function TemplateCard({
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Badge tone="neutral">{template.label}</Badge>
-          <span className="text-label-sm text-ink-muted">
+          <span className="text-label-sm text-ink-mute">
             {template.description}
           </span>
         </div>
       </header>
-      <p className="text-body-md text-ink leading-relaxed whitespace-pre-wrap rounded-btn bg-pearl-soft px-3.5 py-3">
+      <p className="font-serif text-body-md text-ink leading-relaxed whitespace-pre-wrap rounded-card bg-pearl-soft px-3.5 py-3 border border-line">
         {filled}
       </p>
       <div className="flex items-center justify-between">
         {usedBefore ? (
-          <span className="flex items-center gap-1 text-label-sm text-amber">
+          <span className="flex items-center gap-1 text-label-sm text-warning">
             <AlertCircle size={12} />
             このお客様に送信済み
           </span>
@@ -118,12 +118,12 @@ export function TemplateCard({
           onClick={handleCopy}
           disabled={disabled || pending || !customerId}
           className={cn(
-            "flex items-center gap-1.5 h-10 px-4 rounded-btn text-label-md font-medium transition-all",
+            "inline-flex items-center gap-1.5 h-10 px-5 rounded-pill text-label-md font-semibold tracking-[0.04em] transition-all",
             disabled || !customerId
-              ? "bg-pearl-soft text-ink-muted cursor-not-allowed"
+              ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
               : copied
-                ? "bg-amethyst text-pearl shadow-glow-amethyst"
-                : "rose-gradient text-pearl shadow-soft-card active:scale-95",
+                ? "bg-success text-pearl-light-light shadow-soft"
+                : "bg-wine-deep text-pearl-light-light shadow-luxe active:scale-95",
           )}
         >
           {copied ? (

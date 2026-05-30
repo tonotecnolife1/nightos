@@ -28,7 +28,7 @@ export default function SessionViewPage({
     return (
       <div className="animate-fade-in">
         <PageHeader title="履歴が見つかりません" showBack />
-        <div className="px-5 pt-8 text-center text-ink-secondary">
+        <div className="px-5 pt-8 text-center text-ink-soft">
           この相談履歴は削除されたか、存在しません。
         </div>
       </div>
@@ -37,7 +37,7 @@ export default function SessionViewPage({
 
   if (!session) {
     return (
-      <div className="px-5 pt-16 text-center text-ink-muted animate-pulse">
+      <div className="px-5 pt-16 text-center text-ink-mute animate-pulse">
         読み込み中…
       </div>
     );

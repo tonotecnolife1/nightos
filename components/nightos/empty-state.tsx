@@ -12,16 +12,16 @@ interface Props {
 
 const toneConfig = {
   default: {
-    bg: "bg-pearl-warm border-pearl-soft",
-    iconBg: "bg-pearl-soft text-ink-muted",
+    bg: "bg-pearl-light/85 backdrop-blur-md border-ink/[0.08]",
+    iconBg: "bg-pearl-soft text-ink-mute",
   },
   amethyst: {
-    bg: "bg-amethyst-muted/20 border-amethyst-border",
-    iconBg: "bg-amethyst-muted text-amethyst-dark",
+    bg: "bg-pearl-light/85 backdrop-blur-md border-gold/30",
+    iconBg: "bg-champagne-soft/60 text-gold-deep",
   },
   rose: {
-    bg: "bg-roseGold-muted border-roseGold-border",
-    iconBg: "bg-roseGold-muted text-roseGold-dark",
+    bg: "bg-pearl-light/85 backdrop-blur-md border-gold/30",
+    iconBg: "bg-champagne-soft/60 text-wine-deep",
   },
 };
 
@@ -57,9 +57,9 @@ export function EmptyState({
         </div>
       )}
       <div className="space-y-1">
-        <h3 className="text-body-md font-semibold text-ink">{title}</h3>
+        <h3 className="font-serif text-[16px] leading-tight font-medium tracking-[0.02em] text-ink">{title}</h3>
         {description && (
-          <p className="text-body-sm text-ink-secondary leading-relaxed max-w-xs mx-auto">
+          <p className="text-body-sm text-ink-soft leading-relaxed max-w-xs mx-auto">
             {description}
           </p>
         )}

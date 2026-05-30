@@ -111,12 +111,12 @@ export function LineImportPanel({ customer, memo, screenshots }: Props) {
     <section className="space-y-3">
       <header className="flex items-center justify-between">
         <h3 className="text-display-sm text-ink flex items-center gap-1.5">
-          <Camera size={16} className="text-amethyst-dark" />
+          <Camera size={16} className="text-gold-deep" />
           LINEから自動更新
         </h3>
       </header>
 
-      <Card className="!bg-amethyst-muted !border-amethyst-border p-4">
+      <Card className="!bg-champagne-soft/60 !border-gold/30 p-4">
         {phase.name === "idle" && (
           <IdleState
             onPick={() => fileInputRef.current?.click()}
@@ -176,16 +176,16 @@ export function LineImportPanel({ customer, memo, screenshots }: Props) {
             className="w-full flex items-center justify-between text-left"
           >
             <div className="flex items-center gap-1.5 text-label-md font-medium text-ink">
-              <History size={14} className="text-ink-secondary" />
+              <History size={14} className="text-ink-soft" />
               過去の取り込み履歴
-              <span className="text-label-sm text-ink-muted ml-1">
+              <span className="text-label-sm text-ink-mute ml-1">
                 {screenshots.length}件
               </span>
             </div>
             {historyOpen ? (
-              <ChevronUp size={16} className="text-ink-muted" />
+              <ChevronUp size={16} className="text-ink-mute" />
             ) : (
-              <ChevronDown size={16} className="text-ink-muted" />
+              <ChevronDown size={16} className="text-ink-mute" />
             )}
           </button>
           {historyOpen && (
@@ -216,7 +216,7 @@ function IdleState({
 }) {
   return (
     <div className="space-y-3 text-center">
-      <p className="text-body-sm text-amethyst-dark leading-relaxed">
+      <p className="text-body-sm text-gold-deep leading-relaxed">
         LINEのスクリーンショットを取り込むと、
         <br />
         会話の内容を読み取って個人メモを自動更新します
@@ -224,12 +224,12 @@ function IdleState({
       <button
         type="button"
         onClick={onPick}
-        className="w-full h-12 rounded-btn ruri-gradient text-pearl shadow-glow-amethyst flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+        className="w-full h-12 rounded-btn bg-wine-deep text-pearl-light shadow-luxe flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
       >
         <Camera size={18} />
         <span className="text-label-md font-medium">スクショを選ぶ</span>
       </button>
-      <p className="text-label-sm text-ink-muted">
+      <p className="text-label-sm text-ink-mute">
         ※ 写真ライブラリから選択 · 最大1400pxに自動圧縮
         {screenshotCount > 0 && ` · 過去${screenshotCount}件取り込み済み`}
       </p>
@@ -242,9 +242,9 @@ function LoadingState({ label }: { label: string }) {
     <div className="flex flex-col items-center gap-3 py-6">
       <Loader2
         size={28}
-        className="text-amethyst-dark animate-spin"
+        className="text-gold-deep animate-spin"
       />
-      <p className="text-body-sm text-amethyst-dark font-medium">{label}</p>
+      <p className="text-body-sm text-gold-deep font-medium">{label}</p>
     </div>
   );
 }
@@ -258,7 +258,7 @@ function SuccessState({
 }) {
   return (
     <div className="text-center py-3 space-y-3">
-      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald/20 text-emerald">
+      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-success/20 text-success">
         <Check size={22} />
       </div>
       <p className="text-body-md text-ink">
@@ -269,7 +269,7 @@ function SuccessState({
       <button
         type="button"
         onClick={onContinue}
-        className="text-label-md text-amethyst-dark underline underline-offset-2"
+        className="text-label-md text-gold-deep underline underline-offset-2"
       >
         続けて取り込む
       </button>
@@ -286,14 +286,14 @@ function ErrorState({
 }) {
   return (
     <div className="space-y-3">
-      <div className="flex items-start gap-2 text-rose">
+      <div className="flex items-start gap-2 text-wine-deep">
         <AlertCircle size={16} className="mt-0.5 shrink-0" />
         <p className="text-body-sm text-ink leading-relaxed">{message}</p>
       </div>
       <button
         type="button"
         onClick={onRetry}
-        className="w-full h-10 rounded-btn bg-pearl-warm border border-amethyst-border text-amethyst-dark text-label-md active:scale-95"
+        className="w-full h-10 rounded-btn bg-pearl-warm border border-gold/30 text-gold-deep text-label-md active:scale-95"
       >
         もう一度試す
       </button>
@@ -380,8 +380,8 @@ function ReviewPanel({
   return (
     <div className="space-y-4">
       {isStub && (
-        <div className="flex items-start gap-2 rounded-btn bg-amber/10 border border-amber/40 px-3 py-2 text-body-sm text-ink">
-          <AlertCircle size={14} className="mt-0.5 text-amber shrink-0" />
+        <div className="flex items-start gap-2 rounded-btn bg-warning/10 border border-warning/40 px-3 py-2 text-body-sm text-ink">
+          <AlertCircle size={14} className="mt-0.5 text-warning shrink-0" />
           <span>
             デモ応答モードのため、実際のスクショ内容は読み取られていません
           </span>
@@ -390,7 +390,7 @@ function ReviewPanel({
 
       {/* Image preview thumbnail */}
       <div className="flex gap-3">
-        <div className="w-20 h-20 rounded-btn overflow-hidden border border-amethyst-border shrink-0 bg-pearl-warm relative">
+        <div className="w-20 h-20 rounded-btn overflow-hidden border border-gold/30 shrink-0 bg-pearl-warm relative">
           {/* Use unoptimized for data URLs */}
           <Image
             src={imageData}
@@ -402,7 +402,7 @@ function ReviewPanel({
           />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-label-sm text-amethyst-dark font-medium mb-1">
+          <p className="text-label-sm text-gold-deep font-medium mb-1">
             読み取り結果
           </p>
           <p className="text-body-sm text-ink leading-relaxed">
@@ -414,12 +414,12 @@ function ReviewPanel({
 
       {/* Diff fields */}
       {updatableFields.length === 0 ? (
-        <div className="rounded-btn bg-pearl-warm border border-pearl-soft px-3 py-3 text-body-sm text-ink-secondary text-center">
+        <div className="rounded-btn bg-pearl-warm border border-pearl-soft px-3 py-3 text-body-sm text-ink-soft text-center">
           メモを更新する必要はなさそうです
         </div>
       ) : (
         <div className="space-y-2.5">
-          <p className="text-label-sm text-amethyst-dark font-medium">
+          <p className="text-label-sm text-gold-deep font-medium">
             更新する項目を選んでください
           </p>
           {updatableFields.map((field) => (
@@ -441,7 +441,7 @@ function ReviewPanel({
           type="button"
           onClick={onCancel}
           disabled={pending}
-          className="flex-1 h-11 rounded-btn bg-pearl-warm border border-pearl-soft text-ink-secondary text-label-md active:scale-95"
+          className="flex-1 h-11 rounded-btn bg-pearl-warm border border-pearl-soft text-ink-soft text-label-md active:scale-95"
         >
           キャンセル
         </button>
@@ -449,7 +449,7 @@ function ReviewPanel({
           type="button"
           onClick={handleSave}
           disabled={pending || (updatableFields.length > 0 && selected.length === 0)}
-          className="flex-1 h-11 rounded-btn rose-gradient text-pearl text-label-md font-medium shadow-glow-rose disabled:opacity-60 active:scale-95"
+          className="flex-1 h-11 rounded-btn bg-wine-deep text-pearl-light-light text-label-md font-medium shadow-luxe disabled:opacity-60 active:scale-95"
         >
           {pending
             ? "保存中…"
@@ -468,9 +468,9 @@ function ConfidenceBadge({
   confidence: MemoExtractionResult["confidence"];
 }) {
   const labels = {
-    high: { text: "確信度: 高", cls: "bg-emerald/15 text-emerald" },
-    medium: { text: "確信度: 中", cls: "bg-amber/15 text-amber" },
-    low: { text: "確信度: 低", cls: "bg-rose/15 text-rose" },
+    high: { text: "確信度: 高", cls: "bg-success/15 text-success" },
+    medium: { text: "確信度: 中", cls: "bg-warning/15 text-warning" },
+    low: { text: "確信度: 低", cls: "bg-wine/15 text-wine-deep" },
   };
   const { text, cls } = labels[confidence];
   return (
@@ -505,7 +505,7 @@ function FieldDiff({
       className={cn(
         "w-full text-left rounded-btn border px-3 py-2.5 transition-all",
         checked
-          ? "bg-pearl-warm border-amethyst shadow-soft-card"
+          ? "bg-pearl-warm border-gold/40 shadow-soft"
           : "bg-pearl-warm/60 border-pearl-soft",
       )}
     >
@@ -514,22 +514,22 @@ function FieldDiff({
           className={cn(
             "w-5 h-5 rounded mt-0.5 flex items-center justify-center shrink-0 border-2",
             checked
-              ? "bg-amethyst border-amethyst text-pearl"
+              ? "bg-wine-deep border-wine-deep text-pearl-light-light"
               : "border-ink-muted",
           )}
         >
           {checked && <Check size={12} strokeWidth={3} />}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-label-sm text-amethyst-dark font-medium mb-1">
+          <div className="text-label-sm text-gold-deep font-medium mb-1">
             {label}
           </div>
           <div className="text-body-sm text-ink leading-relaxed">
-            <span className="text-ink-muted">→ </span>
+            <span className="text-ink-mute">→ </span>
             {suggested}
           </div>
           {current && (
-            <div className="text-label-sm text-ink-muted line-through mt-0.5 leading-relaxed">
+            <div className="text-label-sm text-ink-mute line-through mt-0.5 leading-relaxed">
               {current}
             </div>
           )}
@@ -584,7 +584,7 @@ function ScreenshotHistoryRow({
           />
         </button>
         <div className="flex-1 min-w-0">
-          <div className="text-label-sm text-ink-muted">{dateLabel}</div>
+          <div className="text-label-sm text-ink-mute">{dateLabel}</div>
           <div className="text-body-sm text-ink truncate">
             {screenshot.extracted.summary || "(要約なし)"}
           </div>
@@ -616,12 +616,12 @@ function ScreenshotHistoryRow({
             </button>
           </div>
           {screenshot.applied_fields.length > 0 ? (
-            <div className="text-label-sm text-amethyst-dark">
+            <div className="text-label-sm text-gold-deep">
               <Sparkles size={10} className="inline mr-1" />
               反映したフィールド: {screenshot.applied_fields.join(", ")}
             </div>
           ) : (
-            <div className="text-label-sm text-ink-muted">
+            <div className="text-label-sm text-ink-mute">
               履歴のみ保存（メモは更新せず）
             </div>
           )}
@@ -629,7 +629,7 @@ function ScreenshotHistoryRow({
             type="button"
             onClick={handleDelete}
             disabled={pending}
-            className="flex items-center gap-1 text-label-sm text-rose hover:underline disabled:opacity-50"
+            className="flex items-center gap-1 text-label-sm text-wine-deep hover:underline disabled:opacity-50"
           >
             <Trash2 size={12} />
             履歴から削除

@@ -128,21 +128,29 @@ export function TemplateWorkspace({
       <CategoryTabs value={category} onChange={handleCategoryChange} />
 
       {!customerId && (
-        <div className="rounded-card bg-amethyst-muted border border-amethyst-border px-4 py-3.5 text-body-sm text-amethyst-dark">
+        <div className="rounded-card bg-champagne-soft/40 border border-gold/30 px-4 py-3.5 text-body-sm text-gold-deep">
           顧客を選択すると、文面が自動で埋まります
         </div>
       )}
 
       {/* AI personalized template generator */}
       {customerId && (
-        <Card className="!bg-amethyst-muted !border-amethyst-border p-4 space-y-3">
+        <div
+          className="relative overflow-hidden rounded-hero border border-ink/[0.08] shadow-warm p-4 space-y-3"
+          style={{
+            background:
+              "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
+              "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
+              "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
+          }}
+        >
           <div className="flex items-center gap-2.5">
             <RuriMamaAvatar size={36} />
             <div className="flex-1">
-              <div className="text-label-md text-amethyst-dark font-semibold">
+              <div className="text-label-xs tracking-luxe text-wine-deep mb-1">
                 さくらママに専用文面を作ってもらう
               </div>
-              <div className="text-label-sm text-ink-secondary">
+              <div className="text-label-sm text-ink-soft">
                 この顧客のカルテを見て、ピッタリの一通を提案します
               </div>
             </div>
@@ -152,24 +160,24 @@ export function TemplateWorkspace({
             <button
               type="button"
               onClick={handleGenerateAi}
-              className="w-full h-11 rounded-btn ruri-gradient text-pearl shadow-glow-amethyst flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
             >
               <Sparkles size={16} />
-              <span className="text-label-md font-medium">
+              <span className="text-label-md font-semibold tracking-[0.04em]">
                 専用文面を作ってもらう
               </span>
             </button>
           )}
 
           {loading && (
-            <div className="flex items-center justify-center gap-2 h-11 text-amethyst-dark">
+            <div className="flex items-center justify-center gap-2 h-11 text-wine-deep">
               <Loader2 size={16} className="animate-spin" />
               <span className="text-body-sm">さくらママが考え中…</span>
             </div>
           )}
 
           {error && (
-            <div className="text-body-sm text-rose">{error}</div>
+            <div className="text-body-sm text-wine-deep">{error}</div>
           )}
 
           {aiTemplate && (
@@ -182,13 +190,13 @@ export function TemplateWorkspace({
               regenerating={loading}
             />
           )}
-        </Card>
+        </div>
       )}
 
       {/* Custom user templates (above defaults) */}
       {customForCategory.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-label-md text-ink-secondary font-medium">
+          <h3 className="text-label-md text-ink-soft font-medium">
             マイテンプレート
           </h3>
           {customForCategory.map((t) => (
@@ -208,7 +216,7 @@ export function TemplateWorkspace({
 
       {/* Default templates */}
       <div className="space-y-3">
-        <h3 className="text-label-md text-ink-secondary font-medium">
+        <h3 className="text-label-md text-ink-soft font-medium">
           定型テンプレート
         </h3>
         {visibleTemplates.map((t) => (
@@ -273,7 +281,7 @@ function AiTemplateResult({
         type="button"
         onClick={onRegenerate}
         disabled={regenerating}
-        className="w-full text-label-sm text-amethyst-dark underline underline-offset-2 disabled:opacity-50"
+        className="w-full text-label-sm text-gold-deep underline underline-offset-2 disabled:opacity-50"
       >
         別の文面で作り直す
       </button>

@@ -87,7 +87,7 @@ export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = []
       />
 
       {filteredMyCustomers.length === 0 ? (
-        <Card className="p-8 text-center text-body-sm text-ink-secondary">
+        <Card className="p-8 text-center text-body-sm text-ink-soft">
           該当する顧客が見つかりません
         </Card>
       ) : (
@@ -102,15 +102,15 @@ export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = []
         <div className="space-y-2 pt-2 border-t border-ink/[0.06]">
           <div className="flex items-center gap-1.5 px-1">
             <HandHelping size={13} className="text-champagne-dark" />
-            <h3 className="text-label-md text-ink-secondary font-medium">
+            <h3 className="text-label-md text-ink-soft font-medium">
               ヘルプで入ったお客様
             </h3>
-            <span className="text-[10px] text-ink-muted ml-auto">
+            <span className="text-[10px] text-ink-mute ml-auto">
               {filteredHelpCustomers.length}人
             </span>
           </div>
           {filteredHelpCustomers.length === 0 ? (
-            <Card className="p-6 text-center text-body-sm text-ink-muted">
+            <Card className="p-6 text-center text-body-sm text-ink-mute">
               該当する顧客が見つかりません
             </Card>
           ) : (

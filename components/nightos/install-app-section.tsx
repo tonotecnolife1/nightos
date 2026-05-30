@@ -64,7 +64,7 @@ export function InstallAppSection() {
             type="button"
             onClick={handleInstall}
             disabled={installing}
-            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-gradient-blush text-ink text-body-sm font-medium shadow-soft disabled:opacity-50 hover:brightness-[1.02] transition"
+            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-sm font-medium shadow-soft disabled:opacity-50 hover:brightness-[1.02] transition"
           >
             <Download size={14} />
             {installing ? "追加中..." : "ホーム画面に追加"}
@@ -80,7 +80,7 @@ export function InstallAppSection() {
           <button
             type="button"
             onClick={shareToInstall}
-            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-gradient-blush text-ink text-body-sm font-medium shadow-soft hover:brightness-[1.02] transition"
+            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-sm font-medium shadow-soft hover:brightness-[1.02] transition"
           >
             <Share2 size={14} />
             共有を開く
@@ -159,7 +159,7 @@ export function InstallAppSectionAlways() {
             type="button"
             onClick={handleInstall}
             disabled={installing}
-            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-gradient-blush text-ink text-body-sm font-medium shadow-soft disabled:opacity-50 hover:brightness-[1.02] transition"
+            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-sm font-medium shadow-soft disabled:opacity-50 hover:brightness-[1.02] transition"
           >
             <Download size={14} />
             {installing ? "追加中..." : "ホーム画面に追加"}
@@ -175,7 +175,7 @@ export function InstallAppSectionAlways() {
           <button
             type="button"
             onClick={shareToInstall}
-            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-gradient-blush text-ink text-body-sm font-medium shadow-soft hover:brightness-[1.02] transition"
+            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-sm font-medium shadow-soft hover:brightness-[1.02] transition"
           >
             <Share2 size={14} />
             共有を開く

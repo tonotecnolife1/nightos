@@ -79,16 +79,16 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
 
   if (applied) {
     return (
-      <Card className="p-3 !border-emerald/30 !bg-emerald/5">
+      <Card className="p-3 !border-success/30 !bg-success/5">
         <div className="flex items-center gap-2">
-          <Check size={14} className="text-emerald" />
-          <span className="text-body-sm text-emerald font-medium">
+          <Check size={14} className="text-success" />
+          <span className="text-body-sm text-success font-medium">
             メモを更新しました
           </span>
           <button
             type="button"
             onClick={cancel}
-            className="ml-auto text-[10px] text-ink-muted underline"
+            className="ml-auto text-[10px] text-ink-mute underline"
           >
             閉じる
           </button>
@@ -99,15 +99,15 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
 
   if (preview) {
     return (
-      <Card className="p-3 !border-amethyst-border !bg-amethyst-muted/20 space-y-3">
+      <Card className="p-3 !border-gold/30 !bg-champagne-soft/60/20 space-y-3">
         <div className="flex items-center gap-1.5">
-          <Sparkles size={14} className="text-amethyst-dark" />
-          <span className="text-body-sm font-medium text-amethyst-dark">
+          <Sparkles size={14} className="text-gold-deep" />
+          <span className="text-body-sm font-medium text-gold-deep">
             メモ更新プレビュー
           </span>
         </div>
         {preview.summary && (
-          <p className="text-[11px] text-ink-secondary bg-pearl-warm px-2 py-1.5 rounded-btn">
+          <p className="text-[11px] text-ink-soft bg-pearl-warm px-2 py-1.5 rounded-btn">
             {preview.summary}
           </p>
         )}
@@ -119,7 +119,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
           <button
             type="button"
             onClick={apply}
-            className="flex-1 h-9 rounded-btn bg-emerald/10 text-emerald border border-emerald/25 text-label-sm font-medium active:scale-[0.98]"
+            className="flex-1 h-9 rounded-btn bg-success/10 text-success border border-success/25 text-label-sm font-medium active:scale-[0.98]"
           >
             <Check size={12} className="inline mr-1" />
             この内容で更新
@@ -127,7 +127,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
           <button
             type="button"
             onClick={cancel}
-            className="h-9 px-3 rounded-btn bg-pearl-soft text-ink-secondary text-label-sm active:scale-[0.98]"
+            className="h-9 px-3 rounded-btn bg-pearl-soft text-ink-soft text-label-sm active:scale-[0.98]"
           >
             <X size={12} className="inline mr-1" />
             破棄
@@ -145,8 +145,8 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
       className={cn(
         "w-full flex items-center justify-center gap-1.5 h-10 rounded-btn border transition-all active:scale-[0.98]",
         loading
-          ? "bg-pearl-soft text-ink-muted border-pearl-soft"
-          : "bg-amethyst-muted text-amethyst-dark border-amethyst-border hover:bg-amethyst-muted/70",
+          ? "bg-pearl-soft text-ink-mute border-pearl-soft"
+          : "bg-champagne-soft/60 text-gold-deep border-gold/30 hover:bg-champagne-soft/60/70",
       )}
     >
       {loading ? (
@@ -160,7 +160,7 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
           アプリ内の全情報でメモを自動更新
         </>
       )}
-      {error && <span className="text-rose text-[10px]">{error}</span>}
+      {error && <span className="text-wine-deep text-[10px]">{error}</span>}
     </button>
   );
 }
@@ -178,22 +178,22 @@ function DiffRow({
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5">
-        <span className="text-[10px] text-ink-muted font-medium">{label}</span>
+        <span className="text-[10px] text-ink-mute font-medium">{label}</span>
         {changed && (
-          <span className="text-[9px] px-1.5 py-0.5 rounded-badge bg-amethyst-muted text-amethyst-dark">
+          <span className="text-[9px] px-1.5 py-0.5 rounded-badge bg-champagne-soft/60 text-gold-deep">
             変更あり
           </span>
         )}
       </div>
       {changed && before && (
-        <div className="text-[11px] text-ink-muted line-through break-words pl-2 border-l-2 border-pearl-soft">
+        <div className="text-[11px] text-ink-mute line-through break-words pl-2 border-l-2 border-pearl-soft">
           {before}
         </div>
       )}
       <div
         className={cn(
           "text-[11px] break-words pl-2 border-l-2",
-          changed ? "text-ink border-amethyst" : "text-ink-secondary border-pearl-soft",
+          changed ? "text-ink border-gold/40" : "text-ink-soft border-pearl-soft",
         )}
       >
         {after ?? "(なし)"}

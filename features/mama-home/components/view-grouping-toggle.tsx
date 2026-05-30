@@ -16,15 +16,15 @@ interface Props {
  */
 export function ViewGroupingToggle({ value, onChange }: Props) {
   return (
-    <div className="inline-flex items-center rounded-full bg-amethyst-muted/40 border border-amethyst-border p-0.5">
+    <div className="inline-flex items-center rounded-full bg-champagne-soft/60/40 border border-gold/30 p-0.5">
       <button
         type="button"
         onClick={() => onChange("customer")}
         className={cn(
           "h-7 px-3 rounded-full text-[10px] font-medium transition-all",
           value === "customer"
-            ? "bg-amethyst text-pearl"
-            : "text-amethyst-dark",
+            ? "bg-wine-deep text-pearl-light-light"
+            : "text-gold-deep",
         )}
       >
         担当顧客
@@ -34,7 +34,7 @@ export function ViewGroupingToggle({ value, onChange }: Props) {
         onClick={() => onChange("cast")}
         className={cn(
           "h-7 px-3 rounded-full text-[10px] font-medium transition-all",
-          value === "cast" ? "bg-amethyst text-pearl" : "text-amethyst-dark",
+          value === "cast" ? "bg-wine-deep text-pearl-light-light" : "text-gold-deep",
         )}
       >
         ヘルプ顧客

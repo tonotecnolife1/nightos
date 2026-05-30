@@ -18,10 +18,10 @@ export const PRIORITY_LABELS: Record<Priority, string> = {
 };
 
 export const PRIORITY_COLORS: Record<Priority, string> = {
-  3: "text-rose bg-rose/15 border-rose/30",
-  2: "text-amber bg-amber/15 border-amber/30",
-  1: "text-ink-secondary bg-pearl-soft border-pearl-soft",
-  0: "text-ink-muted bg-transparent border-transparent",
+  3: "text-wine-deep bg-wine/15 border-wine/30",
+  2: "text-warning bg-warning/15 border-warning/30",
+  1: "text-ink-soft bg-pearl-soft border-pearl-soft",
+  0: "text-ink-mute bg-transparent border-transparent",
 };
 
 function key(castId: string): string {

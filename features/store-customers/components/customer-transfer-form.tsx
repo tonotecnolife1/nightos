@@ -107,7 +107,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
           hint={`担当顧客 ${filtered.length}人`}
         />
 
-        <div className="flex items-center justify-center gap-2 text-ink-muted">
+        <div className="flex items-center justify-center gap-2 text-ink-mute">
           <ArrowRight size={16} />
         </div>
 
@@ -128,7 +128,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
         <section className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Users size={14} className="text-roseGold-dark" />
+              <Users size={14} className="text-wine-deep" />
               <h2 className="text-display-sm text-ink">
                 {sourceCast?.name ?? ""}さんの担当顧客
               </h2>
@@ -136,7 +136,7 @@ export function CustomerTransferForm({ customers, casts }: Props) {
             <button
               type="button"
               onClick={toggleAll}
-              className="text-[11px] text-amethyst-dark underline"
+              className="text-[11px] text-gold-deep underline"
             >
               {selected.size === filtered.length ? "全選択解除" : "全選択"}
             </button>
@@ -152,14 +152,14 @@ export function CustomerTransferForm({ customers, casts }: Props) {
                   onClick={() => toggle(c.id)}
                   className={`w-full text-left p-3 rounded-btn border transition-all flex items-center gap-3 ${
                     isSelected
-                      ? "bg-amethyst-muted border-amethyst-border"
+                      ? "bg-champagne-soft/60 border-gold/30"
                       : "bg-pearl-warm border-pearl-soft"
                   }`}
                 >
                   <div
                     className={`w-4 h-4 rounded-sm border flex items-center justify-center shrink-0 transition-colors ${
                       isSelected
-                        ? "bg-amethyst border-amethyst"
+                        ? "bg-wine-deep border-wine-deep"
                         : "border-pearl-soft bg-white"
                     }`}
                   >
@@ -170,17 +170,17 @@ export function CustomerTransferForm({ customers, casts }: Props) {
                       <span className="text-body-sm font-medium text-ink">
                         {c.name}さま
                       </span>
-                      <span className="text-[10px] text-ink-muted">
+                      <span className="text-[10px] text-ink-mute">
                         {CATEGORY_LABEL[c.category]}
                       </span>
                     </div>
                     <div className="flex gap-2 mt-0.5">
                       {c.job && (
-                        <span className="text-[10px] text-ink-muted truncate">
+                        <span className="text-[10px] text-ink-mute truncate">
                           {c.job}
                         </span>
                       )}
-                      <span className="text-[10px] text-ink-muted shrink-0">
+                      <span className="text-[10px] text-ink-mute shrink-0">
                         {FUNNEL_LABEL[c.funnel_stage ?? "store_only"]}
                       </span>
                     </div>
@@ -190,26 +190,26 @@ export function CustomerTransferForm({ customers, casts }: Props) {
             })}
           </div>
 
-          <p className="text-[10px] text-ink-muted">
+          <p className="text-[10px] text-ink-mute">
             {selected.size > 0
               ? `${selected.size}人を選択中`
               : "移管する顧客をタップして選択"}
           </p>
         </section>
       ) : (
-        <Card className="p-4 text-center text-body-sm text-ink-muted">
+        <Card className="p-4 text-center text-body-sm text-ink-mute">
           {sourceCastId ? "担当顧客がいません" : "移管元を選択してください"}
         </Card>
       )}
 
       {error && (
-        <div className="rounded-btn bg-rose/10 border border-rose/30 text-rose text-body-sm px-3 py-2">
+        <div className="rounded-btn bg-wine/10 border border-wine/30 text-wine-deep text-body-sm px-3 py-2">
           {error}
         </div>
       )}
       {success && (
         <div className="flex items-center gap-2 rounded-btn bg-champagne border border-champagne-dark text-ink text-body-sm px-3 py-2">
-          <Check size={16} className="text-roseGold-dark" />
+          <Check size={16} className="text-wine-deep" />
           {success}
         </div>
       )}

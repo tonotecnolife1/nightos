@@ -32,7 +32,7 @@ export function CustomerSearchList({ customers, value, onChange }: Props) {
       <div className="relative">
         <Search
           size={14}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute"
         />
         <input
           value={query}
@@ -43,7 +43,7 @@ export function CustomerSearchList({ customers, value, onChange }: Props) {
       </div>
       <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
         {filtered.length === 0 ? (
-          <p className="text-body-sm text-ink-muted py-4 text-center">
+          <p className="text-body-sm text-ink-mute py-4 text-center">
             該当する顧客が見つかりません
           </p>
         ) : (
@@ -63,7 +63,7 @@ export function CustomerSearchList({ customers, value, onChange }: Props) {
               >
                 <div className="min-w-0 flex-1">
                   <div className="text-body-md text-ink">{c.name}</div>
-                  <div className="text-label-sm text-ink-muted truncate">
+                  <div className="text-label-sm text-ink-mute truncate">
                     {c.job ?? "—"}
                   </div>
                 </div>

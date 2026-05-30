@@ -107,7 +107,7 @@ export function VisitNotificationPoller({ castId }: Props) {
                 <Bell size={18} className="text-gold-deep" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[11px] text-ink-muted mb-0.5">
+                <div className="text-[11px] text-ink-mute mb-0.5">
                   新しい来店
                 </div>
                 <div className="text-body-md font-medium text-ink flex items-center gap-1.5 truncate">
@@ -117,7 +117,7 @@ export function VisitNotificationPoller({ castId }: Props) {
                   )}
                 </div>
                 {(v.tableName || v.isNominated) && (
-                  <div className="text-[11px] text-ink-secondary">
+                  <div className="text-[11px] text-ink-soft">
                     {v.tableName && `テーブル: ${v.tableName}`}
                     {v.tableName && v.isNominated && " · "}
                     {v.isNominated && "指名"}
@@ -131,7 +131,7 @@ export function VisitNotificationPoller({ castId }: Props) {
                   e.stopPropagation();
                   dismiss(v.id);
                 }}
-                className="p-1 rounded-full hover:bg-pearl-soft shrink-0 text-ink-muted"
+                className="p-1 rounded-full hover:bg-pearl-soft shrink-0 text-ink-mute"
                 aria-label="閉じる"
               >
                 <X size={14} />

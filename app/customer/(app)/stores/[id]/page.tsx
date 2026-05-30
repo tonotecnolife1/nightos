@@ -41,46 +41,56 @@ export default async function CustomerStoreDetailPage({
 
         {/* Quick stats */}
         <div className="grid grid-cols-3 gap-2.5">
-          <div className="rounded-card bg-pearl-warm border border-pearl-soft shadow-soft-card px-3 py-3 text-center">
-            <Calendar size={14} className="mx-auto text-ink-secondary mb-1" />
-            <div className="font-display text-display-sm text-ink">
+          <div className="relative overflow-hidden rounded-hero bg-pearl-light/85 backdrop-blur-md border border-ink/[0.08] shadow-soft px-3 py-3 text-center">
+            <span aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-rose-gold-metallic opacity-60" />
+            <Calendar size={14} className="mx-auto text-ink-soft mb-1" />
+            <div className="font-display text-[1.5rem] leading-none font-normal tabular-nums text-ink">
               {store.visit_count}
             </div>
-            <div className="text-[10px] text-ink-muted">来店回数</div>
+            <div className="text-label-xs tracking-luxe text-ink-mute mt-1">来店回数</div>
           </div>
-          <div className="rounded-card bg-pearl-warm border border-pearl-soft shadow-soft-card px-3 py-3 text-center">
-            <Coins size={14} className="mx-auto text-roseGold-dark mb-1" />
-            <div className="font-display text-body-md text-ink">
+          <div className="relative overflow-hidden rounded-hero bg-pearl-light/85 backdrop-blur-md border border-ink/[0.08] shadow-soft px-3 py-3 text-center">
+            <span aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-rose-gold-metallic opacity-60" />
+            <Coins size={14} className="mx-auto text-wine-deep mb-1" />
+            <div className="font-display text-[1rem] leading-none font-medium tabular-nums text-wine-deep">
               {formatCurrency(store.total_spent_estimate)}
             </div>
-            <div className="text-[10px] text-ink-muted">累計利用</div>
+            <div className="text-label-xs tracking-luxe text-ink-mute mt-1">累計利用</div>
           </div>
-          <div className="rounded-card bg-pearl-warm border border-pearl-soft shadow-soft-card px-3 py-3 text-center">
-            <Ticket size={14} className="mx-auto text-amethyst-dark mb-1" />
-            <div className="font-display text-display-sm text-amethyst-dark">
+          <div className="relative overflow-hidden rounded-hero bg-pearl-light/85 backdrop-blur-md border border-ink/[0.08] shadow-soft px-3 py-3 text-center">
+            <span aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-rose-gold-metallic opacity-60" />
+            <Ticket size={14} className="mx-auto text-gold-deep mb-1" />
+            <div className="font-display text-[1.5rem] leading-none font-normal tabular-nums text-gold-deep">
               {activeCoupons.length}
             </div>
-            <div className="text-[10px] text-ink-muted">使えるクーポン</div>
+            <div className="text-label-xs tracking-luxe text-ink-mute mt-1">使えるクーポン</div>
           </div>
         </div>
 
         {/* Cast (指名) */}
         {store.nomination_cast && (
           <section className="space-y-2">
-            <h2 className="text-display-sm text-ink flex items-center gap-1.5">
-              <User size={16} className="text-roseGold-dark" />
+            <h2 className="relative font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5 pl-3.5">
+              <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+              <User size={16} className="text-wine-deep" />
               担当キャスト
             </h2>
             <Card className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-rose-gold flex items-center justify-center text-pearl text-body-lg font-display font-semibold">
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-ink font-serif text-[18px] leading-none font-medium tracking-[0.02em] border border-gold/35"
+                  style={{
+                    background: "var(--champagne-metallic)",
+                    boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.6)",
+                  }}
+                >
                   {store.nomination_cast.charAt(0)}
                 </div>
                 <div>
-                  <div className="text-body-md font-semibold text-ink">
+                  <div className="font-serif text-[16px] leading-tight font-medium tracking-[0.01em] text-ink">
                     {store.nomination_cast}
                   </div>
-                  <div className="text-label-sm text-ink-muted">
+                  <div className="text-label-xs tracking-luxe text-ink-mute">
                     指名キャスト
                   </div>
                 </div>
@@ -91,15 +101,15 @@ export default async function CustomerStoreDetailPage({
 
         {/* Bottles */}
         <section className="space-y-2">
-          <h2 className="text-display-sm text-ink flex items-center gap-1.5">
-            <Wine size={16} className="text-roseGold-dark" />
+          <h2 className="relative font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5 pl-3.5"><span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+            <Wine size={16} className="text-wine-deep" />
             キープボトル
-            <span className="text-label-sm text-ink-muted">
+            <span className="text-label-sm text-ink-mute">
               {store.bottles.length}本
             </span>
           </h2>
           {store.bottles.length === 0 ? (
-            <Card className="p-4 text-center text-body-sm text-ink-secondary">
+            <Card className="p-4 text-center text-body-sm text-ink-soft">
               この店舗にキープボトルはありません
             </Card>
           ) : (
@@ -115,7 +125,7 @@ export default async function CustomerStoreDetailPage({
                     <span className="text-body-md font-semibold text-ink">
                       {b.brand}
                     </span>
-                    <span className="text-body-sm text-ink-secondary">
+                    <span className="text-body-sm text-ink-soft">
                       残 {formatBottleRemainingPct(
                         b.remaining_glasses,
                         b.total_glasses,
@@ -126,13 +136,13 @@ export default async function CustomerStoreDetailPage({
                     <div
                       className={cn(
                         "h-full rounded-full",
-                        isLow ? "bg-amber" : "bg-gradient-rose-gold",
+                        isLow ? "bg-warning" : "bg-rose-gold-metallic",
                       )}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
                   {isLow && (
-                    <div className="flex items-center gap-1 text-label-sm text-amber">
+                    <div className="flex items-center gap-1 text-label-sm text-warning">
                       <AlertTriangle size={11} />
                       残りわずか
                     </div>
@@ -145,8 +155,8 @@ export default async function CustomerStoreDetailPage({
 
         {/* Coupons */}
         <section className="space-y-2">
-          <h2 className="text-display-sm text-ink flex items-center gap-1.5">
-            <Sparkles size={16} className="text-amethyst-dark" />
+          <h2 className="relative font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5 pl-3.5"><span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+            <Sparkles size={16} className="text-gold-deep" />
             クーポン
           </h2>
 
@@ -159,14 +169,14 @@ export default async function CustomerStoreDetailPage({
           )}
 
           {activeCoupons.length === 0 && (
-            <Card className="p-4 text-center text-body-sm text-ink-secondary">
+            <Card className="p-4 text-center text-body-sm text-ink-soft">
               この店舗で使えるクーポンはありません
             </Card>
           )}
 
           {usedCoupons.length > 0 && (
             <div className="space-y-2 mt-3">
-              <h3 className="text-label-md text-ink-secondary font-medium">
+              <h3 className="text-label-md text-ink-soft font-medium">
                 利用済み
               </h3>
               {usedCoupons.map((coupon) => (
@@ -178,7 +188,7 @@ export default async function CustomerStoreDetailPage({
 
         {/* Last visit */}
         {store.last_visit && (
-          <div className="text-label-sm text-ink-muted text-center">
+          <div className="text-label-sm text-ink-mute text-center">
             最終来店:{" "}
             {new Date(store.last_visit).toLocaleDateString("ja-JP")}
           </div>
@@ -191,11 +201,11 @@ export default async function CustomerStoreDetailPage({
 // ═══════════════ Sub-components ═══════════════
 
 const tierColors: Record<RankTier, { bg: string; border: string; text: string }> = {
-  diamond: { bg: "bg-gradient-amethyst", border: "border-amethyst", text: "text-pearl" },
-  platinum: { bg: "bg-gradient-rose-gold", border: "border-roseGold", text: "text-pearl" },
-  gold: { bg: "bg-gradient-champagne", border: "border-champagne-dark", text: "text-ink" },
-  silver: { bg: "bg-pearl-warm", border: "border-pearl-soft", text: "text-ink" },
-  bronze: { bg: "bg-pearl-warm", border: "border-pearl-soft", text: "text-ink-secondary" },
+  diamond: { bg: "bg-gold-metallic", border: "border-gold", text: "text-pearl-light" },
+  platinum: { bg: "bg-rose-gold-metallic", border: "border-wine-deep", text: "text-pearl-light" },
+  gold: { bg: "bg-champagne-metallic", border: "border-gold", text: "text-ink" },
+  silver: { bg: "bg-pearl-light", border: "border-line-strong", text: "text-ink" },
+  bronze: { bg: "bg-pearl-light", border: "border-line-strong", text: "text-ink-soft" },
 };
 
 function RankCard({ rank }: { rank: CustomerRank }) {
@@ -209,7 +219,7 @@ function RankCard({ rank }: { rank: CustomerRank }) {
             <div className={`text-display-sm font-semibold ${colors.text}`}>
               {rank.label}ランク
             </div>
-            <div className={`text-label-sm ${rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl/80" : "text-ink-secondary"}`}>
+            <div className={`text-label-sm ${rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl-light/80" : "text-ink-soft"}`}>
               来店 {rank.visitCount}回
             </div>
           </div>
@@ -218,10 +228,10 @@ function RankCard({ rank }: { rank: CustomerRank }) {
       {rank.nextTierLabel && (
         <div>
           <div className="flex items-center justify-between text-label-sm mb-1">
-            <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl/80" : "text-ink-secondary"}>
+            <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl-light/80" : "text-ink-soft"}>
               次のランク: {rank.nextTierLabel}
             </span>
-            <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl" : "text-ink"}>
+            <span className={rank.tier === "diamond" || rank.tier === "platinum" ? "text-pearl-light" : "text-ink"}>
               あと{rank.visitsToNextTier}回
             </span>
           </div>
@@ -262,13 +272,13 @@ function CouponCard({ coupon, isUsed }: { coupon: Coupon; isUsed?: boolean }) {
               {coupon.title}
             </span>
             {isUsed && (
-              <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-pearl-soft text-ink-muted text-[10px]">
+              <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-pearl-soft text-ink-mute text-[10px]">
                 <Check size={8} />
                 利用済
               </span>
             )}
           </div>
-          <div className="text-label-sm text-ink-muted flex items-center gap-1">
+          <div className="text-label-sm text-ink-mute flex items-center gap-1">
             <Clock size={9} />
             〜{coupon.valid_until}
             <span className="ml-1 font-mono text-[10px] bg-pearl-soft px-1.5 rounded">

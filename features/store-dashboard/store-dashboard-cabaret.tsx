@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { PageHeader } from "@/components/nightos/page-header";
 import { Card } from "@/components/nightos/card";
 import { StatCard } from "@/components/nightos/stat-card";
@@ -14,6 +15,20 @@ interface Props {
   data: StoreDashboardData;
   customers: Customer[];
   allTargets: FollowTarget[];
+}
+
+function V6Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section>
+      <header className="relative flex items-baseline pl-3.5 mb-3">
+        <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+        <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink">
+          {title}
+        </h2>
+      </header>
+      {children}
+    </section>
+  );
 }
 
 export function StoreDashboardCabaret({ data, customers, allTargets }: Props) {
@@ -60,31 +75,25 @@ export function StoreDashboardCabaret({ data, customers, allTargets }: Props) {
             />
           </div>
 
-          <section>
-            <h2 className="text-display-sm text-ink mb-2">離脱リスク顧客</h2>
+          <V6Section title="離脱リスク顧客">
             <AtRiskCustomers targets={allTargets} />
-          </section>
+          </V6Section>
 
-          <section>
-            <h2 className="text-display-sm text-ink mb-2">指名数の推移</h2>
+          <V6Section title="指名数の推移">
             <Card className="p-4">
               <NominationTrendBars points={data.nominationTrend} />
             </Card>
-          </section>
+          </V6Section>
 
-          <section>
-            <h2 className="text-display-sm text-ink mb-2">
-              リピート率の推移
-            </h2>
+          <V6Section title="リピート率の推移">
             <Card className="p-4">
               <RepeatTrend points={data.repeatTrend} />
             </Card>
-          </section>
+          </V6Section>
 
-          <section>
-            <h2 className="text-display-sm text-ink mb-2">キャスト別成績</h2>
+          <V6Section title="キャスト別成績">
             <CastTable stats={data.castStats} />
-          </section>
+          </V6Section>
         </div>
       </div>
     </OwnerGuard>

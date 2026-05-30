@@ -37,7 +37,7 @@ export default function SignupOwnerForm() {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             新規登録（店舗オーナー）
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <p className="mt-1.5 text-body-sm text-ink-soft">
             新しい店舗を開く。登録後に招待コードを発行
           </p>
         </div>
@@ -47,7 +47,7 @@ export default function SignupOwnerForm() {
         <div className="max-w-sm mx-auto flex flex-col gap-5">
           <form action={handleSubmit} className="space-y-4">
             <section className="space-y-2">
-              <div className="text-body-sm text-ink-secondary px-1">業態</div>
+              <div className="text-body-sm text-ink-soft px-1">業態</div>
               <div className="grid grid-cols-2 gap-2">
                 <Choice
                   active={venueType === "cabaret"}
@@ -70,7 +70,7 @@ export default function SignupOwnerForm() {
                 required
                 maxLength={80}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink placeholder:text-ink-muted shadow-soft focus:outline-none focus:border-blush-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -83,7 +83,7 @@ export default function SignupOwnerForm() {
                 required
                 maxLength={40}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink placeholder:text-ink-muted shadow-soft focus:outline-none focus:border-blush-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -95,7 +95,7 @@ export default function SignupOwnerForm() {
                 placeholder="email@example.com"
                 required
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink placeholder:text-ink-muted shadow-soft focus:outline-none focus:border-blush-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -107,7 +107,7 @@ export default function SignupOwnerForm() {
                 required
                 minLength={8}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink shadow-soft focus:outline-none focus:border-blush-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light shadow-soft text-body-md text-ink shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </Field>
@@ -115,24 +115,24 @@ export default function SignupOwnerForm() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-gradient-blush text-ink text-body-md font-medium tracking-wide hover:brightness-[1.02] hover:-translate-y-px active:translate-y-px transition shadow-float will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
             >
               {pending ? "登録中..." : "店舗を開く"}
             </button>
             {error && <p className="text-[12px] text-[#c2575b] text-center leading-relaxed">{error}</p>}
           </form>
 
-          <p className="text-body-sm text-ink-secondary text-center">
-            <Link href="/store/auth/signup-staff" className="text-blush-deep underline-offset-2 hover:underline">
+          <p className="text-body-sm text-ink-soft text-center">
+            <Link href="/store/auth/signup-staff" className="text-wine-deep underline-offset-2 hover:underline">
               既存の店舗にスタッフとして参加
             </Link>
             {"  ·  "}
-            <Link href="/store/auth/login" className="text-blush-deep underline-offset-2 hover:underline">
+            <Link href="/store/auth/login" className="text-wine-deep underline-offset-2 hover:underline">
               ログイン
             </Link>
           </p>
 
-          <p className="text-[11px] text-ink-muted text-center leading-relaxed">
+          <p className="text-[11px] text-ink-mute text-center leading-relaxed">
             登録すると{" "}
             <Link href="/legal/terms" className="underline underline-offset-2">利用規約</Link>
             {" "}と{" "}
@@ -149,8 +149,8 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   return (
     <label className="block">
       <div className="flex items-baseline justify-between mb-1.5 px-1">
-        <span className="text-body-sm text-ink-secondary">{label}</span>
-        {hint && <span className="text-[11px] text-ink-muted">{hint}</span>}
+        <span className="text-body-sm text-ink-soft">{label}</span>
+        {hint && <span className="text-[11px] text-ink-mute">{hint}</span>}
       </div>
       {children}
     </label>
@@ -163,10 +163,10 @@ function Choice({ active, onClick, label }: { active: boolean; onClick: () => vo
       type="button"
       onClick={onClick}
       className={cn(
-        "py-3 rounded-pill text-body-sm font-medium border transition",
+        "py-3 rounded-pill text-body-sm font-semibold tracking-[0.04em] border transition",
         active
-          ? "border-blush-deep bg-gradient-blush text-ink shadow-soft"
-          : "border-ink/[0.08] bg-pearl-warm text-ink-secondary hover:border-gold/40 hover:-translate-y-px shadow-soft",
+          ? "border-wine-deep bg-wine-deep text-pearl-light-light shadow-luxe"
+          : "border-ink/[0.08] bg-pearl-light text-ink-soft hover:border-gold/30 hover:-translate-y-px shadow-soft",
       )}
     >
       {label}

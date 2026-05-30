@@ -26,7 +26,7 @@ export default function UpdatePasswordForm({ email }: Props) {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             新しいパスワード
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary truncate">
+          <p className="mt-1.5 text-body-sm text-ink-soft truncate">
             {email} のパスワードを再設定します
           </p>
         </div>
@@ -37,10 +37,10 @@ export default function UpdatePasswordForm({ email }: Props) {
           <form action={handleSubmit} className="space-y-3">
             <label className="block">
               <div className="flex items-baseline justify-between mb-1.5 px-1">
-                <span className="text-body-sm text-ink-secondary">
+                <span className="text-body-sm text-ink-soft">
                   新しいパスワード
                 </span>
-                <span className="text-[11px] text-ink-muted">8文字以上</span>
+                <span className="text-[11px] text-ink-mute">8文字以上</span>
               </div>
               <input
                 type="password"
@@ -48,7 +48,7 @@ export default function UpdatePasswordForm({ email }: Props) {
                 required
                 minLength={8}
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink shadow-soft focus:outline-none focus:border-blush-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </label>
@@ -56,7 +56,7 @@ export default function UpdatePasswordForm({ email }: Props) {
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-gradient-blush text-ink text-body-md font-medium tracking-wide hover:brightness-[1.02] hover:-translate-y-px active:translate-y-px transition shadow-float will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
             >
               {pending ? "更新中..." : "パスワードを更新"}
             </button>

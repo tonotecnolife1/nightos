@@ -29,13 +29,13 @@ export function CastRequestBanner({ requests: initial }: { requests: Request[] }
       {requests.map((r) => (
         <div
           key={r.id}
-          className="flex items-start gap-3 rounded-card bg-roseGold-muted border border-roseGold-border p-3 animate-fade-in"
+          className="flex items-start gap-3 rounded-card bg-champagne-soft/60 border border-gold/30 p-3 animate-fade-in"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-rose-gold flex items-center justify-center shrink-0">
-            <Flag size={13} className="text-pearl" />
+          <div className="w-8 h-8 rounded-full bg-rose-gold-metallic flex items-center justify-center shrink-0">
+            <Flag size={13} className="text-pearl-light" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[10px] text-roseGold-dark font-medium">
+            <div className="text-[10px] text-wine-deep font-medium">
               {r.cast_name}さんからのリクエスト
             </div>
             <p className="text-[12px] text-ink leading-relaxed mt-0.5">
@@ -46,7 +46,7 @@ export function CastRequestBanner({ requests: initial }: { requests: Request[] }
             type="button"
             onClick={() => handleResolve(r.id)}
             disabled={pending}
-            className="w-7 h-7 rounded-full bg-pearl-warm border border-pearl-soft flex items-center justify-center text-emerald hover:bg-emerald/10 active:scale-95 shrink-0"
+            className="w-7 h-7 rounded-full bg-pearl-warm border border-pearl-soft flex items-center justify-center text-success hover:bg-success/10 active:scale-95 shrink-0"
             title="対応済み"
           >
             <Check size={12} />

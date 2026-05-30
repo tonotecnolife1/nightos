@@ -32,7 +32,7 @@ export function ImageLightbox({ src, alt = "画像", onClose }: Props) {
       <button
         type="button"
         onClick={onClose}
-        className="absolute top-4 right-4 w-9 h-9 rounded-full bg-pearl/20 backdrop-blur-sm flex items-center justify-center text-pearl hover:bg-pearl/30 transition z-10"
+        className="absolute top-4 right-4 w-9 h-9 rounded-full bg-pearl/20 backdrop-blur-sm flex items-center justify-center text-pearl-light hover:bg-pearl/30 transition z-10"
         aria-label="閉じる"
       >
         <X size={18} />

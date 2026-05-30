@@ -16,11 +16,11 @@ const STYLE_TONE: Record<
   { bg: string; border: string; text: string; selectedBg: string; selectedText: string }
 > = {
   safe: {
-    bg: "bg-roseGold-muted",
-    border: "border-roseGold-border",
-    text: "text-roseGold-dark",
-    selectedBg: "bg-gradient-rose-gold",
-    selectedText: "text-pearl",
+    bg: "bg-champagne-soft/60",
+    border: "border-gold/30",
+    text: "text-wine-deep",
+    selectedBg: "bg-rose-gold-metallic",
+    selectedText: "text-pearl-light",
   },
   practical: {
     bg: "bg-champagne",
@@ -30,11 +30,11 @@ const STYLE_TONE: Record<
     selectedText: "text-ink",
   },
   warm: {
-    bg: "bg-amethyst-muted",
-    border: "border-amethyst-border",
-    text: "text-amethyst-dark",
-    selectedBg: "bg-gradient-amethyst",
-    selectedText: "text-pearl",
+    bg: "bg-champagne-soft/60",
+    border: "border-gold/30",
+    text: "text-gold-deep",
+    selectedBg: "bg-gold-metallic",
+    selectedText: "text-pearl-light",
   },
 };
 
@@ -55,8 +55,8 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-1.5 text-[11px] text-ink-muted px-1">
-        <Sparkles size={11} className="text-amethyst-dark" />
+      <div className="flex items-center gap-1.5 text-[11px] text-ink-mute px-1">
+        <Sparkles size={11} className="text-gold-deep" />
         3つの返し方から選んでください
       </div>
 
@@ -75,10 +75,10 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
               disabled={!!selectedId}
               className={cn(
                 "flex-shrink-0 w-[72vw] max-w-[280px] text-left rounded-card border transition-all snap-start",
-                "shadow-soft-card active:scale-[0.98]",
+                "shadow-soft active:scale-[0.98]",
                 isSelected
-                  ? cn(tone.selectedBg, "border-transparent scale-[1.02] shadow-elevated-light")
-                  : cn("bg-pearl-warm", tone.border, "hover:shadow-elevated-light"),
+                  ? cn(tone.selectedBg, "border-transparent scale-[1.02] shadow-warm")
+                  : cn("bg-pearl-warm", tone.border, "hover:shadow-warm"),
               )}
             >
               {/* Header */}
@@ -116,7 +116,7 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
                     選択済み ✓
                   </span>
                 ) : (
-                  <span className="text-[10px] text-ink-muted">タップ →</span>
+                  <span className="text-[10px] text-ink-mute">タップ →</span>
                 )}
               </div>
 
@@ -135,7 +135,7 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
       </div>
 
       {selectedId && (
-        <p className="text-[11px] text-amethyst-dark px-1 animate-fade-in flex items-center gap-1">
+        <p className="text-[11px] text-gold-deep px-1 animate-fade-in flex items-center gap-1">
           <Check size={11} />
           パターン{selectedId}を選択しました。反映中…
         </p>
@@ -175,10 +175,10 @@ export function RefineTriggerButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[11px] font-medium border border-amethyst-border transition-all active:scale-[0.97]",
+        "inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[11px] font-medium border border-gold/30 transition-all active:scale-[0.97]",
         disabled
-          ? "bg-pearl-soft text-ink-muted cursor-not-allowed"
-          : "bg-amethyst-muted text-amethyst-dark hover:bg-amethyst-muted/80",
+          ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
+          : "bg-champagne-soft/60 text-gold-deep hover:bg-champagne-soft/60/80",
       )}
     >
       <Wand2 size={11} />

@@ -19,15 +19,15 @@ export default async function StoreCustomersPage() {
       <div className="px-5 pt-4 pb-6 space-y-4">
         <Link
           href="/store/customers/transfer"
-          className="flex items-center justify-between w-full p-3 rounded-btn border border-amethyst-border bg-amethyst-muted/30 hover:bg-amethyst-muted/50 transition-colors"
+          className="flex items-center justify-between w-full p-3 rounded-btn border border-gold/30 bg-champagne-soft/60/30 hover:bg-champagne-soft/60/50 transition-colors"
         >
           <div>
             <div className="text-body-sm font-medium text-ink">担当移管</div>
-            <div className="text-[10px] text-ink-muted mt-0.5">
+            <div className="text-[10px] text-ink-mute mt-0.5">
               キャスト間で顧客の担当を引き継ぐ
             </div>
           </div>
-          <ArrowRight size={14} className="text-amethyst-dark shrink-0" />
+          <ArrowRight size={14} className="text-gold-deep shrink-0" />
         </Link>
         <CustomerListClient customers={customers} casts={casts} />
       </div>

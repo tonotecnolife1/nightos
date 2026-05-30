@@ -20,8 +20,8 @@ export function ChipOptions({ question, options, onPick, onSkip }: Props) {
   };
 
   return (
-    <div className="rounded-2xl border border-amethyst-border bg-amethyst-muted px-4 py-3.5 space-y-2.5 animate-fade-in">
-      <p className="text-label-md text-amethyst-dark">{question}</p>
+    <div className="rounded-2xl border border-gold/30 bg-champagne-soft/60 px-4 py-3.5 space-y-2.5 animate-fade-in">
+      <p className="text-label-md text-gold-deep">{question}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((opt) => (
           <button
@@ -32,10 +32,10 @@ export function ChipOptions({ question, options, onPick, onSkip }: Props) {
             className={cn(
               "px-3.5 h-9 rounded-badge text-body-sm border transition-all active:scale-95",
               picked === opt
-                ? "bg-amethyst text-pearl border-amethyst-dark scale-95 shadow-soft"
+                ? "bg-wine-deep text-pearl-light-light border-gold-deep scale-95 shadow-soft"
                 : picked
-                  ? "bg-pearl-soft text-ink-muted border-pearl-soft opacity-50"
-                  : "bg-pearl-warm text-amethyst-dark border-amethyst-border hover:bg-amethyst hover:text-pearl hover:border-amethyst-dark",
+                  ? "bg-pearl-soft text-ink-mute border-pearl-soft opacity-50"
+                  : "bg-pearl-warm text-gold-deep border-gold/30 hover:bg-wine-deep hover:text-pearl-light hover:border-wine-deep",
             )}
           >
             {opt}
@@ -45,7 +45,7 @@ export function ChipOptions({ question, options, onPick, onSkip }: Props) {
           <button
             type="button"
             onClick={onSkip}
-            className="px-3.5 h-9 rounded-badge text-body-sm bg-transparent text-ink-secondary underline underline-offset-2 hover:text-amethyst-dark"
+            className="px-3.5 h-9 rounded-badge text-body-sm bg-transparent text-ink-soft underline underline-offset-2 hover:text-gold-deep"
           >
             お任せ
           </button>

@@ -61,14 +61,45 @@ export function RoleSelector() {
   };
 
   return (
-    <main className="min-h-dvh bg-pearl flex flex-col">
-      {/* ── Hero ── */}
-      <div className="bg-gradient-hero px-6 pt-14 pb-12">
-        <div className="max-w-sm mx-auto">
-          <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
+    <main className="min-h-dvh flex flex-col">
+      {/* V5 Bordeaux Salon Hero — dark wine + champagne-gold */}
+      <div className="v5-hero px-6 pt-14 pb-12">
+        <div className="max-w-sm mx-auto relative">
+          <div
+            className="font-sans font-medium mb-3"
+            style={{
+              fontSize: 11,
+              lineHeight: 1,
+              letterSpacing: "0.32em",
+              color: "var(--v5-gold-mid)",
+            }}
+          >
+            NIGHTOS · WELCOME
+          </div>
+          <h1
+            className="font-serif font-normal v5-metallic"
+            style={{
+              fontSize: "2.25rem",
+              lineHeight: 1.1,
+              letterSpacing: "0.05em",
+            }}
+          >
             {step === "venue" ? "業態を選ぶ" : "役割を選ぶ"}
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <span
+            aria-hidden
+            className="v5-brass-line"
+            style={{ width: "26ch", maxWidth: "55%", margin: "10px 0 14px" }}
+          />
+          <p
+            className="font-sans"
+            style={{
+              fontSize: 13,
+              lineHeight: 1.6,
+              letterSpacing: "0.02em",
+              color: "var(--v5-ink-on-dark-soft)",
+            }}
+          >
             {step === "venue"
               ? "あなたのお店の業態に合わせます"
               : `${venue === "club" ? "クラブ" : "キャバクラ"}でのあなたの立場`}
@@ -100,7 +131,7 @@ export function RoleSelector() {
               <button
                 type="button"
                 onClick={() => setStep("venue")}
-                className="self-start text-[12px] text-ink-muted hover:text-ink-secondary mb-1 px-1"
+                className="self-start text-[12px] text-ink-mute hover:text-ink-soft mb-1 px-1"
               >
                 ← 業態選択に戻る
               </button>
@@ -142,7 +173,7 @@ export function RoleSelector() {
             </div>
           )}
 
-          <p className="mt-6 text-[11px] text-ink-muted text-center">
+          <p className="mt-6 text-[11px] text-ink-mute text-center">
             検証版のため、選択に応じて画面が切り替わります
           </p>
         </div>
@@ -170,27 +201,49 @@ function BigCard({
     <button
       type="button"
       onClick={onClick}
-      className={`group w-full text-left px-5 py-4 rounded-card border transition will-change-transform hover:-translate-y-px ${
+      className={`group relative overflow-hidden w-full text-left px-5 py-4 rounded-card border transition will-change-transform hover:-translate-y-px ${
         accent
-          ? "border-gold/30 bg-gradient-to-br from-pearl-warm via-pearl-warm to-blush-soft/50 shadow-float"
-          : "border-ink/[0.06] bg-pearl-warm hover:border-gold/40 shadow-soft"
+          ? "border-ink/[0.08] shadow-warm"
+          : "border-ink/[0.08] bg-pearl-light/85 backdrop-blur-md shadow-soft hover:shadow-warm"
       }`}
+      style={
+        accent
+          ? {
+              background:
+                "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
+                "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
+                "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
+            }
+          : undefined
+      }
     >
+      {accent && (
+        <span
+          aria-hidden
+          className="absolute left-0 top-0 bottom-0 w-1 bg-rose-gold-metallic"
+        />
+      )}
       <div className="flex items-center gap-4">
-        <span className="w-12 h-12 rounded-full border border-gold/40 bg-gradient-to-br from-pearl-warm to-champagne-soft/60 flex items-center justify-center shrink-0">
+        <span
+          className="w-12 h-12 rounded-full border border-gold/40 flex items-center justify-center shrink-0"
+          style={{
+            background: "var(--champagne-metallic)",
+            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.6)",
+          }}
+        >
           {icon}
         </span>
         <div className="flex-1 min-w-0">
-          <div className="font-display text-[18px] leading-tight font-medium text-ink">
+          <div className="font-serif text-[18px] leading-tight font-medium tracking-[0.02em] text-ink">
             {title}
           </div>
-          <p className="text-[11px] text-ink-muted mt-1 leading-relaxed">
+          <p className="text-[11px] text-ink-soft mt-1 leading-relaxed">
             {description}
           </p>
         </div>
         <ChevronRight
           size={18}
-          className="text-ink-muted shrink-0 group-hover:text-blush-deep transition-colors"
+          className="text-ink-mute shrink-0 group-hover:text-wine-deep transition-colors"
         />
       </div>
     </button>
