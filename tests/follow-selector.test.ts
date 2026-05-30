@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { selectFollowTargets } from "@/features/cast-home/data/follow-selector";
+import {
+  selectFollowTargets,
+  isBottleKeepBrand,
+} from "@/features/cast-home/data/follow-selector";
 import type { Bottle, CastMemo, Customer, Visit } from "@/types/nightos";
 
 const TODAY = new Date("2026-03-19T00:00:00+09:00");
@@ -230,5 +233,94 @@ describe("selectFollowTargets", () => {
     expect(result[0].bottle?.brand).toBe("山崎12年");
     expect(result[0].bottle?.remaining_glasses).toBe(8);
     expect(result[0].lastTopic).toBe("ゴルフの話");
+  });
+
+  it("excludes champagne from the bottle-keep slot (rule: whisky/shochu only)", () => {
+    // ボトルテーブルにシャンパンが混入していても、ボトルキープ枠には出さない。
+    const c = customer({ id: "c_champ", birthday: "1990-03-20" });
+    const champagne: Bottle = {
+      ...bottle("c_champ", 12),
+      id: "b_champ",
+      brand: "モエ・エ・シャンドン",
+    };
+    const result = selectFollowTargets({
+      customers: [c],
+      visits: [visit("c_champ", 3)],
+      bottles: [champagne],
+      memos: [],
+      today: TODAY,
+    });
+    expect(result).toHaveLength(1);
+    // シャンパンしかキープが無い → ボトルキープ枠は空
+    expect(result[0].bottle).toBeUndefined();
+  });
+
+  it("prefers a whisky/shochu keep over a champagne row for the same customer", () => {
+    const c = customer({ id: "c_mix", birthday: "1990-03-20" });
+    const champagne: Bottle = {
+      ...bottle("c_mix", 90),
+      id: "b_mix_champ",
+      brand: "ドンペリニヨン",
+    };
+    const whisky: Bottle = {
+      ...bottle("c_mix", 30),
+      id: "b_mix_whisky",
+      brand: "山崎12年",
+    };
+    const result = selectFollowTargets({
+      customers: [c],
+      visits: [visit("c_mix", 3)],
+      bottles: [champagne, whisky],
+      memos: [],
+      today: TODAY,
+    });
+    expect(result).toHaveLength(1);
+    expect(result[0].bottle?.brand).toBe("山崎12年");
+  });
+});
+
+describe("isBottleKeepBrand", () => {
+  it("accepts whisky and shochu brands", () => {
+    for (const brand of [
+      "山崎12年",
+      "白州12年",
+      "響 JH",
+      "マッカラン18年",
+      "森伊蔵",
+      "魔王",
+      "村尾",
+      "竹鶴17年",
+      "グレンリベット12年",
+    ]) {
+      expect(isBottleKeepBrand(brand)).toBe(true);
+    }
+  });
+
+  it("rejects champagne / sparkling brands", () => {
+    for (const brand of [
+      "シャンパン (モエ)",
+      "ドンペリニヨン",
+      "ドンペリ白",
+      "ヴーヴ・クリコ",
+      "クリュッグ グランキュヴェ",
+      "モエ・エ・シャンドン",
+      "Dom Pérignon",
+      "Moët",
+    ]) {
+      expect(isBottleKeepBrand(brand)).toBe(false);
+    }
+  });
+
+  it("rejects wine, cognac and brandy brands", () => {
+    for (const brand of [
+      "レミーマルタンXO",
+      "ヘネシー VSOP",
+      "コニャック",
+      "ブランデー",
+      "オーパス・ワン",
+      "ロマネ・コンティ",
+    ]) {
+      expect(isBottleKeepBrand(brand)).toBe(false);
+    }
   });
 });
