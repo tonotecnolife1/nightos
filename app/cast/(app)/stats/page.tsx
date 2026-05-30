@@ -1,23 +1,11 @@
-import {
-  Award,
-  Calendar,
-  Flame,
-  Heart,
-  MessageCircle,
-  Sparkles,
-  TrendingUp,
-  UserPlus,
-  Users,
-} from "lucide-react";
-import { Card, GemCard } from "@/components/nightos/card";
-import { PageHeader } from "@/components/nightos/page-header";
-import { StatCard } from "@/components/nightos/stat-card";
-import {
-  GoalProgress,
-  currencyFormatter,
-} from "@/features/cast-stats/components/goal-progress";
-import { CastRepeatTrend } from "@/features/cast-stats/components/repeat-trend";
+import { Flame, JapaneseYen, Users, UsersRound } from "lucide-react";
+import { StatsSubHeader } from "@/features/cast-stats/components/stats-sub-header";
+import { StatsGoalCard } from "@/features/cast-stats/components/stats-goal-card";
+import { StatsMiniKpi } from "@/features/cast-stats/components/stats-mini-kpi";
 import { AiUsageSummary } from "@/features/cast-stats/components/ai-usage-summary";
+import { StatsTrendChart } from "@/features/cast-stats/components/stats-trend-chart";
+import { StatsSectionHead } from "@/features/cast-stats/components/stats-section-head";
+import { StatsEncouragement } from "@/features/cast-stats/components/stats-encouragement";
 import { getCurrentCastId } from "@/lib/nightos/auth";
 import { getCastStatsData } from "@/lib/nightos/supabase-queries";
 
@@ -25,172 +13,141 @@ export default async function CastStatsPage() {
   const castId = await getCurrentCastId();
   const data = await getCastStatsData(castId);
 
-  return (
-    <div className="animate-fade-in">
-      <PageHeader title="あなたの成績" subtitle="今月のがんばり" showBack />
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
 
-      <div className="px-5 pt-4 pb-6 space-y-5">
+  // 年間売上をコンパクト表示 (¥6.2M)。小さなタイルでも桁あふれしない。
+  const annualSalesM = (data.yearly.sales / 1_000_000).toFixed(1);
+
+  return (
+    <div
+      className="animate-fade-in min-h-full"
+      style={{ background: "linear-gradient(180deg, #f3eadb 0%, #efe5d4 100%)" }}
+    >
+      <StatsSubHeader year={year} month={month} />
+
+      <main className="px-5 pt-[18px] flex flex-col gap-[22px]">
         {/* ── 目標進捗 ── */}
-        <div className="grid grid-cols-1 gap-3">
-          <GoalProgress
+        <div className="flex flex-col gap-3">
+          <StatsGoalCard
             label="今月の売上"
             current={data.monthly.sales}
             goal={data.targets.salesGoal}
-            unit=""
-            formatter={currencyFormatter}
+            prefix="¥"
+            barColor="var(--gold-metallic)"
           />
-          <GoalProgress
-            label="今月の同伴"
-            current={data.monthly.douhanCount}
-            goal={data.targets.douhanGoal}
-            unit="回"
-          />
+          {data.targets.douhanGoal > 0 && (
+            <StatsGoalCard
+              label="今月の同伴"
+              current={data.monthly.douhanCount}
+              goal={data.targets.douhanGoal}
+              unit="回"
+              barColor="linear-gradient(90deg, var(--champagne) 0%, var(--champagne-deep) 100%)"
+            />
+          )}
         </div>
 
         {/* ── 月次スコア ── */}
-        <div className="grid grid-cols-3 gap-2.5">
-          <div id="repeat">
-            <StatCard
-              label="再来店率"
-              value={Math.round(data.monthly.repeatRate * 100)}
-              unit="%"
-              tone="rose"
-              icon={<Heart size={12} className="text-wine-deep" />}
-            />
-          </div>
-          <StatCard
+        <div className="flex gap-2">
+          <StatsMiniKpi
+            label="再来店率"
+            value={Math.round(data.monthly.repeatRate * 100)}
+            unit="%"
+            accent="rose"
+          />
+          <StatsMiniKpi
             label="連絡達成率"
             value={Math.round(data.monthly.followRate * 100)}
             unit="%"
-            tone="amethyst"
-            icon={<TrendingUp size={12} className="text-gold-deep" />}
+            accent="ink"
           />
-          <StatCard
-            label="今月の新規"
+          <StatsMiniKpi
+            label="今月新規"
             value={data.monthly.newCustomerCount}
             unit="人"
-            tone="default"
-            icon={<UserPlus size={12} className="text-gold-deep" />}
+            accent="wine"
           />
         </div>
 
         {/* ── 担当・継続 ── */}
-        <div className="grid grid-cols-2 gap-2.5">
-          <StatCard
-            label="担当のお客様"
+        <div className="flex gap-2">
+          <StatsMiniKpi
+            label="担当顧客"
             value={data.monthly.totalCustomerCount}
             unit="人"
-            tone="rose"
-            icon={<Users size={12} className="text-wine-deep" />}
+            accent="ink"
+            icon={<Users size={11} strokeWidth={1.7} />}
           />
-          <StatCard
+          <StatsMiniKpi
             label="連続連絡"
             value={data.followStreakDays}
             unit="日"
-            tone="default"
-            icon={<Flame size={12} className="text-warning" />}
+            accent="amber"
+            icon={<Flame size={11} strokeWidth={1.7} />}
           />
         </div>
 
-        {/* ── AI usage ── */}
+        {/* ── さくらママ活用度 ── */}
         <AiUsageSummary />
 
         {/* ── 再来店率の動き ── */}
-        <section>
-          <header className="relative flex items-baseline justify-between pl-3.5 mb-3">
-            <span
-              aria-hidden
-              className="absolute left-0 top-1 bottom-1 w-[3px] rounded"
-              style={{ background: "var(--v5-champ-gold)" }}
-            />
-            <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.04em] text-ink">
-              再来店率の動き
-            </h2>
-            <span className="text-label-xs tracking-luxe text-ink-mute uppercase">
-              この1ヶ月
-            </span>
-          </header>
-          <Card className="p-4">
-            <CastRepeatTrend points={data.repeatTrend} />
-          </Card>
-        </section>
+        <StatsTrendChart points={data.repeatTrend} />
 
         {/* ── 年間成績 ── */}
-        <section>
-          <header className="relative flex items-baseline gap-2 pl-3.5 mb-3">
-            <span
-              aria-hidden
-              className="absolute left-0 top-1 bottom-1 w-[3px] rounded"
-              style={{ background: "var(--v5-champ-gold)" }}
-            />
-            <Calendar size={16} className="text-ink-soft" />
-            <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.04em] text-ink">
-              年間成績
-            </h2>
-          </header>
-          <div className="grid grid-cols-2 gap-2.5">
-            <StatCard
+        <section className="flex flex-col gap-3">
+          <StatsSectionHead title="年間成績" sub={`${year} ANNUAL`} />
+          <div className="grid grid-cols-2 gap-2">
+            <StatsMiniKpi
               label="年間売上"
-              value={currencyFormatter(data.yearly.sales)}
-              tone="rose"
+              prefix="¥"
+              value={annualSalesM}
+              unit="M"
+              accent="rose"
+              icon={<JapaneseYen size={11} strokeWidth={1.7} />}
             />
-            <StatCard
+            <StatsMiniKpi
               label="年間再来店率"
               value={Math.round(data.yearly.repeatRate * 100)}
               unit="%"
-              tone="default"
+              accent="ink"
             />
-            <StatCard
+            <StatsMiniKpi
               label="年間新規"
               value={data.yearly.newCustomerCount}
               unit="人"
-              tone="amethyst"
+              accent="wine"
+              icon={<Users size={11} strokeWidth={1.7} />}
             />
             {data.yearly.douhanCount > 0 && (
-              <StatCard
+              <StatsMiniKpi
                 label="年間同伴"
                 value={data.yearly.douhanCount}
                 unit="回"
-                tone="default"
+                accent="gold"
+                icon={<UsersRound size={11} strokeWidth={1.7} />}
               />
             )}
           </div>
         </section>
 
         {/* ── さくらママからの励まし ── */}
-        <GemCard className="p-5">
-          <div className="flex items-start gap-3">
-            <div className="w-11 h-11 rounded-full border border-gold/35 flex items-center justify-center shrink-0"
-              style={{
-                background: "var(--champagne-metallic)",
-                boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.6)",
-              }}
-            >
-              <Award size={18} className="text-wine-deep" />
-            </div>
-            <div className="flex-1">
-              <div className="inline-flex items-center gap-1.5 text-label-xs tracking-luxe text-wine-deep mb-2">
-                <Sparkles size={11} strokeWidth={1.8} />
-                <span>{data.cast.name}さんへ</span>
-              </div>
-              <p className="font-serif text-[14.5px] leading-[1.75] font-medium tracking-[0.01em] text-ink">
-                {buildEncouragement(data)}
-              </p>
-            </div>
-          </div>
-        </GemCard>
-      </div>
+        <StatsEncouragement name={data.cast.name} message={buildEncouragement(data)} />
+      </main>
     </div>
   );
 }
 
-function buildEncouragement(data: Awaited<ReturnType<typeof getCastStatsData>>): string {
+function buildEncouragement(
+  data: Awaited<ReturnType<typeof getCastStatsData>>,
+): string {
   const salesPct = Math.round(
     (data.monthly.sales / data.targets.salesGoal) * 100,
   );
-  const douhanPct = data.targets.douhanGoal > 0
-    ? Math.round((data.monthly.douhanCount / data.targets.douhanGoal) * 100)
-    : 0;
+  const douhanPct =
+    data.targets.douhanGoal > 0
+      ? Math.round((data.monthly.douhanCount / data.targets.douhanGoal) * 100)
+      : 0;
   const followPct = Math.round(data.monthly.followRate * 100);
 
   if (salesPct >= 100 && douhanPct >= 100) {
