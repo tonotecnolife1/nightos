@@ -39,12 +39,8 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
       />
 
       <main className="px-5 flex flex-col gap-6">
-        <StoreMessageBanner
-          castId={data.cast.id}
-          initialMessages={storeMessages}
-        />
-
-        {/* KPI を hero の上にオーバーラップさせシームをブリッジ */}
+        {/* KPI を hero の seam にオーバーラップさせシームをブリッジ
+           (StoreMessageBanner より先に置いて橋渡しを成立させる) */}
         <div className="-mt-9 grid grid-cols-3 gap-2.5">
           <StatCard
             label="今月の売上"
@@ -74,6 +70,11 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
             />
           </Link>
         </div>
+
+        <StoreMessageBanner
+          castId={data.cast.id}
+          initialMessages={storeMessages}
+        />
 
         <DouhanTracker customers={customers} />
 
