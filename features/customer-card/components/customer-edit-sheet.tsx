@@ -93,8 +93,8 @@ export function CustomerEditSheet({ customer, isOpen, onClose }: Props) {
         onClick={onClose}
         aria-hidden
       />
-      <div className="absolute bottom-0 left-0 right-0 max-h-[88dvh] overflow-y-auto rounded-t-[28px] bg-pearl-warm shadow-warm animate-slide-up">
-        <div className="sticky top-0 z-10 flex items-start justify-between bg-pearl-warm border-b border-ink/[0.06] px-5 pb-3 pt-5">
+      <div className="absolute bottom-0 left-0 right-0 max-h-[88dvh] overflow-y-auto rounded-t-[28px] bg-white shadow-warm animate-slide-up">
+        <div className="sticky top-0 z-10 flex items-start justify-between bg-white border-b border-ink/[0.06] px-5 pb-3 pt-5">
           <div>
             <h2 className="font-display text-[20px] leading-tight font-medium text-ink">
               顧客情報を編集

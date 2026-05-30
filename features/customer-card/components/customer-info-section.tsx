@@ -38,13 +38,6 @@ export function CustomerInfoSection({ customer }: Props) {
         </button>
       </header>
 
-      {/* 凡例 */}
-      <div className="flex items-center gap-3 flex-wrap text-[10px] text-ink-muted px-1">
-        <LegendChip color="blush" label="入力推奨" />
-        <LegendChip color="default" label="編集可能" />
-        <LegendChip color="beige" label="閲覧のみ" />
-      </div>
-
       {/* 🌸 入力推奨: 呼び名 */}
       <NicknameRow nickname={customer.nickname ?? null} onEdit={() => setEditing(true)} />
 
@@ -182,31 +175,5 @@ function StoreSharedInfoCard({ customer }: { customer: Customer }) {
         <Lock size={9} /> 店舗側のみ編集可能
       </p>
     </StoreInfoCard>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────
-// 凡例 chip
-// ─────────────────────────────────────────────────────────────
-
-function LegendChip({
-  color,
-  label,
-}: {
-  color: "blush" | "default" | "beige";
-  label: string;
-}) {
-  const cls =
-    color === "blush"
-      ? "border-wine-deep/40 bg-wine-soft/25 text-wine-deep"
-      : color === "beige"
-        ? "border-beige-border bg-beige text-ink-secondary"
-        : "border-ink/[0.08] bg-pearl-warm text-ink-secondary";
-  return (
-    <span
-      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-badge border ${cls}`}
-    >
-      {label}
-    </span>
   );
 }
