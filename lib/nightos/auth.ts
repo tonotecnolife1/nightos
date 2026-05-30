@@ -1,6 +1,10 @@
 import { cookies } from "next/headers";
 import type { Cast, CastUserRole, Customer } from "@/types/nightos";
-import { CURRENT_CAST_ID, CURRENT_MAMA_ID } from "./constants";
+import {
+  CURRENT_CAST_ID,
+  CURRENT_MAMA_ID,
+  VENUE_TYPE_STORAGE_KEY,
+} from "./constants";
 import { isMockAuthDisabled } from "./env";
 import { mockCasts } from "./mock-data";
 
@@ -148,6 +152,12 @@ export async function getCurrentRole(): Promise<AccountRole | null> {
  * Falls back to "club" for mock sessions and unauthenticated users.
  */
 export async function getCurrentVenueType(): Promise<"club" | "cabaret"> {
+  // Explicit client-set override (role selector / demo / settings) wins.
+  // Lets a club show club KPIs even in mock/demo where there is no real
+  // per-store auth to resolve venue_type from.
+  const override = cookies().get(VENUE_TYPE_STORAGE_KEY)?.value;
+  if (override === "club" || override === "cabaret") return override;
+
   const cast = await getCurrentCast();
   if (!cast) return "club";
 

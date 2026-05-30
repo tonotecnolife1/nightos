@@ -46,4 +46,7 @@ export function getVenueType(): VenueType {
 export function setVenueType(type: VenueType): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(VENUE_TYPE_STORAGE_KEY, type);
+  // Mirror to a cookie so SSR (getCurrentVenueType) can honor the selection
+  // in mock/demo mode where there is no per-store auth.
+  document.cookie = `${VENUE_TYPE_STORAGE_KEY}=${type}; path=/; max-age=31536000; samesite=lax`;
 }

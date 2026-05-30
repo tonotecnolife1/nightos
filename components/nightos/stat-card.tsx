@@ -42,12 +42,6 @@ export function StatCard({
           "0 4px 12px rgba(94,56,56,0.10), 0 16px 32px rgba(58,31,31,0.08)",
       }}
     >
-      {/* V5: 上端 champagne-gold hairline (Section ribbon と呼応) */}
-      <span
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-0.5"
-        style={{ background: "var(--v5-champ-gold)", opacity: 0.7 }}
-      />
       <div
         className="flex items-center gap-1.5 text-label-xs text-ink-mute"
         style={{ letterSpacing: "0.20em" }}

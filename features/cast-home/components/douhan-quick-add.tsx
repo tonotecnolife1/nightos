@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, X, Check } from "lucide-react";
+import { CalendarPlus, X, Check } from "lucide-react";
 import type { Customer, Douhan } from "@/types/nightos";
 import { upsertDouhan } from "@/lib/nightos/douhan-store";
 import { useCastId } from "@/lib/nightos/cast-context";
@@ -54,9 +54,9 @@ export function DouhanQuickAdd({ customers }: { customers: Customer[] }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full inline-flex items-center justify-center gap-2 h-[52px] rounded-pill bg-wine-deep text-pearl-light font-sans font-semibold tracking-[0.04em] text-[14px] shadow-warm active:scale-[0.99] hover:-translate-y-px transition"
+        className="w-full inline-flex items-center justify-center gap-2 h-[52px] rounded-pill border border-gold-deep/40 bg-champagne-soft/50 text-gold-deep font-sans font-semibold tracking-[0.04em] text-[14px] shadow-soft active:scale-[0.99] hover:bg-champagne-soft/70 transition"
       >
-        <Plus size={16} strokeWidth={2} />
+        <CalendarPlus size={16} strokeWidth={1.8} />
         同伴を登録
       </button>
 
@@ -137,7 +137,7 @@ export function DouhanQuickAdd({ customers }: { customers: Customer[] }) {
                   type="button"
                   onClick={handleSubmit}
                   disabled={!canSubmit}
-                  className="w-full h-12 rounded-pill bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] shadow-luxe active:scale-[0.99] transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-full h-12 rounded-pill border border-gold-deep/40 bg-champagne-soft/60 text-gold-deep font-semibold tracking-[0.04em] shadow-soft active:scale-[0.99] transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   登録する
                 </button>

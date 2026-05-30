@@ -1,9 +1,8 @@
 import { Bookmark, Star, Users } from "lucide-react";
 import { StatCard } from "@/components/nightos/stat-card";
 import { CastHomeHero } from "./components/cast-home-hero";
-import { RuriMamaEntryCard } from "./components/ruri-mama-entry-card";
+import { SakuraMamaCard } from "./components/sakura-mama-card";
 import { FollowTargetList } from "./components/follow-target-list";
-import { MorningBriefing } from "./components/morning-briefing";
 import { StoreMessageBanner } from "./components/store-message-banner";
 import { VisitNotificationPoller } from "./components/visit-notification-poller";
 import { DouhanQuickAdd } from "./components/douhan-quick-add";
@@ -63,9 +62,7 @@ export function CastHomeCabaret({ data, storeMessages, customers }: Props) {
           />
         </div>
 
-        <MorningBriefing castId={data.cast.id} />
-
-        <RuriMamaEntryCard />
+        <SakuraMamaCard castId={data.cast.id} />
 
         <StoreMessageBanner
           castId={data.cast.id}

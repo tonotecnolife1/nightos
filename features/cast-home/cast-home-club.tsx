@@ -2,9 +2,8 @@ import Link from "next/link";
 import { Heart, MessageCircle, TrendingUp, UserPlus } from "lucide-react";
 import { StatCard } from "@/components/nightos/stat-card";
 import { CastHomeHero } from "./components/cast-home-hero";
-import { RuriMamaEntryCard } from "./components/ruri-mama-entry-card";
+import { SakuraMamaCard } from "./components/sakura-mama-card";
 import { FollowTargetList } from "./components/follow-target-list";
-import { MorningBriefing } from "./components/morning-briefing";
 import { StoreMessageBanner } from "./components/store-message-banner";
 import { VisitNotificationPoller } from "./components/visit-notification-poller";
 import { DouhanTracker } from "./components/douhan-tracker";
@@ -74,14 +73,12 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
 
         <DouhanTracker customers={customers} />
 
-        <RuriMamaEntryCard />
+        <SakuraMamaCard castId={data.cast.id} />
 
         <StoreMessageBanner
           castId={data.cast.id}
           initialMessages={storeMessages}
         />
-
-        <MorningBriefing castId={data.cast.id} />
 
         {/* ── Priority Stack ── */}
         <section className="flex flex-col gap-3.5">
