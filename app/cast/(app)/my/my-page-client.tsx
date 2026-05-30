@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
-import { ArrowLeft, Building2, ChevronRight, Crown, Settings, UserCircle, Users } from "lucide-react";
+import { ArrowLeft, Building2, Settings, UserCircle } from "lucide-react";
 import { mockLogout } from "@/app/auth/actions";
 import { InstallAppSection } from "@/components/nightos/install-app-section";
 import type { CastUserRole } from "@/types/nightos";
@@ -126,43 +126,6 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
             </div>
             <span className="text-ink-mute text-[12px]">›</span>
           </Link>
-
-          {/* メンバー管理 */}
-          <section className="space-y-2">
-            <p className="text-[11px] text-ink-mute px-1">メンバー管理</p>
-            <div className="grid grid-cols-2 gap-2">
-              <Link
-                href="/mama/team"
-                className="flex items-center gap-2.5 rounded-card border border-ink/[0.06] bg-pearl-warm p-3.5 shadow-soft hover:-translate-y-px hover:border-gold/40 transition will-change-transform"
-              >
-                <span className="w-7 h-7 rounded-full border border-gold/40 bg-pearl-warm flex items-center justify-center shrink-0">
-                  <Crown size={13} className="text-gold-deep" />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className="text-body-sm font-medium text-ink">メンバー</span>
-                    <ChevronRight size={11} className="text-ink-mute" />
-                  </div>
-                  <span className="text-[10px] text-ink-mute">育成・目標設定</span>
-                </div>
-              </Link>
-              <Link
-                href="/cast/customers"
-                className="flex items-center gap-2.5 rounded-card border border-ink/[0.06] bg-pearl-warm p-3.5 shadow-soft hover:-translate-y-px hover:border-gold/40 transition will-change-transform"
-              >
-                <span className="w-7 h-7 rounded-full border border-gold/40 bg-pearl-warm flex items-center justify-center shrink-0">
-                  <Users size={13} className="text-gold-deep" />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className="text-body-sm font-medium text-ink">全顧客</span>
-                    <ChevronRight size={11} className="text-ink-mute" />
-                  </div>
-                  <span className="text-[10px] text-ink-mute">一覧・相関図・ファネル</span>
-                </div>
-              </Link>
-            </div>
-          </section>
 
           {/* ログアウト */}
           <button

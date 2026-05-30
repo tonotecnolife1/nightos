@@ -7,7 +7,6 @@ import { FollowTargetList } from "./components/follow-target-list";
 import { StoreMessageBanner } from "./components/store-message-banner";
 import { VisitNotificationPoller } from "./components/visit-notification-poller";
 import { DouhanTracker } from "./components/douhan-tracker";
-import { DouhanQuickAdd } from "./components/douhan-quick-add";
 import type { CastHomeData, Customer } from "@/types/nightos";
 
 interface Props {
@@ -102,8 +101,6 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
           </header>
           <FollowTargetList targets={data.targets} />
         </section>
-
-        <DouhanQuickAdd customers={customers} />
       </main>
 
       {/* V5 FAB: wine-deep solid + multi-layer champagne-gold ring */}
