@@ -15,6 +15,47 @@ export function formatCustomerName(name: string | null | undefined): string {
   return `${name}さま`;
 }
 
+/** カタカナ → ひらがな (検索の表記ゆれ吸収用)。 */
+function toHiragana(s: string): string {
+  return s.replace(/[ァ-ヶ]/g, (ch) =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60),
+  );
+}
+
+/** 検索用に正規化: trim + 小文字化 + カナをひらがなに統一 + 空白除去。 */
+function normalizeForSearch(s: string): string {
+  return toHiragana(s.trim().toLowerCase()).replace(/\s+/g, "");
+}
+
+/**
+ * 顧客が検索クエリにマッチするか判定する。
+ * 氏名(漢字) / 読み仮名(ひらがな) / ニックネーム のいずれかに
+ * 部分一致すればヒット。カナ・かなの表記ゆれは吸収する。
+ *
+ * 「ひらがなで予測」したい場合、漢字からの自動読み変換は不安定なため
+ * 各顧客カルテの読み仮名(name_kana)を使う前提。未登録の顧客は
+ * 氏名(漢字)とニックネームでのみヒットする。
+ */
+export function customerMatchesQuery(
+  customer: {
+    name: string;
+    name_kana?: string | null;
+    nickname?: string | null;
+  },
+  query: string,
+): boolean {
+  const q = normalizeForSearch(query);
+  if (!q) return true;
+  const haystack = [
+    customer.name,
+    customer.name_kana ?? "",
+    customer.nickname ?? "",
+  ]
+    .map(normalizeForSearch)
+    .join(" ");
+  return haystack.includes(q);
+}
+
 /** 円表示フォーマット（¥1,234） */
 export function formatCurrency(amount: number): string {
   return `¥${amount.toLocaleString("ja-JP")}`;

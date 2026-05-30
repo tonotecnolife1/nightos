@@ -45,6 +45,8 @@ export function CustomerForm({
   const defaultCastId = lockedCastId ?? casts[0]?.id ?? "";
 
   const [name, setName] = useState("");
+  const [nameKana, setNameKana] = useState("");
+  const [nickname, setNickname] = useState("");
   const [birthday, setBirthday] = useState("");
   const [category, setCategory] = useState<CustomerCategory>("new");
   const [castId, setCastId] = useState(defaultCastId);
@@ -62,6 +64,8 @@ export function CustomerForm({
 
   const reset = () => {
     setName("");
+    setNameKana("");
+    setNickname("");
     setBirthday("");
     setCategory("new");
     setCastId(defaultCastId);
@@ -73,6 +77,7 @@ export function CustomerForm({
 
   const applyBusinessCard = (fields: ExtractedBusinessCard) => {
     if (fields.name) setName(fields.name);
+    if (fields.name_kana) setNameKana(fields.name_kana);
     if (fields.store_memo) {
       setStoreMemo((prev) =>
         prev.trim() ? `${prev.trim()}\n${fields.store_memo}` : fields.store_memo ?? "",
@@ -86,6 +91,8 @@ export function CustomerForm({
     startTransition(async () => {
       const res = await createCustomerAction({
         name: name.trim(),
+        name_kana: nameKana.trim() || null,
+        nickname: nickname.trim() || null,
         birthday: birthday || null,
         job: null,
         favorite_drink: null,
@@ -133,6 +140,26 @@ export function CustomerForm({
         onChange={(e) => setName(e.target.value)}
         placeholder="例: 田中 太郎"
         required
+      />
+
+      {/* 読み仮名（任意・検索の予測に使用） */}
+      <TextInput
+        label="読み仮名（ひらがな）"
+        name="name_kana"
+        value={nameKana}
+        onChange={(e) => setNameKana(e.target.value)}
+        placeholder="例: たなか たろう"
+        hint="ひらがなで検索・予測するために使います"
+      />
+
+      {/* ニックネーム（任意） */}
+      <TextInput
+        label="ニックネーム（任意）"
+        name="nickname"
+        value={nickname}
+        onChange={(e) => setNickname(e.target.value)}
+        placeholder="例: 社長・たかちゃん"
+        hint="フルネームの横に表示され、検索でもヒットします"
       />
 
       {/* 担当キャスト */}

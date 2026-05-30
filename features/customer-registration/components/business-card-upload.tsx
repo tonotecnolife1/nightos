@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 export interface ExtractedBusinessCard {
   name: string | null;
+  name_kana: string | null;
   job: string | null;
   store_memo: string | null;
   confidence: "high" | "medium" | "low";
@@ -185,6 +186,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
 
           <div className="space-y-1 text-body-sm bg-pearl-warm rounded-btn border border-pearl-soft px-2.5 py-2">
             <ResultRow label="お名前" value={result.name} />
+            <ResultRow label="読み仮名" value={result.name_kana} />
             <ResultRow label="職業" value={result.job} />
             <ResultRow label="店舗メモ" value={result.store_memo} />
           </div>

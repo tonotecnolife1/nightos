@@ -324,14 +324,8 @@
   pointer-events: none;
   z-index: 1;
 }
-/* Bottom horizon hairline — continues to light area */
-.v5-hero::after {
-  content: "";
-  position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(235,217,168,0.45) 15%, rgba(235,217,168,0.45) 85%, transparent 100%);
-  pointer-events: none;
-  z-index: 1;
-}
+/* 下端の地平線ハイライトは廃止: KPI タイルが -mt-9 で重なると
+   半透明ガラス越しに金色の横線として透けて視認性を損ねるため。 */
 
 /* Sakura mama dark surface (Hero と地続きの暗ボルドー) */
 .v5-sakura-surface {

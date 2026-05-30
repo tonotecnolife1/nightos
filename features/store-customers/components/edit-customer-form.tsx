@@ -33,6 +33,8 @@ export function EditCustomerForm({ customer, casts }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState(customer.name);
+  const [nameKana, setNameKana] = useState(customer.name_kana ?? "");
+  const [nickname, setNickname] = useState(customer.nickname ?? "");
   const [birthday, setBirthday] = useState(customer.birthday ?? "");
   const [job, setJob] = useState(customer.job ?? "");
   const [favoriteDrink, setFavoriteDrink] = useState(

@@ -747,6 +747,8 @@ function recordFollowLogMock(args: {
 
 export interface CreateCustomerInput {
   name: string;
+  name_kana?: string | null;
+  nickname?: string | null;
   birthday: string | null;
   job: string | null;
   favorite_drink: string | null;
@@ -814,6 +816,8 @@ function createCustomerMock(input: CreateCustomerInput): Customer {
     store_id: input.store_id ?? CURRENT_STORE_ID,
     cast_id: input.cast_id,
     name: input.name,
+    name_kana: input.name_kana ?? null,
+    nickname: input.nickname ?? null,
     birthday: input.birthday,
     job: input.job,
     favorite_drink: input.favorite_drink,
