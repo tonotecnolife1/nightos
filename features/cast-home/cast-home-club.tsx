@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Heart, MessageCircle, TrendingUp, UserPlus } from "lucide-react";
+import { Heart, UserPlus, Users } from "lucide-react";
 import { StatCard } from "@/components/nightos/stat-card";
 import { CastHomeHero } from "./components/cast-home-hero";
 import { SakuraMamaCard } from "./components/sakura-mama-card";
@@ -42,10 +42,10 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
            (StoreMessageBanner より先に置いて橋渡しを成立させる) */}
         <div className="-mt-9 grid grid-cols-3 gap-2.5">
           <StatCard
-            label="今月の売上"
-            value={Math.round(summary.monthlySales / 10000)}
-            unit="万円"
-            icon={<TrendingUp size={11} className="text-gold" />}
+            label="今月の新規"
+            value={summary.newCustomerCount}
+            unit="人"
+            icon={<UserPlus size={11} className="text-gold" />}
             tone="rose"
           />
           <Link href="/cast/stats#repeat" className="block">
@@ -58,16 +58,13 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
               className="h-full cursor-pointer hover:shadow-float hover:-translate-y-px transition will-change-transform"
             />
           </Link>
-          <Link href="/cast/customers" className="block">
-            <StatCard
-              label="フォロー対象"
-              value={summary.followTargetCount}
-              unit="人"
-              icon={<MessageCircle size={11} className="text-gold" />}
-              tone="wine"
-              className="h-full cursor-pointer hover:shadow-float hover:-translate-y-px transition will-change-transform"
-            />
-          </Link>
+          <StatCard
+            label="同伴数"
+            value={summary.douhanCount}
+            unit="件"
+            icon={<Users size={11} className="text-gold" />}
+            tone="wine"
+          />
         </div>
 
         <SakuraMamaCard castId={data.cast.id} />
