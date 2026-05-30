@@ -32,9 +32,9 @@ export function CastHomeClub({ data, storeMessages, customers }: Props) {
       <VisitNotificationPoller castId={data.cast.id} />
 
       <CastHomeHero
+        castId={data.cast.id}
+        customers={customers}
         dateLabel={dateLabel}
-        title="Tonight"
-        subtitle="今夜もいってらっしゃい。"
         hasNotification={hasNotification}
       />
 

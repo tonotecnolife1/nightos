@@ -28,9 +28,9 @@ export function CastHomeCabaret({ data, storeMessages }: Props) {
       <VisitNotificationPoller castId={data.cast.id} />
 
       <CastHomeHero
+        castId={data.cast.id}
+        customers={[]}
         dateLabel={dateLabel}
-        title="Tonight"
-        subtitle="今夜もいってらっしゃい。"
         hasNotification={hasNotification}
       />
 
