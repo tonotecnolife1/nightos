@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight, Bell, CalendarDays, UserCircle } from "lucide-react";
+import { ArrowRight, Bell, UserCircle } from "lucide-react";
 import { loadSchedule, type ShiftEntry } from "@/lib/nightos/schedule-store";
 import { loadDouhansForCast } from "@/lib/nightos/douhan-store";
 import type { Customer, Douhan } from "@/types/nightos";
@@ -146,17 +146,6 @@ export function CastHomeHero({
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href="/cast/schedule"
-            aria-label="スケジュール"
-            className="w-9 h-9 rounded-full v5-ring-gold flex items-center justify-center transition"
-            style={{
-              background: "rgba(255,255,255,0.06)",
-              color: "rgba(253,252,249,0.85)",
-            }}
-          >
-            <CalendarDays size={17} strokeWidth={1.6} />
-          </Link>
           <Link
             href="/cast/my"
             aria-label="マイページ"
