@@ -51,9 +51,13 @@ export function CastHomeMenu({ hasNotification = false }: Props) {
   }, [open]);
 
   // tab bar 表示中はそこに出ている導線を除外し、現在地そのものも出さない。
+  // 「予定」は Hero 本文の「スケジュールを見る」CTA と重複するので除外する。
   const tabBarVisible = isTabBarVisible(pathname);
   const navItems = CAST_NAV_ITEMS.filter(
-    (it) => (tabBarVisible ? !it.inTabBar : true) && !it.match(pathname),
+    (it) =>
+      it.key !== "schedule" &&
+      (tabBarVisible ? !it.inTabBar : true) &&
+      !it.match(pathname),
   );
 
   return (
