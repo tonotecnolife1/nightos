@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ChevronDown, ChevronRight, Crown, User, Users } from "lucide-react";
 import type { Cast, Customer } from "@/types/nightos";
 import {
@@ -249,7 +250,7 @@ function ReferralNodeCard({
   const cast = castById.get(node.customer.cast_id);
 
   return (
-    <a
+    <Link
       href={`/cast/customers/${node.customer.id}`}
       className={cn(
         "block rounded-card bg-pearl-warm border shadow-soft px-3 py-2 active:scale-[0.99] transition-transform",
@@ -287,7 +288,7 @@ function ReferralNodeCard({
           </>
         )}
       </div>
-    </a>
+    </Link>
   );
 }
 
@@ -416,7 +417,7 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
         ? "bg-champagne-soft/60/50 text-gold-deep border-gold/30"
         : "bg-pearl-soft text-ink-soft border-pearl-soft";
   return (
-    <a
+    <Link
       href={`/cast/customers/${customer.id}`}
       className="flex items-center gap-2 px-2 py-1.5 rounded-btn hover:bg-pearl-soft"
     >
@@ -436,6 +437,6 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
       >
         {categoryLabel}
       </span>
-    </a>
+    </Link>
   );
 }
