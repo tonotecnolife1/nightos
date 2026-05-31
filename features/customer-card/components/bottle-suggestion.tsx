@@ -2,6 +2,7 @@
 
 import { Loader2, Sparkles, Wine } from "lucide-react";
 import { useState } from "react";
+import { apiFetchJson } from "@/lib/nightos/api-fetch";
 import { useCastId } from "@/lib/nightos/cast-context";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +34,7 @@ export function BottleSuggestion({ customerId }: Props) {
   const handleClick = async () => {
     setPhase("loading");
     try {
-      const res = await fetch("/api/suggest-bottle", {
+      const data = await apiFetchJson<ApiResponse>("/api/suggest-bottle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -41,8 +42,6 @@ export function BottleSuggestion({ customerId }: Props) {
           castId: castId,
         }),
       });
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data = (await res.json()) as ApiResponse;
       setRecommendations(data.recommendations);
       setIsStub(data.isStub);
       setPhase("ready");
