@@ -83,8 +83,8 @@ export function CastHomeHero({
     for (const d of todayDouhans) {
       const customer = customerById.get(d.customer_id);
       list.push({
-        sortTime: "18:00", // 同伴は具体的な時刻が無いので仮で 18:00 にソート
-        time: "18:00",
+        sortTime: d.time ?? "18:00", // 時刻があればそれで、無ければ仮 18:00
+        time: d.time ?? "18:00",
         label: "同伴",
         detail: customer ? `${customer.name}さま${d.note ? ` · ${d.note}` : ""}` : d.note ?? undefined,
       });
@@ -108,8 +108,8 @@ export function CastHomeHero({
           const customer = customerById.get(d.customer_id);
           future.push({
             date: d.date,
-            sortTime: "18:00",
-            time: "18:00",
+            sortTime: d.time ?? "18:00",
+            time: d.time ?? "18:00",
             label: "同伴",
             detail: customer
               ? `${customer.name}さま${d.note ? ` · ${d.note}` : ""}`
