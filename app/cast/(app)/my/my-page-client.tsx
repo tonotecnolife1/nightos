@@ -50,7 +50,7 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
               color: "var(--v5-gold-mid)",
             }}
           >
-            NIGHTOS · MY PAGE
+            NIGHTOS · マイページ
           </div>
 
           <div className="flex items-center gap-4">

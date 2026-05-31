@@ -59,7 +59,7 @@ export default async function CustomerHomePage() {
             color: "var(--v5-gold-mid)",
           }}
         >
-          NIGHTOS · WELCOME
+          NIGHTOS
         </div>
         <p
           className="font-sans mb-2"
