@@ -3,14 +3,16 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { HandHelping, Loader2, UserPlus } from "lucide-react";
-import type { Cast, Customer } from "@/types/nightos";
+import type { Cast, Customer, Visit } from "@/types/nightos";
 import { Card } from "@/components/nightos/card";
 import { CustomerFilterBar } from "./customer-filter-bar";
-import { CustomerMapView } from "@/features/customer-map/components/customer-map-view";
 import {
-  ViewGroupingToggle,
-  type ViewGrouping,
-} from "@/features/mama-home/components/view-grouping-toggle";
+  CustomerViewToggle,
+  type CustomerView,
+} from "./customer-view-toggle";
+import { CustomerPriorityList } from "./customer-priority-list";
+import { SORT_OPTIONS, type SortKey } from "../lib/enrich";
+import { CustomerMapView } from "@/features/customer-map/components/customer-map-view";
 import {
   applyCustomerFilters,
   DEFAULT_CUSTOMER_FILTERS,
@@ -18,20 +20,31 @@ import {
   saveFilters,
   type CustomerFilters,
 } from "@/lib/nightos/customer-filters";
+import { cn } from "@/lib/utils";
 
-const LS_GROUPING = "nightos.customers.grouping";
+const LS_VIEW = "nightos.customers.grouping";
 const LS_FILTERS = "nightos.customers.filters";
+const LS_SORT = "nightos.customers.sort";
 
 interface Props {
+  castId: string;
   allCasts: Cast[];
   allMyCustomers: Customer[];
   helpCustomers?: Customer[];
+  visits?: Visit[];
 }
 
-export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = [] }: Props) {
+export function CustomerPageShell({
+  castId,
+  allCasts,
+  allMyCustomers,
+  helpCustomers = [],
+  visits = [],
+}: Props) {
   const router = useRouter();
   const [navigating, startNavigation] = useTransition();
-  const [grouping, setGrouping] = useState<ViewGrouping>("customer");
+  const [view, setView] = useState<CustomerView>("priority");
+  const [sortKey, setSortKey] = useState<SortKey>("priority");
   const [filters, setFilters] = useState<CustomerFilters>(
     DEFAULT_CUSTOMER_FILTERS,
   );
@@ -39,8 +52,17 @@ export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = []
 
   useEffect(() => {
     try {
-      const g = localStorage.getItem(LS_GROUPING);
-      if (g === "customer" || g === "cast") setGrouping(g);
+      const g = localStorage.getItem(LS_VIEW);
+      if (g === "customer" || g === "cast" || g === "priority") setView(g);
+      const s = localStorage.getItem(LS_SORT);
+      if (
+        s === "priority" ||
+        s === "daysSince" ||
+        s === "visitCount" ||
+        s === "recentVisits" ||
+        s === "name"
+      )
+        setSortKey(s);
     } catch {}
     setFilters(loadFilters(LS_FILTERS));
     setLoaded(true);
@@ -48,10 +70,16 @@ export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = []
     router.prefetch("/cast/customers/new");
   }, [router]);
 
-  const updateGrouping = (g: ViewGrouping) => {
-    setGrouping(g);
+  const updateView = (g: CustomerView) => {
+    setView(g);
     try {
-      localStorage.setItem(LS_GROUPING, g);
+      localStorage.setItem(LS_VIEW, g);
+    } catch {}
+  };
+  const updateSort = (s: SortKey) => {
+    setSortKey(s);
+    try {
+      localStorage.setItem(LS_SORT, s);
     } catch {}
   };
   const updateFilters = (next: CustomerFilters) => {
@@ -79,7 +107,11 @@ export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = []
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <ViewGroupingToggle value={grouping} onChange={updateGrouping} />
+        <CustomerViewToggle
+          value={view}
+          onChange={updateView}
+          showHelp={helpCustomers.length > 0}
+        />
         <button
           type="button"
           onClick={() => startNavigation(() => router.push("/cast/customers/new"))}
@@ -110,15 +142,42 @@ export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = []
         filteredCount={filteredMyCustomers.length}
       />
 
+      {view === "priority" && (
+        <div className="flex gap-1.5 overflow-x-auto pb-0.5">
+          {SORT_OPTIONS.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              onClick={() => updateSort(o.value)}
+              className={cn(
+                "shrink-0 h-7 px-3 rounded-pill text-[11px] font-medium whitespace-nowrap transition active:scale-95",
+                sortKey === o.value
+                  ? "bg-wine-deep text-pearl-light"
+                  : "bg-pearl-warm text-ink-soft border border-pearl-soft",
+              )}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {filteredMyCustomers.length === 0 ? (
         <Card className="p-8 text-center text-body-sm text-ink-soft">
           該当する顧客が見つかりません
         </Card>
+      ) : view === "priority" ? (
+        <CustomerPriorityList
+          castId={castId}
+          customers={filteredMyCustomers}
+          visits={visits}
+          sortKey={sortKey}
+        />
       ) : (
         <CustomerMapView
           customers={filteredMyCustomers}
           casts={allCasts}
-          mode={grouping}
+          mode={view}
         />
       )}
 
@@ -137,11 +196,18 @@ export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = []
             <Card className="p-6 text-center text-body-sm text-ink-mute">
               該当する顧客が見つかりません
             </Card>
+          ) : view === "priority" ? (
+            <CustomerPriorityList
+              castId={castId}
+              customers={filteredHelpCustomers}
+              visits={visits}
+              sortKey={sortKey}
+            />
           ) : (
             <CustomerMapView
               customers={filteredHelpCustomers}
               casts={allCasts}
-              mode={grouping}
+              mode={view}
             />
           )}
         </div>
