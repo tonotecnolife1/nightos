@@ -125,8 +125,8 @@ export default async function CastStatsPage() {
               accent="ink"
             />
             <StatsMiniKpi
-              label="年間担当顧客"
-              value={data.monthly.totalCustomerCount}
+              label="年間新規"
+              value={data.yearly.newCustomerCount}
               unit="人"
               accent="wine"
               icon={<Users size={11} strokeWidth={1.7} />}
