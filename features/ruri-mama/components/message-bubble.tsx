@@ -3,9 +3,27 @@ import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
 import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/types/nightos";
 
+/**
+ * `next/image` の src として安全に渡せる値だけに絞る。
+ * 不正な src（空文字 / data でも http でも先頭スラッシュでもない値）を
+ * 渡すと next/image が描画中に同期 throw し、画面全体が落ちるため。
+ */
+function renderableImages(images: string[] | undefined): string[] {
+  if (!images) return [];
+  return images.filter(
+    (src) =>
+      typeof src === "string" &&
+      (src.startsWith("data:image/") ||
+        src.startsWith("https://") ||
+        src.startsWith("http://") ||
+        src.startsWith("/")),
+  );
+}
+
 export function MessageBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === "user";
-  const hasImages = !!message.images && message.images.length > 0;
+  const images = renderableImages(message.images);
+  const hasImages = images.length > 0;
 
   if (isUser) {
     return (
@@ -13,7 +31,7 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
         <div className="max-w-[82%] space-y-1.5">
           {hasImages && (
             <div className="grid grid-cols-2 gap-1.5 justify-end">
-              {message.images!.map((img, i) => (
+              {images.map((img, i) => (
                 <div
                   key={i}
                   className="rounded-2xl overflow-hidden border border-gold/30"
