@@ -11,6 +11,7 @@ import {
   saveSession,
   type ChatSession,
 } from "../lib/chat-session-store";
+import { takeStatsConsultHandoff } from "@/lib/nightos/stats-consult-store";
 import { ChatInput } from "./chat-input";
 import { ChipOptions } from "./chip-options";
 import { CustomerContextPill } from "./customer-context-pill";
@@ -162,11 +163,26 @@ export function ChatWindow({
     saveSession(session);
   }, [phase, messages, selectedCustomerId, customers, currentSessionId]);
 
-  // On mount, restore persisted chat history (if any)
+  // On mount, restore persisted chat history (if any) + 成績ページからの
+  // 引き継ぎ (handoff) があれば会話の続きとして追記する。
   useEffect(() => {
     const stored = loadStoredMessages(castId);
+    const handoff = takeStatsConsultHandoff(castId);
+    let base: ChatMessage[] = [GREETING];
     if (stored && stored.length > 0) {
-      setMessages([GREETING, ...stored]);
+      base = [GREETING, ...stored];
+    }
+    if (handoff) {
+      // 成績の分析を会話として持ち込み、そのまま相談を続けられるようにする
+      base = [
+        ...base,
+        { role: "user", content: handoff.userText },
+        { role: "assistant", content: handoff.assistantReply },
+      ];
+      setMessages(base);
+      setPhase({ name: "responded" });
+    } else if (stored && stored.length > 0) {
+      setMessages(base);
       // If the last persisted message was an assistant reply, mark as
       // "responded" so the cast can immediately tap "新しい相談" or
       // continue typing
