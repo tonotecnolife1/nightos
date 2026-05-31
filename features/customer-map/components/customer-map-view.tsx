@@ -54,10 +54,6 @@ function CustomerBasedMap({
 
   return (
     <div className="space-y-3">
-      <div className="text-[10px] text-ink-mute px-1">
-        担当グループ {tree.length}件
-      </div>
-
       <div className="space-y-4">
         {tree.map((node) => (
           <ReferralTree

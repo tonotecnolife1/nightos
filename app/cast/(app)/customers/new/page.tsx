@@ -24,7 +24,6 @@ export default async function CastNewCustomerPage() {
     <div className="animate-fade-in">
       <PageHeader
         title="お客様を追加"
-        subtitle="自分の担当として登録します"
         showBack
       />
       <div className="px-5 pt-4 pb-6">
