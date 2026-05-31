@@ -2,6 +2,7 @@
 
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { MoreMenu } from "@/components/nightos/more-menu";
 
 interface Props {
   /** 西暦 (例: 2026) */
@@ -61,6 +62,7 @@ export function StatsSubHeader({ year, month }: Props) {
         >
           {year} / {mm}
         </span>
+        <MoreMenu />
       </div>
     </header>
   );
