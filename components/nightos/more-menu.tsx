@@ -86,15 +86,16 @@ export function MoreMenu({ tone = "default" }: Props) {
               onClick={() => setOpen(false)}
               aria-hidden
             />
-            {/* 右ドロワー: ハンバーガー (右上) からそのまま伸びるように右端から出す */}
+            {/* 右パネル: ハンバーガー (右上) から右端を伝って出る。内容の高さに
+                合わせて縮み、無駄な余白を作らない (最大でも画面高でスクロール)。 */}
             <div
               className={cn(
-                "absolute top-0 right-0 bottom-0 flex flex-col w-[min(84vw,320px)] rounded-l-[24px] bg-pearl-warm shadow-warm",
+                "absolute top-0 right-0 max-h-dvh overflow-y-auto w-[min(84vw,320px)] rounded-bl-[24px] bg-pearl-warm shadow-warm",
                 "transition-transform duration-300 ease-out",
                 shown ? "translate-x-0" : "translate-x-full",
               )}
             >
-              <div className="shrink-0 flex items-center justify-between border-b border-ink/[0.06] px-5 pb-3 pt-safe">
+              <div className="sticky top-0 z-10 flex items-center justify-between bg-pearl-warm border-b border-ink/[0.06] px-5 pb-3 pt-safe">
                 <h2 className="font-display text-[18px] leading-tight font-medium text-ink">
                   メニュー
                 </h2>
@@ -108,7 +109,7 @@ export function MoreMenu({ tone = "default" }: Props) {
                 </button>
               </div>
 
-              <ul className="flex-1 overflow-y-auto px-3 pt-3 pb-4">
+              <ul className="px-3 pt-3 pb-2">
                 {items.map((it) => {
                   const Icon = it.icon;
                   const active = it.match(pathname);
@@ -134,7 +135,7 @@ export function MoreMenu({ tone = "default" }: Props) {
                 })}
               </ul>
 
-              <div className="shrink-0 px-3 pt-2 pb-safe border-t border-ink/[0.06]">
+              <div className="px-3 pt-2 pb-safe border-t border-ink/[0.06]">
                 <Link
                   href="/settings"
                   onClick={() => setOpen(false)}
