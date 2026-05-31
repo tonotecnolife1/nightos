@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   type ShiftEntry,
@@ -10,6 +10,12 @@ import {
   upsertShift,
   removeShift,
 } from "@/lib/nightos/schedule-store";
+import {
+  type PlanEntry,
+  loadPlansForCast,
+  upsertPlan,
+  deletePlan,
+} from "@/lib/nightos/plan-store";
 import { loadAllDouhans } from "@/lib/nightos/douhan-store";
 import type { Customer, Douhan } from "@/types/nightos";
 
@@ -20,6 +26,13 @@ const STATUS_STYLE: Record<ShiftStatus, { bg: string; text: string; label: strin
   off: { bg: "bg-pearl-soft border border-ink/[0.08]", text: "text-ink-mute", label: "公休" },
   unknown: { bg: "", text: "", label: "" },
 };
+
+/** 予定追加・編集フォームが返すペイロード */
+interface PlanInput {
+  time?: string;
+  title: string;
+  note?: string;
+}
 
 interface Props {
   castId: string;
@@ -41,15 +54,21 @@ export function ScheduleCalendar({ castId, customers }: Props) {
   const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
   const [schedule, setSchedule] = useState<ShiftEntry[]>([]);
   const [douhans, setDouhans] = useState<Douhan[]>([]);
+  const [plans, setPlans] = useState<PlanEntry[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [editEntry, setEditEntry] = useState<ShiftEntry | null>(null);
 
   useEffect(() => {
     setSchedule(loadSchedule());
     setDouhans(loadAllDouhans().filter((d) => d.cast_id === castId));
+    setPlans(loadPlansForCast(castId));
   }, [castId]);
 
   const refresh = useCallback(() => setSchedule(loadSchedule()), []);
+  const refreshPlans = useCallback(
+    () => setPlans(loadPlansForCast(castId)),
+    [castId],
+  );
 
   // Build calendar grid
   const firstDay = new Date(viewYear, viewMonth, 1);
@@ -70,6 +89,15 @@ export function ScheduleCalendar({ castId, customers }: Props) {
     const existing = douhanMap.get(d.date) ?? [];
     existing.push(d);
     douhanMap.set(d.date, existing);
+  }
+  const planMap = new Map<string, PlanEntry[]>();
+  const sortedPlans = [...plans].sort((a, b) =>
+    (a.time ?? "99:99").localeCompare(b.time ?? "99:99"),
+  );
+  for (const p of sortedPlans) {
+    const existing = planMap.get(p.date) ?? [];
+    existing.push(p);
+    planMap.set(p.date, existing);
   }
 
   const handleCellTap = (date: string) => {
@@ -92,6 +120,20 @@ export function ScheduleCalendar({ castId, customers }: Props) {
   const handleCancel = () => {
     setSelected(null);
     setEditEntry(null);
+  };
+
+  // ── Plan CRUD (immediate persistence) ──
+  const handleAddPlan = (date: string, data: PlanInput) => {
+    upsertPlan({ castId, date, ...data });
+    refreshPlans();
+  };
+  const handleUpdatePlan = (id: string, date: string, data: PlanInput) => {
+    upsertPlan({ id, castId, date, ...data });
+    refreshPlans();
+  };
+  const handleDeletePlan = (id: string) => {
+    deletePlan(id);
+    refreshPlans();
   };
 
   const prevMonth = () => {
@@ -152,9 +194,11 @@ export function ScheduleCalendar({ castId, customers }: Props) {
           }
           const shift = shiftMap.get(date);
           const hasDouhan = (douhanMap.get(date)?.length ?? 0) > 0;
+          const hasPlan = (planMap.get(date)?.length ?? 0) > 0;
           const isToday = date === today;
           const isPast = date < today;
           const dow = new Date(date).getDay();
+          const isWorking = shift?.status === "working";
 
           return (
             <button
@@ -163,7 +207,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
               onClick={() => handleCellTap(date)}
               className={cn(
                 "relative aspect-square flex flex-col items-center justify-center rounded-xl text-[13px] font-medium transition-all active:scale-95",
-                shift?.status === "working"
+                isWorking
                   ? "bg-wine-deep text-pearl-light shadow-luxe"
                   : shift?.status === "off"
                     ? "bg-pearl-soft border border-ink/[0.08] text-ink-mute"
@@ -175,13 +219,21 @@ export function ScheduleCalendar({ castId, customers }: Props) {
               )}
             >
               <span>{parseYMD(date).getDate()}</span>
-              {shift?.status === "working" && (
+              {isWorking && (
                 <span className="text-[9px] opacity-80 leading-tight">
-                  {shift.startTime ?? "出勤"}
+                  {shift?.startTime ?? "出勤"}
                 </span>
               )}
               {hasDouhan && (
                 <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-gold" />
+              )}
+              {hasPlan && (
+                <span
+                  className={cn(
+                    "absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full",
+                    isWorking ? "bg-pearl-light/85" : "bg-wine-deep",
+                  )}
+                />
               )}
             </button>
           );
@@ -202,6 +254,10 @@ export function ScheduleCalendar({ castId, customers }: Props) {
           <span className="w-1.5 h-1.5 rounded-full bg-gold inline-block" />
           同伴あり
         </span>
+        <span className="flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-wine-deep inline-block" />
+          予定あり
+        </span>
       </div>
 
       {/* Edit sheet */}
@@ -212,6 +268,10 @@ export function ScheduleCalendar({ castId, customers }: Props) {
           onCancel={handleCancel}
           customers={customers}
           douhans={douhanMap.get(selected) ?? []}
+          plans={planMap.get(selected) ?? []}
+          onAddPlan={(data) => handleAddPlan(selected, data)}
+          onUpdatePlan={(id, data) => handleUpdatePlan(id, selected, data)}
+          onDeletePlan={handleDeletePlan}
         />
       )}
     </div>
@@ -224,24 +284,71 @@ function ShiftEditSheet({
   onCancel,
   customers,
   douhans,
+  plans,
+  onAddPlan,
+  onUpdatePlan,
+  onDeletePlan,
 }: {
   entry: ShiftEntry;
   onSave: (e: ShiftEntry) => void;
   onCancel: () => void;
   customers: Customer[];
   douhans: Douhan[];
+  plans: PlanEntry[];
+  onAddPlan: (data: PlanInput) => void;
+  onUpdatePlan: (id: string, data: PlanInput) => void;
+  onDeletePlan: (id: string) => void;
 }) {
   const [status, setStatus] = useState<ShiftStatus>(entry.status === "unknown" ? "working" : entry.status);
   const [startTime, setStartTime] = useState(entry.startTime ?? "20:00");
   const [endTime, setEndTime] = useState(entry.endTime ?? "01:00");
   const [note, setNote] = useState(entry.note ?? "");
 
+  // 予定フォーム state
+  const [showPlanForm, setShowPlanForm] = useState(false);
+  const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
+  const [planTime, setPlanTime] = useState("");
+  const [planTitle, setPlanTitle] = useState("");
+  const [planNote, setPlanNote] = useState("");
+
+  const startAddPlan = () => {
+    setEditingPlanId(null);
+    setPlanTime("");
+    setPlanTitle("");
+    setPlanNote("");
+    setShowPlanForm(true);
+  };
+  const startEditPlan = (p: PlanEntry) => {
+    setEditingPlanId(p.id);
+    setPlanTime(p.time ?? "");
+    setPlanTitle(p.title);
+    setPlanNote(p.note ?? "");
+    setShowPlanForm(true);
+  };
+  const cancelPlanForm = () => {
+    setShowPlanForm(false);
+    setEditingPlanId(null);
+  };
+  const submitPlan = () => {
+    const title = planTitle.trim();
+    if (!title) return;
+    const data: PlanInput = {
+      time: planTime || undefined,
+      title,
+      note: planNote.trim() || undefined,
+    };
+    if (editingPlanId) onUpdatePlan(editingPlanId, data);
+    else onAddPlan(data);
+    setShowPlanForm(false);
+    setEditingPlanId(null);
+  };
+
   const dateObj = parseYMD(entry.date);
   const label = `${dateObj.getMonth() + 1}/${dateObj.getDate()}（${DOW[dateObj.getDay()]}）`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-[520px] bg-pearl rounded-t-3xl p-5 pb-safe space-y-4 shadow-warm animate-slide-up">
+      <div className="w-full max-w-[520px] max-h-[88vh] overflow-y-auto bg-pearl rounded-t-3xl p-5 pb-safe space-y-4 shadow-warm animate-slide-up">
         <div className="flex items-center justify-between">
           <h3 className="font-serif text-[18px] leading-tight font-medium tracking-[0.02em] text-ink">{label}</h3>
           <button type="button" onClick={onCancel} className="w-8 h-8 rounded-full bg-pearl-soft flex items-center justify-center text-ink-soft">
@@ -316,7 +423,115 @@ function ShiftEditSheet({
           />
         </div>
 
-        {/* Douhan on this day */}
+        <button
+          type="button"
+          onClick={() => onSave({ date: entry.date, status, startTime: status === "working" ? startTime : undefined, endTime: status === "working" ? endTime : undefined, note: note || undefined })}
+          className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md"
+        >
+          出勤・公休を保存
+        </button>
+
+        {/* ── 予定 (複数登録可) ── */}
+        <div className="pt-1 space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-label-sm text-ink-soft">予定</p>
+            {!showPlanForm && (
+              <button
+                type="button"
+                onClick={startAddPlan}
+                className="flex items-center gap-1 text-[12px] font-medium text-wine-deep"
+              >
+                <Plus size={14} strokeWidth={2} /> 予定を追加
+              </button>
+            )}
+          </div>
+
+          {plans.length === 0 && !showPlanForm && (
+            <p className="text-body-sm text-ink-mute">まだ予定はありません</p>
+          )}
+
+          {plans.map((p) => (
+            <div
+              key={p.id}
+              className="flex items-center gap-2 rounded-2xl bg-pearl-warm border border-ink/[0.06] px-3 py-2"
+            >
+              <span className="font-display tabular-nums text-[14px] text-wine-deep min-w-[46px]">
+                {p.time ?? "終日"}
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="text-body-sm text-ink truncate">{p.title}</div>
+                {p.note && (
+                  <div className="text-[11px] text-ink-mute truncate">{p.note}</div>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => startEditPlan(p)}
+                aria-label="予定を編集"
+                className="p-1.5 rounded-full text-ink-soft hover:bg-pearl-soft"
+              >
+                <Pencil size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => onDeletePlan(p.id)}
+                aria-label="予定を削除"
+                className="p-1.5 rounded-full text-ink-mute hover:bg-pearl-soft"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ))}
+
+          {showPlanForm && (
+            <div className="rounded-2xl bg-champagne-soft/50 border border-gold/20 p-3 space-y-2">
+              <div className="grid grid-cols-[88px_1fr] gap-2">
+                <input
+                  type="time"
+                  value={planTime}
+                  onChange={(e) => setPlanTime(e.target.value)}
+                  className="h-10 rounded-xl border border-ink/[0.06] bg-pearl px-2 text-body-sm text-ink"
+                  style={{ fontSize: "16px" }}
+                />
+                <input
+                  type="text"
+                  value={planTitle}
+                  onChange={(e) => setPlanTitle(e.target.value)}
+                  placeholder="予定（例: 同伴 / アフター / 私用）"
+                  className="h-10 rounded-xl border border-ink/[0.06] bg-pearl px-3 text-body-sm text-ink placeholder:text-ink-mute"
+                  style={{ fontSize: "16px" }}
+                />
+              </div>
+              <input
+                type="text"
+                value={planNote}
+                onChange={(e) => setPlanNote(e.target.value)}
+                placeholder="メモ（任意）"
+                className="w-full h-10 rounded-xl border border-ink/[0.06] bg-pearl px-3 text-body-sm text-ink placeholder:text-ink-mute"
+                style={{ fontSize: "16px" }}
+              />
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={cancelPlanForm}
+                  className="flex-1 h-10 rounded-xl border border-ink/[0.06] text-body-sm text-ink-soft hover:bg-pearl-soft"
+                >
+                  キャンセル
+                </button>
+                <button
+                  type="button"
+                  onClick={submitPlan}
+                  disabled={!planTitle.trim()}
+                  className="flex-1 h-10 rounded-xl bg-wine-deep text-pearl-light text-body-sm font-medium disabled:opacity-40"
+                >
+                  {editingPlanId ? "更新" : "追加"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* この日の同伴 (読み取り専用) */}
         {douhans.length > 0 && (
           <div className="rounded-2xl bg-champagne-soft/60 px-3 py-2.5 space-y-1">
             <p className="text-[11px] font-medium text-ink-soft">この日の同伴</p>
@@ -330,14 +545,6 @@ function ShiftEditSheet({
             })}
           </div>
         )}
-
-        <button
-          type="button"
-          onClick={() => onSave({ date: entry.date, status, startTime: status === "working" ? startTime : undefined, endTime: status === "working" ? endTime : undefined, note: note || undefined })}
-          className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md"
-        >
-          保存
-        </button>
       </div>
     </div>
   );
