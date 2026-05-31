@@ -12,9 +12,8 @@ import {
   MoreHorizontal,
   Pencil,
   Search,
-  Send,
-  Sparkles,
   Trash2,
+  UserPlus,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -22,13 +21,29 @@ import { cn } from "@/lib/utils";
 import { MoreMenu } from "@/components/nightos/more-menu";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
 import { SAKURA_MAMA_CHAT_NAME } from "@/lib/nightos/constants";
-import type { ChatMessage, ChatRoom } from "../types";
+import type { ChatAttachment, ChatMessage, ChatRoom } from "../types";
+import { ChatComposer, type ComposerPayload } from "./chat-composer";
+import {
+  type MentionCustomer,
+  detectCustomer,
+} from "../lib/customer-mention";
+import { addChatNoteToKarteAction } from "../actions";
 
 interface Props {
   room: ChatRoom;
   messages: ChatMessage[];
   currentCastId: string;
   currentCastName: string;
+  customers: MentionCustomer[];
+}
+
+/** A pending "add this to 〈customer〉's karte?" suggestion under a message. */
+interface KarteSuggestion {
+  customerId: string;
+  customerName: string;
+  note: string;
+  candidates: MentionCustomer[];
+  status: "idle" | "saving" | "done";
 }
 
 export function ChatRoomView({
@@ -36,6 +51,7 @@ export function ChatRoomView({
   messages: initialMessages,
   currentCastId,
   currentCastName,
+  customers,
 }: Props) {
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState("");
@@ -45,7 +61,81 @@ export function ChatRoomView({
   const [searchQuery, setSearchQuery] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState("");
+  const [karteSuggestions, setKarteSuggestions] = useState<
+    Record<string, KarteSuggestion>
+  >({});
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const customerName = (id: string) =>
+    customers.find((c) => c.id === id)?.name ?? "お客様";
+
+  const addKarteSuggestion = (messageId: string, payload: ComposerPayload) => {
+    const note = payload.text;
+    if (!note) return; // 画像だけの投稿は本文が無いのでスキップ
+    if (note.includes(`@${SAKURA_MAMA_CHAT_NAME}`)) return;
+
+    // 明示メンションがあれば確定。無ければ受動検出で候補を探す。
+    if (payload.customerId) {
+      setKarteSuggestions((prev) => ({
+        ...prev,
+        [messageId]: {
+          customerId: payload.customerId!,
+          customerName: customerName(payload.customerId!),
+          note: note.replace(/@\S+\s?/g, "").trim() || note,
+          candidates: [],
+          status: "idle",
+        },
+      }));
+      return;
+    }
+    const detected = detectCustomer(customers, note);
+    if (detected) {
+      setKarteSuggestions((prev) => ({
+        ...prev,
+        [messageId]: {
+          customerId: detected.customer.id,
+          customerName: detected.customer.name,
+          note,
+          candidates: detected.ambiguous,
+          status: "idle",
+        },
+      }));
+    }
+  };
+
+  const confirmKarte = async (messageId: string) => {
+    const s = karteSuggestions[messageId];
+    if (!s || s.status !== "idle") return;
+    setKarteSuggestions((prev) => ({
+      ...prev,
+      [messageId]: { ...s, status: "saving" },
+    }));
+    const res = await addChatNoteToKarteAction({
+      customerId: s.customerId,
+      note: s.note,
+    });
+    setKarteSuggestions((prev) => ({
+      ...prev,
+      [messageId]: { ...prev[messageId], status: res.ok ? "done" : "idle" },
+    }));
+  };
+
+  const changeKarteTarget = (messageId: string, c: MentionCustomer) =>
+    setKarteSuggestions((prev) => ({
+      ...prev,
+      [messageId]: {
+        ...prev[messageId],
+        customerId: c.id,
+        customerName: c.name,
+      },
+    }));
+
+  const dismissKarte = (messageId: string) =>
+    setKarteSuggestions((prev) => {
+      const next = { ...prev };
+      delete next[messageId];
+      return next;
+    });
 
   const patchMessage = (id: string, patch: Partial<ChatMessage>) => {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
@@ -171,9 +261,10 @@ export function ChatRoomView({
       )
     : topMessages;
 
-  const handleSend = async () => {
-    const text = input.trim();
-    if (!text || sending) return;
+  const handleSend = async (payload: ComposerPayload) => {
+    const text = payload.text.trim();
+    const attachments = payload.attachments;
+    if ((!text && attachments.length === 0) || sending) return;
 
     setSending(true);
     setInput("");
@@ -188,6 +279,8 @@ export function ChatRoomView({
       sender_id: currentCastId,
       sender_name: currentCastName,
       content: text,
+      attachments,
+      customer_id: payload.customerId,
       thread_parent_id: targetId,
       reply_count: 0,
       mentions_ai: mentionsAi,
@@ -208,6 +301,7 @@ export function ChatRoomView({
 
     // Try to persist to Supabase. On failure, keep the optimistic row so
     // the conversation still reads naturally in mock/offline mode.
+    let persistedId = tempId;
     try {
       const res = await fetch("/api/team-chat/messages", {
         method: "POST",
@@ -216,11 +310,14 @@ export function ChatRoomView({
           roomId: room.id,
           content: text,
           threadParentId: targetId ?? undefined,
+          attachments: attachments.length > 0 ? attachments : undefined,
+          customerId: payload.customerId ?? undefined,
         }),
       });
       if (res.ok) {
         const { message } = await res.json();
         if (message?.id) {
+          persistedId = message.id;
           setMessages((prev) =>
             prev.map((m) =>
               m.id === tempId
@@ -233,6 +330,9 @@ export function ChatRoomView({
     } catch {
       // keep optimistic row
     }
+
+    // Offer to capture this into the customer's 逆カルテ (mechanism A + B).
+    if (!mentionsAi) addKarteSuggestion(persistedId, payload);
 
     // If @さくらママ is mentioned, get AI response
     if (mentionsAi) {
@@ -445,44 +545,16 @@ export function ChatRoomView({
             </div>
           ) : (
             <div className="shrink-0 border-t border-ink/[0.06] bg-pearl px-4 py-3 pb-safe">
-              <div className="flex items-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setInput((prev) =>
-                      prev.includes("@さくらママ") ? prev : "@さくらママ " + prev,
-                    );
-                  }}
-                  className="shrink-0 mb-1 p-1.5 rounded-full text-gold-deep hover:bg-champagne-soft/60"
-                  title="@さくらママ"
-                >
-                  <Sparkles size={18} />
-                </button>
-                <div className="flex-1">
-                  <ChatTextarea
-                    value={input}
-                    onChange={setInput}
-                    onSend={handleSend}
-                    placeholder="メッセージを入力..."
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleSend}
-                  disabled={!input.trim() || sending}
-                  className={cn(
-                    "shrink-0 mb-1 p-2 rounded-full transition-colors",
-                    input.trim() && !sending
-                      ? "bg-wine-deep text-pearl-light"
-                      : "bg-pearl-soft text-ink-mute",
-                  )}
-                  aria-label="送信"
-                  title="送信（⌘/Ctrl+Enter）"
-                >
-                  {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                </button>
-              </div>
-                </div>
+              <ChatComposer
+                value={input}
+                onChange={setInput}
+                onSend={handleSend}
+                sending={sending}
+                customers={customers}
+                storeId={room.store_id}
+                roomId={room.id}
+              />
+            </div>
           )}
         </div>
       )}
@@ -576,6 +648,15 @@ export function ChatRoomView({
                   </span>
                 </button>
               )}
+              {karteSuggestions[msg.id] && (
+                <KarteChip
+                  suggestion={karteSuggestions[msg.id]}
+                  isMe={isMe}
+                  onConfirm={() => confirmKarte(msg.id)}
+                  onDismiss={() => dismissKarte(msg.id)}
+                  onPick={(c) => changeKarteTarget(msg.id, c)}
+                />
+              )}
             </div>
           );
         })}
@@ -614,45 +695,17 @@ export function ChatRoomView({
         </div>
       ) : (
         <div className="shrink-0 border-t border-ink/[0.06] bg-pearl px-4 py-3 pb-safe">
-          <div className="flex items-end gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setInput((prev) =>
-                  prev.includes("@さくらママ") ? prev : "@さくらママ " + prev,
-                );
-              }}
-              className="shrink-0 mb-1 p-1.5 rounded-full text-gold-deep hover:bg-champagne-soft/60"
-              title="@さくらママ"
-            >
-              <Sparkles size={18} />
-            </button>
-            <div className="flex-1">
-              <ChatTextarea
-                value={input}
-                onChange={setInput}
-                onSend={handleSend}
-                placeholder="メッセージを入力..."
-              />
-            </div>
-            <button
-              type="button"
-              onClick={handleSend}
-              disabled={!input.trim() || sending}
-              className={cn(
-                "shrink-0 mb-1 p-2 rounded-full transition-colors",
-                input.trim() && !sending
-                  ? "bg-wine-deep text-pearl-light"
-                  : "bg-pearl-soft text-ink-mute",
-              )}
-              aria-label="送信"
-              title="送信（⌘/Ctrl+Enter）"
-            >
-              {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-            </button>
-          </div>
+          <ChatComposer
+            value={input}
+            onChange={setInput}
+            onSend={handleSend}
+            sending={sending}
+            customers={customers}
+            storeId={room.store_id}
+            roomId={room.id}
+          />
           <p className="text-[10px] text-ink-mute mt-1.5 pl-1">
-            Enter で改行 / 送信ボタン または ⌘/Ctrl+Enter で送信
+            画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@お客様名 でカルテ連携
           </p>
         </div>
       )}
@@ -848,15 +901,22 @@ function MessageRow({
           </div>
         ) : (
           /* Bubble */
-          <div
-            className={cn(
-              "px-3.5 py-2 text-body-md leading-relaxed whitespace-pre-wrap break-words",
-              isMe
-                ? "bg-wine-deep text-pearl-light rounded-2xl rounded-br-sm shadow-luxe"
-                : "bg-pearl-light border border-ink/[0.08] text-ink rounded-2xl rounded-bl-sm shadow-soft",
+          <div className={cn("flex flex-col gap-1.5", isMe ? "items-end" : "items-start")}>
+            {msg.content.trim().length > 0 && (
+              <div
+                className={cn(
+                  "px-3.5 py-2 text-body-md leading-relaxed whitespace-pre-wrap break-words",
+                  isMe
+                    ? "bg-wine-deep text-pearl-light rounded-2xl rounded-br-sm shadow-luxe"
+                    : "bg-pearl-light border border-ink/[0.08] text-ink rounded-2xl rounded-bl-sm shadow-soft",
+                )}
+              >
+                {renderContentParts(msg.content, highlight)}
+              </div>
             )}
-          >
-            {renderContentParts(msg.content, highlight)}
+            {msg.attachments && msg.attachments.length > 0 && (
+              <AttachmentGrid attachments={msg.attachments} />
+            )}
           </div>
         )}
 
@@ -996,35 +1056,150 @@ function HighlightedText({ text, query }: { text: string; query: string }) {
   return <>{out}</>;
 }
 
-// ═══════════════ Simple Chat Textarea ═══════════════
+// ═══════════════ 逆カルテ取り込みチップ ═══════════════
 
-function ChatTextarea({
-  value,
-  onChange,
-  onSend,
-  placeholder,
+function KarteChip({
+  suggestion: s,
+  isMe,
+  onConfirm,
+  onDismiss,
+  onPick,
 }: {
-  value: string;
-  onChange: (val: string) => void;
-  onSend: () => void;
-  placeholder: string;
+  suggestion: KarteSuggestion;
+  isMe: boolean;
+  onConfirm: () => void;
+  onDismiss: () => void;
+  onPick: (c: MentionCustomer) => void;
 }) {
+  if (s.status === "done") {
+    return (
+      <div
+        className={cn(
+          "mt-1 mb-2 flex px-2",
+          isMe ? "justify-end" : "justify-start ml-12",
+        )}
+      >
+        <div className="inline-flex items-center gap-1.5 rounded-pill bg-success/10 border border-success/20 px-3 py-1.5 text-[12px] text-success font-medium">
+          <Check size={12} />
+          {s.customerName}さんのカルテに追加しました
+        </div>
+      </div>
+    );
+  }
+
+  const alts = s.candidates.filter((c) => c.id !== s.customerId).slice(0, 3);
+
   return (
-    <textarea
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onKeyDown={(e) => {
-        // Cmd/Ctrl+Enter sends; plain Enter creates a newline so users
-        // can compose multi-line messages without premature submission.
-        if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-          e.preventDefault();
-          onSend();
-        }
-      }}
-      placeholder={placeholder}
-      rows={1}
-      className="w-full resize-none rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 text-body-md text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep"
-      style={{ fontSize: "16px", maxHeight: "160px" }}
-    />
+    <div
+      className={cn(
+        "mt-1 mb-2 flex px-2",
+        isMe ? "justify-end" : "justify-start ml-12",
+      )}
+    >
+      <div className="inline-flex flex-col gap-1.5 rounded-card bg-champagne-soft/40 border border-gold/25 px-3 py-2 max-w-[88%]">
+        <div className="flex items-center gap-2">
+          <UserPlus size={13} className="text-gold-deep shrink-0" />
+          <span className="text-[12px] text-ink leading-snug">
+            <span className="font-medium text-wine-deep">{s.customerName}</span>
+            さんのカルテに追加しますか？
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={s.status === "saving"}
+            className="inline-flex items-center gap-1 rounded-pill bg-wine-deep text-pearl-light px-3 py-1 text-[12px] font-medium disabled:opacity-50"
+          >
+            {s.status === "saving" ? (
+              <Loader2 size={11} className="animate-spin" />
+            ) : (
+              <Check size={11} />
+            )}
+            追加
+          </button>
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="rounded-pill px-2.5 py-1 text-[12px] text-ink-soft hover:bg-pearl-soft"
+          >
+            あとで
+          </button>
+        </div>
+        {alts.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1 pt-0.5">
+            <span className="text-[10px] text-ink-mute">別の人:</span>
+            {alts.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => onPick(c)}
+                className="rounded-pill border border-ink/[0.15] px-2 py-0.5 text-[11px] text-ink-soft hover:border-gold/40"
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════ Attachment grid + lightbox ═══════════════
+
+function AttachmentGrid({ attachments }: { attachments: ChatAttachment[] }) {
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const images = attachments.filter((a) => a.url);
+  if (images.length === 0) return null;
+
+  return (
+    <>
+      <div
+        className={cn(
+          "grid gap-1.5 max-w-[240px]",
+          images.length === 1 ? "grid-cols-1" : "grid-cols-2",
+        )}
+      >
+        {images.map((a, i) => (
+          <button
+            key={`${a.url}_${i}`}
+            type="button"
+            onClick={() => setLightbox(a.url)}
+            className="block overflow-hidden rounded-xl border border-ink/[0.08] bg-pearl-soft"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={a.url}
+              alt="共有画像"
+              className="w-full h-auto max-h-64 object-cover"
+              loading="lazy"
+            />
+          </button>
+        ))}
+      </div>
+
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[60] bg-ink/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-pearl/20 text-pearl-light flex items-center justify-center"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={lightbox}
+            alt="共有画像"
+            className="max-w-full max-h-full rounded-2xl object-contain"
+          />
+        </div>
+      )}
+    </>
   );
 }

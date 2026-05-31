@@ -83,11 +83,27 @@ export const chatAiSchema = z.object({
 
 const roomId = z.string().min(1).max(64);
 
-export const teamChatCreateSchema = z.object({
-  roomId,
-  content: shortText,
-  threadParentId: z.string().min(1).max(64).optional(),
+const chatAttachment = z.object({
+  url: z.string().max(2_000_000), // inline data URLs (mock mode) can be large
+  path: z.string().max(2048).nullish(),
+  mime: z.string().min(1).max(64),
+  width: z.number().int().positive().max(20000).nullish(),
+  height: z.number().int().positive().max(20000).nullish(),
 });
+
+export const teamChatCreateSchema = z
+  .object({
+    roomId,
+    // 画像のみの投稿も許可するため content は空可（ただし画像が無ければ拒否）。
+    content: z.string().max(4000).default(""),
+    threadParentId: z.string().min(1).max(64).optional(),
+    attachments: z.array(chatAttachment).max(4).optional(),
+    customerId: z.string().min(1).max(64).nullish(),
+  })
+  .refine(
+    (v) => v.content.trim().length > 0 || (v.attachments?.length ?? 0) > 0,
+    { message: "content or attachments required" },
+  );
 
 export const teamChatUpdateSchema = z.object({
   content: shortText,

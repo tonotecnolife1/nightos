@@ -9,8 +9,10 @@ import {
   loadChatRoom,
   loadMessages,
 } from "@/features/team-chat/lib/supabase-queries";
+import { toMentionCustomer } from "@/features/team-chat/lib/customer-mention";
 import { getCurrentCastId } from "@/lib/nightos/auth";
 import { mockCasts } from "@/lib/nightos/mock-data";
+import { getCustomersForCast } from "@/lib/nightos/supabase-queries";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { ChatMessage, ChatRoom } from "@/features/team-chat/types";
 
@@ -23,7 +25,10 @@ export default async function ChatRoomPage({
 }) {
   const castId = await getCurrentCastId();
 
-  const { room, messages } = await resolveRoom(params.id, castId);
+  const [{ room, messages }, customers] = await Promise.all([
+    resolveRoom(params.id, castId),
+    getCustomersForCast(castId),
+  ]);
   if (!room) notFound();
 
   const currentCast = mockCasts.find((c) => c.id === castId);
@@ -35,6 +40,7 @@ export default async function ChatRoomPage({
       messages={messages}
       currentCastId={castId}
       currentCastName={castName}
+      customers={customers.map(toMentionCustomer)}
     />
   );
 }

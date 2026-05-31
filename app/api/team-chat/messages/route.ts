@@ -36,6 +36,21 @@ export async function POST(req: Request) {
 
   const id = `msg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const mentionsAi = parsed.content.includes("@さくらママ");
+
+  // Persist the storage path (not the time-limited signed URL) when available,
+  // so links can be re-signed on read and never go stale. In mock mode there's
+  // no path — keep the inline data URL.
+  const attachments =
+    parsed.attachments && parsed.attachments.length > 0
+      ? parsed.attachments.map((a) => ({
+          path: a.path ?? null,
+          url: a.path ? null : a.url,
+          mime: a.mime,
+          width: a.width ?? null,
+          height: a.height ?? null,
+        }))
+      : null;
+
   const row = {
     id,
     room_id: parsed.roomId,
@@ -46,6 +61,8 @@ export async function POST(req: Request) {
     thread_parent_id: parsed.threadParentId ?? null,
     mentions_ai: mentionsAi,
     is_bot: false,
+    attachments,
+    customer_id: parsed.customerId ?? null,
   };
 
   const { data, error } = await supabase
