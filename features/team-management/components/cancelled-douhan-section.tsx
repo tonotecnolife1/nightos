@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { XCircle } from "lucide-react";
 import { Card } from "@/components/nightos/card";
 import { loadCancelledDouhansForCast } from "@/lib/nightos/douhan-store";
+import { fetchCancelledDouhansForCast } from "@/lib/nightos/douhan-manager";
 import { formatCustomerName } from "@/lib/utils";
 import type { Customer, Douhan } from "@/types/nightos";
 
@@ -15,16 +16,24 @@ interface Props {
 
 /**
  * ママ・姉さんがキャストのキャンセル履歴を見るためのクライアントコンポーネント。
- * localStorage 上の共有同伴ストアから最新データを読む。
- * （キャスト側がキャンセルすると即座に反映される）
+ * 認証済みならサーバー (店舗スコープ) の実データを、mock / 未認証なら
+ * localStorage の共有同伴ストアを読む。
  */
 export function CancelledDouhanSection({ castId, customers }: Props) {
   const [items, setItems] = useState<Douhan[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setItems(loadCancelledDouhansForCast(castId));
-    setLoaded(true);
+    let cancelled = false;
+    void fetchCancelledDouhansForCast(castId).then((server) => {
+      if (cancelled) return;
+      // null = 未認証 → localStorage にフォールバック
+      setItems(server ?? loadCancelledDouhansForCast(castId));
+      setLoaded(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [castId]);
 
   const customerById = new Map(customers.map((c) => [c.id, c]));

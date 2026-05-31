@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Bell, UserCircle } from "lucide-react";
 import { loadSchedule, type ShiftEntry } from "@/lib/nightos/schedule-store";
 import { loadDouhansForCast } from "@/lib/nightos/douhan-store";
+import { pullCastSchedule } from "@/lib/nightos/schedule-sync";
 import type { Customer, Douhan } from "@/types/nightos";
 
 interface Props {
@@ -64,6 +65,7 @@ export function CastHomeHero({
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    const compute = () => {
     const today = todayYMD();
 
     // Today's shift (出勤/公休)
@@ -137,6 +139,18 @@ export function CastHomeHero({
     setEvents(list);
     setNextEvent(upcomingEvent);
     setLoaded(true);
+    };
+
+    // Instant paint from the cache, then reconcile shifts with the server
+    // (migration 013) so schedules registered on other devices appear.
+    compute();
+    let cancelled = false;
+    void pullCastSchedule().then((applied) => {
+      if (applied && !cancelled) compute();
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [castId, customers]);
 
   // ── Rendered text — switches between three states ──

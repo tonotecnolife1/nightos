@@ -20,6 +20,7 @@ import {
   loadDouhansForCast,
   upsertDouhan,
 } from "@/lib/nightos/douhan-store";
+import { pullCastSchedule } from "@/lib/nightos/schedule-sync";
 import type { Customer, Douhan } from "@/types/nightos";
 
 interface Props {
@@ -37,6 +38,15 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
   useEffect(() => {
     setEntries(loadDouhansForCast(castId));
     setLoaded(true);
+    // Reconcile with the server so douhans registered on other devices
+    // appear (migration 014). No-op for mock / unauthenticated sessions.
+    let cancelled = false;
+    void pullCastSchedule().then((applied) => {
+      if (applied && !cancelled) setEntries(loadDouhansForCast(castId));
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [castId]);
 
   const refresh = () => setEntries(loadDouhansForCast(castId));

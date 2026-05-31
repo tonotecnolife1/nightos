@@ -1,7 +1,10 @@
-// Plan store — localStorage-based MVP.
-// 1日に複数登録できる「予定」(同伴 / アフター / 私用 等)。
+// Plan store — localStorage cache + server sync (migration 013).
+// 1日に複数登録できる「予定」(アフター / 私用 等)。
 // 出勤シフト (ShiftEntry, schedule-store) とは別軸で、ホーム画面の
-// 出勤判定には影響しない。
+// 出勤判定には影響しない。読み取りは localStorage から同期的に行い、
+// 書き込みは Supabase にもミラーして端末間で整合させる。
+
+import { pushSchedule } from "./schedule-sync";
 
 export interface PlanEntry {
   id: string;
@@ -12,7 +15,8 @@ export interface PlanEntry {
   note?: string;
 }
 
-const STORAGE_KEY = "nightos.plans.v1";
+export const PLANS_STORAGE_KEY = "nightos.plans.v1";
+const STORAGE_KEY = PLANS_STORAGE_KEY;
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
@@ -33,6 +37,8 @@ export function savePlans(list: PlanEntry[]): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
   } catch {}
+  // Mirror to the server so plans sync across devices (migration 013).
+  void pushSchedule({ plans: list });
 }
 
 export function loadPlansForCast(castId: string): PlanEntry[] {

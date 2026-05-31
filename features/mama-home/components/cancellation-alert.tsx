@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AlertTriangle, ChevronRight, XCircle } from "lucide-react";
 import { Card } from "@/components/nightos/card";
 import { countThisMonthCancellationsByCast } from "@/lib/nightos/douhan-store";
+import { fetchCancellationCounts } from "@/lib/nightos/douhan-manager";
 import type { Cast } from "@/types/nightos";
 
 interface Props {
@@ -20,22 +21,38 @@ interface AlertEntry {
 
 /**
  * お店のキャストのうち、今月キャンセルが threshold 件以上の者を警告する。
- * localStorage の同伴ストアから動的に読み込むため、キャストがキャンセルすると即反映。
+ * 認証済みならサーバー (店舗横断) のキャンセル件数を、mock / 未認証なら
+ * localStorage の同伴ストアを集計する。
  */
 export function CancellationAlert({ teamCasts, threshold = 2 }: Props) {
   const [alerts, setAlerts] = useState<AlertEntry[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const counts = countThisMonthCancellationsByCast(new Date());
-    const list: AlertEntry[] = [];
-    for (const cast of teamCasts) {
-      const c = counts[cast.id] ?? 0;
-      if (c >= threshold) list.push({ cast, count: c });
-    }
-    list.sort((a, b) => b.count - a.count);
-    setAlerts(list);
-    setLoaded(true);
+    let cancelled = false;
+
+    const build = (counts: Record<string, number>) => {
+      const list: AlertEntry[] = [];
+      for (const cast of teamCasts) {
+        const c = counts[cast.id] ?? 0;
+        if (c >= threshold) list.push({ cast, count: c });
+      }
+      list.sort((a, b) => b.count - a.count);
+      return list;
+    };
+
+    void fetchCancellationCounts().then((serverCounts) => {
+      if (cancelled) return;
+      // null = 未認証 → localStorage 集計にフォールバック
+      const counts =
+        serverCounts ?? countThisMonthCancellationsByCast(new Date());
+      setAlerts(build(counts));
+      setLoaded(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [teamCasts, threshold]);
 
   if (!loaded || alerts.length === 0) return null;
