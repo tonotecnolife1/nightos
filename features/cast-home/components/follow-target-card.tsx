@@ -231,7 +231,7 @@ export function FollowTargetCard({
               onClick={() => setConfirming(false)}
               className="h-8 px-3 rounded-pill border border-ink/15 bg-transparent text-ink-soft text-[12px] font-medium active:scale-[0.98] transition-transform"
             >
-              やめる
+              いいえ
             </button>
           </div>
         ) : (
