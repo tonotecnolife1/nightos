@@ -3,6 +3,7 @@ import { ConnectionStatus } from "@/components/nightos/connection-status";
 import { FeedbackLink } from "@/components/nightos/feedback-link";
 import { InstallPrompt } from "@/components/nightos/install-prompt";
 import { ServiceWorkerRegister } from "@/components/nightos/service-worker-register";
+import { NavigationProgress } from "@/components/navigation-progress";
 import "./globals.css";
 
 // Set NEXT_PUBLIC_APP_URL to your production canonical URL (e.g.
@@ -70,6 +71,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/ruri-mama-b.svg" />
       </head>
       <body className="font-sans bg-pearl text-ink antialiased">
+        <NavigationProgress />
         <ConnectionStatus />
         {children}
         <FeedbackLink />

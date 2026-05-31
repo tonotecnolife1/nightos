@@ -29,6 +29,7 @@ import {
 } from "./reply-option-picker";
 import { RefineDirectionPicker } from "./refine-direction-picker";
 import { recordChoice } from "../lib/option-choice-store";
+import { sanitizeStoredMessages } from "../lib/sanitize-messages";
 import type { RefineDirection } from "../data/refine-directions";
 import type {
   ChatMessage,
@@ -48,8 +49,12 @@ function loadStoredMessages(castId: string): ChatMessage[] | null {
   try {
     const raw = window.localStorage.getItem(`${STORAGE_KEY_PREFIX}.${castId}`);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as ChatMessage[];
-    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+    // JSON.parse はできても「描画すると落ちる」壊れたメッセージが
+    // 混ざっていることがある（古い版の形 / 不正な画像 src 等）。
+    // ここで安全な形だけに正規化してから返す。これをしないと壊れた
+    // 1 件がエラーバウンダリに落ち、リロードしても同じデータで再発する。
+    const parsed = sanitizeStoredMessages(JSON.parse(raw));
+    if (parsed.length === 0) return null;
     return parsed;
   } catch {
     return null;
