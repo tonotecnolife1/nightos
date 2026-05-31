@@ -134,7 +134,7 @@ export function ChatWindow({
   );
   const [stubMode, setStubMode] = useState(initialIsStubMode);
   const [historyLoaded, setHistoryLoaded] = useState(false);
-  const [currentSessionId] = useState(() => newSessionId());
+  const [currentSessionId, setCurrentSessionId] = useState(() => newSessionId());
   /** ブラッシュアップ方向選択中のメッセージ index。null = 起動されてない */
   const [refiningMessageIdx, setRefiningMessageIdx] = useState<number | null>(
     null,
@@ -481,6 +481,14 @@ export function ChatWindow({
   };
 
   const handleNewConsultation = () => {
+    // 進行中の応答があれば中断し、現在の会話を片付けて新しいセッションを開始する。
+    // 直前の相談は phase==="responded" の時点で履歴へ保存済みなので、
+    // ここで新しい session id を発行することで履歴を上書きせず別セッションになる。
+    abortRef.current?.abort();
+    clearStoredMessages(castId);
+    setMessages([GREETING]);
+    setCurrentSessionId(newSessionId());
+    setRefiningMessageIdx(null);
     setPhase({ name: "intent-pick" });
   };
 
