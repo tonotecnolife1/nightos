@@ -53,8 +53,11 @@ export function MoreMenu({ tone = "default" }: Props) {
 
   // tab bar 表示中はそこに出ている導線を除外（重複排除）。
   // tab bar 非表示の画面ではメニューが唯一のナビなので全項目を出す。
+  // いずれの場合も現在地そのものは出さない（例: スケジュール画面の「予定」）。
   const tabBarVisible = isTabBarVisible(pathname);
-  const items = CAST_NAV_ITEMS.filter((it) => (tabBarVisible ? !it.inTabBar : true));
+  const items = CAST_NAV_ITEMS.filter(
+    (it) => (tabBarVisible ? !it.inTabBar : true) && !it.match(pathname),
+  );
 
   return (
     <>
