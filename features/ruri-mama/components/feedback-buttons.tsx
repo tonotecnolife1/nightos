@@ -31,6 +31,22 @@ export function FeedbackButtons({ assistantContent }: Props) {
     saveFeedback(castId, assistantContent, value);
   };
 
+  // フィードバックを送ったら選択肢は消し、控えめなお礼だけ残す
+  if (feedback) {
+    return (
+      <div className="flex justify-start pl-2">
+        <span className="inline-flex items-center gap-1 text-label-sm text-ink-mute">
+          {feedback === "helpful" ? (
+            <ThumbsUp size={12} className="text-wine-deep" />
+          ) : (
+            <ThumbsDown size={12} className="text-ink-secondary" />
+          )}
+          フィードバックありがとう
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-start gap-2 pl-2">
       <button
