@@ -1021,7 +1021,7 @@ export async function getCastByAuthUserId(authUserId: string): Promise<Cast | nu
 
 // ═══════════════ Row → type mappers ═══════════════
 
-export function rowToCast(row: any): Cast {
+function rowToCast(row: any): Cast {
   return {
     id: row.id,
     store_id: row.store_id,
