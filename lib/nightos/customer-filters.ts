@@ -2,6 +2,7 @@
 // 顧客リストで共通利用するフィルター。
 
 import type { Customer } from "@/types/nightos";
+import { normalizeForSearch } from "./kana";
 
 export type CategoryFilter = "all" | "vip" | "regular" | "new";
 export type FunnelFilter = "all" | "store_only" | "assigned" | "line_exchanged";
@@ -49,6 +50,31 @@ export function activeFilterCount(f: CustomerFilters): number {
   return n;
 }
 
+/**
+ * 顧客のテキスト検索一致判定（共通）。
+ *
+ * 氏名・読み仮名・呼び名・職業・好きなお酒（＋呼び出し側が渡す追加項目）に対し、
+ * ひらがな/カタカナ/全角半角の差を吸収して部分一致する。漢字氏名だけでは
+ * 当たらない「ひらがな打鍵」も name_kana 経由でヒットする。
+ */
+export function customerMatchesQuery(
+  c: Customer,
+  rawQuery: string,
+  extraFields: (string | null | undefined)[] = [],
+): boolean {
+  const q = normalizeForSearch(rawQuery);
+  if (!q) return true;
+  const fields = [
+    c.name,
+    c.name_kana,
+    c.nickname,
+    c.job,
+    c.favorite_drink,
+    ...extraFields,
+  ];
+  return fields.some((f) => f != null && normalizeForSearch(f).includes(q));
+}
+
 export function applyCustomerFilters<T extends Customer>(
   customers: T[],
   f: CustomerFilters,
@@ -57,12 +83,7 @@ export function applyCustomerFilters<T extends Customer>(
 
   const q = f.query.trim();
   if (q) {
-    result = result.filter(
-      (c) =>
-        c.name.includes(q) ||
-        (c.job?.includes(q) ?? false) ||
-        (c.favorite_drink?.includes(q) ?? false),
-    );
+    result = result.filter((c) => customerMatchesQuery(c, q));
   }
 
   if (f.category !== "all") {

@@ -7,6 +7,7 @@ import { BirthdayInput } from "@/components/nightos/birthday-input";
 import { TextInput } from "@/components/nightos/input";
 import { TextAreaInput } from "@/components/nightos/textarea";
 import { inferManagerCastId } from "@/lib/nightos/manager-assignment";
+import { useAutoKana } from "@/lib/nightos/use-auto-kana";
 import type { Cast, Customer, CustomerCategory } from "@/types/nightos";
 import { createCustomerAction } from "../actions";
 import {
@@ -47,6 +48,9 @@ export function CustomerForm({
   const [name, setName] = useState("");
   const [nameKana, setNameKana] = useState("");
   const [nickname, setNickname] = useState("");
+
+  // 氏名の IME 変換前かなから読み仮名を自動採取（新規なので初期は未編集）。
+  const autoKana = useAutoKana({ setKana: setNameKana });
   const [birthday, setBirthday] = useState("");
   const [category, setCategory] = useState<CustomerCategory>("new");
   const [castId, setCastId] = useState(defaultCastId);
@@ -77,7 +81,10 @@ export function CustomerForm({
 
   const applyBusinessCard = (fields: ExtractedBusinessCard) => {
     if (fields.name) setName(fields.name);
-    if (fields.name_kana) setNameKana(fields.name_kana);
+    if (fields.name_kana) {
+      setNameKana(fields.name_kana);
+      autoKana.markKanaEdited(); // 名刺の読みを氏名入力で上書きしない
+    }
     if (fields.store_memo) {
       setStoreMemo((prev) =>
         prev.trim() ? `${prev.trim()}\n${fields.store_memo}` : fields.store_memo ?? "",
@@ -137,19 +144,26 @@ export function CustomerForm({
         label="お名前（フルネーム）"
         name="name"
         value={name}
-        onChange={(e) => setName(e.target.value)}
+        onChange={(e) => {
+          setName(e.target.value);
+          autoKana.onNameChange(e.target.value);
+        }}
+        {...autoKana.bind}
         placeholder="例: 田中 太郎"
         required
       />
 
-      {/* 読み仮名（任意・検索の予測に使用） */}
+      {/* 読み仮名（任意・検索の予測に使用。氏名入力中に自動補完） */}
       <TextInput
         label="読み仮名（ひらがな）"
         name="name_kana"
         value={nameKana}
-        onChange={(e) => setNameKana(e.target.value)}
+        onChange={(e) => {
+          setNameKana(e.target.value);
+          autoKana.markKanaEdited();
+        }}
         placeholder="例: たなか たろう"
-        hint="ひらがなで検索・予測するために使います"
+        hint="氏名の入力中に自動で補完されます。ひらがな検索に使われます"
       />
 
       {/* 呼び名（入力推奨） */}

@@ -19,6 +19,11 @@ const categoryTone = {
 export function CustomerHeader({ customer }: { customer: Customer }) {
   return (
     <div className="space-y-1.5">
+      {customer.name_kana && (
+        <p className="text-label-sm text-ink-mute tracking-[0.08em]">
+          {customer.name_kana}
+        </p>
+      )}
       <div className="flex items-baseline gap-3 flex-wrap">
         <h1 className="font-serif text-[2rem] leading-[1.15] font-medium tracking-[0.02em] text-ink">
 

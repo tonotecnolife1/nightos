@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { Check, X } from "lucide-react";
 import { BirthdayInput } from "@/components/nightos/birthday-input";
 import { TextInput } from "@/components/nightos/input";
+import { useAutoKana } from "@/lib/nightos/use-auto-kana";
 import { ALL_PREFECTURES } from "@/lib/nightos/regions";
 import type { Customer } from "@/types/nightos";
 import { updateCustomerProfileAction } from "../actions";
@@ -28,7 +29,15 @@ export function CustomerEditSheet({ customer, isOpen, onClose }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState(customer.name);
+  const [nameKana, setNameKana] = useState(customer.name_kana ?? "");
   const [nickname, setNickname] = useState(customer.nickname ?? "");
+
+  // 氏名入力の IME 変換前かなを読み仮名へ自動採取。既に読みがある場合は
+  // 上書きしない（initialEdited）。シート開閉のたびに初期状態へ戻す。
+  const autoKana = useAutoKana({
+    setKana: setNameKana,
+    initialEdited: !!customer.name_kana,
+  });
   const [birthday, setBirthday] = useState(customer.birthday ?? "");
   const [job, setJob] = useState(customer.job ?? "");
   const [favoriteDrink, setFavoriteDrink] = useState(
@@ -40,6 +49,7 @@ export function CustomerEditSheet({ customer, isOpen, onClose }: Props) {
   useEffect(() => {
     if (isOpen) {
       setName(customer.name);
+      setNameKana(customer.name_kana ?? "");
       setNickname(customer.nickname ?? "");
       setBirthday(customer.birthday ?? "");
       setJob(customer.job ?? "");
@@ -71,6 +81,7 @@ export function CustomerEditSheet({ customer, isOpen, onClose }: Props) {
         customerId: customer.id,
         input: {
           name,
+          name_kana: nameKana || null,
           nickname: nickname || null,
           birthday: birthday || null,
           job: job || null,
@@ -146,9 +157,25 @@ export function CustomerEditSheet({ customer, isOpen, onClose }: Props) {
             label="お名前（フルネーム）"
             name="name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              autoKana.onNameChange(e.target.value);
+            }}
+            {...autoKana.bind}
             placeholder="例: 田中 太郎"
             required
+          />
+
+          <TextInput
+            label="読み仮名（ひらがな）"
+            name="name_kana"
+            value={nameKana}
+            onChange={(e) => {
+              setNameKana(e.target.value);
+              autoKana.markKanaEdited();
+            }}
+            placeholder="例: たなか たろう"
+            hint="氏名の入力中に自動で補完されます。ひらがな検索に使われます"
           />
 
           <BirthdayInput value={birthday} onChange={(v) => setBirthday(v)} />

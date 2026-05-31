@@ -86,13 +86,14 @@ export async function applyMemoUpdateAction(args: {
 /**
  * キャスト編集可能な顧客プロフィール項目を一括更新する。
  *
- * 編集可能: name / nickname / birthday / job / favorite_drink / region
+ * 編集可能: name / name_kana / nickname / birthday / job / favorite_drink / region
  * 編集不可（保持）: category / store_memo / cast_id / その他システム項目
  *
  * store_memo は店舗からの共有情報なのでキャスト側からは触らない。
  */
 export interface CustomerProfileEdit {
   name: string;
+  name_kana: string | null;
   nickname: string | null;
   birthday: string | null;
   job: string | null;
@@ -119,6 +120,7 @@ export async function updateCustomerProfileAction(args: {
 
   const customer = await updateCustomer(args.customerId, {
     name: args.input.name.trim(),
+    name_kana: args.input.name_kana?.trim() || null,
     nickname: args.input.nickname?.trim() || null,
     birthday: args.input.birthday,
     job: args.input.job?.trim() || null,

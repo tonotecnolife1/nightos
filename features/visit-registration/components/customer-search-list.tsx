@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/nightos/badge";
 import { cn } from "@/lib/utils";
+import { customerMatchesQuery } from "@/lib/nightos/customer-filters";
 import type { Customer } from "@/types/nightos";
 
 interface Props {
@@ -18,12 +19,7 @@ export function CustomerSearchList({ customers, value, onChange }: Props) {
   const filtered = useMemo(() => {
     const q = query.trim();
     if (!q) return customers;
-    return customers.filter(
-      (c) =>
-        c.name.includes(q) ||
-        c.job?.includes(q) ||
-        c.favorite_drink?.includes(q),
-    );
+    return customers.filter((c) => customerMatchesQuery(c, q));
   }, [customers, query]);
 
   return (
@@ -37,7 +33,7 @@ export function CustomerSearchList({ customers, value, onChange }: Props) {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="名前・職業で検索"
+          placeholder="名前（ひらがな可）・職業で検索"
           className="w-full h-11 pl-9 pr-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink text-body-md outline-none focus:border-champagne-dark"
         />
       </div>

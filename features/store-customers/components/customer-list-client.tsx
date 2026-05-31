@@ -15,6 +15,7 @@ import { Card } from "@/components/nightos/card";
 import { CsvDownloadButton } from "@/components/nightos/csv-download-button";
 import type { Cast, Customer } from "@/types/nightos";
 import type { CsvColumn } from "@/lib/nightos/csv";
+import { customerMatchesQuery } from "@/lib/nightos/customer-filters";
 import { deleteCustomerAction } from "../actions";
 
 interface Props {
@@ -30,13 +31,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
   const filtered = useMemo(() => {
     const q = query.trim();
     if (!q) return customers;
-    return customers.filter(
-      (c) =>
-        c.name.includes(q) ||
-        c.job?.includes(q) ||
-        c.favorite_drink?.includes(q) ||
-        c.store_memo?.includes(q),
-    );
+    return customers.filter((c) => customerMatchesQuery(c, q, [c.store_memo]));
   }, [customers, query]);
 
   const handleDelete = (id: string, name: string) => {
@@ -91,7 +86,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="名前・職業・好み・メモで検索"
+            placeholder="名前（ひらがな可）・職業・好み・メモで検索"
             style={{ fontSize: "13px" }}
             className="w-full h-10 pl-8 pr-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-mute"
           />
