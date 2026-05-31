@@ -168,6 +168,7 @@ export async function POST(request: Request) {
         cast_id: v.cast_id,
         table_name: v.table_name,
         is_nominated: v.is_nominated,
+        sales_amount: v.sales_amount,
         visited_at: v.visited_at,
       }));
     let visitOk = 0;

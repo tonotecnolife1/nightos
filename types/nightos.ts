@@ -195,6 +195,8 @@ export interface Visit {
   cast_id: string;
   table_name: string | null;
   is_nominated: boolean;
+  /** お会計金額（円）。会計未確定 / 未入力は 0。 */
+  sales_amount: number;
   visited_at: string;
 }
 
