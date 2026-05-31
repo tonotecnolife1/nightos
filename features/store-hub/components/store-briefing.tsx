@@ -4,6 +4,7 @@ import { Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/nightos/card";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 
 interface CachedBriefing {
   briefing: string;
@@ -38,9 +39,10 @@ export function StoreBriefing() {
       } catch {}
     }
     try {
-      const res = await fetch("/api/store-briefing", { method: "POST" });
-      if (!res.ok) throw new Error(`${res.status}`);
-      const data = (await res.json()) as { isStub: boolean; briefing: string };
+      const data = await apiFetchJson<{ isStub: boolean; briefing: string }>(
+        "/api/store-briefing",
+        { method: "POST", ...AI_FETCH_OPTIONS },
+      );
       const cached: CachedBriefing = {
         briefing: data.briefing,
         isStub: data.isStub,

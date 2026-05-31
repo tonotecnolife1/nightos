@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Info, Plus, Sparkles, Trash2 } from "lucide-react";
 import { useCastId } from "@/lib/nightos/cast-context";
+import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 import { detectIntent } from "@/lib/nightos/intent-detector";
 import { HEARING_FLOWS } from "../data/system-prompt";
 import { recentFeedbackSamples } from "../lib/feedback-store";
@@ -233,7 +234,7 @@ export function ChatWindow({
     setPhase({ name: "loading" });
     try {
       const feedbackContext = recentFeedbackSamples(castId, 8);
-      const res = await fetch("/api/ruri-mama", {
+      const data = await apiFetchJson<RuriMamaResponse>("/api/ruri-mama", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -245,9 +246,8 @@ export function ChatWindow({
           recentFeedback: feedbackContext,
         }),
         signal: controller.signal,
+        ...AI_FETCH_OPTIONS,
       });
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data: RuriMamaResponse = await res.json();
       setStubMode(data.isStub);
       setMessages((prev) => [
         ...prev,
@@ -260,7 +260,8 @@ export function ChatWindow({
       ]);
       setPhase({ name: "responded" });
     } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") return; // silently ignore — new topic took over
+      // 別の話題に切り替わって中断された場合は無視（DOMException/AbortError）
+      if ((err as { name?: string } | null)?.name === "AbortError") return;
       console.error(err);
       setMessages((prev) => [
         ...prev,
@@ -312,22 +313,24 @@ export function ChatWindow({
     setPhase({ name: "loading" });
 
     try {
-      const res = await fetch("/api/ruri-mama", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            { role: "user", content: `ブラッシュアップ: ${direction.label}` },
-          ],
-          castId: castId,
-          intent: "freeform",
-          refineStep: "apply",
-          previousReply: srcMessage.content,
-          refinementDirection: direction.prompt,
-        }),
-      });
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data: import("@/types/nightos").RuriMamaResponse = await res.json();
+      const data = await apiFetchJson<import("@/types/nightos").RuriMamaResponse>(
+        "/api/ruri-mama",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [
+              { role: "user", content: `ブラッシュアップ: ${direction.label}` },
+            ],
+            castId: castId,
+            intent: "freeform",
+            refineStep: "apply",
+            previousReply: srcMessage.content,
+            refinementDirection: direction.prompt,
+          }),
+          ...AI_FETCH_OPTIONS,
+        },
+      );
       setStubMode(data.isStub);
       setMessages((prev) => [
         ...prev,

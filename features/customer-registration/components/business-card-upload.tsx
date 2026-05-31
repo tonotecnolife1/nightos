@@ -3,6 +3,7 @@
 import { AlertCircle, Camera, Check, Images, Loader2, ScanLine, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { Card } from "@/components/nightos/card";
+import { AI_FETCH_OPTIONS, apiFetchJson, toUserMessage } from "@/lib/nightos/api-fetch";
 import { cn } from "@/lib/utils";
 
 export interface ExtractedBusinessCard {
@@ -60,23 +61,20 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
       setLoading(true);
 
       try {
-        const res = await fetch("/api/extract-business-card", {
+        const data = await apiFetchJson<{
+          isStub: boolean;
+          result: ExtractedBusinessCard;
+        }>("/api/extract-business-card", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ imageBase64: dataUrl }),
+          ...AI_FETCH_OPTIONS,
         });
-        if (!res.ok) {
-          throw new Error(`status ${res.status}`);
-        }
-        const data = (await res.json()) as {
-          isStub: boolean;
-          result: ExtractedBusinessCard;
-        };
         setResult(data.result);
         setIsStub(data.isStub);
       } catch (err) {
         console.error("[business-card-upload] failed:", err);
-        setError("名刺の読み取りに失敗しました。もう一度お試しください。");
+        setError(`${toUserMessage(err)}`);
       } finally {
         setLoading(false);
       }

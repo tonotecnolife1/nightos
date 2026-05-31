@@ -107,6 +107,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|images/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // sw.js / offline.html / manifest.json は認証リダイレクトに巻き込むと
+    // Service Worker の登録やオフライン配信が壊れるため必ず除外する。
+    "/((?!_next/static|_next/image|favicon.ico|images/|sw.js|offline.html|manifest.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

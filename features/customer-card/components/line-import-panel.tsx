@@ -20,6 +20,7 @@ import {
   type ChangeEvent,
 } from "react";
 import { Card } from "@/components/nightos/card";
+import { apiFetchJson, toUserMessage } from "@/lib/nightos/api-fetch";
 import { cn } from "@/lib/utils";
 import type {
   CastMemo,
@@ -67,7 +68,10 @@ export function LineImportPanel({ customer, memo, screenshots }: Props) {
       const { dataUrl, mediaType } = await compressImage(file);
       setPhase({ name: "extracting", imageData: dataUrl, mediaType });
 
-      const res = await fetch("/api/extract-memo", {
+      const data = await apiFetchJson<{
+        isStub: boolean;
+        result: MemoExtractionResult;
+      }>("/api/extract-memo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -75,12 +79,9 @@ export function LineImportPanel({ customer, memo, screenshots }: Props) {
           customerId: customer.id,
           castId: customer.cast_id,
         }),
+        // 画像解析は時間がかかるのでタイムアウトを長めに
+        timeoutMs: 30_000,
       });
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data = (await res.json()) as {
-        isStub: boolean;
-        result: MemoExtractionResult;
-      };
       setPhase({
         name: "review",
         imageData: dataUrl,
@@ -92,8 +93,7 @@ export function LineImportPanel({ customer, memo, screenshots }: Props) {
       console.error(err);
       setPhase({
         name: "error",
-        message:
-          "画像の解析に失敗しました。別のスクショで試すか、しばらくしてから再度お試しください。",
+        message: `${toUserMessage(err)}別のスクショで試すこともできます。`,
       });
     }
   };

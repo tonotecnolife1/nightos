@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { ConnectionStatus } from "@/components/nightos/connection-status";
 import { FeedbackLink } from "@/components/nightos/feedback-link";
 import { InstallPrompt } from "@/components/nightos/install-prompt";
+import { ServiceWorkerRegister } from "@/components/nightos/service-worker-register";
 import "./globals.css";
 
 // Set NEXT_PUBLIC_APP_URL to your production canonical URL (e.g.
@@ -73,6 +74,7 @@ export default function RootLayout({
         {children}
         <FeedbackLink />
         <InstallPrompt />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

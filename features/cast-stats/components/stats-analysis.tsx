@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 import { setStatsConsultHandoff } from "@/lib/nightos/stats-consult-store";
 
 interface Props {
@@ -47,13 +48,15 @@ export function StatsAnalysis({ castId, name }: Props) {
   const runAnalysis = async () => {
     setState({ phase: "loading" });
     try {
-      const res = await fetch("/api/stats-analysis", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ castId }),
-      });
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data: AnalysisApiResponse = await res.json();
+      const data = await apiFetchJson<AnalysisApiResponse>(
+        "/api/stats-analysis",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ castId }),
+          ...AI_FETCH_OPTIONS,
+        },
+      );
       setState({
         phase: "done",
         isStub: data.isStub,
