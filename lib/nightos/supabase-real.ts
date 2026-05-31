@@ -872,9 +872,10 @@ export async function getStoreDashboardDataReal(
 export async function getCastStatsDataReal(
   castId: string,
   storeId: string,
+  refDate?: Date,
 ): Promise<CastStatsData> {
   const supabase = createServerSupabaseClient();
-  const now = new Date();
+  const now = refDate ?? new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const yearStart = new Date(now.getFullYear(), 0, 1);
   // 月次トレンドは過去 6 ヶ月遡るため、年初より早い場合に備えて

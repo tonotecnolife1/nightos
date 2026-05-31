@@ -1081,15 +1081,25 @@ export interface CastStatsData {
   followStreakDays: number;
 }
 
-export async function getCastStatsData(castId: string): Promise<CastStatsData> {
+/**
+ * @param refDate 集計の基準日。省略時は「今」(mock は MOCK_TODAY / real は new Date)。
+ *   過去月を表示する場合はその月の月末を渡すことで、当月分を丸ごと集計できる。
+ */
+export async function getCastStatsData(
+  castId: string,
+  refDate?: Date,
+): Promise<CastStatsData> {
   return withFallback(
     "getCastStatsData",
-    () => getCastStatsDataReal(castId, CURRENT_STORE_ID),
-    () => getCastStatsDataMock(castId),
+    () => getCastStatsDataReal(castId, CURRENT_STORE_ID, refDate),
+    () => getCastStatsDataMock(castId, refDate),
   );
 }
 
-async function getCastStatsDataMock(castId: string): Promise<CastStatsData> {
+async function getCastStatsDataMock(
+  castId: string,
+  refDate?: Date,
+): Promise<CastStatsData> {
   const cast = mockCasts.find((c) => c.id === castId);
   if (!cast) throw new Error(`Cast not found: ${castId}`);
 
@@ -1114,7 +1124,7 @@ async function getCastStatsDataMock(castId: string): Promise<CastStatsData> {
   // Customers
   const myCustomers = mockCustomers.filter((c) => c.cast_id === castId);
   const myCustomerIds = myCustomers.map((c) => c.id);
-  const now = MOCK_TODAY;
+  const now = refDate ?? MOCK_TODAY;
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthNewCount = myCustomers.filter(
     (c) => new Date(c.created_at) >= monthStart,

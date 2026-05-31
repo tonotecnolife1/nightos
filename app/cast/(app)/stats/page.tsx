@@ -10,13 +10,27 @@ import { StatsAnalysis } from "@/features/cast-stats/components/stats-analysis";
 import { getCurrentCastId } from "@/lib/nightos/auth";
 import { getCastStatsData } from "@/lib/nightos/supabase-queries";
 
-export default async function CastStatsPage() {
-  const castId = await getCurrentCastId();
-  const data = await getCastStatsData(castId);
+interface PageProps {
+  searchParams?: { month?: string };
+}
 
+export default async function CastStatsPage({ searchParams }: PageProps) {
+  const castId = await getCurrentCastId();
+
+  // 表示対象の年月。?month=YYYY-MM で過去月を選択できる。未指定 / 不正値は今月。
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
+  const selected = parseMonthParam(searchParams?.month);
+  const year = selected?.year ?? now.getFullYear();
+  const month = selected?.month ?? now.getMonth() + 1;
+
+  // 当月は「今」を基準に部分集計、過去月は月末を基準に丸ごと集計する。
+  const isCurrentMonth =
+    year === now.getFullYear() && month === now.getMonth() + 1;
+  const refDate = isCurrentMonth
+    ? undefined
+    : new Date(year, month, 0, 23, 59, 59);
+
+  const data = await getCastStatsData(castId, refDate);
 
   // 年間売上をコンパクト表示 (¥6.2M)。小さなタイルでも桁あふれしない。
   const annualSalesM = (data.yearly.sales / 1_000_000).toFixed(1);
@@ -31,7 +45,8 @@ export default async function CastStatsPage() {
       <main className="px-5 pt-[18px] flex flex-col gap-[22px]">
         {/* ── 月次成績 ── */}
         <section className="flex flex-col gap-[22px]">
-          <StatsSectionHead title="月次成績" sub={`${year}年${month}月`} />
+          {/* 年月は固定ヘッダーの chip に表示済みのため sub は出さない */}
+          <StatsSectionHead title="月次成績" />
 
           {/* 目標進捗 */}
           <div className="flex flex-col gap-3">
@@ -148,4 +163,17 @@ export default async function CastStatsPage() {
       </main>
     </div>
   );
+}
+
+/** "YYYY-MM" を {year, month} に変換。不正値は null。 */
+function parseMonthParam(
+  raw: string | undefined,
+): { year: number; month: number } | null {
+  if (!raw) return null;
+  const m = /^(\d{4})-(\d{1,2})$/.exec(raw);
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  if (month < 1 || month > 12) return null;
+  return { year, month };
 }
