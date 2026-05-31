@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { HandHelping, UserPlus } from "lucide-react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { HandHelping, Loader2, UserPlus } from "lucide-react";
 import type { Cast, Customer } from "@/types/nightos";
 import { Card } from "@/components/nightos/card";
 import { CustomerFilterBar } from "./customer-filter-bar";
@@ -29,6 +29,8 @@ interface Props {
 }
 
 export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = [] }: Props) {
+  const router = useRouter();
+  const [navigating, startNavigation] = useTransition();
   const [grouping, setGrouping] = useState<ViewGrouping>("customer");
   const [filters, setFilters] = useState<CustomerFilters>(
     DEFAULT_CUSTOMER_FILTERS,
@@ -42,7 +44,9 @@ export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = []
     } catch {}
     setFilters(loadFilters(LS_FILTERS));
     setLoaded(true);
-  }, []);
+    // 「新規」ボタンの遷移先を先読みして体感速度を確保（Link の prefetch 相当）
+    router.prefetch("/cast/customers/new");
+  }, [router]);
 
   const updateGrouping = (g: ViewGrouping) => {
     setGrouping(g);
@@ -76,13 +80,25 @@ export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = []
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
         <ViewGroupingToggle value={grouping} onChange={updateGrouping} />
-        <Link
-          href="/cast/customers/new"
-          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[linear-gradient(135deg,#eccd8b_0%,#c9a45c_100%)] text-[#3a241c] text-[12px] font-semibold shadow-[0_6px_16px_-6px_rgba(201,164,92,0.7)] active:scale-95 transition-transform"
+        <button
+          type="button"
+          onClick={() => startNavigation(() => router.push("/cast/customers/new"))}
+          disabled={navigating}
+          aria-busy={navigating}
+          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[linear-gradient(135deg,#eccd8b_0%,#c9a45c_100%)] text-[#3a241c] text-[12px] font-semibold shadow-[0_6px_16px_-6px_rgba(201,164,92,0.7)] active:scale-95 transition-transform disabled:opacity-80 disabled:active:scale-100"
         >
-          <UserPlus size={14} />
-          新規
-        </Link>
+          {navigating ? (
+            <>
+              <Loader2 size={14} className="animate-spin" />
+              開いています…
+            </>
+          ) : (
+            <>
+              <UserPlus size={14} />
+              新規
+            </>
+          )}
+        </button>
       </div>
 
       <CustomerFilterBar
