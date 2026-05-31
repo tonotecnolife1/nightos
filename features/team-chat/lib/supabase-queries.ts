@@ -22,6 +22,14 @@ interface MemberRow {
   cast: { name: string | null } | { name: string | null }[] | null;
 }
 
+interface StoredAttachment {
+  path?: string | null;
+  url?: string | null;
+  mime: string;
+  width?: number | null;
+  height?: number | null;
+}
+
 interface MessageRow {
   id: string;
   room_id: string;
@@ -29,6 +37,8 @@ interface MessageRow {
   sender_name: string;
   sender_role: string | null;
   content: string;
+  attachments: StoredAttachment[] | null;
+  customer_id: string | null;
   thread_parent_id: string | null;
   mentions_ai: boolean | null;
   is_bot: boolean | null;
@@ -81,6 +91,15 @@ function toMessage(row: MessageRow): ChatMessage {
     sender_name: row.sender_name,
     sender_role: (row.sender_role ?? undefined) as ChatMessage["sender_role"],
     content: row.content,
+    attachments: (row.attachments ?? [])
+      .map((a) => ({
+        url: a.url ?? "",
+        path: a.path ?? null,
+        mime: a.mime,
+        width: a.width ?? null,
+        height: a.height ?? null,
+      })),
+    customer_id: row.customer_id ?? null,
     thread_parent_id: row.thread_parent_id,
     reply_count: 0,
     mentions_ai: !!row.mentions_ai,
@@ -89,6 +108,36 @@ function toMessage(row: MessageRow): ChatMessage {
     edited_at: row.edited_at,
     deleted_at: row.deleted_at,
   };
+}
+
+/**
+ * Replace stored attachment paths with fresh signed URLs so images load even
+ * though the bucket is private. Mutates the messages in place. Attachments
+ * already carrying an inline URL (mock mode) are left untouched.
+ */
+async function signAttachments(
+  supabase: SupabaseClient,
+  messages: ChatMessage[],
+): Promise<void> {
+  const paths = messages
+    .flatMap((m) => m.attachments ?? [])
+    .filter((a) => a.path)
+    .map((a) => a.path as string);
+  if (paths.length === 0) return;
+
+  const { data } = await supabase.storage
+    .from("team-chat")
+    .createSignedUrls(paths, 60 * 60);
+  if (!data) return;
+
+  const byPath = new Map(
+    data.filter((d) => d.path).map((d) => [d.path as string, d.signedUrl]),
+  );
+  for (const m of messages) {
+    for (const a of m.attachments ?? []) {
+      if (a.path && byPath.has(a.path)) a.url = byPath.get(a.path) ?? a.url;
+    }
+  }
 }
 
 /**
@@ -305,6 +354,7 @@ export async function loadMessages(
 
   const rows = (data ?? []) as MessageRow[];
   const messages = rows.map(toMessage);
+  await signAttachments(supabase, messages);
   const replyCounts = new Map<string, number>();
   for (const m of messages) {
     if (m.thread_parent_id) {

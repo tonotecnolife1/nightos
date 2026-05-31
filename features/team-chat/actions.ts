@@ -1,6 +1,11 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { getCurrentCastId } from "@/lib/nightos/auth";
+import {
+  getCustomerContext,
+  updateCastMemo,
+} from "@/lib/nightos/supabase-queries";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { mockChatRooms, mockStoreCasts } from "./lib/mock-chat-data";
 import { createGroupRoom, findOrCreateDmRoom, getStoreCastsForDm } from "./lib/supabase-queries";
@@ -104,4 +109,46 @@ export async function createGroupRoomAction(
 
   // Mock: return a synthetic room ID
   return `group_${castId}_${Date.now()}`;
+}
+
+/**
+ * チャットのやりとりを、指定顧客の逆カルテ（次回の話題候補）に1行追記する。
+ * @顧客メンション / 受動検出の確認チップから呼ばれる。既存のメモ層
+ * (updateCastMemo) を再利用し、現在値の末尾に日付付きで追記する。
+ */
+export async function addChatNoteToKarteAction(args: {
+  customerId: string;
+  note: string;
+}): Promise<
+  | { ok: true; customerName: string }
+  | { ok: false; error: string }
+> {
+  const note = args.note.trim();
+  if (!note) return { ok: false, error: "メモが空です" };
+
+  const castId = await getCurrentCastId();
+  const context = await getCustomerContext(castId, args.customerId);
+  if (!context) return { ok: false, error: "顧客が見つかりません" };
+
+  const today = new Date().toLocaleDateString("ja-JP", {
+    month: "numeric",
+    day: "numeric",
+  });
+  const line = `【${today} チャット】${note}`;
+  const existing = context.memo?.next_topics?.trim();
+  const next_topics = existing ? `${existing}\n${line}` : line;
+
+  await updateCastMemo({
+    castId,
+    customerId: args.customerId,
+    input: {
+      last_topic: context.memo?.last_topic ?? null,
+      service_tips: context.memo?.service_tips ?? null,
+      next_topics,
+    },
+  });
+
+  revalidatePath(`/cast/customers/${args.customerId}`);
+  revalidatePath("/cast/home");
+  return { ok: true, customerName: context.customer.name };
 }

@@ -3,69 +3,38 @@
 import { useEffect } from "react";
 
 /**
- * Service Worker を登録するクライアントコンポーネント。
+ * Service Worker クリーンアップ専用コンポーネント。
  *
- * - 本番ビルドでのみ登録する（dev では Next.js の HMR と干渉するため）。
- * - 新しい SW を検知したら自動で skipWaiting → 次回リロードで最新版に。
- *   モバイルでアプリを開きっぱなしでも、デプロイ後の古いチャンク参照
- *   (ChunkLoadError) を起こしにくくする。
+ * 以前 SW（/_next/static の cache-first 等）を導入したが、デプロイ後の
+ * 版ずれで全画面エラーから復帰できない不具合が出たため SW 機能を停止した。
  *
- * 何も描画しない（副作用専用）。
+ * このコンポーネントは「新規登録は一切せず、既に登録されている SW を
+ * 解除し、SW が作ったキャッシュを削除する」だけを行う。過去に旧 SW を
+ * 登録してしまった端末（＝不具合が出ている端末）を、次回アクセス時に
+ * 自動でクリーンな状態へ戻すのが目的。
+ *
+ * 何も描画しない（副作用専用）。SW を再び有効化したくなったら、この
+ * コンポーネントを登録処理に戻し、public/sw.js を実装し直すこと。
  */
 export function ServiceWorkerRegister() {
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production") return;
     if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) {
       return;
     }
 
-    let refreshing = false;
-    // 初回登録時は controller が null。clients.claim() による初回の
-    // controllerchange ではリロードせず、「既に制御されている状態からの
-    // 切り替え」= 実際のデプロイ更新時のみリロードする。
-    const hadController = Boolean(navigator.serviceWorker.controller);
-
-    const register = async () => {
+    void (async () => {
       try {
-        const reg = await navigator.serviceWorker.register("/sw.js");
-
-        // 新しい SW がインストールされたら、待機させず即適用を促す
-        reg.addEventListener("updatefound", () => {
-          const installing = reg.installing;
-          if (!installing) return;
-          installing.addEventListener("statechange", () => {
-            if (
-              installing.state === "installed" &&
-              navigator.serviceWorker.controller
-            ) {
-              installing.postMessage({ type: "SKIP_WAITING" });
-            }
-          });
-        });
+        const regs = await navigator.serviceWorker.getRegistrations();
+        if (regs.length === 0) return; // 登録が無ければ何もしない
+        await Promise.all(regs.map((r) => r.unregister()));
+        if (typeof caches !== "undefined") {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k)));
+        }
       } catch {
-        // 登録失敗してもアプリ本体は動くので握りつぶす
+        // 失敗してもアプリ本体には影響しないので握りつぶす
       }
-    };
-
-    // 制御 SW が切り替わったら一度だけリロードして新バージョンを反映
-    const onControllerChange = () => {
-      if (refreshing || !hadController) return;
-      refreshing = true;
-      window.location.reload();
-    };
-    navigator.serviceWorker.addEventListener(
-      "controllerchange",
-      onControllerChange,
-    );
-
-    void register();
-
-    return () => {
-      navigator.serviceWorker.removeEventListener(
-        "controllerchange",
-        onControllerChange,
-      );
-    };
+    })();
   }, []);
 
   return null;
