@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ChatMessage, ChatRoom, ChatRoomType } from "../types";
 
@@ -237,10 +238,13 @@ export async function findOrCreateDmRoom(
     }
   }
 
-  // Create a new DM room
+  // Create a new DM room.
+  // team_chat_rooms.id is a text PK without a DB default (migration 004),
+  // so we must generate the id here — otherwise the insert fails with a
+  // not-null violation and the room (and navigation) silently never happens.
   const { data: room, error: roomErr } = await supabase
     .from("team_chat_rooms")
-    .insert({ store_id: storeId, type: "dm", name: null })
+    .insert({ id: `dm_${randomUUID()}`, store_id: storeId, type: "dm", name: null })
     .select("id")
     .single();
   if (roomErr || !room) return null;
@@ -267,9 +271,10 @@ export async function createGroupRoom(
   name: string,
   storeId: string,
 ): Promise<string | null> {
+  // team_chat_rooms.id has no DB default (migration 004) — generate it here.
   const { data: room, error: roomErr } = await supabase
     .from("team_chat_rooms")
-    .insert({ store_id: storeId, type: "channel", name, visible_to_seniors: false })
+    .insert({ id: `group_${randomUUID()}`, store_id: storeId, type: "channel", name, visible_to_seniors: false })
     .select("id")
     .single();
   if (roomErr || !room) return null;
