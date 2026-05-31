@@ -228,13 +228,18 @@ const config: Config = {
         luxe: "0.18em",  // tiny eyebrows / pill labels only
       },
       keyframes: {
+        // NOTE: 終端は transform: none にする。translateY(0) のままだと
+        // animation-fill-mode: both で transform が残り続け、要素が stacking
+        // context / fixed の containing block になってしまう。これで子孫の
+        // position: fixed モーダル（顧客編集シート等）が z-index 通りに
+        // ビューポート基準で重なり、フッタータブ(z-40)の下に潜らなくなる。
         "fade-in": {
           from: { opacity: "0", transform: "translateY(8px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
+          to: { opacity: "1", transform: "none" },
         },
         "slide-up": {
           from: { transform: "translateY(100%)" },
-          to: { transform: "translateY(0)" },
+          to: { transform: "none" },
         },
         "fade-overlay": {
           from: { opacity: "0" },
