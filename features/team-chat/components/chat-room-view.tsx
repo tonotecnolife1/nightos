@@ -14,6 +14,7 @@ import {
   Search,
   Sparkles,
   Trash2,
+  User,
   UserPlus,
   X,
 } from "lucide-react";
@@ -22,12 +23,19 @@ import { cn } from "@/lib/utils";
 import { MoreMenu } from "@/components/nightos/more-menu";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
 import { SAKURA_MAMA_CHAT_NAME } from "@/lib/nightos/constants";
+import {
+  clearRoomPin,
+  getRoomPin,
+  setRoomPin,
+  type RoomCustomerPin,
+} from "@/lib/nightos/chat-room-pin-store";
 import type { ChatAttachment, ChatMessage, ChatRoom } from "../types";
 import { ChatComposer, type ComposerPayload } from "./chat-composer";
 import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
 import {
   type MentionCustomer,
   detectCustomer,
+  searchCustomers,
 } from "../lib/customer-mention";
 import { addChatNoteToKarteAction } from "../actions";
 
@@ -70,7 +78,14 @@ export function ChatRoomView({
   const [karteSuggestions, setKarteSuggestions] = useState<
     Record<string, KarteSuggestion>
   >({});
+  const [pin, setPin] = useState<RoomCustomerPin | null>(null);
+  const [pinPickerOpen, setPinPickerOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Load the room's pinned customer (mechanism C) on mount / room change.
+  useEffect(() => {
+    setPin(getRoomPin(room.id));
+  }, [room.id]);
 
   const customerName = (id: string) =>
     customers.find((c) => c.id === id)?.name ?? "お客様";
@@ -85,7 +100,7 @@ export function ChatRoomView({
     const note =
       payload.text.replace(/@\S+\s?/g, "").trim() || payload.text.trim();
 
-    // 対象顧客を特定: 明示メンション → 受動検出（本文の名前）。
+    // 対象顧客を特定: 明示メンション → 受動検出（本文の名前）→ ルームのピン。
     let customerId = payload.customerId ?? null;
     let candidates: MentionCustomer[] = [];
     if (!customerId && payload.text.trim()) {
@@ -95,6 +110,8 @@ export function ChatRoomView({
         candidates = detected.ambiguous;
       }
     }
+    // ルームに顧客がピンされていれば、特定できなくてもその顧客を既定対象に。
+    if (!customerId && pin) customerId = pin.customerId;
     if (!customerId) return; // 顧客が特定できない
     if (!note && !image) return; // 追加できる中身がない
 
@@ -167,6 +184,16 @@ export function ChatRoomView({
           }
         : prev,
     );
+  };
+
+  // ── 機構C: ルームへの顧客ピン留め ───────────────────────────
+  const pinCustomer = (c: MentionCustomer) => {
+    setPin(setRoomPin(room.id, { id: c.id, name: c.name }));
+    setPinPickerOpen(false);
+  };
+  const unpinCustomer = () => {
+    clearRoomPin(room.id);
+    setPin(null);
   };
 
   const patchMessage = (id: string, patch: Partial<ChatMessage>) => {
@@ -293,7 +320,12 @@ export function ChatRoomView({
       )
     : topMessages;
 
-  const handleSend = async (payload: ComposerPayload) => {
+  const handleSend = async (rawPayload: ComposerPayload) => {
+    // ルームに顧客がピンされていれば、明示メンションが無くても既定の対象にする。
+    const payload: ComposerPayload =
+      rawPayload.customerId || !pin
+        ? rawPayload
+        : { ...rawPayload, customerId: pin.customerId };
     const text = payload.text.trim();
     const attachments = payload.attachments;
     if ((!text && attachments.length === 0) || sending) return;
@@ -453,6 +485,17 @@ export function ChatRoomView({
         </div>
 
       </header>
+
+      {/* 機構C: ルームにピンした顧客のバー（カルテ導線 + 自動ひも付け） */}
+      <PinBar
+        pin={pin}
+        pickerOpen={pinPickerOpen}
+        customers={customers}
+        onOpenPicker={() => setPinPickerOpen(true)}
+        onClosePicker={() => setPinPickerOpen(false)}
+        onPick={pinCustomer}
+        onUnpin={unpinCustomer}
+      />
 
       {searchOpen && (
         <div className="shrink-0 px-4 py-2 border-b border-ink/[0.06] bg-pearl-soft/40">
@@ -1098,6 +1141,129 @@ function HighlightedText({ text, query }: { text: string; query: string }) {
     cursor = idx + q.length;
   }
   return <>{out}</>;
+}
+
+// ═══════════════ 機構C: 顧客ピンバー ═══════════════
+
+function PinBar({
+  pin,
+  pickerOpen,
+  customers,
+  onOpenPicker,
+  onClosePicker,
+  onPick,
+  onUnpin,
+}: {
+  pin: RoomCustomerPin | null;
+  pickerOpen: boolean;
+  customers: MentionCustomer[];
+  onOpenPicker: () => void;
+  onClosePicker: () => void;
+  onPick: (c: MentionCustomer) => void;
+  onUnpin: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const results = searchCustomers(customers, query, 8);
+
+  if (pin) {
+    return (
+      <div className="shrink-0 flex items-center gap-2 px-4 py-2 border-b border-gold/20 bg-champagne-soft/40">
+        <span className="w-6 h-6 rounded-full bg-champagne-soft border border-gold/30 flex items-center justify-center text-[11px] font-medium text-wine-deep shrink-0">
+          {pin.customerName.charAt(0)}
+        </span>
+        <span className="text-[12px] text-ink leading-snug">
+          このトークは{" "}
+          <span className="font-medium text-wine-deep">{pin.customerName}</span>{" "}
+          さんの話題
+        </span>
+        <Link
+          href={`/cast/customers/${pin.customerId}`}
+          className="ml-auto inline-flex items-center gap-1 rounded-pill border border-gold/40 px-2.5 py-1 text-[11px] text-wine-deep font-medium hover:bg-champagne-soft/60"
+        >
+          <User size={11} />
+          カルテ
+        </Link>
+        <button
+          type="button"
+          onClick={onUnpin}
+          className="w-6 h-6 rounded-full flex items-center justify-center text-ink-mute hover:bg-pearl-soft shrink-0"
+          aria-label="ピンを外す"
+          title="ピンを外す"
+        >
+          <X size={13} />
+        </button>
+      </div>
+    );
+  }
+
+  if (!pickerOpen) {
+    if (customers.length === 0) return null;
+    return (
+      <div className="shrink-0 px-4 py-1.5 border-b border-ink/[0.06] bg-pearl-soft/30">
+        <button
+          type="button"
+          onClick={onOpenPicker}
+          className="inline-flex items-center gap-1 text-[11px] text-ink-soft hover:text-wine-deep"
+        >
+          <UserPlus size={12} className="text-gold-deep" />
+          この相談を顧客に紐づける
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="shrink-0 px-4 py-2 border-b border-gold/20 bg-champagne-soft/40 space-y-2">
+      <div className="flex items-center gap-2">
+        <label className="flex-1 flex items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-1.5">
+          <Search size={13} className="text-ink-mute shrink-0" />
+          <input
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="顧客を検索してピン..."
+            className="flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
+            style={{ fontSize: "16px" }}
+          />
+        </label>
+        <button
+          type="button"
+          onClick={() => {
+            setQuery("");
+            onClosePicker();
+          }}
+          className="text-[11px] text-ink-soft shrink-0"
+        >
+          やめる
+        </button>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {results.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => onPick(c)}
+            className="inline-flex items-center gap-1.5 rounded-pill border border-ink/[0.12] bg-pearl-light px-2.5 py-1 text-[12px] text-ink hover:border-gold/40"
+          >
+            <span className="w-5 h-5 rounded-full bg-champagne-soft/60 flex items-center justify-center text-[10px] font-medium text-wine-deep">
+              {c.name.charAt(0)}
+            </span>
+            {c.name}
+            {c.category === "vip" && (
+              <span className="text-[9px] px-1 rounded bg-wine/10 text-wine-deep font-medium">
+                VIP
+              </span>
+            )}
+          </button>
+        ))}
+        {results.length === 0 && (
+          <span className="text-[11px] text-ink-mute py-1">
+            一致する顧客がいません
+          </span>
+        )}
+      </div>
+    </div>
+  );
 }
 
 // ═══════════════ 逆カルテ取り込みチップ ═══════════════
