@@ -279,6 +279,18 @@ V5 Hero 内の主要 CTA だけ例外で **champagne-gold solid + dark text (反
 - 見出しは `font-serif text-[20px] tracking-[0.04em]`
 - 戻るボタン + 右側 slot
 
+### 4.8 チームチャット入力・添付・カルテ連携 (`features/team-chat/`)
+
+実装: `components/chat-composer.tsx` / `chat-room-view.tsx`
+
+- **コンポーザー** (`ChatComposer`): 画像添付ボタン (`ImagePlus`, `text-gold-deep`) + テキストエリア + 送信ボタン (`bg-wine-deep text-pearl-light`)。⌘/Ctrl+Enter 送信。`onPaste` / ドラッグ&ドロップで画像添付（ドラッグ中は `ring-2 ring-gold/60`）
+- **`@` メンションメニュー**: コンポーザー上にポップ。さくらママ (AI相談) と顧客候補を一覧。選択チップは `bg-champagne-soft/60` アバター + VIP は `bg-wine/10 text-wine-deep`
+- **添付プレビュー / 表示**: 角丸 `rounded-xl` サムネ、枠 `border-ink/[0.08]`。バブル内画像はタップで全画面ライトボックス (`bg-ink/80 backdrop-blur-sm`)
+- **逆カルテ取り込みチップ** (`KarteChip`): メッセージ下に `bg-champagne-soft/40 border-gold/25` の card。`UserPlus` + 「〈名前〉さんのカルテに追加/反映しますか？」、主アクション `bg-wine-deep`、副 = 「あとで」。完了時は `bg-success/10 text-success` の pill。画像付きメッセージでは `Sparkles` の「スクショから反映」(主) + 「メモ追加」(副 = gold hairline) を出し分け
+- **スクショ抽出モーダル** (`ChatKarteExtractModal`): 既存 `/api/extract-memo` (vision) + `applyMemoUpdateAction` を再利用。`rounded-card bg-pearl shadow-warm`、項目チェックボックスは選択時 `bg-champagne-soft/40 border-gold/40`、反映は `bg-wine-deep`
+- **顧客ピンバー** (`PinBar`, 機構C): ヘッダー直下の `bg-champagne-soft/40 border-gold/20` バー。ピン中は顧客チップ + 「カルテ」pill (`border-gold/40 text-wine-deep`) + 解除`X`。未ピン時は `UserPlus` の控えめな「この相談を顧客に紐づける」リンク → 検索ピッカー。ピン状態は localStorage (`chat-room-pin-store`) に保持し、以後の投稿を自動でその顧客へひも付け
+- 画像は Supabase Storage (private `team-chat` バケット) に保存し署名 URL で表示。未設定環境では inline data URL にフォールバック
+
 ---
 
 ## 5. ヒーローの内容ルール (案 A 基準)

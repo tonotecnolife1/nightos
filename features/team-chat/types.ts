@@ -27,6 +27,18 @@ export interface ChatMessagePreview {
   sent_at: string;
 }
 
+/** An image attached to a chat message (LINE screenshot, photo, etc.). */
+export interface ChatAttachment {
+  /** Signed/display URL. In mock mode this can be an inline data URL. */
+  url: string;
+  /** Storage path (private bucket); the server re-signs `url` from this on read. */
+  path?: string | null;
+  /** MIME type, e.g. "image/png". */
+  mime: string;
+  width?: number | null;
+  height?: number | null;
+}
+
 export interface ChatMessage {
   id: string;
   room_id: string;
@@ -34,6 +46,10 @@ export interface ChatMessage {
   sender_name: string;
   sender_role?: ClubRole;
   content: string;
+  /** Image attachments (shared LINE screenshots etc.). */
+  attachments?: ChatAttachment[];
+  /** Customer this message is about, for 逆カルテ linkage. */
+  customer_id?: string | null;
   /** If this message is a reply in a thread, the parent message ID */
   thread_parent_id: string | null;
   /** Number of replies if this is a thread parent */
