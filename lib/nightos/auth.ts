@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import type { Cast, CastUserRole, Customer } from "@/types/nightos";
 import {
@@ -33,7 +34,7 @@ export interface AuthSession {
  * In mock mode, reads from a cookie `nightos.mock-cast-id` so the
  * role selector can switch between personas without real auth.
  */
-export async function getCurrentCast(): Promise<Cast | null> {
+export const getCurrentCast = cache(async (): Promise<Cast | null> => {
   if (!isSupabaseConfigured()) {
     return getMockCast();
   }
@@ -52,29 +53,29 @@ export async function getCurrentCast(): Promise<Cast | null> {
   } catch {
     return getMockCast();
   }
-}
+});
 
 /**
  * Get the current cast ID for queries. Returns the authenticated
  * cast's ID, or falls back to the hardcoded mock ID.
  */
-export async function getCurrentCastId(): Promise<string> {
+export const getCurrentCastId = cache(async (): Promise<string> => {
   const cast = await getCurrentCast();
   return cast?.id ?? CURRENT_CAST_ID;
-}
+});
 
 /**
  * For manager views: get the cast ID of the current user if they
  * have a management role (mama/oneesan), otherwise fall back to
  * CURRENT_MAMA_ID.
  */
-export async function getCurrentManagerId(): Promise<string> {
+export const getCurrentManagerId = cache(async (): Promise<string> => {
   const cast = await getCurrentCast();
   if (cast && (cast.club_role === "mama" || cast.club_role === "oneesan")) {
     return cast.id;
   }
   return CURRENT_MAMA_ID;
-}
+});
 
 /**
  * Check if the current session is authenticated (real or mock).
@@ -110,7 +111,7 @@ function getMockCast(): Cast | null {
  * Returns the customers row owned by the signed-in user (migration 008).
  * Used by /customer/* layouts to enforce role and to scope queries.
  */
-export async function getCurrentCustomer(): Promise<Customer | null> {
+export const getCurrentCustomer = cache(async (): Promise<Customer | null> => {
   if (!isSupabaseConfigured()) return null;
   try {
     const { createServerSupabaseClient } = await import("@/lib/supabase/server");
@@ -125,7 +126,7 @@ export async function getCurrentCustomer(): Promise<Customer | null> {
   } catch {
     return null;
   }
-}
+});
 
 /**
  * Resolve the account-level role of the signed-in user.
@@ -137,7 +138,7 @@ export async function getCurrentCustomer(): Promise<Customer | null> {
  *      treated as "cast"
  *   4. null (not signed in / no profile yet)
  */
-export async function getCurrentRole(): Promise<AccountRole | null> {
+export const getCurrentRole = cache(async (): Promise<AccountRole | null> => {
   const cast = await getCurrentCast();
   if (cast) return (cast.user_role ?? "cast") as CastUserRole;
 
@@ -145,13 +146,15 @@ export async function getCurrentRole(): Promise<AccountRole | null> {
   if (customer) return "customer";
 
   return null;
-}
+});
 
 /**
  * Resolve the venue type for the current cast's store.
  * Falls back to "club" for mock sessions and unauthenticated users.
  */
-export async function getCurrentVenueType(): Promise<"club" | "cabaret"> {
+export const getCurrentVenueType = cache(async (): Promise<
+  "club" | "cabaret"
+> => {
   const cast = await getCurrentCast();
 
   // Real, authenticated account: the store's venue_type is authoritative.
@@ -172,7 +175,7 @@ export async function getCurrentVenueType(): Promise<"club" | "cabaret"> {
   if (override === "club" || override === "cabaret") return override;
 
   return "club";
-}
+});
 
 /** Where the role is supposed to land after sign-in. */
 export function homePathForRole(role: AccountRole): string {
