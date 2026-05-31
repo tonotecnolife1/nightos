@@ -1,9 +1,26 @@
 import { describe, it, expect } from "vitest";
-import { mergeCastPlans } from "@/lib/nightos/schedule-sync";
+import {
+  mergeCastDouhans,
+  mergeCastPlans,
+} from "@/lib/nightos/schedule-sync";
 import type { PlanEntry } from "@/lib/nightos/plan-store";
+import type { Douhan } from "@/types/nightos";
 
 function plan(id: string, castId: string, date = "2026-06-01"): PlanEntry {
   return { id, castId, date, title: `plan ${id}` };
+}
+
+function douhan(id: string, castId: string): Douhan {
+  return {
+    id,
+    cast_id: castId,
+    customer_id: "cust1",
+    store_id: "store1",
+    date: "2026-06-01",
+    status: "scheduled",
+    note: null,
+    created_at: "2026-06-01",
+  };
 }
 
 describe("mergeCastPlans", () => {
@@ -37,5 +54,29 @@ describe("mergeCastPlans", () => {
     const merged = mergeCastPlans(existing, serverPlans, undefined);
 
     expect(merged).toEqual(serverPlans);
+  });
+});
+
+describe("mergeCastDouhans", () => {
+  it("replaces only the signed-in cast's douhans, keeping other casts", () => {
+    const existing = [
+      douhan("a", "cast1"),
+      douhan("b", "cast1"),
+      douhan("z", "cast2"),
+    ];
+    const server = [douhan("c", "cast1")];
+
+    const merged = mergeCastDouhans(existing, server, "cast1");
+
+    expect(merged.map((d) => d.id).sort()).toEqual(["c", "z"]);
+    expect(merged.find((d) => d.id === "z")?.cast_id).toBe("cast2");
+  });
+
+  it("clears the cast's douhans when the server has none", () => {
+    const existing = [douhan("a", "cast1"), douhan("z", "cast2")];
+
+    const merged = mergeCastDouhans(existing, [], "cast1");
+
+    expect(merged.map((d) => d.id)).toEqual(["z"]);
   });
 });

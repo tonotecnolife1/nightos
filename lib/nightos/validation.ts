@@ -120,6 +120,20 @@ const planSyncEntry = z.object({
   note: scheduleNote.optional(),
 });
 
+const douhanSyncEntry = z.object({
+  id: z.string().min(1).max(64),
+  cast_id: castId,
+  customer_id: customerId,
+  store_id: z.string().min(1).max(64),
+  date: ymd,
+  status: z.enum(["scheduled", "completed", "cancelled"]),
+  note: scheduleNote.nullish(),
+  time: hhmm.nullish(),
+  cancellation_reason: scheduleNote.nullish(),
+  cancelled_at: z.string().max(40).nullish(),
+  created_at: z.string().max(40).optional(),
+});
+
 /**
  * Body for PUT /api/cast-schedule. Each array, when present, fully
  * replaces the signed-in cast's rows in that table. A 31-day month with
@@ -129,6 +143,7 @@ const planSyncEntry = z.object({
 export const castScheduleSyncSchema = z.object({
   shifts: z.array(shiftSyncEntry).max(400).optional(),
   plans: z.array(planSyncEntry).max(400).optional(),
+  douhans: z.array(douhanSyncEntry).max(400).optional(),
 });
 
 // Signup / onboarding ─────────────────────────────────────────────

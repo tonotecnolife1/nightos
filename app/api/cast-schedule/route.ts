@@ -39,20 +39,24 @@ export async function GET() {
   }
 
   const supabase = createServerSupabaseClient();
-  const [shiftsRes, plansRes] = await Promise.all([
+  const [shiftsRes, plansRes, douhansRes] = await Promise.all([
     supabase
       .from("cast_shifts")
       .select("*")
       .eq("cast_id", cast.id)
       .order("date"),
     supabase.from("cast_plans").select("*").eq("cast_id", cast.id).order("date"),
+    supabase.from("douhans").select("*").eq("cast_id", cast.id).order("date"),
   ]);
 
-  if (shiftsRes.error || plansRes.error) {
+  if (shiftsRes.error || plansRes.error || douhansRes.error) {
     return NextResponse.json(
       {
         error: "read_failed",
-        detail: shiftsRes.error?.message ?? plansRes.error?.message,
+        detail:
+          shiftsRes.error?.message ??
+          plansRes.error?.message ??
+          douhansRes.error?.message,
       },
       { status: 500 },
     );
@@ -63,6 +67,7 @@ export async function GET() {
     castId: cast.id,
     shifts: (shiftsRes.data ?? []).map(rowToShift),
     plans: (plansRes.data ?? []).map(rowToPlan),
+    douhans: (douhansRes.data ?? []).map(rowToDouhan),
   });
 }
 
@@ -124,6 +129,38 @@ export async function PUT(req: Request) {
     }
   }
 
+  // Douhans: full replace for this cast. Only the signed-in cast's own
+  // douhans are touched — entries carrying another cast_id are ignored so
+  // a stale mixed cache can't write into someone else's data.
+  if (parsed.douhans) {
+    const mine = parsed.douhans.filter((d) => d.cast_id === cast.id);
+    const { error: delErr } = await supabase
+      .from("douhans")
+      .delete()
+      .eq("cast_id", cast.id);
+    if (delErr) return writeError(delErr.message);
+
+    if (mine.length > 0) {
+      const rows = mine.map((d) => ({
+        id: d.id,
+        cast_id: cast.id,
+        customer_id: d.customer_id,
+        // Force the cast's real store — the client caches a mock
+        // CURRENT_STORE_ID, but RLS requires store_id = the cast's store.
+        store_id: cast.store_id,
+        date: d.date,
+        status: d.status,
+        note: d.note ?? null,
+        time: d.time ?? null,
+        cancellation_reason: d.cancellation_reason ?? null,
+        cancelled_at: d.cancelled_at ?? null,
+        created_at: d.created_at ?? now,
+      }));
+      const { error: insErr } = await supabase.from("douhans").insert(rows);
+      if (insErr) return writeError(insErr.message);
+    }
+  }
+
   return NextResponse.json({ authenticated: true, ok: true });
 }
 
@@ -150,5 +187,21 @@ function rowToPlan(row: any) {
     time: row.time ?? undefined,
     title: row.title as string,
     note: row.note ?? undefined,
+  };
+}
+
+function rowToDouhan(row: any) {
+  return {
+    id: row.id as string,
+    cast_id: row.cast_id as string,
+    customer_id: row.customer_id as string,
+    store_id: row.store_id as string,
+    date: row.date as string,
+    status: row.status as "scheduled" | "completed" | "cancelled",
+    note: row.note ?? null,
+    time: row.time ?? null,
+    cancellation_reason: row.cancellation_reason ?? null,
+    cancelled_at: row.cancelled_at ?? null,
+    created_at: row.created_at ?? row.date,
   };
 }

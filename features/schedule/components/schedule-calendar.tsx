@@ -68,6 +68,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
       if (applied && !cancelled) {
         setSchedule(loadSchedule());
         setPlans(loadPlansForCast(castId));
+        setDouhans(loadAllDouhans().filter((d) => d.cast_id === castId));
       }
     });
     return () => {
