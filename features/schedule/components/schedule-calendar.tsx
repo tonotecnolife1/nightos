@@ -16,17 +16,15 @@ import {
   upsertPlan,
   deletePlan,
 } from "@/lib/nightos/plan-store";
-import { loadAllDouhans, upsertDouhan } from "@/lib/nightos/douhan-store";
+import {
+  loadAllDouhans,
+  upsertDouhan,
+  deleteDouhan,
+} from "@/lib/nightos/douhan-store";
 import { CURRENT_STORE_ID } from "@/lib/nightos/constants";
 import type { Customer, Douhan } from "@/types/nightos";
 
 const DOW = ["日", "月", "火", "水", "木", "金", "土"];
-
-const STATUS_STYLE: Record<ShiftStatus, { bg: string; text: string; label: string }> = {
-  working: { bg: "bg-wine-deep", text: "text-pearl-light", label: "出勤" },
-  off: { bg: "bg-pearl-soft border border-ink/[0.08]", text: "text-ink-mute", label: "公休" },
-  unknown: { bg: "", text: "", label: "" },
-};
 
 /** 予定追加・編集フォームが返すペイロード */
 interface PlanInput {
@@ -57,7 +55,6 @@ export function ScheduleCalendar({ castId, customers }: Props) {
   const [douhans, setDouhans] = useState<Douhan[]>([]);
   const [plans, setPlans] = useState<PlanEntry[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
-  const [editEntry, setEditEntry] = useState<ShiftEntry | null>(null);
 
   useEffect(() => {
     setSchedule(loadSchedule());
@@ -85,7 +82,6 @@ export function ScheduleCalendar({ castId, customers }: Props) {
       toYMD(new Date(viewYear, viewMonth, i + 1)),
     ),
   ];
-  // Pad to complete weeks
   while (cells.length % 7 !== 0) cells.push(null);
 
   const shiftMap = new Map(schedule.map((e) => [e.date, e]));
@@ -96,44 +92,34 @@ export function ScheduleCalendar({ castId, customers }: Props) {
     douhanMap.set(d.date, existing);
   }
   const planMap = new Map<string, PlanEntry[]>();
-  const sortedPlans = [...plans].sort((a, b) =>
-    (a.time ?? "99:99").localeCompare(b.time ?? "99:99"),
-  );
-  for (const p of sortedPlans) {
+  for (const p of plans) {
     const existing = planMap.get(p.date) ?? [];
     existing.push(p);
     planMap.set(p.date, existing);
   }
 
-  const handleCellTap = (date: string) => {
-    const existing = shiftMap.get(date);
-    setSelected(date);
-    setEditEntry(existing ?? { date, status: "unknown" });
-  };
-
-  const handleSave = (entry: ShiftEntry) => {
+  const handleSaveShift = (entry: ShiftEntry) => {
     if (entry.status === "unknown") {
       removeShift(entry.date);
     } else {
       upsertShift(entry);
     }
     refresh();
-    setSelected(null);
-    setEditEntry(null);
   };
 
-  const handleCancel = () => {
-    setSelected(null);
-    setEditEntry(null);
-  };
-
-  const handleAddDouhan = (date: string, customerId: string, note: string) => {
+  const handleAddDouhan = (
+    date: string,
+    customerId: string,
+    note: string,
+    time?: string,
+  ) => {
     const entry: Douhan = {
       id: `d_${Date.now()}`,
       cast_id: castId,
       customer_id: customerId,
       store_id: CURRENT_STORE_ID,
       date,
+      time: time || null,
       note: note || null,
       status: "scheduled",
       created_at: new Date().toISOString(),
@@ -141,8 +127,15 @@ export function ScheduleCalendar({ castId, customers }: Props) {
     upsertDouhan(entry);
     refreshDouhans();
   };
+  const handleUpdateDouhan = (d: Douhan) => {
+    upsertDouhan(d);
+    refreshDouhans();
+  };
+  const handleDeleteDouhan = (id: string) => {
+    deleteDouhan(id);
+    refreshDouhans();
+  };
 
-  // ── Plan CRUD (immediate persistence) ──
   const handleAddPlan = (date: string, data: PlanInput) => {
     upsertPlan({ castId, date, ...data });
     refreshPlans();
@@ -224,7 +217,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
             <button
               key={date}
               type="button"
-              onClick={() => handleCellTap(date)}
+              onClick={() => setSelected(date)}
               className={cn(
                 "relative aspect-square flex flex-col items-center justify-center rounded-xl text-[13px] font-medium transition-all active:scale-95",
                 isWorking
@@ -280,16 +273,19 @@ export function ScheduleCalendar({ castId, customers }: Props) {
         </span>
       </div>
 
-      {/* Edit sheet */}
-      {selected && editEntry && (
-        <ShiftEditSheet
-          entry={editEntry}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          customers={customers}
+      {/* Day sheet */}
+      {selected && (
+        <DaySheet
+          date={selected}
+          shift={shiftMap.get(selected) ?? { date: selected, status: "unknown" }}
           douhans={douhanMap.get(selected) ?? []}
-          onAddDouhan={handleAddDouhan}
           plans={planMap.get(selected) ?? []}
+          customers={customers}
+          onCancel={() => setSelected(null)}
+          onSaveShift={handleSaveShift}
+          onAddDouhan={(cid, note, time) => handleAddDouhan(selected, cid, note, time)}
+          onUpdateDouhan={handleUpdateDouhan}
+          onDeleteDouhan={handleDeleteDouhan}
           onAddPlan={(data) => handleAddPlan(selected, data)}
           onUpdatePlan={(id, data) => handleUpdatePlan(id, selected, data)}
           onDeletePlan={handleDeletePlan}
@@ -299,76 +295,184 @@ export function ScheduleCalendar({ castId, customers }: Props) {
   );
 }
 
-type EditMode = "shift" | "douhan" | "plan";
+// ───────────────────────── Day sheet ─────────────────────────
 
-function ShiftEditSheet({
-  entry,
-  onSave,
-  onCancel,
-  customers,
+type Screen = "timeline" | "picker" | "form";
+type FormKind = "shift" | "douhan" | "plan";
+
+/** タイムライン1行ぶんの正規化データ */
+type DayItem =
+  | { kind: "shift"; sort: string; time?: string; title: string; sub?: string }
+  | { kind: "douhan"; sort: string; time?: string; title: string; sub?: string; ref: Douhan }
+  | { kind: "plan"; sort: string; time?: string; title: string; sub?: string; ref: PlanEntry };
+
+const KIND_META: Record<FormKind, { label: string; chip: string }> = {
+  shift: { label: "出勤", chip: "bg-wine-deep text-pearl-light" },
+  douhan: { label: "同伴", chip: "bg-gold/25 text-wine-deep" },
+  plan: { label: "その他", chip: "bg-pearl-soft text-ink-soft" },
+};
+
+function DaySheet({
+  date,
+  shift,
   douhans,
-  onAddDouhan,
   plans,
+  customers,
+  onCancel,
+  onSaveShift,
+  onAddDouhan,
+  onUpdateDouhan,
+  onDeleteDouhan,
   onAddPlan,
   onUpdatePlan,
   onDeletePlan,
 }: {
-  entry: ShiftEntry;
-  onSave: (e: ShiftEntry) => void;
-  onCancel: () => void;
-  customers: Customer[];
+  date: string;
+  shift: ShiftEntry;
   douhans: Douhan[];
-  onAddDouhan: (date: string, customerId: string, note: string) => void;
   plans: PlanEntry[];
+  customers: Customer[];
+  onCancel: () => void;
+  onSaveShift: (e: ShiftEntry) => void;
+  onAddDouhan: (customerId: string, note: string, time?: string) => void;
+  onUpdateDouhan: (d: Douhan) => void;
+  onDeleteDouhan: (id: string) => void;
   onAddPlan: (data: PlanInput) => void;
   onUpdatePlan: (id: string, data: PlanInput) => void;
   onDeletePlan: (id: string) => void;
 }) {
-  const [mode, setMode] = useState<EditMode>("shift");
-  const [status, setStatus] = useState<ShiftStatus>(entry.status === "unknown" ? "working" : entry.status);
-  const [startTime, setStartTime] = useState(entry.startTime ?? "20:00");
-  const [endTime, setEndTime] = useState(entry.endTime ?? "01:00");
-  const [note, setNote] = useState(entry.note ?? "");
+  const [screen, setScreen] = useState<Screen>("timeline");
+  const [formKind, setFormKind] = useState<FormKind>("shift");
 
-  // 同伴登録フォーム用
+  // shift form
+  const [status, setStatus] = useState<ShiftStatus>("working");
+  const [startTime, setStartTime] = useState("20:00");
+  const [endTime, setEndTime] = useState("01:00");
+  const [shiftNote, setShiftNote] = useState("");
+
+  // douhan form
+  const [editingDouhanId, setEditingDouhanId] = useState<string | null>(null);
   const [douhanCustomerId, setDouhanCustomerId] = useState("");
+  const [douhanTime, setDouhanTime] = useState("");
   const [douhanNote, setDouhanNote] = useState("");
-  const canRegisterDouhan = Boolean(douhanCustomerId);
 
-  // 予定フォーム用
-  const [showPlanForm, setShowPlanForm] = useState(false);
+  // plan form
   const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
   const [planTime, setPlanTime] = useState("");
   const [planTitle, setPlanTitle] = useState("");
   const [planNote, setPlanNote] = useState("");
 
-  const dateObj = parseYMD(entry.date);
+  const dateObj = parseYMD(date);
   const label = `${dateObj.getMonth() + 1}/${dateObj.getDate()}（${DOW[dateObj.getDay()]}）`;
 
-  const handleRegisterDouhan = () => {
-    if (!canRegisterDouhan) return;
-    onAddDouhan(entry.date, douhanCustomerId, douhanNote);
-    setDouhanCustomerId("");
-    setDouhanNote("");
+  // Build the time-ordered timeline of confirmed items
+  const items: DayItem[] = [];
+  if (shift.status === "working") {
+    const range = shift.startTime
+      ? `${shift.startTime}${shift.endTime ? `〜${shift.endTime}` : ""}`
+      : undefined;
+    items.push({
+      kind: "shift",
+      sort: shift.startTime ?? "20:00",
+      time: shift.startTime,
+      title: "出勤",
+      sub: [range, shift.note].filter(Boolean).join(" · ") || undefined,
+    });
+  }
+  for (const d of douhans) {
+    const cust = customers.find((c) => c.id === d.customer_id);
+    items.push({
+      kind: "douhan",
+      sort: d.time ?? "18:00",
+      time: d.time ?? undefined,
+      title: `${cust?.name ?? "不明"}さま`,
+      sub: d.note ?? undefined,
+      ref: d,
+    });
+  }
+  for (const p of plans) {
+    items.push({
+      kind: "plan",
+      sort: p.time ?? "99:99",
+      time: p.time,
+      title: p.title,
+      sub: p.note,
+      ref: p,
+    });
+  }
+  items.sort((a, b) => a.sort.localeCompare(b.sort));
+
+  // ── form openers ──
+  const openPicker = () => setScreen("picker");
+
+  const openShiftForm = () => {
+    setFormKind("shift");
+    setStatus(shift.status === "unknown" ? "working" : shift.status);
+    setStartTime(shift.startTime ?? "20:00");
+    setEndTime(shift.endTime ?? "01:00");
+    setShiftNote(shift.note ?? "");
+    setScreen("form");
+  };
+  const openDouhanForm = (d?: Douhan) => {
+    setFormKind("douhan");
+    setEditingDouhanId(d?.id ?? null);
+    setDouhanCustomerId(d?.customer_id ?? "");
+    setDouhanTime(d?.time ?? "");
+    setDouhanNote(d?.note ?? "");
+    setScreen("form");
+  };
+  const openPlanForm = (p?: PlanEntry) => {
+    setFormKind("plan");
+    setEditingPlanId(p?.id ?? null);
+    setPlanTime(p?.time ?? "");
+    setPlanTitle(p?.title ?? "");
+    setPlanNote(p?.note ?? "");
+    setScreen("form");
   };
 
-  const startAddPlan = () => {
-    setEditingPlanId(null);
-    setPlanTime("");
-    setPlanTitle("");
-    setPlanNote("");
-    setShowPlanForm(true);
+  const pickKind = (kind: FormKind) => {
+    if (kind === "shift") openShiftForm();
+    else if (kind === "douhan") openDouhanForm();
+    else openPlanForm();
   };
-  const startEditPlan = (p: PlanEntry) => {
-    setEditingPlanId(p.id);
-    setPlanTime(p.time ?? "");
-    setPlanTitle(p.title);
-    setPlanNote(p.note ?? "");
-    setShowPlanForm(true);
+
+  const editItem = (it: DayItem) => {
+    if (it.kind === "shift") openShiftForm();
+    else if (it.kind === "douhan") openDouhanForm(it.ref);
+    else openPlanForm(it.ref);
   };
-  const cancelPlanForm = () => {
-    setShowPlanForm(false);
-    setEditingPlanId(null);
+
+  // ── form submitters (return to timeline) ──
+  const submitShift = () => {
+    onSaveShift({
+      date,
+      status,
+      startTime: status === "working" ? startTime : undefined,
+      endTime: status === "working" ? endTime : undefined,
+      note: shiftNote || undefined,
+    });
+    setScreen("timeline");
+  };
+  const deleteShift = () => {
+    onSaveShift({ date, status: "unknown" });
+    setScreen("timeline");
+  };
+  const submitDouhan = () => {
+    if (!douhanCustomerId) return;
+    if (editingDouhanId) {
+      const original = douhans.find((d) => d.id === editingDouhanId);
+      if (original) {
+        onUpdateDouhan({
+          ...original,
+          customer_id: douhanCustomerId,
+          time: douhanTime || null,
+          note: douhanNote || null,
+        });
+      }
+    } else {
+      onAddDouhan(douhanCustomerId, douhanNote, douhanTime || undefined);
+    }
+    setScreen("timeline");
   };
   const submitPlan = () => {
     const title = planTitle.trim();
@@ -380,46 +484,125 @@ function ShiftEditSheet({
     };
     if (editingPlanId) onUpdatePlan(editingPlanId, data);
     else onAddPlan(data);
-    setShowPlanForm(false);
-    setEditingPlanId(null);
+    setScreen("timeline");
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-sm animate-fade-in">
       <div className="w-full max-w-[520px] max-h-[88vh] overflow-y-auto bg-pearl rounded-t-3xl p-5 pb-safe space-y-4 shadow-warm animate-slide-up">
+        {/* Header */}
         <div className="flex items-center justify-between">
-          <h3 className="font-serif text-[18px] leading-tight font-medium tracking-[0.02em] text-ink">{label}</h3>
+          <div className="flex items-center gap-2">
+            {screen !== "timeline" && (
+              <button
+                type="button"
+                onClick={() => setScreen("timeline")}
+                aria-label="戻る"
+                className="w-8 h-8 -ml-1 rounded-full flex items-center justify-center text-ink-soft hover:bg-pearl-soft"
+              >
+                <ChevronLeft size={18} />
+              </button>
+            )}
+            <h3 className="font-serif text-[18px] leading-tight font-medium tracking-[0.02em] text-ink">
+              {label}
+            </h3>
+          </div>
           <button type="button" onClick={onCancel} className="w-8 h-8 rounded-full bg-pearl-soft flex items-center justify-center text-ink-soft">
             <X size={16} />
           </button>
         </div>
 
-        {/* Mode toggle: シフト / 同伴 / 予定 */}
-        <div className="flex gap-1 p-1 rounded-2xl bg-pearl-soft">
-          {([
-            { key: "shift" as EditMode, label: "シフト" },
-            { key: "douhan" as EditMode, label: "同伴" },
-            { key: "plan" as EditMode, label: "予定" },
-          ]).map((m) => (
-            <button
-              key={m.key}
-              type="button"
-              onClick={() => setMode(m.key)}
-              className={cn(
-                "flex-1 h-9 rounded-xl text-body-sm font-medium transition-all",
-                mode === m.key
-                  ? "bg-wine-deep text-pearl-light shadow-soft"
-                  : "text-ink-soft hover:text-ink",
-              )}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-
-        {mode === "shift" ? (
+        {screen === "timeline" && (
           <>
-            {/* Status toggle */}
+            {shift.status === "off" && (
+              <button
+                type="button"
+                onClick={openShiftForm}
+                className="w-full flex items-center justify-between rounded-2xl bg-pearl-soft border border-ink/[0.08] px-3 py-2.5"
+              >
+                <span className="text-body-sm font-medium text-ink-soft">公休</span>
+                <Pencil size={14} className="text-ink-mute" />
+              </button>
+            )}
+
+            {items.length === 0 && shift.status !== "off" ? (
+              <p className="text-body-sm text-ink-mute py-2">
+                確定した予定はありません。下のボタンから登録できます。
+              </p>
+            ) : (
+              <div className="space-y-1.5">
+                {items.map((it, i) => {
+                  const meta = KIND_META[it.kind];
+                  return (
+                    <button
+                      key={`${it.kind}-${i}`}
+                      type="button"
+                      onClick={() => editItem(it)}
+                      className="w-full flex items-stretch gap-3 text-left"
+                    >
+                      {/* time rail */}
+                      <div className="w-11 shrink-0 pt-2 text-right font-display tabular-nums text-[13px] text-wine-deep">
+                        {it.time ?? "—"}
+                      </div>
+                      <div className="flex flex-col items-center pt-2.5">
+                        <span className="w-2 h-2 rounded-full bg-wine-deep" />
+                        {i < items.length - 1 && (
+                          <span className="flex-1 w-px bg-ink/[0.12] mt-1" />
+                        )}
+                      </div>
+                      {/* content */}
+                      <div className="flex-1 min-w-0 rounded-2xl bg-pearl-warm border border-ink/[0.06] px-3 py-2 mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className={cn("px-1.5 py-0.5 rounded-md text-[10px] font-medium", meta.chip)}>
+                            {meta.label}
+                          </span>
+                          <span className="text-body-sm text-ink truncate">{it.title}</span>
+                          <Pencil size={12} className="ml-auto shrink-0 text-ink-mute" />
+                        </div>
+                        {it.sub && (
+                          <div className="text-[11px] text-ink-mute truncate mt-0.5">{it.sub}</div>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={openPicker}
+              className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md flex items-center justify-center gap-1.5"
+            >
+              <Plus size={16} strokeWidth={2} /> 新規で予定を登録
+            </button>
+          </>
+        )}
+
+        {screen === "picker" && (
+          <div className="space-y-2">
+            <p className="text-label-sm text-ink-soft">登録する予定の種類</p>
+            {(["shift", "douhan", "plan"] as FormKind[]).map((k) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => pickKind(k)}
+                className="w-full flex items-center gap-3 rounded-2xl bg-pearl-warm border border-ink/[0.06] px-4 h-14 hover:border-wine-deep/30 transition-all"
+              >
+                <span className={cn("px-2 py-1 rounded-md text-[11px] font-medium", KIND_META[k].chip)}>
+                  {KIND_META[k].label}
+                </span>
+                <span className="text-body-md text-ink">
+                  {k === "shift" ? "出勤・公休を登録" : k === "douhan" ? "同伴を登録" : "その他の予定を登録"}
+                </span>
+                <ChevronRight size={18} className="ml-auto text-ink-mute" />
+              </button>
+            ))}
+          </div>
+        )}
+
+        {screen === "form" && formKind === "shift" && (
+          <>
             <div className="flex gap-2">
               {(["working", "off"] as ShiftStatus[]).map((s) => (
                 <button
@@ -435,19 +618,11 @@ function ShiftEditSheet({
                       : "bg-pearl-warm border-ink/[0.06] text-ink-soft hover:border-wine-deep/30",
                   )}
                 >
-                  {STATUS_STYLE[s].label}
+                  {s === "working" ? "出勤" : "公休"}
                 </button>
               ))}
-              <button
-                type="button"
-                onClick={() => onSave({ ...entry, status: "unknown" })}
-                className="px-3 h-10 rounded-2xl border border-ink/[0.06] text-body-sm text-ink-mute hover:bg-pearl-soft"
-              >
-                削除
-              </button>
             </div>
 
-            {/* Time pickers (working only) */}
             {status === "working" && (
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
@@ -473,60 +648,41 @@ function ShiftEditSheet({
               </div>
             )}
 
-            {/* Note */}
             <div className="space-y-1">
               <label className="text-label-sm text-ink-soft">メモ（任意）</label>
               <input
                 type="text"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
+                value={shiftNote}
+                onChange={(e) => setShiftNote(e.target.value)}
                 placeholder="例: 早上がり予定"
                 className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink placeholder:text-ink-mute"
                 style={{ fontSize: "16px" }}
               />
             </div>
 
-            {/* Douhan on this day */}
-            {douhans.length > 0 && (
-              <div className="rounded-2xl bg-champagne-soft/60 px-3 py-2.5 space-y-1">
-                <p className="text-[11px] font-medium text-ink-soft">この日の同伴</p>
-                {douhans.map((d) => {
-                  const cust = customers.find((c) => c.id === d.customer_id);
-                  return (
-                    <div key={d.id} className="text-body-sm text-ink">
-                      {cust?.name ?? "不明"} — {d.note ?? "（メモなし）"}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={() => onSave({ date: entry.date, status, startTime: status === "working" ? startTime : undefined, endTime: status === "working" ? endTime : undefined, note: note || undefined })}
-              className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md"
-            >
-              保存
-            </button>
+            <div className="flex gap-2">
+              {shift.status !== "unknown" && (
+                <button
+                  type="button"
+                  onClick={deleteShift}
+                  className="px-4 h-12 rounded-2xl border border-ink/[0.06] text-body-sm text-ink-mute hover:bg-pearl-soft"
+                >
+                  削除
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={submitShift}
+                className="flex-1 h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md"
+              >
+                保存
+              </button>
+            </div>
           </>
-        ) : mode === "douhan" ? (
-          <>
-            {/* 既存の同伴 */}
-            {douhans.length > 0 && (
-              <div className="rounded-2xl bg-champagne-soft/60 px-3 py-2.5 space-y-1">
-                <p className="text-[11px] font-medium text-ink-soft">この日の同伴</p>
-                {douhans.map((d) => {
-                  const cust = customers.find((c) => c.id === d.customer_id);
-                  return (
-                    <div key={d.id} className="text-body-sm text-ink">
-                      {cust?.name ?? "不明"} — {d.note ?? "（メモなし）"}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+        )}
 
-            {/* 顧客選択（必須） */}
+        {screen === "form" && formKind === "douhan" && (
+          <>
             <div className="space-y-1">
               <label className="text-label-sm text-ink-soft">お客様（必須）</label>
               <select
@@ -546,127 +702,115 @@ function ShiftEditSheet({
               </select>
             </div>
 
-            {/* メモ（任意） */}
+            <div className="grid grid-cols-[120px_1fr] gap-2">
+              <div className="space-y-1">
+                <label className="text-label-sm text-ink-soft">時間（任意）</label>
+                <input
+                  type="time"
+                  value={douhanTime}
+                  onChange={(e) => setDouhanTime(e.target.value)}
+                  className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
+                  style={{ fontSize: "16px" }}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-label-sm text-ink-soft">場所やメモ（任意）</label>
+                <input
+                  type="text"
+                  value={douhanNote}
+                  onChange={(e) => setDouhanNote(e.target.value)}
+                  placeholder="例: 〇〇で待ち合わせ"
+                  className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink placeholder:text-ink-mute"
+                  style={{ fontSize: "16px" }}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              {editingDouhanId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onDeleteDouhan(editingDouhanId);
+                    setScreen("timeline");
+                  }}
+                  className="px-4 h-12 rounded-2xl border border-ink/[0.06] text-body-sm text-ink-mute hover:bg-pearl-soft"
+                >
+                  削除
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={submitDouhan}
+                disabled={!douhanCustomerId}
+                className="flex-1 h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md disabled:opacity-40"
+              >
+                {editingDouhanId ? "更新" : "同伴を登録"}
+              </button>
+            </div>
+          </>
+        )}
+
+        {screen === "form" && formKind === "plan" && (
+          <>
+            <div className="grid grid-cols-[120px_1fr] gap-2">
+              <div className="space-y-1">
+                <label className="text-label-sm text-ink-soft">時間（任意）</label>
+                <input
+                  type="time"
+                  value={planTime}
+                  onChange={(e) => setPlanTime(e.target.value)}
+                  className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
+                  style={{ fontSize: "16px" }}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-label-sm text-ink-soft">予定（必須）</label>
+                <input
+                  type="text"
+                  value={planTitle}
+                  onChange={(e) => setPlanTitle(e.target.value)}
+                  placeholder="例: アフター / 私用 / 美容院"
+                  className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink placeholder:text-ink-mute"
+                  style={{ fontSize: "16px" }}
+                />
+              </div>
+            </div>
+
             <div className="space-y-1">
-              <label className="text-label-sm text-ink-soft">場所やメモ（任意）</label>
+              <label className="text-label-sm text-ink-soft">メモ（任意）</label>
               <input
                 type="text"
-                value={douhanNote}
-                onChange={(e) => setDouhanNote(e.target.value)}
-                placeholder="例: 〇〇で待ち合わせ"
+                value={planNote}
+                onChange={(e) => setPlanNote(e.target.value)}
+                placeholder="補足があれば"
                 className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink placeholder:text-ink-mute"
                 style={{ fontSize: "16px" }}
               />
             </div>
 
-            <button
-              type="button"
-              onClick={handleRegisterDouhan}
-              disabled={!canRegisterDouhan}
-              className={cn(
-                "w-full h-12 rounded-2xl font-semibold tracking-[0.04em] text-body-md transition-all",
-                canRegisterDouhan
-                  ? "bg-wine-deep text-pearl-light shadow-luxe active:scale-[0.98]"
-                  : "bg-pearl-soft text-ink-mute cursor-not-allowed",
+            <div className="flex gap-2">
+              {editingPlanId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onDeletePlan(editingPlanId);
+                    setScreen("timeline");
+                  }}
+                  className="px-4 h-12 rounded-2xl border border-ink/[0.06] text-body-sm text-ink-mute hover:bg-pearl-soft"
+                >
+                  削除
+                </button>
               )}
-            >
-              同伴を登録
-            </button>
-          </>
-        ) : (
-          <>
-            {/* ── 予定 (複数登録可) ── */}
-            {plans.length === 0 && !showPlanForm && (
-              <p className="text-body-sm text-ink-mute">まだ予定はありません</p>
-            )}
-
-            {plans.map((p) => (
-              <div
-                key={p.id}
-                className="flex items-center gap-2 rounded-2xl bg-pearl-warm border border-ink/[0.06] px-3 py-2"
-              >
-                <span className="font-display tabular-nums text-[14px] text-wine-deep min-w-[46px]">
-                  {p.time ?? "終日"}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-body-sm text-ink truncate">{p.title}</div>
-                  {p.note && (
-                    <div className="text-[11px] text-ink-mute truncate">{p.note}</div>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => startEditPlan(p)}
-                  aria-label="予定を編集"
-                  className="p-1.5 rounded-full text-ink-soft hover:bg-pearl-soft"
-                >
-                  <Pencil size={14} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onDeletePlan(p.id)}
-                  aria-label="予定を削除"
-                  className="p-1.5 rounded-full text-ink-mute hover:bg-pearl-soft"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ))}
-
-            {showPlanForm ? (
-              <div className="rounded-2xl bg-champagne-soft/50 border border-gold/20 p-3 space-y-2">
-                <div className="grid grid-cols-[88px_1fr] gap-2">
-                  <input
-                    type="time"
-                    value={planTime}
-                    onChange={(e) => setPlanTime(e.target.value)}
-                    className="h-10 rounded-xl border border-ink/[0.06] bg-pearl px-2 text-body-sm text-ink"
-                    style={{ fontSize: "16px" }}
-                  />
-                  <input
-                    type="text"
-                    value={planTitle}
-                    onChange={(e) => setPlanTitle(e.target.value)}
-                    placeholder="予定（例: アフター / 私用）"
-                    className="h-10 rounded-xl border border-ink/[0.06] bg-pearl px-3 text-body-sm text-ink placeholder:text-ink-mute"
-                    style={{ fontSize: "16px" }}
-                  />
-                </div>
-                <input
-                  type="text"
-                  value={planNote}
-                  onChange={(e) => setPlanNote(e.target.value)}
-                  placeholder="メモ（任意）"
-                  className="w-full h-10 rounded-xl border border-ink/[0.06] bg-pearl px-3 text-body-sm text-ink placeholder:text-ink-mute"
-                  style={{ fontSize: "16px" }}
-                />
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={cancelPlanForm}
-                    className="flex-1 h-10 rounded-xl border border-ink/[0.06] text-body-sm text-ink-soft hover:bg-pearl-soft"
-                  >
-                    キャンセル
-                  </button>
-                  <button
-                    type="button"
-                    onClick={submitPlan}
-                    disabled={!planTitle.trim()}
-                    className="flex-1 h-10 rounded-xl bg-wine-deep text-pearl-light text-body-sm font-medium disabled:opacity-40"
-                  >
-                    {editingPlanId ? "更新" : "追加"}
-                  </button>
-                </div>
-              </div>
-            ) : (
               <button
                 type="button"
-                onClick={startAddPlan}
-                className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md flex items-center justify-center gap-1.5"
+                onClick={submitPlan}
+                disabled={!planTitle.trim()}
+                className="flex-1 h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md disabled:opacity-40"
               >
-                <Plus size={16} strokeWidth={2} /> 予定を追加
+                {editingPlanId ? "更新" : "登録"}
               </button>
-            )}
+            </div>
           </>
         )}
       </div>

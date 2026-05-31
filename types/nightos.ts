@@ -55,6 +55,11 @@ export interface Douhan {
   status: "scheduled" | "completed" | "cancelled";
   note: string | null;
   /**
+   * 任意の時刻 HH:mm。スケジュールのタイムライン表示・並び替え用
+   * (localStorage MVP)。未指定時は表示側で既定値を使う。
+   */
+  time?: string | null;
+  /**
    * キャンセル理由。status === "cancelled" の時は必須。
    * ママ・姉さんがキャンセル傾向を把握するための情報。
    */
