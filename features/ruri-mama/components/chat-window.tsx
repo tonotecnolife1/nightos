@@ -1,17 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Info, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Info, PanelLeftOpen, Plus, Sparkles, Trash2 } from "lucide-react";
 import { useCastId } from "@/lib/nightos/cast-context";
 import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 import { detectIntent } from "@/lib/nightos/intent-detector";
 import { HEARING_FLOWS } from "../data/system-prompt";
 import { recentFeedbackSamples } from "../lib/feedback-store";
 import {
+  loadSessions,
   newSessionId,
   saveSession,
   type ChatSession,
 } from "../lib/chat-session-store";
+import { ChatHistorySidebar } from "./chat-history-sidebar";
 import { takeStatsConsultHandoff } from "@/lib/nightos/stats-consult-store";
 import { ChatInput } from "./chat-input";
 import { ChipOptions } from "./chip-options";
@@ -135,6 +137,9 @@ export function ChatWindow({
   const [stubMode, setStubMode] = useState(initialIsStubMode);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState(() => newSessionId());
+  // 相談履歴サイドバー（ChatGPT 風ドロワー）
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [historySessions, setHistorySessions] = useState<ChatSession[]>([]);
   /** ブラッシュアップ方向選択中のメッセージ index。null = 起動されてない */
   const [refiningMessageIdx, setRefiningMessageIdx] = useState<number | null>(
     null,
@@ -152,14 +157,17 @@ export function ChatWindow({
     const customerName = selectedCustomerId
       ? customers.find((c) => c.id === selectedCustomerId)?.name ?? null
       : null;
+    // 既存セッションを継続している場合は createdAt を保持する
+    const existing = loadSessions().find((s) => s.id === currentSessionId);
+    const now = new Date().toISOString();
     const session: ChatSession = {
       id: currentSessionId,
       customerId: selectedCustomerId ?? null,
       customerName,
       title: userMsgs[0]?.content.slice(0, 50) ?? "相談",
       messages: messages.filter((m) => m !== GREETING && m !== FREEFORM_PROMPT),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
     };
     saveSession(session);
   }, [phase, messages, selectedCustomerId, customers, currentSessionId]);
@@ -213,6 +221,47 @@ export function ChatWindow({
     clearStoredMessages(castId);
     setMessages([GREETING]);
     setPhase({ name: "intent-pick" });
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // 相談履歴サイドバー（ChatGPT / Claude 風）
+  // ─────────────────────────────────────────────────────────────
+
+  const refreshHistory = () => {
+    const all = [...loadSessions()].sort((a, b) =>
+      b.updatedAt.localeCompare(a.updatedAt),
+    );
+    setHistorySessions(all);
+  };
+
+  const handleOpenSidebar = () => {
+    refreshHistory();
+    setSidebarOpen(true);
+  };
+
+  /** 過去のセッションを読み込み、その続きから相談できる状態にする。 */
+  const handleSelectSession = (session: ChatSession) => {
+    abortRef.current?.abort();
+    setMessages([GREETING, ...session.messages]);
+    setCurrentSessionId(session.id);
+    setSelectedCustomerId(session.customerId ?? undefined);
+    setCustomerChosen(true);
+    setRefiningMessageIdx(null);
+    setPhase({ name: "responded" });
+    setSidebarOpen(false);
+  };
+
+  /** まっさらな新規相談を開始する。 */
+  const handleNewChat = () => {
+    abortRef.current?.abort();
+    clearStoredMessages(castId);
+    setMessages([GREETING]);
+    setCurrentSessionId(newSessionId());
+    setSelectedCustomerId(undefined);
+    setCustomerChosen(false);
+    setRefiningMessageIdx(null);
+    setPhase({ name: "intent-pick" });
+    setSidebarOpen(false);
   };
 
   const lookupCustomerName = (id: string | undefined): string | null =>
@@ -512,7 +561,7 @@ export function ChatWindow({
             : "選ぶか自由に書いてもOK";
 
   return (
-    <div className="flex flex-col h-dvh">
+    <div className="relative flex flex-col h-dvh overflow-hidden">
       {stubMode && (
         <div className="px-4 pt-3">
           <div className="flex items-start gap-2 rounded-card bg-warning/10 border border-warning/40 text-ink px-3 py-2 text-body-sm">
@@ -527,13 +576,23 @@ export function ChatWindow({
         </div>
       )}
 
-      {/* Persistent top pill — always visible "今の相談相手: 田中さま" */}
-      <div className="sticky top-0 px-4 pt-2 pb-2 bg-pearl/95 backdrop-blur-sm border-b border-pearl-soft z-30">
-        <CustomerContextPill
-          customers={customers}
-          selectedId={selectedCustomerId}
-          onSelect={setSelectedCustomerId}
-        />
+      {/* Persistent top pill — 左に履歴トグル + "今の相談相手: 田中さま" */}
+      <div className="sticky top-0 px-4 pt-2 pb-2 bg-pearl/95 backdrop-blur-sm border-b border-pearl-soft z-30 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={handleOpenSidebar}
+          aria-label="相談履歴を開く"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-ink-soft hover:bg-pearl-warm active:scale-95 transition shrink-0"
+        >
+          <PanelLeftOpen size={19} />
+        </button>
+        <div className="flex-1 min-w-0">
+          <CustomerContextPill
+            customers={customers}
+            selectedId={selectedCustomerId}
+            onSelect={setSelectedCustomerId}
+          />
+        </div>
       </div>
 
       <div
@@ -672,6 +731,16 @@ export function ChatWindow({
         onSend={handleUserSend}
         disabled={isInputDisabled}
         placeholder={placeholder}
+      />
+
+      <ChatHistorySidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        sessions={historySessions}
+        activeSessionId={currentSessionId}
+        onSelect={handleSelectSession}
+        onNewChat={handleNewChat}
+        onChanged={refreshHistory}
       />
     </div>
   );
