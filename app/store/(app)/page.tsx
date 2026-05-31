@@ -42,7 +42,7 @@ export default async function StoreHubPage() {
             color: "var(--v5-gold-mid)",
           }}
         >
-          NIGHTOS · STORE HUB
+          NIGHTOS
         </div>
         <p
           className="font-sans mb-2"

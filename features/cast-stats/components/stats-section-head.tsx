@@ -1,6 +1,6 @@
 interface Props {
   title: string;
-  /** 右肩の eyebrow (例: "2026 ANNUAL") */
+  /** 右肩の eyebrow (例: "2026年") */
   sub?: string;
 }
 

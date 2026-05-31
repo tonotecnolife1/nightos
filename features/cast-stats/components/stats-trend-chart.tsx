@@ -65,7 +65,7 @@ export function StatsTrendChart({ points }: Props) {
             className="font-sans text-[10px] leading-none text-ink-mute"
             style={{ letterSpacing: "0.16em" }}
           >
-            RETENTION · MONTHLY
+            月次
           </div>
           <div
             className="mt-1.5 font-serif text-[16px] leading-none font-medium text-ink"

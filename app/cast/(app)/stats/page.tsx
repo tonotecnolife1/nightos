@@ -31,7 +31,7 @@ export default async function CastStatsPage() {
       <main className="px-5 pt-[18px] flex flex-col gap-[22px]">
         {/* ── 月次成績 ── */}
         <section className="flex flex-col gap-[22px]">
-          <StatsSectionHead title="月次成績" sub={`${year} MONTHLY`} />
+          <StatsSectionHead title="月次成績" sub={`${year}年${month}月`} />
 
           {/* 目標進捗 */}
           <div className="flex flex-col gap-3">
@@ -108,7 +108,7 @@ export default async function CastStatsPage() {
 
         {/* ── 年間成績 ── */}
         <section className="flex flex-col gap-3">
-          <StatsSectionHead title="年間成績" sub={`${year} ANNUAL`} />
+          <StatsSectionHead title="年間成績" sub={`${year}年`} />
           <div className="grid grid-cols-2 gap-2">
             <StatsMiniKpi
               label="年間売上"

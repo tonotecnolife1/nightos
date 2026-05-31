@@ -29,10 +29,10 @@ type State =
   | { phase: "done"; analysis: Analysis; isStub: boolean }
   | { phase: "error" };
 
-const SECTIONS: { key: keyof Analysis; eyebrow: string; label: string }[] = [
-  { key: "genjou", eyebrow: "NOW", label: "現状" },
-  { key: "kadai", eyebrow: "ISSUE", label: "課題" },
-  { key: "action", eyebrow: "ACTION", label: "取るべきアクション" },
+const SECTIONS: { key: keyof Analysis; label: string }[] = [
+  { key: "genjou", label: "現状" },
+  { key: "kadai", label: "課題" },
+  { key: "action", label: "取るべきアクション" },
 ];
 
 /**
@@ -138,7 +138,7 @@ export function StatsAnalysis({ castId, name }: Props) {
               className="text-[10px] tracking-[0.22em] mb-0.5"
               style={{ color: "rgba(235,217,168,0.75)" }}
             >
-              SAKURA MAMA · REVIEW
+              さくらママの講評
             </div>
             <div
               className="font-serif text-[16px] leading-[1.2] inline-block v5-metallic"
@@ -211,7 +211,7 @@ export function StatsAnalysis({ castId, name }: Props) {
 
           {state.phase === "done" && (
             <div className="flex flex-col gap-3.5">
-              {SECTIONS.map(({ key, eyebrow, label }) => (
+              {SECTIONS.map(({ key, label }) => (
                 <div
                   key={key}
                   className="rounded-card p-3.5"
@@ -221,12 +221,6 @@ export function StatsAnalysis({ castId, name }: Props) {
                   }}
                 >
                   <div className="flex items-baseline gap-2 mb-1.5">
-                    <span
-                      className="text-[9px] tracking-[0.22em]"
-                      style={{ color: "rgba(235,217,168,0.7)" }}
-                    >
-                      {eyebrow}
-                    </span>
                     <span
                       className="font-serif text-[13px] font-semibold"
                       style={{ color: "var(--v5-champ-gold-light, #ebd9a8)" }}

@@ -74,7 +74,7 @@ export function RoleSelector() {
               color: "var(--v5-gold-mid)",
             }}
           >
-            NIGHTOS · WELCOME
+            NIGHTOS · ようこそ
           </div>
           <h1
             className="font-serif font-normal v5-metallic"
