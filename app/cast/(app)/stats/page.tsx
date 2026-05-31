@@ -5,6 +5,7 @@ import { StatsMiniKpi } from "@/features/cast-stats/components/stats-mini-kpi";
 import { AiUsageSummary } from "@/features/cast-stats/components/ai-usage-summary";
 import { StatsTrendChart } from "@/features/cast-stats/components/stats-trend-chart";
 import { StatsSectionHead } from "@/features/cast-stats/components/stats-section-head";
+import { StatsWorkDaysKpi } from "@/features/cast-stats/components/stats-workdays-kpi";
 import { StatsEncouragement } from "@/features/cast-stats/components/stats-encouragement";
 import { getCurrentCastId } from "@/lib/nightos/auth";
 import { getCastStatsData } from "@/lib/nightos/supabase-queries";
@@ -28,65 +29,71 @@ export default async function CastStatsPage() {
       <StatsSubHeader year={year} month={month} />
 
       <main className="px-5 pt-[18px] flex flex-col gap-[22px]">
-        {/* ── 目標進捗 ── */}
-        <div className="flex flex-col gap-3">
-          <StatsGoalCard
-            label="今月の売上"
-            current={data.monthly.sales}
-            goal={data.targets.salesGoal}
-            prefix="¥"
-            barColor="var(--gold-metallic)"
-          />
-          {data.targets.douhanGoal > 0 && (
+        {/* ── 月次成績 ── */}
+        <section className="flex flex-col gap-[22px]">
+          <StatsSectionHead title="月次成績" sub={`${year} MONTHLY`} />
+
+          {/* 目標進捗 */}
+          <div className="flex flex-col gap-3">
             <StatsGoalCard
-              label="今月の同伴"
-              current={data.monthly.douhanCount}
-              goal={data.targets.douhanGoal}
-              unit="回"
-              barColor="linear-gradient(90deg, var(--champagne) 0%, var(--champagne-deep) 100%)"
+              label="今月の売上"
+              current={data.monthly.sales}
+              goal={data.targets.salesGoal}
+              prefix="¥"
+              barColor="var(--gold-metallic)"
             />
-          )}
-        </div>
+            {data.targets.douhanGoal > 0 && (
+              <StatsGoalCard
+                label="今月の同伴"
+                current={data.monthly.douhanCount}
+                goal={data.targets.douhanGoal}
+                unit="回"
+                barColor="linear-gradient(90deg, var(--champagne) 0%, var(--champagne-deep) 100%)"
+              />
+            )}
+          </div>
 
-        {/* ── 月次スコア ── */}
-        <div className="flex gap-2">
-          <StatsMiniKpi
-            label="再来店率"
-            value={Math.round(data.monthly.repeatRate * 100)}
-            unit="%"
-            accent="rose"
-          />
-          <StatsMiniKpi
-            label="連絡達成率"
-            value={Math.round(data.monthly.followRate * 100)}
-            unit="%"
-            accent="ink"
-          />
-          <StatsMiniKpi
-            label="今月新規"
-            value={data.monthly.newCustomerCount}
-            unit="人"
-            accent="wine"
-          />
-        </div>
+          {/* 月次スコア */}
+          <div className="flex gap-2">
+            <StatsMiniKpi
+              label="再来店率"
+              value={Math.round(data.monthly.repeatRate * 100)}
+              unit="%"
+              accent="rose"
+            />
+            <StatsMiniKpi
+              label="連絡達成率"
+              value={Math.round(data.monthly.followRate * 100)}
+              unit="%"
+              accent="ink"
+            />
+            <StatsMiniKpi
+              label="今月新規"
+              value={data.monthly.newCustomerCount}
+              unit="人"
+              accent="wine"
+            />
+          </div>
 
-        {/* ── 担当・継続 ── */}
-        <div className="flex gap-2">
-          <StatsMiniKpi
-            label="担当顧客"
-            value={data.monthly.totalCustomerCount}
-            unit="人"
-            accent="ink"
-            icon={<Users size={11} strokeWidth={1.7} />}
-          />
-          <StatsMiniKpi
-            label="連続連絡"
-            value={data.followStreakDays}
-            unit="日"
-            accent="amber"
-            icon={<Flame size={11} strokeWidth={1.7} />}
-          />
-        </div>
+          {/* 担当・継続・出勤 */}
+          <div className="flex gap-2">
+            <StatsMiniKpi
+              label="担当顧客"
+              value={data.monthly.totalCustomerCount}
+              unit="人"
+              accent="ink"
+              icon={<Users size={11} strokeWidth={1.7} />}
+            />
+            <StatsMiniKpi
+              label="連続連絡"
+              value={data.followStreakDays}
+              unit="日"
+              accent="amber"
+              icon={<Flame size={11} strokeWidth={1.7} />}
+            />
+            <StatsWorkDaysKpi />
+          </div>
+        </section>
 
         {/* ── さくらママ活用度 ── */}
         <AiUsageSummary />
