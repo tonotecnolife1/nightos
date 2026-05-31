@@ -12,6 +12,7 @@ import {
   MoreHorizontal,
   Pencil,
   Search,
+  Sparkles,
   Trash2,
   UserPlus,
   X,
@@ -23,6 +24,7 @@ import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
 import { SAKURA_MAMA_CHAT_NAME } from "@/lib/nightos/constants";
 import type { ChatAttachment, ChatMessage, ChatRoom } from "../types";
 import { ChatComposer, type ComposerPayload } from "./chat-composer";
+import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
 import {
   type MentionCustomer,
   detectCustomer,
@@ -44,6 +46,10 @@ interface KarteSuggestion {
   note: string;
   candidates: MentionCustomer[];
   status: "idle" | "saving" | "done";
+  /** First image attachment, if the message shared a screenshot. */
+  image: { url: string; mime: string } | null;
+  /** How it was captured, for the success label. */
+  doneVia?: "note" | "extract";
 }
 
 export function ChatRoomView({
@@ -70,37 +76,39 @@ export function ChatRoomView({
     customers.find((c) => c.id === id)?.name ?? "お客様";
 
   const addKarteSuggestion = (messageId: string, payload: ComposerPayload) => {
-    const note = payload.text;
-    if (!note) return; // 画像だけの投稿は本文が無いのでスキップ
-    if (note.includes(`@${SAKURA_MAMA_CHAT_NAME}`)) return;
+    if (payload.text.includes(`@${SAKURA_MAMA_CHAT_NAME}`)) return;
 
-    // 明示メンションがあれば確定。無ければ受動検出で候補を探す。
-    if (payload.customerId) {
-      setKarteSuggestions((prev) => ({
-        ...prev,
-        [messageId]: {
-          customerId: payload.customerId!,
-          customerName: customerName(payload.customerId!),
-          note: note.replace(/@\S+\s?/g, "").trim() || note,
-          candidates: [],
-          status: "idle",
-        },
-      }));
-      return;
+    const image =
+      payload.attachments.find(
+        (a) => a.mime?.startsWith("image/") && a.url,
+      ) ?? null;
+    const note =
+      payload.text.replace(/@\S+\s?/g, "").trim() || payload.text.trim();
+
+    // 対象顧客を特定: 明示メンション → 受動検出（本文の名前）。
+    let customerId = payload.customerId ?? null;
+    let candidates: MentionCustomer[] = [];
+    if (!customerId && payload.text.trim()) {
+      const detected = detectCustomer(customers, payload.text);
+      if (detected) {
+        customerId = detected.customer.id;
+        candidates = detected.ambiguous;
+      }
     }
-    const detected = detectCustomer(customers, note);
-    if (detected) {
-      setKarteSuggestions((prev) => ({
-        ...prev,
-        [messageId]: {
-          customerId: detected.customer.id,
-          customerName: detected.customer.name,
-          note,
-          candidates: detected.ambiguous,
-          status: "idle",
-        },
-      }));
-    }
+    if (!customerId) return; // 顧客が特定できない
+    if (!note && !image) return; // 追加できる中身がない
+
+    setKarteSuggestions((prev) => ({
+      ...prev,
+      [messageId]: {
+        customerId: customerId!,
+        customerName: customerName(customerId!),
+        note,
+        candidates,
+        status: "idle",
+        image: image ? { url: image.url, mime: image.mime } : null,
+      },
+    }));
   };
 
   const confirmKarte = async (messageId: string) => {
@@ -116,7 +124,11 @@ export function ChatRoomView({
     });
     setKarteSuggestions((prev) => ({
       ...prev,
-      [messageId]: { ...prev[messageId], status: res.ok ? "done" : "idle" },
+      [messageId]: {
+        ...prev[messageId],
+        status: res.ok ? "done" : "idle",
+        doneVia: "note",
+      },
     }));
   };
 
@@ -136,6 +148,26 @@ export function ChatRoomView({
       delete next[messageId];
       return next;
     });
+
+  // LINEスクショ抽出モーダル（対象メッセージ）
+  const [extractFor, setExtractFor] = useState<string | null>(null);
+  const extractSuggestion = extractFor ? karteSuggestions[extractFor] : null;
+
+  const finishExtract = (messageId: string) => {
+    setExtractFor(null);
+    setKarteSuggestions((prev) =>
+      prev[messageId]
+        ? {
+            ...prev,
+            [messageId]: {
+              ...prev[messageId],
+              status: "done",
+              doneVia: "extract",
+            },
+          }
+        : prev,
+    );
+  };
 
   const patchMessage = (id: string, patch: Partial<ChatMessage>) => {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
@@ -655,6 +687,7 @@ export function ChatRoomView({
                   onConfirm={() => confirmKarte(msg.id)}
                   onDismiss={() => dismissKarte(msg.id)}
                   onPick={(c) => changeKarteTarget(msg.id, c)}
+                  onExtract={() => setExtractFor(msg.id)}
                 />
               )}
             </div>
@@ -708,6 +741,17 @@ export function ChatRoomView({
             画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@お客様名 でカルテ連携
           </p>
         </div>
+      )}
+
+      {extractFor && extractSuggestion?.image && (
+        <ChatKarteExtractModal
+          customerId={extractSuggestion.customerId}
+          customerName={extractSuggestion.customerName}
+          castId={currentCastId}
+          image={extractSuggestion.image}
+          onClose={() => setExtractFor(null)}
+          onApplied={() => finishExtract(extractFor)}
+        />
       )}
     </div>
   );
@@ -1064,12 +1108,14 @@ function KarteChip({
   onConfirm,
   onDismiss,
   onPick,
+  onExtract,
 }: {
   suggestion: KarteSuggestion;
   isMe: boolean;
   onConfirm: () => void;
   onDismiss: () => void;
   onPick: (c: MentionCustomer) => void;
+  onExtract: () => void;
 }) {
   if (s.status === "done") {
     return (
@@ -1081,12 +1127,15 @@ function KarteChip({
       >
         <div className="inline-flex items-center gap-1.5 rounded-pill bg-success/10 border border-success/20 px-3 py-1.5 text-[12px] text-success font-medium">
           <Check size={12} />
-          {s.customerName}さんのカルテに追加しました
+          {s.customerName}さんのカルテに
+          {s.doneVia === "extract" ? "反映しました" : "追加しました"}
         </div>
       </div>
     );
   }
 
+  const hasImage = !!s.image;
+  const hasNote = s.note.trim().length > 0;
   const alts = s.candidates.filter((c) => c.id !== s.customerId).slice(0, 3);
 
   return (
@@ -1101,23 +1150,40 @@ function KarteChip({
           <UserPlus size={13} className="text-gold-deep shrink-0" />
           <span className="text-[12px] text-ink leading-snug">
             <span className="font-medium text-wine-deep">{s.customerName}</span>
-            さんのカルテに追加しますか？
+            さんのカルテに{hasImage ? "反映しますか？" : "追加しますか？"}
           </span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={s.status === "saving"}
-            className="inline-flex items-center gap-1 rounded-pill bg-wine-deep text-pearl-light px-3 py-1 text-[12px] font-medium disabled:opacity-50"
-          >
-            {s.status === "saving" ? (
-              <Loader2 size={11} className="animate-spin" />
-            ) : (
-              <Check size={11} />
-            )}
-            追加
-          </button>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {hasImage && (
+            <button
+              type="button"
+              onClick={onExtract}
+              className="inline-flex items-center gap-1 rounded-pill bg-wine-deep text-pearl-light px-3 py-1 text-[12px] font-medium"
+            >
+              <Sparkles size={11} />
+              スクショから反映
+            </button>
+          )}
+          {hasNote && (
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={s.status === "saving"}
+              className={cn(
+                "inline-flex items-center gap-1 rounded-pill px-3 py-1 text-[12px] font-medium disabled:opacity-50",
+                hasImage
+                  ? "border border-gold/40 text-wine-deep"
+                  : "bg-wine-deep text-pearl-light",
+              )}
+            >
+              {s.status === "saving" ? (
+                <Loader2 size={11} className="animate-spin" />
+              ) : (
+                <Check size={11} />
+              )}
+              メモ追加
+            </button>
+          )}
           <button
             type="button"
             onClick={onDismiss}
