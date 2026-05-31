@@ -21,7 +21,7 @@ export function ChipOptions({ question, options, onPick, onSkip }: Props) {
 
   return (
     <div className="rounded-2xl border border-gold/30 bg-champagne-soft/60 px-4 py-3.5 space-y-2.5 animate-fade-in">
-      <p className="text-label-md text-gold-deep">{question}</p>
+      <p className="text-label-md font-semibold text-wine-deep">{question}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((opt) => (
           <button
@@ -30,12 +30,12 @@ export function ChipOptions({ question, options, onPick, onSkip }: Props) {
             onClick={() => handlePick(opt)}
             disabled={!!picked}
             className={cn(
-              "px-3.5 h-9 rounded-badge text-body-sm border transition-all active:scale-95",
+              "px-3.5 h-9 rounded-badge text-body-sm font-medium border transition-all active:scale-95",
               picked === opt
-                ? "bg-wine-deep text-pearl-light border-gold-deep scale-95 shadow-soft"
+                ? "bg-wine-deep text-pearl-light border-wine-deep scale-95 shadow-soft"
                 : picked
                   ? "bg-pearl-soft text-ink-mute border-pearl-soft opacity-50"
-                  : "bg-pearl-warm text-gold-deep border-gold/30 hover:bg-wine-deep hover:text-pearl-light hover:border-wine-deep",
+                  : "bg-pearl-light text-wine-deep border-wine/30 shadow-soft hover:bg-wine-deep hover:text-pearl-light hover:border-wine-deep",
             )}
           >
             {opt}
