@@ -8,12 +8,12 @@ import {
 } from "@/lib/nightos/supabase-queries";
 
 export default async function CastHomePage() {
-  const [castId, venueType] = await Promise.all([
-    getCurrentCastId(),
-    getCurrentVenueType(),
-  ]);
+  // castId だけ先に解決し、業態(venueType)は重いデータ取得と並列で走らせる。
+  // 以前は venueType がデータ取得をブロックして待ち時間を伸ばしていた。
+  const castId = await getCurrentCastId();
 
-  const [data, storeMessages, customers] = await Promise.all([
+  const [venueType, data, storeMessages, customers] = await Promise.all([
+    getCurrentVenueType(),
     fetchCastHomeData(castId),
     getUnreadCastMessages(castId),
     getCustomersForCast(castId),
