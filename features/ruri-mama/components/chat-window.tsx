@@ -801,21 +801,25 @@ function synthesizeIntentText(
 
   if (intent === "follow") {
     const purpose = answers.purpose ?? "メッセージ";
-    const moodLabel: Record<string, string> = {
-      盛り上がった: "前回は盛り上がった様子でした。",
-      落ち着いた: "前回は落ち着いた感じでした。",
-      元気なかった: "前回は少し元気がない様子でした。",
-      覚えてない: "前回の様子は覚えていません。",
+    const relationshipLabel: Record<string, string> = {
+      来たばかりの新規: "まだ来たばかりの新規の方です。",
+      育てたい常連候補: "これから常連にしたい育成中の方です。",
+      通ってくれる常連: "通ってくれている常連の方です。",
+      "VIP・太客": "VIP・太客の方です。",
+      しばらく来てない: "しばらく足が遠のいている方です。",
     };
-    const toneLabel: Record<string, string> = {
-      親しみやすく: "親しみやすいトーンで送りたいです。",
-      丁寧に: "丁寧なトーンで送りたいです。",
-      甘えた感じ: "少し甘えた感じで送りたいです。",
-      お任せ: "トーンはお任せします。",
+    const hookLabel: Record<string, string> = {
+      仕事の話: "前回は仕事の話で盛り上がりました。",
+      "趣味・遊び": "前回は趣味や遊びの話で盛り上がりました。",
+      "お酒・グルメ": "前回はお酒やグルメの話で盛り上がりました。",
+      "家族・プライベート": "前回は家族やプライベートの話で盛り上がりました。",
+      特になし: "これといった話のネタは思い出せません。",
     };
-    const mood = answers.mood ? (moodLabel[answers.mood] ?? "") : "";
-    const tone = answers.tone ? (toneLabel[answers.tone] ?? "") : "";
-    return `${subject}に「${purpose}」のLINEを送りたいです。${mood}${tone}`.trim();
+    const relationship = answers.relationship
+      ? (relationshipLabel[answers.relationship] ?? "")
+      : "";
+    const hook = answers.hook ? (hookLabel[answers.hook] ?? "") : "";
+    return `${subject}に「${purpose}」のLINEを送りたいです。${relationship}${hook}`.trim();
   }
 
   if (intent === "serving") {

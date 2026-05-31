@@ -181,18 +181,18 @@ export const HEARING_FLOWS: Record<Intent, HearingFlow> = {
     steps: [
       {
         id: "purpose",
-        question: "連絡の目的は？",
-        options: ["お礼", "お誘い", "お祝い", "ボトル連絡", "その他"],
+        question: "どんな連絡をしたい？",
+        options: ["来店のお礼", "お誘い・同伴", "お祝い・記念日", "ご無沙汰の挨拶", "その他"],
       },
       {
-        id: "mood",
-        question: "前回の来店はどんな感じだった？",
-        options: ["盛り上がった", "落ち着いた", "元気なかった", "覚えてない"],
+        id: "relationship",
+        question: "その方との今の関係は？",
+        options: ["来たばかりの新規", "育てたい常連候補", "通ってくれる常連", "VIP・太客", "しばらく来てない"],
       },
       {
-        id: "tone",
-        question: "どんなトーンで送りたい？",
-        options: ["親しみやすく", "丁寧に", "甘えた感じ", "お任せ"],
+        id: "hook",
+        question: "前回つかんだ話のネタは？（1つあると刺さるLINEになるわよ）",
+        options: ["仕事の話", "趣味・遊び", "お酒・グルメ", "家族・プライベート", "特になし"],
       },
     ],
   },
