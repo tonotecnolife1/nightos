@@ -1,36 +1,21 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { getCastByAuthUserId } from "@/lib/nightos/supabase-real";
+import { resolveAuthedCast } from "@/lib/nightos/api-auth";
 import { castScheduleSyncSchema, parseBody } from "@/lib/nightos/validation";
-import type { Cast } from "@/types/nightos";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Cross-device sync for a cast's own scheduling data (migration 013).
+ * Cross-device sync for a cast's own scheduling data (migrations 013/014).
  *
- *   GET  → { authenticated, shifts, plans } for the signed-in cast
- *   PUT  → replace the signed-in cast's shifts / plans (whichever arrays
- *          are present in the body) and echo the stored data back
+ *   GET  → { authenticated, shifts, plans, douhans } for the signed-in cast
+ *   PUT  → replace the signed-in cast's shifts / plans / douhans (whichever
+ *          arrays are present in the body) and echo success back
  *
  * Mock / unauthenticated sessions get `{ authenticated: false }` so the
  * client keeps using localStorage only (demo & local dev stay offline).
  */
-
-/** Resolve the real Supabase-authenticated cast, or null in mock mode. */
-async function resolveAuthedCast(): Promise<Cast | null> {
-  try {
-    const supabase = createServerSupabaseClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return null;
-    return await getCastByAuthUserId(user.id);
-  } catch {
-    return null;
-  }
-}
 
 export async function GET() {
   const cast = await resolveAuthedCast();
