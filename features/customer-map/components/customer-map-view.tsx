@@ -57,24 +57,21 @@ function StarButton({ id }: { id: string }) {
   );
 }
 
-function PinnedStarred({ customers }: { customers: Customer[] }) {
-  if (customers.length === 0) return null;
-  return (
-    <div className="space-y-0.5 rounded-card bg-champagne-soft/60/20 border border-gold/30 p-2.5">
-      <div className="flex items-center gap-1.5 px-0.5 mb-0.5">
-        <Star size={12} className="fill-current text-gold-deep" />
-        <span className="text-[11px] font-semibold text-ink">
-          星をつけたお客様
-        </span>
-        <span className="text-[10px] text-ink-mute ml-auto">
-          {customers.length}人
-        </span>
-      </div>
-      {customers.map((c) => (
-        <CustomerLeaf key={c.id} customer={c} />
-      ))}
-    </div>
-  );
+/** 星をつけた顧客を先頭へ。元の並び順は安定的に保つ。 */
+function sortStarredFirst<T>(
+  items: T[],
+  getId: (item: T) => string,
+  starred: Set<string> | undefined,
+): T[] {
+  if (!starred || starred.size === 0) return items;
+  return items
+    .map((item, idx) => ({ item, idx }))
+    .sort((a, b) => {
+      const sa = starred.has(getId(a.item)) ? 0 : 1;
+      const sb = starred.has(getId(b.item)) ? 0 : 1;
+      return sa - sb || a.idx - b.idx;
+    })
+    .map((x) => x.item);
 }
 
 export function CustomerMapView({
@@ -103,22 +100,13 @@ export function CustomerMapView({
     );
   }
 
-  const starredCustomers = ctxValue
-    ? customers.filter((c) => ctxValue.starred.has(c.id))
-    : [];
-
   return (
     <StarContext.Provider value={ctxValue}>
-      <div className="space-y-3">
-        {starredCustomers.length > 0 && (
-          <PinnedStarred customers={starredCustomers} />
-        )}
-        {mode === "customer" ? (
-          <CustomerBasedMap customers={customers} casts={casts} />
-        ) : (
-          <CastBasedMap customers={customers} casts={casts} />
-        )}
-      </div>
+      {mode === "customer" ? (
+        <CustomerBasedMap customers={customers} casts={casts} />
+      ) : (
+        <CastBasedMap customers={customers} casts={casts} />
+      )}
     </StarContext.Provider>
   );
 }
@@ -136,11 +124,17 @@ function CustomerBasedMap({
 }) {
   const tree = buildReferralTree({ customers, casts });
   const castById = new Map(casts.map((c) => [c.id, c]));
+  const starCtx = useContext(StarContext);
+  const sortedTree = sortStarredFirst(
+    tree,
+    (node) => node.customer.id,
+    starCtx?.starred,
+  );
 
   return (
     <div className="space-y-3">
       <div className="space-y-4">
-        {tree.map((node) => (
+        {sortedTree.map((node) => (
           <ReferralTree
             key={node.customer.id}
             node={node}
@@ -442,9 +436,15 @@ function CastBucket({
   bucket: import("@/lib/nightos/referral-tree").CastBasedNode["byCast"][number];
 }) {
   const [expanded, setExpanded] = useState(true);
+  const starCtx = useContext(StarContext);
   const castLabel = bucket.cast
     ? `${bucket.cast.name}さん担当`
     : "担当未割り当て";
+  const sortedCustomers = sortStarredFirst(
+    bucket.customers,
+    (c) => c.id,
+    starCtx?.starred,
+  );
 
   return (
     <div className="rounded-btn bg-pearl-warm border border-pearl-soft overflow-hidden">
@@ -470,10 +470,10 @@ function CastBucket({
       {/* Cast → Customer connectors */}
       {expanded && (
         <div className="pl-2 pr-1.5 pb-1.5 pt-1">
-          {bucket.customers.map((c, idx) => (
+          {sortedCustomers.map((c, idx) => (
             <TreeChildWrapper
               key={c.id}
-              isLast={idx === bucket.customers.length - 1}
+              isLast={idx === sortedCustomers.length - 1}
               lineTone="soft"
             >
               <CustomerLeaf customer={c} />
