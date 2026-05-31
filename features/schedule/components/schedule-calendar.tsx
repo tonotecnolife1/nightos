@@ -21,6 +21,7 @@ import {
   upsertDouhan,
   deleteDouhan,
 } from "@/lib/nightos/douhan-store";
+import { pullCastSchedule } from "@/lib/nightos/schedule-sync";
 import { CURRENT_STORE_ID } from "@/lib/nightos/constants";
 import type { Customer, Douhan } from "@/types/nightos";
 
@@ -57,9 +58,21 @@ export function ScheduleCalendar({ castId, customers }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
 
   useEffect(() => {
+    // Instant paint from the localStorage cache…
     setSchedule(loadSchedule());
     setDouhans(loadAllDouhans().filter((d) => d.cast_id === castId));
     setPlans(loadPlansForCast(castId));
+    // …then reconcile with the server so other devices' edits show up.
+    let cancelled = false;
+    void pullCastSchedule().then((applied) => {
+      if (applied && !cancelled) {
+        setSchedule(loadSchedule());
+        setPlans(loadPlansForCast(castId));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [castId]);
 
   const refresh = useCallback(() => setSchedule(loadSchedule()), []);

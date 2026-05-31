@@ -93,6 +93,44 @@ export const teamChatUpdateSchema = z.object({
   content: shortText,
 });
 
+// Cast schedule sync (migration 013) ──────────────────────────────
+
+const ymd = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "invalid date (YYYY-MM-DD)");
+const hhmm = z
+  .string()
+  .regex(/^\d{2}:\d{2}$/, "invalid time (HH:mm)");
+const planTitle = z.string().min(1).max(200);
+const scheduleNote = z.string().max(500);
+
+const shiftSyncEntry = z.object({
+  date: ymd,
+  status: z.enum(["working", "off"]),
+  startTime: hhmm.optional(),
+  endTime: hhmm.optional(),
+  note: scheduleNote.optional(),
+});
+
+const planSyncEntry = z.object({
+  id: z.string().min(1).max(64),
+  date: ymd,
+  time: hhmm.optional(),
+  title: planTitle,
+  note: scheduleNote.optional(),
+});
+
+/**
+ * Body for PUT /api/cast-schedule. Each array, when present, fully
+ * replaces the signed-in cast's rows in that table. A 31-day month with
+ * a few plans is tiny, so whole-array replace keeps the client logic
+ * simple (mirrors the localStorage "save the whole list" semantics).
+ */
+export const castScheduleSyncSchema = z.object({
+  shifts: z.array(shiftSyncEntry).max(400).optional(),
+  plans: z.array(planSyncEntry).max(400).optional(),
+});
+
 // Signup / onboarding ─────────────────────────────────────────────
 
 const displayName = z

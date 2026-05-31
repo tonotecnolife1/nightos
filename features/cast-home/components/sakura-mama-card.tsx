@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Loader2, MessageCircle, RefreshCw, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getUpcomingShifts } from "@/lib/nightos/schedule-store";
+import { pullCastSchedule } from "@/lib/nightos/schedule-sync";
 
 interface Props {
   castId: string;
@@ -77,6 +78,9 @@ export function SakuraMamaCard({ castId }: Props) {
 
     try {
       const today = todayKey();
+      // Reconcile shifts with the server first so the briefing reflects
+      // schedules registered on other devices (migration 013).
+      await pullCastSchedule();
       const upcomingShifts = getUpcomingShifts(today, 5);
       const res = await fetch("/api/morning-briefing", {
         method: "POST",
