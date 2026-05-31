@@ -53,29 +53,32 @@ export default async function CastStatsPage() {
             )}
           </div>
 
-          {/* 月次スコア */}
+          {/* 月次スコア (当月集計) */}
           <div className="flex gap-2">
             <StatsMiniKpi
               label="再来店率"
               value={Math.round(data.monthly.repeatRate * 100)}
               unit="%"
               accent="rose"
+              period="今月"
             />
             <StatsMiniKpi
               label="連絡達成率"
               value={Math.round(data.monthly.followRate * 100)}
               unit="%"
               accent="ink"
+              period="今月"
             />
             <StatsMiniKpi
-              label="今月新規"
+              label="新規"
               value={data.monthly.newCustomerCount}
               unit="人"
               accent="wine"
+              period="今月"
             />
           </div>
 
-          {/* 担当・継続・出勤 */}
+          {/* 担当・継続 (累計) ＋ 当月の出勤 */}
           <div className="flex gap-2">
             <StatsMiniKpi
               label="担当顧客"
@@ -83,6 +86,7 @@ export default async function CastStatsPage() {
               unit="人"
               accent="ink"
               icon={<Users size={11} strokeWidth={1.7} />}
+              period="累計"
             />
             <StatsMiniKpi
               label="連続連絡"
@@ -90,6 +94,7 @@ export default async function CastStatsPage() {
               unit="日"
               accent="amber"
               icon={<Flame size={11} strokeWidth={1.7} />}
+              period="累計"
             />
             <StatsWorkDaysKpi />
           </div>

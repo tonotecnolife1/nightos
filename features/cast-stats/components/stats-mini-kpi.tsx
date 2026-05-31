@@ -18,6 +18,8 @@ interface Props {
   accent?: Accent;
   /** lucide icon (size は呼び出し側で 11 程度に) */
   icon?: ReactNode;
+  /** 集計期間バッジ。「今月」(当月集計) / 「累計」(継続・通算) を右上に表示。 */
+  period?: "今月" | "累計";
 }
 
 /**
@@ -31,6 +33,7 @@ export function StatsMiniKpi({
   prefix,
   accent = "ink",
   icon,
+  period,
 }: Props) {
   const color = ACCENT_COLOR[accent];
   return (
@@ -47,6 +50,14 @@ export function StatsMiniKpi({
         className="absolute left-0 right-0 top-0 h-[1.5px]"
         style={{ background: "var(--gold-metallic)", opacity: 0.55 }}
       />
+      {period && (
+        <span
+          className="absolute top-2 right-2.5 font-sans text-[8px] leading-none tracking-[0.12em] text-ink-soft rounded-full px-1.5 py-[3px]"
+          style={{ background: "rgba(45, 24, 24, 0.06)" }}
+        >
+          {period}
+        </span>
+      )}
       <div className="flex items-center gap-1.5">
         {icon && (
           <span className="inline-flex" style={{ color }}>
