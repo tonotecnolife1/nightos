@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, MessageCircle, Plus, Users, X } from "lucide-react";
+import { Check, Loader2, MessageCircle, Plus, Users, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,8 @@ export function NewDmSheet({ storeCasts }: Props) {
   const [mode, setMode] = useState<Mode>("dm");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [groupName, setGroupName] = useState("");
+  // どちらの種類を「立ち上げ中」か。オーバーレイの文言切り替えに使う。
+  const [launching, setLaunching] = useState<Mode | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -42,20 +44,31 @@ export function NewDmSheet({ storeCasts }: Props) {
   };
 
   const handleDmSelect = (cast: CastMember) => {
+    // 立ち上げオーバーレイを即座に出す。pending は遷移完了まで true のまま
+    // なので、チャット一覧で固まって見えていた数秒間もカバーされる。
+    setLaunching("dm");
     startTransition(async () => {
       const roomId = await createDmRoomAction(cast.id);
-      if (roomId) router.push(`/cast/chat/${roomId}`);
-      setOpen(false);
+      if (roomId) {
+        router.push(`/cast/chat/${roomId}`);
+      } else {
+        // 失敗時のみシートに戻す（成功時は遷移でこの画面ごと破棄される）
+        setLaunching(null);
+      }
     });
   };
 
   const handleCreateGroup = () => {
     if (selected.size === 0) return;
     const name = groupName.trim() || selectedNames();
+    setLaunching("group");
     startTransition(async () => {
       const roomId = await createGroupRoomAction(Array.from(selected), name);
-      if (roomId) router.push(`/cast/chat/${roomId}`);
-      setOpen(false);
+      if (roomId) {
+        router.push(`/cast/chat/${roomId}`);
+      } else {
+        setLaunching(null);
+      }
     });
   };
 
@@ -77,6 +90,26 @@ export function NewDmSheet({ storeCasts }: Props) {
       >
         <Plus size={20} />
       </button>
+
+      {/* 立ち上げ中オーバーレイ — 作成アクション〜チャット画面への遷移完了まで
+          表示し続け、「一覧に戻って固まった」ように見える間を埋める */}
+      {pending && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/40 backdrop-blur-sm animate-fade-in"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="flex flex-col items-center gap-3 rounded-[24px] bg-pearl-warm px-9 py-7 shadow-warm">
+            <Loader2 size={28} className="text-gold-deep animate-spin" />
+            <p className="text-body-sm font-medium text-ink">
+              {launching === "group"
+                ? "グループを準備しています…"
+                : "トークルームを準備しています…"}
+            </p>
+            <p className="text-label-sm text-ink-mute">まもなく開きます</p>
+          </div>
+        </div>
+      )}
 
       {open && (
         <>
