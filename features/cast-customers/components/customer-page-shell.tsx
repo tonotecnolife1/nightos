@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { HandHelping } from "lucide-react";
+import Link from "next/link";
+import { HandHelping, UserPlus } from "lucide-react";
 import type { Cast, Customer } from "@/types/nightos";
 import { Card } from "@/components/nightos/card";
 import { CustomerFilterBar } from "./customer-filter-bar";
@@ -73,8 +74,15 @@ export function CustomerPageShell({ allCasts, allMyCustomers, helpCustomers = []
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-2">
         <ViewGroupingToggle value={grouping} onChange={updateGrouping} />
+        <Link
+          href="/cast/customers/new"
+          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[linear-gradient(135deg,#eccd8b_0%,#c9a45c_100%)] text-[#3a241c] text-[12px] font-semibold shadow-[0_6px_16px_-6px_rgba(201,164,92,0.7)] active:scale-95 transition-transform"
+        >
+          <UserPlus size={14} />
+          新規
+        </Link>
       </div>
 
       <CustomerFilterBar

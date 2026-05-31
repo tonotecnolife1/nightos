@@ -41,18 +41,7 @@ export default async function CastCustomerListPage() {
         title="お客様リスト"
         subtitle={`${customers.length}人のお客様`}
         showBack
-        right={
-          <div className="flex items-center gap-1.5">
-            <Link
-              href="/cast/customers/new"
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-pill bg-wine-deep text-pearl-light text-label-sm font-semibold tracking-[0.04em] shadow-soft hover:-translate-y-px transition"
-            >
-              <UserPlus size={14} />
-              新規
-            </Link>
-            <MoreMenu />
-          </div>
-        }
+        right={<MoreMenu />}
       />
       <div className="px-5 pt-3 pb-6 space-y-5">
         {/* Funnel snapshot */}
