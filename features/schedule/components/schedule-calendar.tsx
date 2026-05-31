@@ -243,12 +243,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
                     <span className="w-1.5 h-1.5 rounded-full bg-gold" />
                   )}
                   {hasPlan && (
-                    <span
-                      className={cn(
-                        "w-1.5 h-1.5 rounded-full",
-                        isWorking ? "bg-pearl-light" : "bg-wine-deep",
-                      )}
-                    />
+                    <span className="w-1.5 h-1.5 rounded-full bg-wine-soft" />
                   )}
                 </span>
               )}
@@ -272,7 +267,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
           同伴あり
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-wine-deep inline-block" />
+          <span className="w-1.5 h-1.5 rounded-full bg-wine-soft inline-block" />
           予定あり
         </span>
       </div>
