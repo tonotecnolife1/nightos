@@ -30,6 +30,15 @@ const CATEGORY_OPTIONS: { value: CustomerCategory; label: string }[] = [
   { value: "vip", label: "VIP" },
 ];
 
+// ネイティブ <option> はスタイル指定がないと小さく描画される端末がある。
+// 開いたときのリストでも読めるよう、明示的に文字サイズ・配色・余白を与える。
+const OPTION_STYLE: React.CSSProperties = {
+  fontSize: "16px",
+  padding: "10px 12px",
+  color: "#2b232a",
+  backgroundColor: "#fdfcf9",
+};
+
 export function CustomerForm({
   casts,
   existingCustomers = [],
@@ -198,7 +207,7 @@ export function CustomerForm({
           style={{ fontSize: "16px" }}
         >
           {casts.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
+            <option key={c.id} value={c.id} style={OPTION_STYLE}>{c.name}</option>
           ))}
         </select>
       </div>
@@ -216,7 +225,7 @@ export function CustomerForm({
           style={{ fontSize: "16px" }}
         >
           {casts.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
+            <option key={c.id} value={c.id} style={OPTION_STYLE}>{c.name}</option>
           ))}
         </select>
       </div>
@@ -280,9 +289,9 @@ export function CustomerForm({
                 className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
                 style={{ fontSize: "16px" }}
               >
-                <option value="">紹介なし</option>
+                <option value="" style={OPTION_STYLE}>紹介なし</option>
                 {referrerOptions.map((r) => (
-                  <option key={r.value} value={r.value}>{r.label}さま</option>
+                  <option key={r.value} value={r.value} style={OPTION_STYLE}>{r.label}さま</option>
                 ))}
               </select>
             </div>
