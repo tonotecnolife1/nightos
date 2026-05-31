@@ -58,7 +58,9 @@ export function CastHomeHero({
   hasNotification = false,
 }: Props) {
   const [events, setEvents] = useState<TonightEvent[]>([]);
-  const [nextWorkingDate, setNextWorkingDate] = useState<string | null>(null);
+  const [nextEvent, setNextEvent] = useState<
+    (TonightEvent & { date: string }) | null
+  >(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -97,17 +99,43 @@ export function CastHomeHero({
     }
     list.sort((a, b) => a.sortTime.localeCompare(b.sortTime));
 
-    // Fallback: next working day
-    let nextDate: string | null = null;
+    // Fallback: next upcoming event (douhan or working shift) when nothing today
+    let upcomingEvent: (TonightEvent & { date: string }) | null = null;
     if (list.length === 0) {
-      const upcoming = allShifts
-        .filter((e) => e.date > today && e.status === "working")
-        .sort((a, b) => a.date.localeCompare(b.date))[0];
-      nextDate = upcoming?.date ?? null;
+      const future: (TonightEvent & { date: string })[] = [];
+      for (const d of allDouhans) {
+        if (d.date > today && d.status === "scheduled") {
+          const customer = customerById.get(d.customer_id);
+          future.push({
+            date: d.date,
+            sortTime: "18:00",
+            time: "18:00",
+            label: "同伴",
+            detail: customer
+              ? `${customer.name}さま${d.note ? ` · ${d.note}` : ""}`
+              : d.note ?? undefined,
+          });
+        }
+      }
+      for (const e of allShifts) {
+        if (e.date > today && e.status === "working") {
+          future.push({
+            date: e.date,
+            sortTime: e.startTime ?? "20:00",
+            time: e.startTime ?? "20:00",
+            label: "出勤",
+            detail: e.note ?? undefined,
+          });
+        }
+      }
+      future.sort((a, b) =>
+        `${a.date} ${a.sortTime}`.localeCompare(`${b.date} ${b.sortTime}`),
+      );
+      upcomingEvent = future[0] ?? null;
     }
 
     setEvents(list);
-    setNextWorkingDate(nextDate);
+    setNextEvent(upcomingEvent);
     setLoaded(true);
   }, [castId, customers]);
 
@@ -116,11 +144,16 @@ export function CastHomeHero({
   const mainEvent = events[0];
   const restEvents = events.slice(1);
 
-  // No-event fallback content
-  const noEventNextLabel = nextWorkingDate
-    ? `次の出勤 ${daysBetween(todayYMD(), nextWorkingDate)} 日後`
-    : "次の出勤未定";
-  const noEventNextDate = nextWorkingDate ? formatDate(nextWorkingDate) : null;
+  // No-event fallback content — surface the next upcoming event
+  const nextEventDaysAway = nextEvent
+    ? daysBetween(todayYMD(), nextEvent.date)
+    : null;
+  const nextEventMonthDay = nextEvent
+    ? (() => {
+        const [, m, d] = nextEvent.date.split("-").map(Number);
+        return `${m}/${d}`;
+      })()
+    : null;
 
   return (
     <section className="v5-hero px-5 pt-12 pb-16">
@@ -202,7 +235,7 @@ export function CastHomeHero({
       <h1
         className="relative m-0 font-serif font-normal v5-metallic"
         style={{
-          fontSize: hasEvents ? "2.5rem" : "2rem",
+          fontSize: hasEvents || nextEvent ? "2.5rem" : "2rem",
           lineHeight: 1.1,
           letterSpacing: "0.04em",
           marginBottom: 8,
@@ -221,8 +254,18 @@ export function CastHomeHero({
             </span>
             {mainEvent.label}
           </>
+        ) : nextEvent ? (
+          <>
+            <span
+              className="font-display tabular-nums"
+              style={{ fontSize: "2.5rem", marginRight: 14 }}
+            >
+              {nextEventMonthDay}
+            </span>
+            {nextEvent.label}
+          </>
         ) : (
-          noEventNextLabel
+          "予定未登録"
         )}
       </h1>
 
@@ -248,9 +291,11 @@ export function CastHomeHero({
         >
           {hasEvents
             ? (mainEvent.detail ?? "今夜もいってらっしゃい。")
-            : noEventNextDate
-              ? `${noEventNextDate} 出勤予定。ゆっくり充電して。`
-              : "スケジュールを編集して出勤日を登録しましょう。"}
+            : nextEvent
+              ? `次回 · ${formatDate(nextEvent.date)}${
+                  nextEventDaysAway != null ? `（${nextEventDaysAway}日後）` : ""
+                }${nextEvent.detail ? ` · ${nextEvent.detail}` : ""}`
+              : "スケジュールを編集して予定を登録しましょう。"}
         </p>
       )}
 
