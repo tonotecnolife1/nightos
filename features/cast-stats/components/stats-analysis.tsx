@@ -138,7 +138,7 @@ export function StatsAnalysis({ castId, name }: Props) {
               className="font-serif text-[16px] leading-[1.2] inline-block v5-metallic"
               style={{ letterSpacing: "0.04em" }}
             >
-              成績をママに見てもらう
+              さくらママから
             </div>
           </div>
         </div>
@@ -151,7 +151,7 @@ export function StatsAnalysis({ castId, name }: Props) {
                 className="m-0 mb-4 font-serif text-[13px] leading-[1.75] font-medium"
                 style={{ color: "#fdfcf9", letterSpacing: "0.02em" }}
               >
-                今月の数字を、さくらママが現状・課題・次にやることまで読み解くわ。ボタンを押してみて。
+                今月の数字を、ママが現状・課題・次にやることまで読み解くわ。ボタンを押してみて。
               </p>
               <button
                 type="button"
