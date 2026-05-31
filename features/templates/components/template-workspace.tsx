@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Card } from "@/components/nightos/card";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
 import { CustomerContextPicker } from "@/features/ruri-mama/components/customer-context-picker";
+import { AI_FETCH_OPTIONS, apiFetchJson, toUserMessage } from "@/lib/nightos/api-fetch";
 import { useCastId } from "@/lib/nightos/cast-context";
 import type { Bottle, CastMemo, Customer } from "@/types/nightos";
 import { CategoryTabs } from "./category-tabs";
@@ -81,17 +82,19 @@ export function TemplateWorkspace({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/generate-template", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerId,
-          castId: castId,
-          category,
-        }),
-      });
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data = (await res.json()) as { isStub: boolean; body: string };
+      const data = await apiFetchJson<{ isStub: boolean; body: string }>(
+        "/api/generate-template",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerId,
+            castId: castId,
+            category,
+          }),
+          ...AI_FETCH_OPTIONS,
+        },
+      );
       setAiTemplates((prev) => ({
         ...prev,
         [cacheKey]: {
@@ -102,7 +105,7 @@ export function TemplateWorkspace({
       }));
     } catch (err) {
       console.error(err);
-      setError("生成に失敗しました。もう一度お試しください。");
+      setError(toUserMessage(err));
     } finally {
       setLoading(false);
     }

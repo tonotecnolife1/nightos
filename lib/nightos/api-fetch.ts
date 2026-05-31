@@ -132,7 +132,7 @@ export async function apiFetch(
       if (!res.ok) {
         throw new ApiFetchError(
           "http",
-          `HTTP ${res.status}`,
+          `サーバーエラー (HTTP ${res.status})`,
           res.status,
         );
       }
@@ -189,3 +189,19 @@ export function toUserMessage(err: unknown): string {
   if (err instanceof ApiFetchError) return err.userMessage;
   return "予期しないエラーが発生しました。もう一度お試しください。";
 }
+
+/**
+ * AI(LLM) エンドポイント向けのプリセット。
+ *
+ * さくらママ系の生成 API は応答に時間がかかる（特にモバイル回線）ので
+ * タイムアウトを長く取り、リトライは 1 回に抑える（重い生成を何度も
+ * 叩かないため）。`apiFetchJson(url, { ...AI_FETCH_OPTIONS, body })` の
+ * ように展開して使う。
+ */
+export const AI_FETCH_OPTIONS: Pick<
+  ApiFetchOptions,
+  "timeoutMs" | "retries"
+> = {
+  timeoutMs: 45_000,
+  retries: 1,
+};

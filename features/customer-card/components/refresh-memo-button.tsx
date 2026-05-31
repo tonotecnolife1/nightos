@@ -3,6 +3,7 @@
 import { Check, Loader2, RefreshCw, X } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/nightos/card";
+import { AI_FETCH_OPTIONS, apiFetchJson, toUserMessage } from "@/lib/nightos/api-fetch";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -38,17 +39,19 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/refresh-customer-memo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerId, castId }),
-      });
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data = (await res.json()) as RefreshedMemo;
+      const data = await apiFetchJson<RefreshedMemo>(
+        "/api/refresh-customer-memo",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customerId, castId }),
+          ...AI_FETCH_OPTIONS,
+        },
+      );
       setPreview(data);
     } catch (err) {
       console.error(err);
-      setError("メモの更新に失敗しました");
+      setError(toUserMessage(err));
     } finally {
       setLoading(false);
     }

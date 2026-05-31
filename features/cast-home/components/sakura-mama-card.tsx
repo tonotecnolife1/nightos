@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Loader2, MessageCircle, RefreshCw, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
+import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 import { getUpcomingShifts } from "@/lib/nightos/schedule-store";
 
 interface Props {
@@ -78,17 +79,16 @@ export function SakuraMamaCard({ castId }: Props) {
     try {
       const today = todayKey();
       const upcomingShifts = getUpcomingShifts(today, 5);
-      const res = await fetch("/api/morning-briefing", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ castId, upcomingShifts }),
-      });
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data = (await res.json()) as {
+      const data = await apiFetchJson<{
         isStub: boolean;
         briefing: string;
         generatedAt: string;
-      };
+      }>("/api/morning-briefing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ castId, upcomingShifts }),
+        ...AI_FETCH_OPTIONS,
+      });
       const cached: CachedBriefing = {
         briefing: data.briefing,
         isStub: data.isStub,

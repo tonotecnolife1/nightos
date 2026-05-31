@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 import { cn } from "@/lib/utils";
 import type { LineScreenshot } from "@/types/nightos";
 import type { LineSummaryResponse } from "@/app/api/line-history-summary/route";
@@ -79,13 +80,15 @@ export function LineCommunicationSummary({
         service_tips: ss.extracted.service_tips,
         next_topics: ss.extracted.next_topics,
       }));
-      const res = await fetch("/api/line-history-summary", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerName, castName, summaries }),
-      });
-      if (!res.ok) throw new Error(`status ${res.status}`);
-      const data = (await res.json()) as LineSummaryResponse;
+      const data = await apiFetchJson<LineSummaryResponse>(
+        "/api/line-history-summary",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customerName, castName, summaries }),
+          ...AI_FETCH_OPTIONS,
+        },
+      );
       setNarrative(data.narrative);
       setIsStub(data.isStub);
       saveCache(customerId, {
