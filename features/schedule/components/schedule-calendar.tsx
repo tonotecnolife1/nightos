@@ -231,22 +231,26 @@ export function ScheduleCalendar({ castId, customers }: Props) {
                 dow === 6 && !shift && "text-sky-400",
               )}
             >
-              <span>{parseYMD(date).getDate()}</span>
+              <span className="leading-none">{parseYMD(date).getDate()}</span>
               {isWorking && (
-                <span className="text-[9px] opacity-80 leading-tight">
+                <span className="text-[9px] opacity-80 leading-none mt-0.5">
                   {shift?.startTime ?? "出勤"}
                 </span>
               )}
-              {hasDouhan && (
-                <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-gold" />
-              )}
-              {hasPlan && (
-                <span
-                  className={cn(
-                    "absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full",
-                    isWorking ? "bg-pearl-light/85" : "bg-wine-deep",
+              {(hasDouhan || hasPlan) && (
+                <span className="flex items-center gap-1 mt-1">
+                  {hasDouhan && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-gold" />
                   )}
-                />
+                  {hasPlan && (
+                    <span
+                      className={cn(
+                        "w-1.5 h-1.5 rounded-full",
+                        isWorking ? "bg-pearl-light" : "bg-wine-deep",
+                      )}
+                    />
+                  )}
+                </span>
               )}
             </button>
           );
