@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight, Bell, UserCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { CastHomeMenu } from "./cast-home-menu";
 import { loadSchedule, type ShiftEntry } from "@/lib/nightos/schedule-store";
 import { loadDouhansForCast } from "@/lib/nightos/douhan-store";
 import { pullCastSchedule } from "@/lib/nightos/schedule-sync";
@@ -171,7 +172,7 @@ export function CastHomeHero({
 
   return (
     <section className="v5-hero px-5 pt-12 pb-16">
-      {/* Top row — eyebrow + utility icons */}
+      {/* Top row — eyebrow + ☰ menu (マイページ / 通知 を内包) */}
       <div className="relative flex items-center justify-between mb-5">
         <div className="flex items-baseline gap-3">
           <span
@@ -192,39 +193,7 @@ export function CastHomeHero({
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/cast/my"
-            aria-label="マイページ"
-            className="w-9 h-9 rounded-full v5-ring-gold flex items-center justify-center transition"
-            style={{
-              background: "rgba(255,255,255,0.06)",
-              color: "rgba(253,252,249,0.85)",
-            }}
-          >
-            <UserCircle size={20} strokeWidth={1.6} />
-          </Link>
-          <button
-            type="button"
-            aria-label="通知"
-            className="relative w-9 h-9 rounded-full v5-ring-gold flex items-center justify-center"
-            style={{
-              background: "rgba(255,255,255,0.06)",
-              color: "rgba(253,252,249,0.85)",
-            }}
-          >
-            <Bell size={17} strokeWidth={1.6} />
-            {hasNotification && (
-              <span
-                className="absolute top-1.5 right-1.5 w-[7px] h-[7px] rounded-full"
-                style={{
-                  background: "var(--v5-gold-mid)",
-                  border: "1.5px solid #2D1818",
-                }}
-              />
-            )}
-          </button>
-        </div>
+        <CastHomeMenu hasNotification={hasNotification} />
       </div>
 
       {/* Small eyebrow above headline */}
