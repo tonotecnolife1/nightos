@@ -10,7 +10,8 @@ import {
   upsertShift,
   removeShift,
 } from "@/lib/nightos/schedule-store";
-import { loadAllDouhans } from "@/lib/nightos/douhan-store";
+import { loadAllDouhans, upsertDouhan } from "@/lib/nightos/douhan-store";
+import { CURRENT_STORE_ID } from "@/lib/nightos/constants";
 import type { Customer, Douhan } from "@/types/nightos";
 
 const DOW = ["日", "月", "火", "水", "木", "金", "土"];
@@ -50,6 +51,10 @@ export function ScheduleCalendar({ castId, customers }: Props) {
   }, [castId]);
 
   const refresh = useCallback(() => setSchedule(loadSchedule()), []);
+  const refreshDouhans = useCallback(
+    () => setDouhans(loadAllDouhans().filter((d) => d.cast_id === castId)),
+    [castId],
+  );
 
   // Build calendar grid
   const firstDay = new Date(viewYear, viewMonth, 1);
@@ -92,6 +97,21 @@ export function ScheduleCalendar({ castId, customers }: Props) {
   const handleCancel = () => {
     setSelected(null);
     setEditEntry(null);
+  };
+
+  const handleAddDouhan = (date: string, customerId: string, note: string) => {
+    const entry: Douhan = {
+      id: `d_${Date.now()}`,
+      cast_id: castId,
+      customer_id: customerId,
+      store_id: CURRENT_STORE_ID,
+      date,
+      note: note || null,
+      status: "scheduled",
+      created_at: new Date().toISOString(),
+    };
+    upsertDouhan(entry);
+    refreshDouhans();
   };
 
   const prevMonth = () => {
@@ -212,11 +232,14 @@ export function ScheduleCalendar({ castId, customers }: Props) {
           onCancel={handleCancel}
           customers={customers}
           douhans={douhanMap.get(selected) ?? []}
+          onAddDouhan={handleAddDouhan}
         />
       )}
     </div>
   );
 }
+
+type EditMode = "shift" | "douhan";
 
 function ShiftEditSheet({
   entry,
@@ -224,20 +247,35 @@ function ShiftEditSheet({
   onCancel,
   customers,
   douhans,
+  onAddDouhan,
 }: {
   entry: ShiftEntry;
   onSave: (e: ShiftEntry) => void;
   onCancel: () => void;
   customers: Customer[];
   douhans: Douhan[];
+  onAddDouhan: (date: string, customerId: string, note: string) => void;
 }) {
+  const [mode, setMode] = useState<EditMode>("shift");
   const [status, setStatus] = useState<ShiftStatus>(entry.status === "unknown" ? "working" : entry.status);
   const [startTime, setStartTime] = useState(entry.startTime ?? "20:00");
   const [endTime, setEndTime] = useState(entry.endTime ?? "01:00");
   const [note, setNote] = useState(entry.note ?? "");
 
+  // 同伴登録フォーム用
+  const [douhanCustomerId, setDouhanCustomerId] = useState("");
+  const [douhanNote, setDouhanNote] = useState("");
+  const canRegisterDouhan = Boolean(douhanCustomerId);
+
   const dateObj = parseYMD(entry.date);
   const label = `${dateObj.getMonth() + 1}/${dateObj.getDate()}（${DOW[dateObj.getDay()]}）`;
+
+  const handleRegisterDouhan = () => {
+    if (!canRegisterDouhan) return;
+    onAddDouhan(entry.date, douhanCustomerId, douhanNote);
+    setDouhanCustomerId("");
+    setDouhanNote("");
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-sm animate-fade-in">
@@ -249,95 +287,185 @@ function ShiftEditSheet({
           </button>
         </div>
 
-        {/* Status toggle */}
-        <div className="flex gap-2">
-          {(["working", "off"] as ShiftStatus[]).map((s) => (
+        {/* Mode toggle: シフト / 同伴登録 */}
+        <div className="flex gap-1 p-1 rounded-2xl bg-pearl-soft">
+          {([
+            { key: "shift" as EditMode, label: "シフト" },
+            { key: "douhan" as EditMode, label: "同伴登録" },
+          ]).map((m) => (
             <button
-              key={s}
+              key={m.key}
               type="button"
-              onClick={() => setStatus(s)}
+              onClick={() => setMode(m.key)}
               className={cn(
-                "flex-1 h-10 rounded-2xl border text-body-sm font-medium transition-all",
-                status === s
-                  ? s === "working"
-                    ? "bg-wine-deep text-pearl-light border-gold/40"
-                    : "bg-pearl-soft border-ink/[0.08] text-ink"
-                  : "bg-pearl-warm border-ink/[0.06] text-ink-soft hover:border-wine-deep/30",
+                "flex-1 h-9 rounded-xl text-body-sm font-medium transition-all",
+                mode === m.key
+                  ? "bg-wine-deep text-pearl-light shadow-soft"
+                  : "text-ink-soft hover:text-ink",
               )}
             >
-              {STATUS_STYLE[s].label}
+              {m.label}
             </button>
           ))}
-          <button
-            type="button"
-            onClick={() => onSave({ ...entry, status: "unknown" })}
-            className="px-3 h-10 rounded-2xl border border-ink/[0.06] text-body-sm text-ink-mute hover:bg-pearl-soft"
-          >
-            削除
-          </button>
         </div>
 
-        {/* Time pickers (working only) */}
-        {status === "working" && (
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <label className="text-label-sm text-ink-soft">開始時間</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
-                style={{ fontSize: "16px" }}
-              />
+        {mode === "shift" ? (
+          <>
+            {/* Status toggle */}
+            <div className="flex gap-2">
+              {(["working", "off"] as ShiftStatus[]).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStatus(s)}
+                  className={cn(
+                    "flex-1 h-10 rounded-2xl border text-body-sm font-medium transition-all",
+                    status === s
+                      ? s === "working"
+                        ? "bg-wine-deep text-pearl-light border-gold/40"
+                        : "bg-pearl-soft border-ink/[0.08] text-ink"
+                      : "bg-pearl-warm border-ink/[0.06] text-ink-soft hover:border-wine-deep/30",
+                  )}
+                >
+                  {STATUS_STYLE[s].label}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => onSave({ ...entry, status: "unknown" })}
+                className="px-3 h-10 rounded-2xl border border-ink/[0.06] text-body-sm text-ink-mute hover:bg-pearl-soft"
+              >
+                削除
+              </button>
             </div>
-            <div className="space-y-1">
-              <label className="text-label-sm text-ink-soft">終了時間</label>
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
-                style={{ fontSize: "16px" }}
-              />
-            </div>
-          </div>
-        )}
 
-        {/* Note */}
-        <div className="space-y-1">
-          <label className="text-label-sm text-ink-soft">メモ（任意）</label>
-          <input
-            type="text"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="例: 早上がり予定"
-            className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink placeholder:text-ink-mute"
-            style={{ fontSize: "16px" }}
-          />
-        </div>
-
-        {/* Douhan on this day */}
-        {douhans.length > 0 && (
-          <div className="rounded-2xl bg-champagne-soft/60 px-3 py-2.5 space-y-1">
-            <p className="text-[11px] font-medium text-ink-soft">この日の同伴</p>
-            {douhans.map((d) => {
-              const cust = customers.find((c) => c.id === d.customer_id);
-              return (
-                <div key={d.id} className="text-body-sm text-ink">
-                  {cust?.name ?? "不明"} — {d.note ?? "（メモなし）"}
+            {/* Time pickers (working only) */}
+            {status === "working" && (
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-label-sm text-ink-soft">開始時間</label>
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
+                    style={{ fontSize: "16px" }}
+                  />
                 </div>
-              );
-            })}
-          </div>
-        )}
+                <div className="space-y-1">
+                  <label className="text-label-sm text-ink-soft">終了時間</label>
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
+                    style={{ fontSize: "16px" }}
+                  />
+                </div>
+              </div>
+            )}
 
-        <button
-          type="button"
-          onClick={() => onSave({ date: entry.date, status, startTime: status === "working" ? startTime : undefined, endTime: status === "working" ? endTime : undefined, note: note || undefined })}
-          className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md"
-        >
-          保存
-        </button>
+            {/* Note */}
+            <div className="space-y-1">
+              <label className="text-label-sm text-ink-soft">メモ（任意）</label>
+              <input
+                type="text"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="例: 早上がり予定"
+                className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink placeholder:text-ink-mute"
+                style={{ fontSize: "16px" }}
+              />
+            </div>
+
+            {/* Douhan on this day */}
+            {douhans.length > 0 && (
+              <div className="rounded-2xl bg-champagne-soft/60 px-3 py-2.5 space-y-1">
+                <p className="text-[11px] font-medium text-ink-soft">この日の同伴</p>
+                {douhans.map((d) => {
+                  const cust = customers.find((c) => c.id === d.customer_id);
+                  return (
+                    <div key={d.id} className="text-body-sm text-ink">
+                      {cust?.name ?? "不明"} — {d.note ?? "（メモなし）"}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => onSave({ date: entry.date, status, startTime: status === "working" ? startTime : undefined, endTime: status === "working" ? endTime : undefined, note: note || undefined })}
+              className="w-full h-12 rounded-2xl bg-wine-deep text-pearl-light font-semibold tracking-[0.04em] text-body-md"
+            >
+              保存
+            </button>
+          </>
+        ) : (
+          <>
+            {/* 既存の同伴 */}
+            {douhans.length > 0 && (
+              <div className="rounded-2xl bg-champagne-soft/60 px-3 py-2.5 space-y-1">
+                <p className="text-[11px] font-medium text-ink-soft">この日の同伴</p>
+                {douhans.map((d) => {
+                  const cust = customers.find((c) => c.id === d.customer_id);
+                  return (
+                    <div key={d.id} className="text-body-sm text-ink">
+                      {cust?.name ?? "不明"} — {d.note ?? "（メモなし）"}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* 顧客選択（必須） */}
+            <div className="space-y-1">
+              <label className="text-label-sm text-ink-soft">お客様（必須）</label>
+              <select
+                value={douhanCustomerId}
+                onChange={(e) => setDouhanCustomerId(e.target.value)}
+                className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink focus:outline-none focus:border-wine-deep"
+                style={{ fontSize: "16px" }}
+              >
+                <option value="" disabled>
+                  お客様を選ぶ
+                </option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* メモ（任意） */}
+            <div className="space-y-1">
+              <label className="text-label-sm text-ink-soft">場所やメモ（任意）</label>
+              <input
+                type="text"
+                value={douhanNote}
+                onChange={(e) => setDouhanNote(e.target.value)}
+                placeholder="例: 〇〇で待ち合わせ"
+                className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink placeholder:text-ink-mute"
+                style={{ fontSize: "16px" }}
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleRegisterDouhan}
+              disabled={!canRegisterDouhan}
+              className={cn(
+                "w-full h-12 rounded-2xl font-semibold tracking-[0.04em] text-body-md transition-all",
+                canRegisterDouhan
+                  ? "bg-wine-deep text-pearl-light shadow-luxe active:scale-[0.98]"
+                  : "bg-pearl-soft text-ink-mute cursor-not-allowed",
+              )}
+            >
+              同伴を登録
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
