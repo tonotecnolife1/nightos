@@ -8,7 +8,7 @@ export default function StoreApprovalsPage() {
       <div className="animate-fade-in">
         <PageHeader
           title="承認キュー"
-          subtitle="管理者変更の承認待ち"
+          subtitle="係変更の承認待ち"
           showBack
         />
         <div className="px-5 pt-4 pb-6">

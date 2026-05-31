@@ -58,7 +58,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
       value: (c) =>
         c.category === "vip" ? "VIP" : c.category === "new" ? "新規" : "常連",
     },
-    { header: "担当キャスト", value: (c) => castName(c.cast_id) },
+    { header: "係", value: (c) => castName(c.manager_cast_id ?? c.cast_id) },
     { header: "誕生日", value: (c) => c.birthday ?? "" },
     { header: "職業", value: (c) => c.job ?? "" },
     { header: "好み", value: (c) => c.favorite_drink ?? "" },
@@ -142,7 +142,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
                   </Badge>
                 </div>
                 <div className="text-[11px] text-ink-mute truncate">
-                  {[c.job, c.favorite_drink, `担当: ${castName(c.cast_id)}`]
+                  {[c.job, c.favorite_drink, `係: ${castName(c.manager_cast_id ?? c.cast_id)}`]
                     .filter(Boolean)
                     .join(" · ")}
                 </div>

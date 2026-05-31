@@ -47,7 +47,7 @@ export default async function CastCustomerListPage() {
         {/* Funnel snapshot */}
         <div className="grid grid-cols-2 gap-2.5">
           <StatCard
-            label={isCabaret ? "フリー" : "担当"}
+            label={isCabaret ? "フリー" : "係"}
             value={funnel.assigned}
             unit="人"
             tone="rose"

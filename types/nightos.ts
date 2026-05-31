@@ -113,9 +113,10 @@ export interface Customer {
   line_exchanged_at?: string | null;
 
   /**
-   * この顧客を「管理する」ママまたは姉さんの id。
-   * 現場の担当者 (cast_id) とは別概念で、上位ポジション。
-   * 担当者がキャスト(help)なら、管理者はその上の姉さんかママ。
+   * この顧客の「係」（メインのホステス）の id。
+   * お客様を店に呼んだ本人で、売上や指名（同伴など）の成績はこの係につく。
+   * 席についてサポートする現場のホステス (cast_id) が係と異なる場合、
+   * その cast_id はヘルプとして扱う。
    */
   manager_cast_id?: string | null;
 

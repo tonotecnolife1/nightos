@@ -16,9 +16,9 @@ import type { Cast } from "@/types/nightos";
 interface Props {
   filters: CustomerFilters;
   onChange: (next: CustomerFilters) => void;
-  /** マネージャー候補（ママ/姉さん） */
+  /** 係候補（ママ/姉さん） */
   managerOptions: Cast[];
-  /** 担当者候補（全キャスト） */
+  /** ヘルプ候補（全キャスト） */
   castOptions: Cast[];
   /** 全件数 */
   totalCount: number;
@@ -151,7 +151,7 @@ export function CustomerFilterBar({
 
           {/* Manager + Cast (selects) */}
           <div className="grid grid-cols-2 gap-2">
-            <FilterRow label="管理者">
+            <FilterRow label="係">
               <select
                 value={filters.managerId}
                 onChange={(e) => update("managerId", e.target.value)}
@@ -166,7 +166,7 @@ export function CustomerFilterBar({
                 ))}
               </select>
             </FilterRow>
-            <FilterRow label="担当者">
+            <FilterRow label="ヘルプ">
               <select
                 value={filters.castId}
                 onChange={(e) => update("castId", e.target.value)}

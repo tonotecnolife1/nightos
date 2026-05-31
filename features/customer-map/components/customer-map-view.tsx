@@ -350,13 +350,19 @@ function ReferralNodeCard({
           </span>
         )}
       </div>
-      {/* 2行目: 管理：X、担当：Y、職業 */}
+      {/* 2行目: 係：X（、ヘルプ：Y）、職業 */}
       <div className="text-[11px] text-ink-soft mt-1 truncate">
-        <span>管理：</span>
-        <span className="text-ink font-medium">{manager?.name ?? "—"}</span>
-        <span className="text-ink-mute">、</span>
-        <span>担当：</span>
-        <span className="text-ink font-medium">{cast?.name ?? "—"}</span>
+        <span>係：</span>
+        <span className="text-ink font-medium">
+          {manager?.name ?? cast?.name ?? "—"}
+        </span>
+        {cast && manager && cast.id !== manager.id && (
+          <>
+            <span className="text-ink-mute">、</span>
+            <span>ヘルプ：</span>
+            <span className="text-ink font-medium">{cast.name}</span>
+          </>
+        )}
         {node.customer.job && (
           <>
             <span className="text-ink-mute">、</span>
@@ -368,9 +374,9 @@ function ReferralNodeCard({
   );
 }
 
-// ═══════════════ Cast-based (manager → cast → customers) ═══════════════
-// Layout: 管理者ごとに上から縦に階層で並べる。
-//         管理者ブロック内で 担当キャスト → 顧客 と更に字下げ。
+// ═══════════════ Cast-based (係 → ヘルプ → customers) ═══════════════
+// Layout: 係ごとに上から縦に階層で並べる。
+//         係ブロック内で ヘルプ → 顧客 と更に字下げ。
 
 function CastBasedMap({
   customers,
@@ -400,7 +406,7 @@ function ManagerBlock({
 }) {
   const managerLabel = group.manager
     ? `${group.manager.name}さん`
-    : "管理者未割り当て";
+    : "係未割り当て";
 
   return (
     <div className="flex flex-col gap-2 rounded-card bg-champagne-soft/60/20 border border-gold/30 p-2.5">

@@ -36,7 +36,7 @@ export default async function MamaCustomerDetailPage({
     <div className="animate-fade-in">
       <PageHeader
         title="お客様カルテ"
-        subtitle={`担当: ${assignedCast?.name ?? "不明"}さん`}
+        subtitle={`係: ${assignedCast?.name ?? "不明"}さん`}
         showBack
       />
       <div className="px-5 pt-4 pb-6 space-y-5">
