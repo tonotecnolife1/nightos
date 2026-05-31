@@ -8,6 +8,7 @@ import { CustomerPageShell } from "@/features/cast-customers/components/customer
 import {
   getAllCasts,
   getCustomersForCast,
+  getRecentVisitsForCast,
 } from "@/lib/nightos/supabase-queries";
 import { getCurrentCastId, getCurrentVenueType } from "@/lib/nightos/auth";
 import { calculateFunnelStats } from "@/lib/nightos/referral-tree";
@@ -16,10 +17,16 @@ export const dynamic = "force-dynamic";
 
 export default async function CastCustomerListPage() {
   const castId = await getCurrentCastId();
-  const [allCasts, allCustomers, venueType] = await Promise.all([
+  // 優先表示の自動判定（最終来店・来店頻度・状態）に使う来店履歴。
+  // 直近 18 ヶ月ぶんを取得して顧客ごとに集計する。
+  const sinceIso = new Date(
+    Date.now() - 18 * 30 * 24 * 60 * 60 * 1000,
+  ).toISOString();
+  const [allCasts, allCustomers, venueType, visits] = await Promise.all([
     getAllCasts(),
     getCustomersForCast(castId),
     getCurrentVenueType(),
+    getRecentVisitsForCast(castId, sinceIso),
   ]);
   const isCabaret = venueType === "cabaret";
 
@@ -84,9 +91,11 @@ export default async function CastCustomerListPage() {
           </Card>
         ) : (
           <CustomerPageShell
+            castId={castId}
             allCasts={allCasts}
             allMyCustomers={customers}
             helpCustomers={!isCabaret ? helpCustomers : []}
+            visits={visits}
           />
         )}
       </div>
