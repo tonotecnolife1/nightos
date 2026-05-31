@@ -54,6 +54,19 @@ const categoryLabel: Record<string, { text: string; cls: string }> = {
   },
 };
 
+/**
+ * 連絡優先度リボン（カード左端）。rank が小さい＝優先度が高いほど、
+ * 帯を太く・金色を濃く（メタリック）して、一覧をスクロールせずとも
+ * 「どの順で連絡すべきか」が一目で分かるようにする。
+ */
+function priorityRibbon(rank: number): { width: string; background: string } {
+  if (rank <= 2)
+    return { width: "6px", background: "var(--v5-champ-gold)" }; // 最優先: 強いメタリックゴールド
+  if (rank <= 5)
+    return { width: "4px", background: "var(--gold)" }; // 中優先: 単色ゴールド
+  return { width: "3px", background: "rgba(140,111,68,0.3)" }; // それ以下: 淡いブラス
+}
+
 interface Props {
   target: FollowTarget;
   contacted: boolean;
@@ -72,6 +85,7 @@ export function FollowTargetCard({
   const [confirming, setConfirming] = useState(false);
   const cat = categoryLabel[customer.category] ?? categoryLabel.regular;
   const isTop = rank <= 2;
+  const ribbon = priorityRibbon(rank);
 
   const initial = formatCustomerName(customer.name).charAt(0) || "客";
 
@@ -83,15 +97,11 @@ export function FollowTargetCard({
         contacted && "opacity-50",
       )}
     >
-      {/* V5: 優先度リボン (左端 champagne-gold metallic) */}
+      {/* V5: 優先度リボン (左端 champagne-gold metallic)。rank で太さ・濃さを段階表示 */}
       <span
         aria-hidden
-        className="absolute left-0 top-0 bottom-0 w-1"
-        style={{
-          background: isTop
-            ? "var(--v5-champ-gold)"
-            : "linear-gradient(180deg, rgba(212,168,168,0.45), rgba(232,210,170,0.55))",
-        }}
+        className="absolute left-0 top-0 bottom-0"
+        style={{ width: ribbon.width, background: ribbon.background }}
       />
 
       {/* ── Contacted banner ── */}
