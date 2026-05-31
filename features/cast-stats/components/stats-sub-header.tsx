@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { MoreMenu } from "@/components/nightos/more-menu";
@@ -83,14 +83,6 @@ export function StatsSubHeader({ year, month }: Props) {
         style={{ background: "var(--gold-metallic)", opacity: 0.45 }}
       />
       <div className="flex items-center gap-1.5">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          aria-label="戻る"
-          className="-ml-2 w-9 h-9 rounded-full flex items-center justify-center text-ink-soft hover:bg-pearl-soft transition-colors"
-        >
-          <ChevronLeft size={20} strokeWidth={1.8} />
-        </button>
         <div className="flex-1 min-w-0">
           <h1
             className="m-0 font-serif text-[22px] leading-[1.2] font-medium text-ink"
