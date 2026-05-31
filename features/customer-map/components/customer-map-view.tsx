@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronRight, Crown, User, Users } from "lucide-react";
+import { ChevronDown, ChevronRight, Crown, Star, User, Users } from "lucide-react";
 import type { Cast, Customer } from "@/types/nightos";
 import {
   buildCastBasedTree,
@@ -17,9 +17,81 @@ interface Props {
   customers: Customer[];
   casts: Cast[];
   mode: "customer" | "cast";
+  /** 星をつけた顧客の id 集合（指定時のみ星 UI を表示） */
+  starredIds?: Set<string>;
+  /** 星のオン/オフ切替。未指定なら星ボタン・ピン留め帯を出さない */
+  onToggleStar?: (customerId: string) => void;
 }
 
-export function CustomerMapView({ customers, casts, mode }: Props) {
+// 星の状態とハンドラをツリーの各階層へ配るためのコンテキスト。
+// （prop drilling を避けるための内部利用）
+const StarContext = createContext<{
+  starred: Set<string>;
+  toggle: (id: string) => void;
+} | null>(null);
+
+function StarButton({ id }: { id: string }) {
+  const ctx = useContext(StarContext);
+  if (!ctx) return null;
+  const active = ctx.starred.has(id);
+  return (
+    <button
+      type="button"
+      aria-label={active ? "星を外す" : "星をつける"}
+      aria-pressed={active}
+      onClick={(e) => {
+        // 親が Link のためデフォルト遷移と伝播を止める
+        e.preventDefault();
+        e.stopPropagation();
+        ctx.toggle(id);
+      }}
+      className="shrink-0 w-7 h-7 -ml-1 flex items-center justify-center rounded-full hover:bg-pearl-soft active:scale-90 transition"
+    >
+      <Star
+        size={14}
+        className={cn(
+          active ? "fill-current text-gold-deep" : "text-ink-mute",
+        )}
+      />
+    </button>
+  );
+}
+
+function PinnedStarred({ customers }: { customers: Customer[] }) {
+  if (customers.length === 0) return null;
+  return (
+    <div className="space-y-0.5 rounded-card bg-champagne-soft/60/20 border border-gold/30 p-2.5">
+      <div className="flex items-center gap-1.5 px-0.5 mb-0.5">
+        <Star size={12} className="fill-current text-gold-deep" />
+        <span className="text-[11px] font-semibold text-ink">
+          星をつけたお客様
+        </span>
+        <span className="text-[10px] text-ink-mute ml-auto">
+          {customers.length}人
+        </span>
+      </div>
+      {customers.map((c) => (
+        <CustomerLeaf key={c.id} customer={c} />
+      ))}
+    </div>
+  );
+}
+
+export function CustomerMapView({
+  customers,
+  casts,
+  mode,
+  starredIds,
+  onToggleStar,
+}: Props) {
+  const ctxValue = useMemo(
+    () =>
+      onToggleStar
+        ? { starred: starredIds ?? new Set<string>(), toggle: onToggleStar }
+        : null,
+    [starredIds, onToggleStar],
+  );
+
   if (customers.length === 0) {
     return (
       <EmptyState
@@ -31,10 +103,23 @@ export function CustomerMapView({ customers, casts, mode }: Props) {
     );
   }
 
-  return mode === "customer" ? (
-    <CustomerBasedMap customers={customers} casts={casts} />
-  ) : (
-    <CastBasedMap customers={customers} casts={casts} />
+  const starredCustomers = ctxValue
+    ? customers.filter((c) => ctxValue.starred.has(c.id))
+    : [];
+
+  return (
+    <StarContext.Provider value={ctxValue}>
+      <div className="space-y-3">
+        {starredCustomers.length > 0 && (
+          <PinnedStarred customers={starredCustomers} />
+        )}
+        {mode === "customer" ? (
+          <CustomerBasedMap customers={customers} casts={casts} />
+        ) : (
+          <CastBasedMap customers={customers} casts={casts} />
+        )}
+      </div>
+    </StarContext.Provider>
   );
 }
 
@@ -257,8 +342,9 @@ function ReferralNodeCard({
         isRoot ? "border-gold/30" : "border-pearl-soft",
       )}
     >
-      {/* 1行目: 名前 + ファネル状態バッジ（担当ありは表示しない） [余白] 紹介元ラベル */}
+      {/* 1行目: 星 + 名前 + ファネル状態バッジ（担当ありは表示しない） [余白] 紹介元ラベル */}
       <div className="flex items-center gap-2 min-w-0">
+        <StarButton id={node.customer.id} />
         <span className="text-body-sm font-semibold text-ink truncate">
           {formatCustomerName(node.customer.name)}
         </span>
@@ -421,6 +507,7 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
       href={`/cast/customers/${customer.id}`}
       className="flex items-center gap-2 px-2 py-1.5 rounded-btn hover:bg-pearl-soft"
     >
+      <StarButton id={customer.id} />
       <span className="text-[12px] text-ink flex-1 truncate">
         {formatCustomerName(customer.name)}
       </span>
