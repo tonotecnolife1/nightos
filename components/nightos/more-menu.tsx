@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import { Menu, Settings, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Menu } from "lucide-react";
+import { Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CAST_NAV_ITEMS, isTabBarVisible } from "./cast-nav";
 
@@ -16,36 +16,36 @@ interface Props {
 /**
  * 全画面ナビゲーション用の「☰」メニュー。
  *
+ * V5: ハンバーガー直下に上向きキャレット付きの吹き出し (bordeaux gradient +
+ * cream text + champagne-gold アクセント) を出す。さくらママカードと同じ
+ * dark-on-light の正典パターン。
+ *
  * - bottom tab が非表示の画面（さくらママ・チャット詳細）では全タブへ届く
  * - bottom tab 表示中は重複を避け、tab bar に無い導線（予定）と設定だけ出す
+ * - 現在地そのものは出さない（例: スケジュール画面の「予定」）
  *
- * シート本体は document.body へ portal する。PageHeader 等の `backdrop-blur`
- * を持つ sticky 親は `position: fixed` の含有ブロックになり、portal しないと
- * シートがヘッダー内に閉じ込められて画面外へはみ出すため。
+ * 吹き出しはボタンの相対配置に対する `absolute` で出すため、PageHeader の
+ * `backdrop-blur` 内でも画面外へはみ出さない（`fixed` を使わない）。
  */
 export function MoreMenu({ tone = "default" }: Props) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  // open 直後に true へ倒して右からのスライドインを transition で駆動する
-  // （tailwind に slide-in-right の keyframe を増やさず実現するため）。
-  const [shown, setShown] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() ?? "";
 
-  useEffect(() => setMounted(true), []);
-
+  // 外側クリック / Escape で閉じる。
   useEffect(() => {
     if (!open) return;
-    const raf = requestAnimationFrame(() => setShown(true));
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
+    const onPointer = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
     document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
+    document.addEventListener("pointerdown", onPointer);
     return () => {
-      cancelAnimationFrame(raf);
-      setShown(false);
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      document.removeEventListener("pointerdown", onPointer);
     };
   }, [open]);
 
@@ -55,16 +55,34 @@ export function MoreMenu({ tone = "default" }: Props) {
   // tab bar 非表示の画面ではメニューが唯一のナビなので全項目を出す。
   // いずれの場合も現在地そのものは出さない（例: スケジュール画面の「予定」）。
   const tabBarVisible = isTabBarVisible(pathname);
-  const items = CAST_NAV_ITEMS.filter(
+  const navItems = CAST_NAV_ITEMS.filter(
     (it) => (tabBarVisible ? !it.inTabBar : true) && !it.match(pathname),
   );
 
+  const items = [
+    ...navItems.map((it) => ({
+      key: it.key,
+      label: it.label,
+      href: it.href,
+      icon: it.icon,
+      active: it.match(pathname),
+    })),
+    {
+      key: "settings",
+      label: "アカウント設定",
+      href: "/settings",
+      icon: Settings,
+      active: pathname.startsWith("/settings"),
+    },
+  ];
+
   return (
-    <>
+    <div ref={rootRef} className="relative">
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => setOpen((v) => !v)}
         aria-label="メニュー"
+        aria-expanded={open}
         className={cn(
           "w-9 h-9 rounded-full flex items-center justify-center transition",
           // tone="ruri" のヘッダーも地は淡い pearl なので、旧 dark-hero 用の
@@ -72,83 +90,77 @@ export function MoreMenu({ tone = "default" }: Props) {
           isRuri
             ? "bg-wine-deep/10 hover:bg-wine-deep/20 text-wine-deep"
             : "bg-pearl-warm/70 hover:bg-pearl-warm text-ink-soft",
+          open && "bg-wine-deep/15 text-wine-deep",
         )}
       >
         <Menu size={18} />
       </button>
 
-      {open &&
-        mounted &&
-        createPortal(
-          <div className="fixed inset-0 z-[70]">
-            <div
-              className="absolute inset-0 bg-ink/40 animate-fade-overlay"
-              onClick={() => setOpen(false)}
-              aria-hidden
-            />
-            {/* 右パネル: ハンバーガー (右上) から右端を伝って出る。内容の高さに
-                合わせて縮み、無駄な余白を作らない (最大でも画面高でスクロール)。 */}
-            <div
-              className={cn(
-                "absolute top-0 right-0 max-h-dvh overflow-y-auto w-[min(84vw,320px)] rounded-bl-[24px] bg-pearl-warm shadow-warm",
-                "transition-transform duration-300 ease-out",
-                shown ? "translate-x-0" : "translate-x-full",
-              )}
-            >
-              <div className="sticky top-0 z-10 flex items-center justify-between bg-pearl-warm border-b border-ink/[0.06] px-5 pb-3 pt-safe">
-                <h2 className="font-display text-[18px] leading-tight font-medium text-ink">
-                  メニュー
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  aria-label="閉じる"
-                  className="w-8 h-8 rounded-full border border-ink/[0.08] bg-pearl-warm flex items-center justify-center text-ink-secondary hover:bg-pearl-soft"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-
-              <ul className="px-3 pt-3 pb-2">
-                {items.map((it) => {
-                  const Icon = it.icon;
-                  const active = it.match(pathname);
-                  return (
-                    <li key={it.key}>
-                      <Link
-                        href={it.href}
-                        onClick={() => setOpen(false)}
-                        className={cn(
-                          "flex items-center gap-3 px-4 py-3 rounded-card border transition",
-                          active
-                            ? "border-gold/30 bg-champagne-soft/60 text-gold-deep"
-                            : "border-transparent text-ink hover:bg-pearl-soft",
-                        )}
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-full mt-2.5 z-[70] w-[208px] origin-top-right animate-fade-in"
+        >
+          {/* 上向きキャレット (吹き出しの尻尾) */}
+          <span
+            aria-hidden
+            className="absolute -top-1.5 right-3 w-3 h-3 rotate-45 rounded-[2px]"
+            style={{
+              background: "var(--v5-bordeaux-deep)",
+              boxShadow: "var(--v5-shadow-luxe)",
+            }}
+          />
+          <div
+            className="relative overflow-hidden rounded-[18px] p-1.5"
+            style={{
+              background: "var(--v5-bordeaux)",
+              boxShadow: "var(--v5-shadow-luxe)",
+              border: "1px solid rgba(235,217,168,0.18)",
+            }}
+          >
+            <ul className="flex flex-col">
+              {items.map((it) => {
+                const Icon = it.icon;
+                return (
+                  <li key={it.key}>
+                    <Link
+                      href={it.href}
+                      role="menuitem"
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        "group flex items-center justify-between gap-3 rounded-[12px] pl-3.5 pr-2 py-2.5 transition-colors",
+                        it.active
+                          ? "bg-[rgba(20,10,10,0.45)]"
+                          : "hover:bg-[rgba(20,10,10,0.28)]",
+                      )}
+                    >
+                      <span
+                        className="text-[13px] font-medium tracking-[0.06em]"
+                        style={{
+                          color: it.active
+                            ? "var(--v5-gold-on-dark)"
+                            : "var(--v5-ink-on-dark)",
+                        }}
                       >
-                        <Icon size={18} />
-                        <span className="text-body-md font-medium">
-                          {it.label}
-                        </span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-
-              <div className="px-3 pt-2 pb-safe border-t border-ink/[0.06]">
-                <Link
-                  href="/settings"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-card text-ink-secondary hover:bg-pearl-soft"
-                >
-                  <Settings size={16} />
-                  <span className="text-body-md">アカウント設定</span>
-                </Link>
-              </div>
-            </div>
-          </div>,
-          document.body,
-        )}
-    </>
+                        {it.label}
+                      </span>
+                      <span
+                        className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center"
+                        style={{
+                          background: "rgba(235,217,168,0.12)",
+                          color: "var(--v5-gold-on-dark)",
+                        }}
+                      >
+                        <Icon size={14} />
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
