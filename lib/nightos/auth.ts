@@ -65,6 +65,16 @@ export const getCurrentCastId = cache(async (): Promise<string> => {
 });
 
 /**
+ * 現在のユーザーが属する店舗 ID。cast / mama / store いずれのロールでも
+ * nightos_casts 行の store_id を返す。店舗スコープのキャッシュキーに使う。
+ * mock / 未認証では null。
+ */
+export const getCurrentStoreId = cache(async (): Promise<string | null> => {
+  const cast = await getCurrentCast();
+  return cast?.store_id ?? null;
+});
+
+/**
  * For manager views: get the cast ID of the current user if they
  * have a management role (mama/oneesan), otherwise fall back to
  * CURRENT_MAMA_ID.
@@ -162,6 +172,13 @@ export const getCurrentVenueType = cache(async (): Promise<
   // stale demo cookie (set while trying キャバクラ) is still in the browser.
   if (cast && isSupabaseConfigured()) {
     try {
+      // 店舗の業態は「固定情報」。サービスロールキーがあれば store_id を
+      // キーに 5 分キャッシュした経路で取得し、遷移ごとの再問い合わせを避ける。
+      const { isServiceRoleConfigured } = await import("@/lib/supabase/service");
+      if (cast.store_id && isServiceRoleConfigured()) {
+        const { getVenueTypeForStore } = await import("./supabase-queries");
+        return await getVenueTypeForStore(cast.store_id);
+      }
       const { getVenueTypeForCastReal } = await import("./supabase-real");
       return await getVenueTypeForCastReal(cast.id);
     } catch {

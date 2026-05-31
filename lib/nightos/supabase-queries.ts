@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+import { isServiceRoleConfigured } from "@/lib/supabase/service";
 import type {
   Bottle,
   Cast,
@@ -221,12 +223,62 @@ export async function getCastById(castId: string): Promise<Cast | null> {
 
 // ═══════════════ Store-side queries ═══════════════
 
+// ─────────────────────────────────────────────────────────────
+// 店舗スコープの「固定情報」キャッシュ（5 分）。
+//
+// キャスト一覧・業態は店舗ごとに変わるが更新頻度が低い。store_id を
+// キーに unstable_cache (Data Cache) へ載せ、ページ遷移ごとの再取得を
+// 避ける。キャッシュ内ではサービスロール + store_id 明示フィルタを使う
+// （RLS 非依存・店舗混在を防止）。サービスロール未設定なら従来の RLS
+// 経路にフォールバックする。
+// ─────────────────────────────────────────────────────────────
+const STORE_REFERENCE_TTL = 300; // 5 分
+
+function allCastsForStoreCached(storeId: string): Promise<Cast[]> {
+  return unstable_cache(
+    async () => {
+      const { getAllCastsForStoreService } = await import("./supabase-service");
+      return getAllCastsForStoreService(storeId);
+    },
+    ["all-casts-by-store", storeId],
+    { revalidate: STORE_REFERENCE_TTL, tags: [`store-${storeId}-casts`] },
+  )();
+}
+
 export async function getAllCasts(): Promise<Cast[]> {
+  if (isSupabaseConfigured() && isServiceRoleConfigured()) {
+    try {
+      const { getCurrentStoreId } = await import("./auth");
+      const storeId = await getCurrentStoreId();
+      if (storeId) return await allCastsForStoreCached(storeId);
+    } catch (err) {
+      console.error(
+        "[supabase] getAllCasts cached path failed, falling back:",
+        err,
+      );
+    }
+  }
   return withFallback(
     "getAllCasts",
     () => getAllCastsReal(),
     () => [...mockCasts],
   );
+}
+
+/** 店舗の業態を 5 分キャッシュで取得（auth.getCurrentVenueType から使用）。 */
+export function getVenueTypeForStore(
+  storeId: string,
+): Promise<"club" | "cabaret"> {
+  return unstable_cache(
+    async () => {
+      const { getVenueTypeForStoreService } = await import(
+        "./supabase-service"
+      );
+      return getVenueTypeForStoreService(storeId);
+    },
+    ["venue-type-by-store", storeId],
+    { revalidate: STORE_REFERENCE_TTL, tags: [`store-${storeId}-venue`] },
+  )();
 }
 
 /**
