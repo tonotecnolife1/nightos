@@ -46,15 +46,6 @@ export default async function CastCustomerListPage() {
         title="顧客リスト"
         subtitle={`${customers.length}人のお客様`}
         showBack
-        right={
-          <Link
-            href="/cast/customers/new"
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amethyst-muted text-amethyst-dark text-label-sm font-medium border border-amethyst-border hover:bg-amethyst hover:text-pearl transition-colors"
-          >
-            <UserPlus size={14} />
-            新規
-          </Link>
-        }
       />
       <div className="px-5 pt-3 pb-6 space-y-5">
         {/* Funnel snapshot */}
