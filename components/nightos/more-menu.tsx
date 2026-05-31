@@ -26,18 +26,24 @@ interface Props {
 export function MoreMenu({ tone = "default" }: Props) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  // open 直後に true へ倒して右からのスライドインを transition で駆動する
+  // （tailwind に slide-in-right の keyframe を増やさず実現するため）。
+  const [shown, setShown] = useState(false);
   const pathname = usePathname() ?? "";
 
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!open) return;
+    const raf = requestAnimationFrame(() => setShown(true));
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
+      cancelAnimationFrame(raf);
+      setShown(false);
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
@@ -47,8 +53,11 @@ export function MoreMenu({ tone = "default" }: Props) {
 
   // tab bar 表示中はそこに出ている導線を除外（重複排除）。
   // tab bar 非表示の画面ではメニューが唯一のナビなので全項目を出す。
+  // いずれの場合も現在地そのものは出さない（例: スケジュール画面の「予定」）。
   const tabBarVisible = isTabBarVisible(pathname);
-  const items = CAST_NAV_ITEMS.filter((it) => (tabBarVisible ? !it.inTabBar : true));
+  const items = CAST_NAV_ITEMS.filter(
+    (it) => (tabBarVisible ? !it.inTabBar : true) && !it.match(pathname),
+  );
 
   return (
     <>
@@ -77,8 +86,15 @@ export function MoreMenu({ tone = "default" }: Props) {
               onClick={() => setOpen(false)}
               aria-hidden
             />
-            <div className="absolute bottom-0 left-0 right-0 mx-auto max-w-[520px] max-h-[80dvh] overflow-y-auto rounded-t-[28px] bg-pearl-warm shadow-warm animate-slide-up">
-              <div className="sticky top-0 z-10 flex items-center justify-between bg-pearl-warm border-b border-ink/[0.06] px-5 pb-3 pt-5">
+            {/* 右ドロワー: ハンバーガー (右上) からそのまま伸びるように右端から出す */}
+            <div
+              className={cn(
+                "absolute top-0 right-0 bottom-0 flex flex-col w-[min(84vw,320px)] rounded-l-[24px] bg-pearl-warm shadow-warm",
+                "transition-transform duration-300 ease-out",
+                shown ? "translate-x-0" : "translate-x-full",
+              )}
+            >
+              <div className="shrink-0 flex items-center justify-between border-b border-ink/[0.06] px-5 pb-3 pt-safe">
                 <h2 className="font-display text-[18px] leading-tight font-medium text-ink">
                   メニュー
                 </h2>
@@ -92,7 +108,7 @@ export function MoreMenu({ tone = "default" }: Props) {
                 </button>
               </div>
 
-              <ul className="px-3 pt-3 pb-4">
+              <ul className="flex-1 overflow-y-auto px-3 pt-3 pb-4">
                 {items.map((it) => {
                   const Icon = it.icon;
                   const active = it.match(pathname);
@@ -118,7 +134,7 @@ export function MoreMenu({ tone = "default" }: Props) {
                 })}
               </ul>
 
-              <div className="px-3 pb-6 pt-2 border-t border-ink/[0.06]">
+              <div className="shrink-0 px-3 pt-2 pb-safe border-t border-ink/[0.06]">
                 <Link
                   href="/settings"
                   onClick={() => setOpen(false)}

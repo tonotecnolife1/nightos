@@ -97,7 +97,7 @@ export function StatsGoalCard({
           className="absolute left-0 top-0 bottom-0 rounded-pill"
           style={{
             width: `${Math.min(pct, 100)}%`,
-            background: done ? "var(--success)" : barColor,
+            background: done ? "var(--rose-gold-metallic)" : barColor,
             boxShadow:
               "inset 0 1px 0 rgba(253,248,240,0.7), 0 1px 3px rgba(110,42,51,0.18)",
           }}
@@ -109,7 +109,7 @@ export function StatsGoalCard({
           className="font-display text-[22px] leading-none tabular-nums"
           style={{
             letterSpacing: "0.02em",
-            color: done ? "var(--success)" : "var(--rose-gold-ink)",
+            color: done ? "var(--wine-deep)" : "var(--rose-gold-ink)",
           }}
         >
           {pct}
@@ -125,7 +125,7 @@ export function StatsGoalCard({
           style={{ letterSpacing: "0.04em" }}
         >
           {done ? (
-            <span className="text-success font-medium">目標達成 ✨</span>
+            <span className="text-wine-deep font-medium">目標達成 ✨</span>
           ) : (
             <>
               残り {prefix}

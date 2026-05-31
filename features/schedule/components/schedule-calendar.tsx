@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronRight, Pencil, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -243,12 +243,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
                     <span className="w-1.5 h-1.5 rounded-full bg-gold" />
                   )}
                   {hasPlan && (
-                    <span
-                      className={cn(
-                        "w-1.5 h-1.5 rounded-full",
-                        isWorking ? "bg-pearl-light" : "bg-wine-deep",
-                      )}
-                    />
+                    <span className="w-1.5 h-1.5 rounded-full bg-wine-soft" />
                   )}
                 </span>
               )}
@@ -272,7 +267,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
           同伴あり
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-wine-deep inline-block" />
+          <span className="w-1.5 h-1.5 rounded-full bg-wine-soft inline-block" />
           予定あり
         </span>
       </div>
@@ -347,6 +342,34 @@ function DaySheet({
 }) {
   const [screen, setScreen] = useState<Screen>("timeline");
   const [formKind, setFormKind] = useState<FormKind>("shift");
+
+  // ドラッグで閉じる (下スワイプ / 下ドラッグ)
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const dragStartY = useRef<number | null>(null);
+  const dragging = useRef(false);
+  const [dragY, setDragY] = useState(0);
+
+  const onDragStart = (clientY: number) => {
+    // スクロール最上部からのみドラッグ開始 (中身スクロールと両立)
+    if ((sheetRef.current?.scrollTop ?? 0) > 0) return;
+    dragStartY.current = clientY;
+    dragging.current = true;
+  };
+  const onDragMove = (clientY: number) => {
+    if (!dragging.current || dragStartY.current === null) return;
+    const dy = clientY - dragStartY.current;
+    if (dy > 0) setDragY(dy);
+    else {
+      dragging.current = false;
+      setDragY(0);
+    }
+  };
+  const onDragEnd = () => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    if (dragY > 110) onCancel();
+    else setDragY(0);
+  };
 
   // shift form
   const [status, setStatus] = useState<ShiftStatus>("working");
@@ -492,8 +515,27 @@ function DaySheet({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-[520px] max-h-[88vh] overflow-y-auto bg-pearl rounded-t-3xl p-5 pb-safe space-y-4 shadow-warm animate-slide-up">
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-sm animate-fade-in"
+      onClick={onCancel}
+    >
+      <div
+        ref={sheetRef}
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={(e) => onDragStart(e.touches[0].clientY)}
+        onTouchMove={(e) => onDragMove(e.touches[0].clientY)}
+        onTouchEnd={onDragEnd}
+        style={{
+          transform: dragY ? `translateY(${dragY}px)` : undefined,
+          transition: dragging.current ? "none" : "transform 0.25s ease",
+        }}
+        className="w-full max-w-[520px] max-h-[88vh] overflow-y-auto bg-pearl rounded-t-3xl px-5 pb-safe pb-5 space-y-4 shadow-warm animate-slide-up touch-pan-y"
+      >
+        {/* Drag handle — 下スワイプで閉じる */}
+        <div className="sticky top-0 -mx-5 px-5 pt-2.5 pb-2 bg-pearl flex justify-center">
+          <span className="w-10 h-1 rounded-full bg-ink/20" />
+        </div>
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
