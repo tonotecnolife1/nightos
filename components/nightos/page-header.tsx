@@ -99,20 +99,24 @@ function DefaultRightActions({ tone }: { tone: "default" | "ruri" }) {
   if (!pathname.startsWith("/cast")) return null;
 
   const isRuri = tone === "ruri";
+  // スケジュール画面では「予定」ショートカットは現在地そのものなので出さない。
+  const onSchedule = pathname.startsWith("/cast/schedule");
   return (
     <div className="flex items-center gap-1.5">
-      <Link
-        href="/cast/schedule"
-        aria-label="予定"
-        className={cn(
-          "w-9 h-9 rounded-full flex items-center justify-center transition",
-          isRuri
-            ? "bg-white/15 hover:bg-white/25 text-pearl-light"
-            : "bg-pearl-warm/70 hover:bg-pearl-warm text-ink-soft",
-        )}
-      >
-        <CalendarDays size={17} />
-      </Link>
+      {!onSchedule && (
+        <Link
+          href="/cast/schedule"
+          aria-label="予定"
+          className={cn(
+            "w-9 h-9 rounded-full flex items-center justify-center transition",
+            isRuri
+              ? "bg-white/15 hover:bg-white/25 text-pearl-light"
+              : "bg-pearl-warm/70 hover:bg-pearl-warm text-ink-soft",
+          )}
+        >
+          <CalendarDays size={17} />
+        </Link>
+      )}
       <MoreMenu tone={tone} />
     </div>
   );

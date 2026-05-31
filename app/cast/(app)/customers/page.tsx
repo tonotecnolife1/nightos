@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { UserPlus } from "lucide-react";
 import { Card } from "@/components/nightos/card";
+import { MoreMenu } from "@/components/nightos/more-menu";
 import { PageHeader } from "@/components/nightos/page-header";
 import { StatCard } from "@/components/nightos/stat-card";
 import { CustomerPageShell } from "@/features/cast-customers/components/customer-page-shell";
@@ -41,13 +42,16 @@ export default async function CastCustomerListPage() {
         subtitle={`${customers.length}人のお客様`}
         showBack
         right={
-          <Link
-            href="/cast/customers/new"
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-pill bg-wine-deep text-pearl-light text-label-sm font-semibold tracking-[0.04em] shadow-soft hover:-translate-y-px transition"
-          >
-            <UserPlus size={14} />
-            新規
-          </Link>
+          <div className="flex items-center gap-1.5">
+            <Link
+              href="/cast/customers/new"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-pill bg-wine-deep text-pearl-light text-label-sm font-semibold tracking-[0.04em] shadow-soft hover:-translate-y-px transition"
+            >
+              <UserPlus size={14} />
+              新規
+            </Link>
+            <MoreMenu />
+          </div>
         }
       />
       <div className="px-5 pt-3 pb-6 space-y-5">

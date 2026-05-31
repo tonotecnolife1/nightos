@@ -2,74 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  MessageCircle,
-  Sparkles,
-  TrendingUp,
-  Users,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SAKURA_MAMA_DISPLAY_NAME } from "@/lib/nightos/constants";
+import { CAST_NAV_ITEMS, isTabBarVisible } from "./cast-nav";
 
-interface Tab {
-  key: string;
-  label: string;
-  icon: typeof Home;
-  href: string;
-  match: (pathname: string) => boolean;
-}
-
-const TABS: Tab[] = [
-  {
-    key: "home",
-    label: "ホーム",
-    href: "/cast/home",
-    icon: Home,
-    match: (p) => p === "/cast/home",
-  },
-  {
-    key: "customers",
-    label: "顧客",
-    href: "/cast/customers",
-    icon: Users,
-    match: (p) => p.startsWith("/cast/customers"),
-  },
-  {
-    key: "ruri-mama",
-    label: SAKURA_MAMA_DISPLAY_NAME,
-    href: "/cast/ruri-mama",
-    icon: Sparkles,
-    match: (p) =>
-      p.startsWith("/cast/ruri-mama") || p.startsWith("/mama/ruri-mama"),
-  },
-  {
-    key: "chat",
-    label: "チャット",
-    href: "/cast/chat",
-    icon: MessageCircle,
-    match: (p) => p.startsWith("/cast/chat") || p.startsWith("/mama/chat"),
-  },
-  {
-    key: "stats",
-    label: "成績",
-    href: "/cast/stats",
-    icon: TrendingUp,
-    match: (p) => p.startsWith("/cast/stats"),
-  },
-];
-
-const HIDE_PATTERNS = [
-  /^\/cast\/ruri-mama/,
-  /^\/cast\/chat\/.+/,
-  /^\/mama\/ruri-mama/,
-  /^\/mama\/chat\/.+/,
-];
+const TABS = CAST_NAV_ITEMS.filter((item) => item.inTabBar);
 
 export function CastTabBar() {
   const pathname = usePathname() ?? "";
 
-  if (HIDE_PATTERNS.some((re) => re.test(pathname))) return null;
+  if (!isTabBarVisible(pathname)) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
