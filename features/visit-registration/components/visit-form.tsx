@@ -4,6 +4,7 @@ import { BellRing, CalendarPlus, Check, Sparkles } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/nightos/button";
 import { SelectInput } from "@/components/nightos/select";
+import { TextInput } from "@/components/nightos/input";
 import { cn } from "@/lib/utils";
 import type { Cast, Customer } from "@/types/nightos";
 import { createVisitAction } from "../actions";
@@ -28,6 +29,7 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
     return casts[0]?.id ?? "";
   });
   const [isNominated, setIsNominated] = useState(false);
+  const [salesAmount, setSalesAmount] = useState("");
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +46,7 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
     setTableId(null);
     setCustomerId(null);
     setIsNominated(false);
+    setSalesAmount("");
   };
 
   const submit = () => {
@@ -53,12 +56,20 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
       setError("お客様と担当キャストを選んでください");
       return;
     }
+    const parsedAmount = salesAmount.trim()
+      ? Number(salesAmount.replace(/[,\s]/g, ""))
+      : 0;
+    if (Number.isNaN(parsedAmount) || parsedAmount < 0) {
+      setError("お会計金額は0以上の数字で入力してください");
+      return;
+    }
     startTransition(async () => {
       const res = await createVisitAction({
         customer_id: customerId,
         cast_id: castId,
         table_name: tableId,
         is_nominated: isNominated,
+        sales_amount: parsedAmount,
       });
       if (!res.ok) {
         setError(res.error);
@@ -113,6 +124,31 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
             active={isNominated}
             onClick={() => setIsNominated(true)}
             icon={<Sparkles size={14} />}
+          />
+        </div>
+      </div>
+
+      {/* Sales amount (store staff input) */}
+      <div>
+        <div className="text-label-md text-ink font-medium mb-2">
+          お会計金額
+          <span className="text-label-sm text-ink-mute font-normal ml-1.5">
+            任意・後から入力も可
+          </span>
+        </div>
+        <div className="relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-soft font-display text-[18px] leading-none pointer-events-none">
+            ¥
+          </span>
+          <TextInput
+            name="sales_amount"
+            inputMode="numeric"
+            placeholder="例: 50000"
+            value={salesAmount}
+            onChange={(e) =>
+              setSalesAmount(e.target.value.replace(/[^\d,]/g, ""))
+            }
+            className="pl-8 tabular-nums"
           />
         </div>
       </div>

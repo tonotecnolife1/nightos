@@ -36,7 +36,13 @@ import {
   type TrendPoint,
 } from "./store-mock-data";
 import { CURRENT_STORE_ID, DEMO_CAST_IDS } from "./constants";
-import { buildMonthlyRepeatTrend } from "./stats-trend";
+import {
+  buildMonthlyRepeatTrend,
+  monthlyRepeatRate,
+  monthlySales,
+  yearlyRepeatRate,
+  yearlySales,
+} from "./stats-trend";
 import {
   consumeBottleReal,
   createBottleReal,
@@ -860,6 +866,8 @@ export interface CreateVisitInput {
   cast_id: string;
   table_name: string | null;
   is_nominated: boolean;
+  /** お会計金額（円）。未入力は 0。 */
+  sales_amount?: number;
 }
 
 export async function createVisit(input: CreateVisitInput): Promise<Visit> {
@@ -878,6 +886,7 @@ function createVisitMock(input: CreateVisitInput): Visit {
     cast_id: input.cast_id,
     table_name: input.table_name,
     is_nominated: input.is_nominated,
+    sales_amount: input.sales_amount ?? 0,
     visited_at: new Date().toISOString(),
   };
   mockVisits.push(visit);
@@ -1052,6 +1061,7 @@ async function getCastStatsDataMock(castId: string): Promise<CastStatsData> {
 
   // Customers
   const myCustomers = mockCustomers.filter((c) => c.cast_id === castId);
+  const myCustomerIds = myCustomers.map((c) => c.id);
   const now = MOCK_TODAY;
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthNewCount = myCustomers.filter(
@@ -1078,22 +1088,29 @@ async function getCastStatsDataMock(castId: string): Promise<CastStatsData> {
   return {
     cast,
     monthly: {
-      sales: cast.monthly_sales,
-      repeatRate: cast.repeat_rate,
+      // visits.sales_amount からの実集計（静的 monthly_sales は使わない）
+      sales: monthlySales(mockVisits, castId, now),
+      repeatRate: monthlyRepeatRate(mockVisits, castId, myCustomerIds, now),
       followRate,
       newCustomerCount: monthNewCount,
       totalCustomerCount: myCustomers.length,
       douhanCount: monthDouhansCompleted,
     },
     yearly: {
-      sales: cast.monthly_sales * 3,
-      repeatRate: cast.repeat_rate - 0.03,
+      sales: yearlySales(mockVisits, castId, now),
+      repeatRate: yearlyRepeatRate(mockVisits, castId, myCustomerIds, now),
       newCustomerCount: yearNewCount,
       douhanCount: yearDouhans,
     },
     targets,
     repeatTrend,
-    repeatTrendMonthly: buildMonthlyRepeatTrend(cast.repeat_rate, now, 6),
+    repeatTrendMonthly: buildMonthlyRepeatTrend(
+      mockVisits,
+      castId,
+      myCustomerIds,
+      now,
+      6,
+    ),
     followStreakDays,
   };
 }
