@@ -88,6 +88,31 @@ function clearStoredMessages(castId: string) {
   }
 }
 
+// ── 進行中セッションの id 永続化 ──
+// 会話本文（上の message buffer）はリロードを跨いで復元されるが、
+// セッション id を保存していないと復元のたびに新しい id が振られ、
+// 同じ相談が履歴に二重登録されてしまう。本文とセットで id も保存し、
+// 復元時は同じ id を引き継いで履歴を上書き更新する。
+const SESSION_ID_KEY_PREFIX = "nightos.chat-sid";
+
+function loadStoredSessionId(castId: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage.getItem(`${SESSION_ID_KEY_PREFIX}.${castId}`);
+  } catch {
+    return null;
+  }
+}
+
+function saveSessionIdToStorage(castId: string, sessionId: string) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(`${SESSION_ID_KEY_PREFIX}.${castId}`, sessionId);
+  } catch {
+    // ignore quota errors
+  }
+}
+
 interface Props {
   customers: Customer[];
   helpCastNames?: Record<string, string>;
@@ -182,6 +207,12 @@ export function ChatWindow({
   useEffect(() => {
     const stored = loadStoredMessages(castId);
     const handoff = takeStatsConsultHandoff(castId);
+    // 復元する会話には、それを保存した時と同じセッション id を引き継ぐ。
+    // これがないとリロードのたびに新しい id になり履歴が重複する。
+    if (stored && stored.length > 0) {
+      const storedSid = loadStoredSessionId(castId);
+      if (storedSid) setCurrentSessionId(storedSid);
+    }
     let base: ChatMessage[] = [GREETING];
     if (stored && stored.length > 0) {
       base = [GREETING, ...stored];
@@ -212,7 +243,9 @@ export function ChatWindow({
   useEffect(() => {
     if (!historyLoaded) return;
     saveMessagesToStorage(castId, messages);
-  }, [messages, historyLoaded]);
+    // 会話本文と一緒に現在のセッション id も保存しておく（リロード復元用）。
+    saveSessionIdToStorage(castId, currentSessionId);
+  }, [messages, historyLoaded, currentSessionId]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
