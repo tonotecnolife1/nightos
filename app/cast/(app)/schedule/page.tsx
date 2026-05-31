@@ -11,7 +11,7 @@ export default async function SchedulePage() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="スケジュール" />
+      <PageHeader title="スケジュール" showBack backHref="/cast/home" />
       <div className="px-4 pt-3 pb-6">
         <ScheduleCalendar castId={castId} customers={customers} />
       </div>
