@@ -101,11 +101,8 @@ export function ChatRoomView({
     .map((id, i) => ({ id, name: room.member_names[i] ?? id }))
     .filter((m) => m.id !== currentCastId);
 
-  // 本文中の @メンションをチップ表示するための既知の名前一覧。
-  const mentionNames = [
-    ...members.map((m) => m.name),
-    ...customers.map((c) => c.name),
-  ];
+  // 本文中の @メンション（さくらママ / 関係者）をチップ表示するための名前一覧。
+  const mentionNames = members.map((m) => m.name);
 
   const customerName = (id: string) =>
     customers.find((c) => c.id === id)?.name ?? "お客様";
@@ -120,10 +117,10 @@ export function ChatRoomView({
     const note =
       payload.text.replace(/@\S+\s?/g, "").trim() || payload.text.trim();
 
-    // 対象顧客を特定: 明示メンション → 受動検出（本文の名前）→ ルームのピン。
-    let customerId = payload.customerId ?? null;
+    // 対象顧客を特定: 受動検出（本文の名前）→ ルームのピン。
+    let customerId: string | null = null;
     let candidates: MentionCustomer[] = [];
-    if (!customerId && payload.text.trim()) {
+    if (payload.text.trim()) {
       const detected = detectCustomer(customers, payload.text);
       if (detected) {
         customerId = detected.customer.id;
@@ -349,22 +346,7 @@ export function ChatRoomView({
       )
     : topMessages;
 
-  const handleSend = async (rawPayload: ComposerPayload) => {
-    // お客様を明示メンションした場合、まだピンが無ければ上部バーを
-    // その顧客に自動で紐づける（相談 → 顧客の関連付けを省力化）。
-    if (rawPayload.customerId && !pin) {
-      setPin(
-        setRoomPin(room.id, {
-          id: rawPayload.customerId,
-          name: customerName(rawPayload.customerId),
-        }),
-      );
-    }
-    // ルームに顧客がピンされていれば、明示メンションが無くても既定の対象にする。
-    const payload: ComposerPayload =
-      rawPayload.customerId || !pin
-        ? rawPayload
-        : { ...rawPayload, customerId: pin.customerId };
+  const handleSend = async (payload: ComposerPayload) => {
     const text = payload.text.trim();
     const attachments = payload.attachments;
     if ((!text && attachments.length === 0) || sending) return;
@@ -373,6 +355,8 @@ export function ChatRoomView({
     setInput("");
 
     const mentionsAi = text.includes("@さくらママ");
+    // ルームに顧客がピンされていれば、その顧客にメッセージを関連付ける。
+    const linkedCustomerId = pin?.customerId ?? null;
     const targetId = threadOpen ?? null;
     const tempId = `tmp_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
@@ -383,7 +367,7 @@ export function ChatRoomView({
       sender_name: currentCastName,
       content: text,
       attachments,
-      customer_id: payload.customerId,
+      customer_id: linkedCustomerId,
       thread_parent_id: targetId,
       reply_count: 0,
       mentions_ai: mentionsAi,
@@ -414,7 +398,7 @@ export function ChatRoomView({
           content: text,
           threadParentId: targetId ?? undefined,
           attachments: attachments.length > 0 ? attachments : undefined,
-          customerId: payload.customerId ?? undefined,
+          customerId: linkedCustomerId ?? undefined,
         }),
       });
       if (res.ok) {
@@ -683,7 +667,6 @@ export function ChatRoomView({
                 onChange={setInput}
                 onSend={handleSend}
                 sending={sending}
-                customers={customers}
                 members={members}
                 storeId={room.store_id}
                 roomId={room.id}
@@ -836,13 +819,12 @@ export function ChatRoomView({
             onChange={setInput}
             onSend={handleSend}
             sending={sending}
-            customers={customers}
             members={members}
             storeId={room.store_id}
             roomId={room.id}
           />
           <p className="text-[10px] text-ink-mute mt-1.5 pl-1">
-            画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@関係者 で呼びかけ・@お客様名 でカルテ連携
+            画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@関係者 で呼びかけ。お客様との紐づけは上部から
           </p>
         </div>
       )}

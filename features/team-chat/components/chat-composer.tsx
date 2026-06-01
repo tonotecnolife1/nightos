@@ -6,10 +6,6 @@ import { cn } from "@/lib/utils";
 import { SAKURA_MAMA_CHAT_NAME } from "@/lib/nightos/constants";
 import type { ChatAttachment } from "../types";
 import {
-  type MentionCustomer,
-  searchCustomers,
-} from "../lib/customer-mention";
-import {
   MAX_ATTACHMENTS,
   isAllowedImage,
   uploadChatImage,
@@ -24,7 +20,6 @@ interface PendingAttachment extends ChatAttachment {
 export interface ComposerPayload {
   text: string;
   attachments: ChatAttachment[];
-  customerId: string | null;
 }
 
 /** A group member (cast/staff in the room) that can be @mentioned. */
@@ -38,7 +33,6 @@ interface Props {
   onChange: (v: string) => void;
   onSend: (payload: ComposerPayload) => void;
   sending: boolean;
-  customers: MentionCustomer[];
   /** Other members in this room (excluding self), for @関係者 mentions. */
   members?: MentionMember[];
   storeId: string;
@@ -58,14 +52,12 @@ export function ChatComposer({
   onChange,
   onSend,
   sending,
-  customers,
   members = [],
   storeId,
   roomId,
   placeholder = "メッセージを入力...",
 }: Props) {
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
-  const [customerId, setCustomerId] = useState<string | null>(null);
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -78,13 +70,6 @@ export function ChatComposer({
     onChange(next);
     const m = next.match(MENTION_RE);
     setMentionQuery(m ? m[1] : null);
-  };
-
-  const pickMentionCustomer = (c: MentionCustomer) => {
-    const replaced = value.replace(MENTION_RE, `@${c.name} `);
-    onChange(replaced);
-    setCustomerId(c.id);
-    setMentionQuery(null);
   };
 
   const pickMentionAi = () => {
@@ -165,15 +150,11 @@ export function ChatComposer({
           width: a.width,
           height: a.height,
         })),
-      customerId,
     });
     setAttachments([]);
-    setCustomerId(null);
     setMentionQuery(null);
   };
 
-  const mentionResults =
-    mentionQuery !== null ? searchCustomers(customers, mentionQuery) : [];
   const memberResults =
     mentionQuery !== null
       ? members.filter((m) => {
@@ -186,8 +167,7 @@ export function ChatComposer({
     SAKURA_MAMA_CHAT_NAME.includes(mentionQuery) &&
     mentionQuery.length <= SAKURA_MAMA_CHAT_NAME.length;
   const showMentions =
-    mentionQuery !== null &&
-    (mentionResults.length > 0 || memberResults.length > 0 || showAiOption);
+    mentionQuery !== null && (memberResults.length > 0 || showAiOption);
 
   return (
     <div
@@ -220,7 +200,7 @@ export function ChatComposer({
               <span className="ml-auto text-[10px] text-ink-mute">AIに相談</span>
             </button>
           )}
-          {memberResults.length > 0 && (
+          {memberResults.length > 0 && showAiOption && (
             <div className="px-3 pt-2 pb-1 text-[10px] font-medium tracking-wide text-ink-mute">
               関係者
             </div>
@@ -239,33 +219,6 @@ export function ChatComposer({
               <span className="ml-auto text-[10px] text-ink-mute">メンバー</span>
             </button>
           ))}
-          {mentionResults.length > 0 && (memberResults.length > 0 || showAiOption) && (
-            <div className="px-3 pt-2 pb-1 text-[10px] font-medium tracking-wide text-ink-mute">
-              お客様
-            </div>
-          )}
-          {mentionResults.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              onClick={() => pickMentionCustomer(c)}
-              className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-pearl-soft"
-            >
-              <span className="w-7 h-7 rounded-full bg-champagne-soft/60 border border-gold/30 flex items-center justify-center text-[11px] font-medium text-wine-deep">
-                {c.name.charAt(0)}
-              </span>
-              <span className="text-body-sm text-ink font-medium">{c.name}</span>
-              {c.nickname && (
-                <span className="text-[11px] text-ink-mute">{c.nickname}</span>
-              )}
-              {c.category === "vip" && (
-                <span className="ml-auto text-[9px] px-1 py-0.5 rounded bg-wine/10 text-wine-deep font-medium">
-                  VIP
-                </span>
-              )}
-            </button>
-          ))}
-          {mentionResults.length === 0 && !showAiOption && null}
         </div>
       )}
 
