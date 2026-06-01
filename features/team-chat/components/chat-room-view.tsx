@@ -35,6 +35,7 @@ import {
 } from "@/lib/nightos/chat-room-name-store";
 import type { ChatAttachment, ChatMessage, ChatRoom } from "../types";
 import { ChatComposer, type ComposerPayload, type MentionMember } from "./chat-composer";
+import { GroupNameModal } from "./group-name-modal";
 import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
 import {
   type MentionCustomer,
@@ -86,7 +87,6 @@ export function ChatRoomView({
   const [pinPickerOpen, setPinPickerOpen] = useState(false);
   const [nameOverride, setNameOverride] = useState<string | null>(null);
   const [nameEditOpen, setNameEditOpen] = useState(false);
-  const [nameDraft, setNameDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Load the room's pinned customer (mechanism C) and any custom name on
@@ -320,12 +320,8 @@ export function ChatRoomView({
   // 指導ノートは固定の意味を持つ名前なのでリネーム対象外。
   const canRename = !isCoaching;
 
-  const openNameEdit = () => {
-    setNameDraft(nameOverride ?? "");
-    setNameEditOpen(true);
-  };
-  const commitName = () => {
-    setNameOverride(setRoomName(room.id, nameDraft) || null);
+  const commitName = (name: string) => {
+    setNameOverride(setRoomName(room.id, name) || null);
     setNameEditOpen(false);
   };
 
@@ -504,7 +500,7 @@ export function ChatRoomView({
           {canRename ? (
             <button
               type="button"
-              onClick={openNameEdit}
+              onClick={() => setNameEditOpen(true)}
               className="inline-flex items-center gap-1 max-w-full group"
               title="グループ名を編集"
             >
@@ -864,55 +860,12 @@ export function ChatRoomView({
 
       {/* グループ名の編集 */}
       {nameEditOpen && (
-        <div
-          className="fixed inset-0 z-[60] bg-ink/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-4"
-          onClick={() => setNameEditOpen(false)}
-        >
-          <div
-            className="w-full max-w-sm rounded-card bg-pearl border border-ink/[0.06] shadow-warm p-4 space-y-3"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-body-md font-medium text-ink">グループ名</div>
-            <input
-              autoFocus
-              value={nameDraft}
-              onChange={(e) => setNameDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  commitName();
-                }
-                if (e.key === "Escape") {
-                  e.preventDefault();
-                  setNameEditOpen(false);
-                }
-              }}
-              placeholder={baseName}
-              className="w-full rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 text-body-md text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep"
-              style={{ fontSize: "16px" }}
-            />
-            <p className="text-[11px] text-ink-mute">
-              空にするとメンバー名（{baseName}）に戻ります
-            </p>
-            <div className="flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setNameEditOpen(false)}
-                className="px-3 py-1.5 rounded-pill text-label-sm text-ink-soft hover:bg-pearl-soft"
-              >
-                キャンセル
-              </button>
-              <button
-                type="button"
-                onClick={commitName}
-                className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-pill bg-wine-deep text-pearl-light text-label-sm font-medium shadow-warm"
-              >
-                <Check size={13} />
-                保存
-              </button>
-            </div>
-          </div>
-        </div>
+        <GroupNameModal
+          baseName={baseName}
+          initialName={nameOverride ?? ""}
+          onClose={() => setNameEditOpen(false)}
+          onSubmit={commitName}
+        />
       )}
     </div>
   );
