@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   BookOpen,
   Hash,
+  type LucideIcon,
   MessageCircle,
   MoreHorizontal,
   Pencil,
@@ -34,13 +35,22 @@ interface Props {
 
 type FilterTab = "all" | "channels" | "dm" | "pinned" | "learnings";
 
-const TAB_LABELS: Record<FilterTab, string> = {
-  all: "すべて",
-  channels: "グループ",
-  dm: "個別連絡",
-  pinned: "📌 ピン留め",
-  learnings: "📚 学び",
-};
+/** トークの絞り込み（すべて / グループ / 個別連絡）。テキストだけのプレーンなピル。 */
+const ROOM_TABS: { id: FilterTab; label: string }[] = [
+  { id: "all", label: "すべて" },
+  { id: "channels", label: "グループ" },
+  { id: "dm", label: "個別連絡" },
+];
+
+/**
+ * トークとは別概念の「集めたもの」。lucide アイコン付きで、常に champagne の地を
+ * 敷いてトーク絞り込みと視覚的に区別する。
+ */
+const COLLECTION_TABS: { id: "pinned" | "learnings"; label: string; Icon: LucideIcon }[] =
+  [
+    { id: "pinned", label: "ピン留め", Icon: Pin },
+    { id: "learnings", label: "学び", Icon: BookOpen },
+  ];
 
 /** Tabs that show running collections (pins / learnings) rather than rooms. */
 function isCollectionTab(tab: FilterTab): tab is "pinned" | "learnings" {
@@ -171,27 +181,54 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
         </div>
       )}
 
-      {/* Filter tabs */}
-      <div className="flex gap-1 px-5 py-3 border-b border-ink/[0.08] overflow-x-auto">
-        {(["all", "channels", "dm", "pinned", "learnings"] as FilterTab[]).map(
-          (t) => (
+      {/* Filter tabs — トークの絞り込みと「集めたもの」を hairline で区切る */}
+      <div className="flex items-center gap-1 px-5 py-3 border-b border-ink/[0.08] overflow-x-auto">
+        {ROOM_TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            className={cn(
+              "px-3 py-1.5 rounded-pill text-label-sm font-medium transition-colors whitespace-nowrap tracking-[0.04em]",
+              tab === t.id
+                ? "bg-champagne-soft/60 text-wine-deep border border-gold/30"
+                : "text-ink-mute hover:text-ink-soft border border-transparent",
+            )}
+          >
+            {t.label}
+          </button>
+        ))}
+
+        {/* champagne hairline — ここから先はトークではなく「集めたもの」 */}
+        <span
+          className="mx-1.5 h-5 w-px shrink-0 self-center bg-gradient-to-b from-transparent via-gold/40 to-transparent"
+          aria-hidden
+        />
+
+        {COLLECTION_TABS.map(({ id, label, Icon }) => {
+          const active = tab === id;
+          return (
             <button
-              key={t}
+              key={id}
               type="button"
-              onClick={() => setTab(t)}
+              onClick={() => setTab(id)}
               className={cn(
-                "px-3 py-1.5 rounded-pill text-label-sm font-medium transition-colors whitespace-nowrap tracking-[0.04em]",
-                tab === t
-                  ? t === "learnings"
-                    ? "bg-success/15 text-success border border-success/25"
-                    : "bg-champagne-soft/60 text-wine-deep border border-gold/30"
-                  : "text-ink-mute hover:text-ink-soft border border-transparent",
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-pill text-label-sm font-medium transition-colors whitespace-nowrap tracking-[0.04em]",
+                active
+                  ? id === "learnings"
+                    ? "bg-success/15 text-success border border-success/30"
+                    : "bg-champagne-soft/70 text-wine-deep border border-gold/40"
+                  : "bg-champagne-soft/25 text-gold-deep border border-gold/15 hover:bg-champagne-soft/45 hover:text-wine-deep",
               )}
             >
-              {TAB_LABELS[t]}
+              <Icon
+                size={13}
+                className={cn("shrink-0", id === "pinned" && "-rotate-45")}
+              />
+              {label}
             </button>
-          ),
-        )}
+          );
+        })}
       </div>
 
       {/* Collection tabs */}
