@@ -4,10 +4,10 @@ import type { Cast, Customer, CustomerReferralNode, CustomerFunnelStats } from "
 
 /**
  * キャストベースのツリーノード。
- * 係（メインのホステス）→ ヘルプ → 顧客 の3階層。
+ * 担当（メインのホステス）→ ヘルプ → 顧客 の3階層。
  */
 export interface CastBasedNode {
-  manager: Cast | null; // null = 係未割り当て
+  manager: Cast | null; // null = 担当未割り当て
   byCast: Array<{
     cast: Cast | null; // null = ヘルプ未割り当て
     customers: Customer[];
@@ -16,7 +16,7 @@ export interface CastBasedNode {
 }
 
 /**
- * 顧客データを「係→ヘルプ→顧客」の3階層にまとめる。
+ * 顧客データを「担当→ヘルプ→顧客」の3階層にまとめる。
  */
 export function buildCastBasedTree(args: {
   customers: Customer[];

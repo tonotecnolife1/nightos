@@ -12,7 +12,7 @@ interface Props {
 /**
  * お客様の並べ方を切り替える。
  * - お客様: 紹介チェーンごとに表示
- * - 係: 係→ヘルプ→お客様 の階層
+ * - 担当: 担当→ヘルプ→お客様 の階層
  */
 export function ViewGroupingToggle({ value, onChange }: Props) {
   return (
@@ -37,7 +37,7 @@ export function ViewGroupingToggle({ value, onChange }: Props) {
           value === "cast" ? "bg-wine-deep text-pearl-light" : "text-gold-deep",
         )}
       >
-        係
+        担当
       </button>
     </div>
   );

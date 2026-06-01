@@ -24,7 +24,7 @@ interface Props {
 }
 
 /**
- * 顧客カルテ上の「係を変更」ボタン。
+ * 顧客カルテ上の「担当を変更」ボタン。
  * - オーナー（権限あり）: 即適用 + 履歴記録
  * - 非オーナー: 承認申請キューに積む（履歴にはまだ残らない）
  */
@@ -115,7 +115,7 @@ export function ChangeManagerButton({
         )}
       >
         <UserCog size={10} />
-        係を変更
+        担当を変更
       </button>
     );
   }
@@ -125,7 +125,7 @@ export function ChangeManagerButton({
       <Card className="p-3 !border-success/30 !bg-success/5">
         <div className="flex items-center gap-1.5 text-success text-body-sm">
           <Check size={14} />
-          係を変更しました
+          担当を変更しました
         </div>
       </Card>
     );
@@ -149,7 +149,7 @@ export function ChangeManagerButton({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-gold-deep">
           <Crown size={13} />
-          <span className="text-body-sm font-medium">係を変更</span>
+          <span className="text-body-sm font-medium">担当を変更</span>
         </div>
         <button
           type="button"
@@ -171,7 +171,7 @@ export function ChangeManagerButton({
           className="w-full h-10 rounded-btn border border-pearl-soft bg-pearl-warm px-3 text-body-sm text-ink"
           style={{ fontSize: "16px" }}
         >
-          <option value="">係なし</option>
+          <option value="">担当なし</option>
           {managers.map((m) => (
             <option key={m.id} value={m.id}>
               {m.name}さん

@@ -44,7 +44,7 @@ export function ApprovalLink() {
             </div>
             <div className="text-[10px] text-ink-soft mt-0.5">
               {count > 0
-                ? `${count}件の係変更申請が承認待ちです`
+                ? `${count}件の担当変更申請が承認待ちです`
                 : "未処理の申請はありません"}
             </div>
           </div>

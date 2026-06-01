@@ -15,7 +15,7 @@ interface Props {
 
 /**
  * 「ヘルプで入ったお客様」セクション。
- * 他の係が担当する顧客への接客実績を集約表示。
+ * 他の担当（メイン）の顧客への接客実績を集約表示。
  */
 export function HelpVisitsSection({
   entries,
@@ -29,7 +29,7 @@ export function HelpVisitsSection({
         <EmptyState
           icon={<HandHelping size={20} />}
           title="ヘルプ実績はまだありません"
-          description="他の係が担当するお客様に接客した記録があればここに表示されます。"
+          description="他の担当のお客様に接客した記録があればここに表示されます。"
         />
       </section>
     );
