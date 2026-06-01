@@ -1047,6 +1047,7 @@ function rowToCast(row: any): Cast {
     is_active: row.is_active === undefined ? true : Boolean(row.is_active),
     club_role: row.club_role ?? undefined,
     assigned_oneesan_id: row.assigned_oneesan_id ?? undefined,
+    avatar_path: row.avatar_path ?? null,
   };
 }
 

@@ -25,6 +25,12 @@ export default async function RuriMamaPage({ searchParams }: Props) {
         subtitle="銀座30年の経験者"
         showBack
         tone="ruri"
+        // 相談履歴サイドバー (z-50) より上に重ねる。
+        // PageHeader は sticky z-50 で stacking context を作るため、☰ メニューの
+        // 吹き出し (z-[70]) はその内側に閉じ込められ、後から DOM に並ぶ相談履歴
+        // (z-50) に覆われてしまう。ヘッダー自体を z-[60] へ引き上げて、☰ が常に
+        // 最前面に出るようにする。
+        className="z-[60]"
         // 相談履歴は画面内の左上トグル（サイドバー）から開ける。
         // スケジュールアイコンは出さず ☰ メニューのみ表示する。
         right={<MoreMenu tone="ruri" />}

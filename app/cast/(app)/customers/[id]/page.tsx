@@ -108,15 +108,23 @@ export default async function CustomerCardPage({
         {!isCabaret && (
           <div className="flex items-center gap-2 flex-wrap text-[11px] text-ink-soft">
             <span>
-              管理:{" "}
+              担当:{" "}
               <span className="text-ink font-medium">
                 {allCasts.find((c) => c.id === customer.manager_cast_id)?.name ??
+                  allCasts.find((c) => c.id === customer.cast_id)?.name ??
                   "—"}
               </span>
-              {" / 担当: "}
-              <span className="text-ink font-medium">
-                {allCasts.find((c) => c.id === customer.cast_id)?.name ?? "—"}
-              </span>
+              {customer.cast_id &&
+                customer.manager_cast_id &&
+                customer.cast_id !== customer.manager_cast_id && (
+                  <>
+                    {" / ヘルプ: "}
+                    <span className="text-ink font-medium">
+                      {allCasts.find((c) => c.id === customer.cast_id)?.name ??
+                        "—"}
+                    </span>
+                  </>
+                )}
             </span>
             <ChangeManagerButton
               customerId={customer.id}

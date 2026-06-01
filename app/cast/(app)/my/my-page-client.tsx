@@ -17,9 +17,10 @@ interface Props {
   castName: string;
   storeName: string | null;
   userRole: CastUserRole;
+  avatarUrl?: string | null;
 }
 
-export function MyPageClient({ castName, storeName, userRole }: Props) {
+export function MyPageClient({ castName, storeName, userRole, avatarUrl }: Props) {
   const [pending, startTransition] = useTransition();
 
   const handleLogout = () => {
@@ -62,13 +63,22 @@ export function MyPageClient({ castName, storeName, userRole }: Props) {
               }}
             >
               <div
-                className="w-full h-full rounded-full flex items-center justify-center"
+                className="w-full h-full rounded-full flex items-center justify-center overflow-hidden"
                 style={{
                   background: "#3A1F1F",
                   color: "var(--v5-gold-on-dark)",
                 }}
               >
-                <UserCircle size={28} strokeWidth={1.4} />
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={avatarUrl}
+                    alt="アイコン画像"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <UserCircle size={28} strokeWidth={1.4} />
+                )}
               </div>
             </div>
             <div>
