@@ -13,6 +13,7 @@ import {
   saveSession,
   type ChatSession,
 } from "../lib/chat-session-store";
+import { pullChatSessions } from "../lib/chat-sync";
 import { ChatHistorySidebar } from "./chat-history-sidebar";
 import { takeStatsConsultHandoff } from "@/lib/nightos/stats-consult-store";
 import { ChatInput } from "./chat-input";
@@ -239,6 +240,19 @@ export function ChatWindow({
     setHistoryLoaded(true);
   }, []);
 
+  // On mount, hydrate 相談履歴 from the server so the same account stays
+  // consistent across devices (PC で相談 → スマホでも見える)。mock/未認証
+  // では no-op。マージ結果（ローカル∪サーバー）で履歴一覧を更新する。
+  useEffect(() => {
+    let cancelled = false;
+    void pullChatSessions().then((merged) => {
+      if (!cancelled && merged) setHistorySessions(merged);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Save on every change after the initial restore
   useEffect(() => {
     if (!historyLoaded) return;
@@ -275,6 +289,10 @@ export function ChatWindow({
   const handleOpenSidebar = () => {
     refreshHistory();
     setSidebarOpen(true);
+    // 開くタイミングでもサーバーから最新を取りに行き、戻ったら一覧を更新。
+    void pullChatSessions().then((merged) => {
+      if (merged) setHistorySessions(merged);
+    });
   };
 
   /** 過去のセッションを読み込み、その続きから相談できる状態にする。 */
