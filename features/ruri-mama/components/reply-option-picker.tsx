@@ -1,8 +1,8 @@
 "use client";
 
-import { Check, ChevronDown, Heart, MessageSquareQuote, Sparkles, Wand2, Zap } from "lucide-react";
+import { Check, ChevronDown, Copy, Heart, MessageSquareQuote, Sparkles, Wand2, Zap } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn, copyToClipboard } from "@/lib/utils";
 import type { ReplyOption, ReplyOptionStyle } from "@/types/nightos";
 
 const STYLE_ICON: Record<ReplyOptionStyle, typeof Heart> = {
@@ -146,6 +146,7 @@ function OptionCard({
   onPick?: () => void;
 }) {
   const [showDetail, setShowDetail] = useState(false);
+  const [copied, setCopied] = useState(false);
   const Icon = STYLE_ICON[option.style];
   const tone = STYLE_TONE[option.style];
   const chosen = picked || isSelected;
@@ -158,6 +159,13 @@ function OptionCard({
     ? sections.filter((s) => s !== messageSection)
     : sections.slice(1);
   const hasMessage = !!messageSection;
+
+  const handleCopy = async () => {
+    const ok = await copyToClipboard(primary.body);
+    if (!ok) return;
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2200);
+  };
 
   return (
     <div
@@ -202,6 +210,40 @@ function OptionCard({
         >
           {primary.body}
         </div>
+
+        {/* 文面をコピー — LINE 等に貼り付けやすいよう本文のすぐ下に常設。
+            picked（確定後）は主役アクションとして全幅・濃色で大きく出す。 */}
+        {hasMessage && (
+          <button
+            type="button"
+            onClick={handleCopy}
+            className={cn(
+              "mt-2 inline-flex items-center justify-center gap-1.5 rounded-full font-semibold transition-all active:scale-[0.98]",
+              picked
+                ? "w-full h-10 text-label-md"
+                : "w-full h-9 text-label-sm",
+              copied
+                ? "bg-success text-pearl-light shadow-soft"
+                : picked
+                  ? // 確定後は主役アクションとして濃色で大きく
+                    "bg-wine-deep text-pearl-light shadow-warm hover:opacity-90"
+                  : // 選択前は下部の「この文面を使う」と競合しないよう控えめに
+                    "bg-champagne-soft/70 text-wine-deep border border-gold/30 hover:bg-champagne-soft",
+            )}
+          >
+            {copied ? (
+              <>
+                <Check size={14} />
+                コピーしました
+              </>
+            ) : (
+              <>
+                <Copy size={14} />
+                文面をコピー
+              </>
+            )}
+          </button>
+        )}
 
         {/* 解説（状況分析・なぜ効く 等）は折りたたみ — 縦長を防ぐ */}
         {details.length > 0 && (
