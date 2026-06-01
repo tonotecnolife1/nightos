@@ -8,8 +8,11 @@ import { cn } from "@/lib/utils";
 import { CAST_NAV_ITEMS, isTabBarVisible } from "@/components/nightos/cast-nav";
 
 interface Props {
-  /** 未読あり (店舗メッセージ等) のとき、ハンバーガーと「通知」行にドットを出す。 */
-  hasNotification?: boolean;
+  /**
+   * 未読通知の件数 (店舗メッセージ + 直近の来店)。0 より大きいとハンバーガーと
+   * 「通知」行にドット、メニュー内に件数バッジを出す。
+   */
+  notificationCount?: number;
 }
 
 /**
@@ -25,10 +28,11 @@ interface Props {
  * hero 用にボタンを v5-ring-gold (champagne-gold ヘアライン + 半透明ガラス) で
  * 起こす。吹き出しは MoreMenu と同じ bordeaux gradient + キャレットの正典。
  *
- * 通知は専用ページを持たない (未読は本文の店舗メッセージバナーに出る) ため、
- * メニュー内の「通知」は未読インジケータ表示のみのボタンに留める。
+ * 「通知」は専用ページ (/cast/notifications) へ遷移し、未読件数を件数バッジで
+ * 出す。件数は店舗メッセージ + 直近の来店を合算した値。
  */
-export function CastHomeMenu({ hasNotification = false }: Props) {
+export function CastHomeMenu({ notificationCount = 0 }: Props) {
+  const hasNotification = notificationCount > 0;
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() ?? "";
@@ -119,13 +123,18 @@ export function CastHomeMenu({ hasNotification = false }: Props) {
                 />
               </li>
 
-              {/* 通知 — 旧右上アイコンその 2。専用ページが無いので未読表示のみ。 */}
+              {/* 通知 — 旧右上アイコンその 2。専用ページ + 未読件数バッジ。 */}
               <li>
-                <button
-                  type="button"
+                <Link
+                  href="/cast/notifications"
                   role="menuitem"
                   onClick={() => setOpen(false)}
-                  className="group flex w-full items-center justify-between gap-3 rounded-[12px] pl-3.5 pr-2 py-2.5 transition-colors hover:bg-[rgba(20,10,10,0.28)]"
+                  className={cn(
+                    "group flex w-full items-center justify-between gap-3 rounded-[12px] pl-3.5 pr-2 py-2.5 transition-colors",
+                    pathname.startsWith("/cast/notifications")
+                      ? "bg-[rgba(20,10,10,0.45)]"
+                      : "hover:bg-[rgba(20,10,10,0.28)]",
+                  )}
                 >
                   <span className="flex items-center gap-2">
                     <span
@@ -136,13 +145,13 @@ export function CastHomeMenu({ hasNotification = false }: Props) {
                     </span>
                     {hasNotification && (
                       <span
-                        className="text-[10px] font-medium tracking-[0.08em] px-1.5 py-0.5 rounded-full"
+                        className="min-w-[18px] text-center text-[10px] font-semibold tabular-nums tracking-[0.04em] px-1.5 py-0.5 rounded-full"
                         style={{
                           background: "rgba(235,217,168,0.16)",
                           color: "var(--v5-gold-on-dark)",
                         }}
                       >
-                        未読
+                        {notificationCount > 99 ? "99+" : notificationCount}
                       </span>
                     )}
                   </span>
@@ -164,7 +173,7 @@ export function CastHomeMenu({ hasNotification = false }: Props) {
                       />
                     )}
                   </span>
-                </button>
+                </Link>
               </li>
 
               {/* tab bar に無い導線 (予定) + アカウント設定 — MoreMenu と同一の正典 */}
