@@ -6,15 +6,12 @@ import {
   BookOpen,
   Check,
   Clock,
-  Copy,
   Loader2,
   MessageCircle,
-  MoreHorizontal,
   Pencil,
   Pin,
   Search,
   Sparkles,
-  Trash2,
   User,
   UserPlus,
   X,
@@ -43,6 +40,10 @@ import { ChatComposer, type ComposerPayload, type MentionMember } from "./chat-c
 import { GroupNameModal } from "./group-name-modal";
 import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
 import { MessagePinSheet } from "./message-pin-sheet";
+import {
+  MessageActionSheet,
+  PartialCopyModal,
+} from "./message-action-sheet";
 import {
   type MentionCustomer,
   detectCustomer,
@@ -95,6 +96,13 @@ export function ChatRoomView({
   const [nameEditOpen, setNameEditOpen] = useState(false);
   const [pinSheetFor, setPinSheetFor] = useState<ChatMessage | null>(null);
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
+  // LINE風の長押しメニュー対象（canReply はスレッド内かどうかで切替）。
+  const [actionFor, setActionFor] = useState<{
+    msg: ChatMessage;
+    canReply: boolean;
+  } | null>(null);
+  const [partialCopyFor, setPartialCopyFor] = useState<string | null>(null);
+  const [copiedToast, setCopiedToast] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Load the room's pinned customer (mechanism C) and any custom name on
@@ -292,7 +300,13 @@ export function ChatRoomView({
 
   const handleCopy = (msg: ChatMessage) => {
     if (typeof navigator === "undefined" || !navigator.clipboard) return;
-    navigator.clipboard.writeText(msg.content).catch(() => {});
+    navigator.clipboard
+      .writeText(msg.content)
+      .then(() => {
+        setCopiedToast(true);
+        setTimeout(() => setCopiedToast(false), 1500);
+      })
+      .catch(() => {});
   };
 
   // Auto scroll to bottom
@@ -622,15 +636,14 @@ export function ChatRoomView({
               showName={true}
               mentionNames={mentionNames}
               isPinned={pinnedIds.has(activeThread.id)}
-              onLongPress={() => setPinSheetFor(activeThread)}
+              onLongPress={() =>
+                setActionFor({ msg: activeThread, canReply: false })
+              }
               editingId={editingId}
               editDraft={editDraft}
               setEditDraft={setEditDraft}
-              onStartEdit={startEdit}
               onCancelEdit={cancelEdit}
               onCommitEdit={commitEdit}
-              onDelete={handleDelete}
-              onCopy={handleCopy}
             />
             {activeThreadReplies.length > 0 && (
               <div className="text-label-sm text-ink-mute pl-2">
@@ -650,15 +663,12 @@ export function ChatRoomView({
                   showName={!isGrouped}
                   mentionNames={mentionNames}
                   isPinned={pinnedIds.has(m.id)}
-                  onLongPress={() => setPinSheetFor(m)}
+                  onLongPress={() => setActionFor({ msg: m, canReply: false })}
                   editingId={editingId}
                   editDraft={editDraft}
                   setEditDraft={setEditDraft}
-                  onStartEdit={startEdit}
                   onCancelEdit={cancelEdit}
                   onCommitEdit={commitEdit}
-                  onDelete={handleDelete}
-                  onCopy={handleCopy}
                 />
               );
             })}
@@ -744,17 +754,13 @@ export function ChatRoomView({
                 showName={!isGrouped}
                 mentionNames={mentionNames}
                 isPinned={pinnedIds.has(msg.id)}
-                onLongPress={() => setPinSheetFor(msg)}
-                onOpenThread={() => setThreadOpen(msg.id)}
+                onLongPress={() => setActionFor({ msg, canReply: true })}
                 highlight={isSearching ? normalizedQuery : undefined}
                 editingId={editingId}
                 editDraft={editDraft}
                 setEditDraft={setEditDraft}
-                onStartEdit={startEdit}
                 onCancelEdit={cancelEdit}
                 onCommitEdit={commitEdit}
-                onDelete={handleDelete}
-                onCopy={handleCopy}
               />
               {/* Thread preview */}
               {(msg.reply_count > 0 || replies.length > 0) && (
@@ -845,7 +851,7 @@ export function ChatRoomView({
             roomId={room.id}
           />
           <p className="text-[10px] text-ink-mute mt-1.5 pl-1">
-            画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@関係者 で呼びかけ。お客様との紐づけは上部から
+            画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@関係者 で呼びかけ・吹き出しを長押しでメニュー。お客様との紐づけは上部から
           </p>
         </div>
       )}
@@ -871,7 +877,54 @@ export function ChatRoomView({
         />
       )}
 
-      {/* 吹き出し長押し → ピン留め / 顧客紐づけ / メモ */}
+      {/* 吹き出し長押し → LINE風アクションメニュー */}
+      {actionFor && (
+        <MessageActionSheet
+          message={actionFor.msg}
+          isPinned={pinnedIds.has(actionFor.msg.id)}
+          canReply={actionFor.canReply}
+          canEdit={
+            actionFor.msg.sender_id === currentCastId &&
+            !actionFor.msg.is_bot &&
+            !actionFor.msg.deleted_at
+          }
+          onReply={() => {
+            setThreadOpen(actionFor.msg.id);
+            setActionFor(null);
+          }}
+          onCopyAll={() => {
+            handleCopy(actionFor.msg);
+            setActionFor(null);
+          }}
+          onPartialCopy={() => {
+            setPartialCopyFor(actionFor.msg.content);
+            setActionFor(null);
+          }}
+          onPin={() => {
+            setPinSheetFor(actionFor.msg);
+            setActionFor(null);
+          }}
+          onEdit={() => {
+            startEdit(actionFor.msg);
+            setActionFor(null);
+          }}
+          onDelete={() => {
+            const id = actionFor.msg.id;
+            setActionFor(null);
+            handleDelete(id);
+          }}
+          onClose={() => setActionFor(null)}
+        />
+      )}
+
+      {partialCopyFor !== null && (
+        <PartialCopyModal
+          content={partialCopyFor}
+          onClose={() => setPartialCopyFor(null)}
+        />
+      )}
+
+      {/* ピン留め / 顧客紐づけ / メモ */}
       {pinSheetFor && (
         <MessagePinSheet
           message={pinSheetFor}
@@ -881,6 +934,15 @@ export function ChatRoomView({
           onClose={() => setPinSheetFor(null)}
           onChanged={() => setPinnedIds(getPinnedIds())}
         />
+      )}
+
+      {copiedToast && (
+        <div className="fixed inset-x-0 bottom-24 z-[90] flex justify-center pointer-events-none">
+          <div className="inline-flex items-center gap-1.5 rounded-pill bg-ink/85 text-pearl-light px-4 py-2 text-body-sm shadow-luxe">
+            <Check size={13} />
+            コピーしました
+          </div>
+        </div>
       )}
     </div>
   );
@@ -898,19 +960,15 @@ interface MessageRowProps {
   mentionNames: string[];
   /** Whether this message is currently pinned (ピン留め). */
   isPinned?: boolean;
-  /** Long-press (or the ピン button) opens the pin / customer / memo sheet. */
+  /** Long-press (touch) / right-click (desktop) opens the LINE風 action menu. */
   onLongPress?: () => void;
-  onOpenThread?: () => void;
   /** Lowercased search query to highlight; if set, matching substrings get wrapped. */
   highlight?: string;
   editingId: string | null;
   editDraft: string;
   setEditDraft: (v: string) => void;
-  onStartEdit: (msg: ChatMessage) => void;
   onCancelEdit: () => void;
   onCommitEdit: (id: string) => void;
-  onDelete: (id: string) => void;
-  onCopy: (msg: ChatMessage) => void;
 }
 
 function MessageRow({
@@ -922,37 +980,18 @@ function MessageRow({
   mentionNames,
   isPinned,
   onLongPress,
-  onOpenThread,
   highlight,
   editingId,
   editDraft,
   setEditDraft,
-  onStartEdit,
   onCancelEdit,
   onCommitEdit,
-  onDelete,
-  onCopy,
 }: MessageRowProps) {
   const isMe = msg.sender_id === currentCastId;
   const time = new Date(msg.created_at);
   const timeStr = `${time.getHours()}:${String(time.getMinutes()).padStart(2, "0")}`;
   const isEditing = editingId === msg.id;
   const isDeleted = !!msg.deleted_at;
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [menuOpen]);
-
-  const canEdit = isMe && !msg.is_bot && !isDeleted;
 
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleTouchStart = () => {
@@ -1004,10 +1043,19 @@ function MessageRow({
         className={cn(
           "flex flex-col max-w-[72%]",
           isMe ? "items-end" : "items-start",
+          // 長押しメニューを使うため、吹き出し自体の選択/iOSコールアウトは抑止。
+          // 文章の部分コピーはアクションメニューの「部分コピー」で行う。
+          !isEditing && "select-none",
         )}
+        style={!isEditing ? { WebkitTouchCallout: "none" } : undefined}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchEnd}
+        onContextMenu={(e) => {
+          if (!onLongPress || isDeleted) return;
+          e.preventDefault();
+          onLongPress();
+        }}
       >
         {/* Sender name (others, first in group) */}
         {!isMe && showName && (
@@ -1115,83 +1163,6 @@ function MessageRow({
             )}
             {msg.edited_at && (
               <span className="text-[9px] text-ink-mute">編集済み</span>
-            )}
-          </div>
-        )}
-
-        {/* Action buttons (tap-revealed) */}
-        {!isEditing && !isDeleted && (
-          <div className={cn("flex items-center gap-2 mt-1 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
-            {onOpenThread && (
-              <button
-                type="button"
-                onClick={onOpenThread}
-                className="flex items-center gap-0.5 text-[10px] text-ink-mute hover:text-ink-soft"
-              >
-                <MessageCircle size={10} />
-                返信
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => onCopy(msg)}
-              className="flex items-center gap-0.5 text-[10px] text-ink-mute hover:text-ink-soft"
-            >
-              <Copy size={10} />
-              コピー
-            </button>
-            {onLongPress && (
-              <button
-                type="button"
-                onClick={onLongPress}
-                className={cn(
-                  "flex items-center gap-0.5 text-[10px] hover:text-ink-soft",
-                  isPinned ? "text-gold-deep" : "text-ink-mute",
-                )}
-              >
-                <Pin size={10} />
-                {isPinned ? "ピン済み" : "ピン"}
-              </button>
-            )}
-            {canEdit && (
-              <div ref={menuRef} className="relative">
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen((v) => !v)}
-                  className="flex items-center gap-0.5 text-[10px] text-ink-mute hover:text-ink-soft"
-                >
-                  <MoreHorizontal size={12} />
-                </button>
-                {menuOpen && (
-                  <div className={cn(
-                    "absolute z-30 top-full mt-1 min-w-[140px] rounded-card border border-ink/[0.06] bg-pearl shadow-soft overflow-hidden",
-                    isMe ? "right-0" : "left-0",
-                  )}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onStartEdit(msg);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-left text-body-sm text-ink hover:bg-pearl-soft"
-                    >
-                      <Pencil size={13} />
-                      編集
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onDelete(msg.id);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-left text-body-sm text-[#c2575b] hover:bg-[#c2575b]/5"
-                    >
-                      <Trash2 size={13} />
-                      取り消し
-                    </button>
-                  </div>
-                )}
-              </div>
             )}
           </div>
         )}
