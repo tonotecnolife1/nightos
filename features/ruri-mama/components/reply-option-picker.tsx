@@ -60,9 +60,11 @@ function parseSections(content: string): Section[] {
 interface Props {
   options: ReplyOption[];
   onPick: (option: ReplyOption) => void;
+  /** 「どれもしっくりこない → 別の3案を作る」導線。未指定なら非表示。 */
+  onRequestMore?: () => void;
 }
 
-export function ReplyOptionPicker({ options, onPick }: Props) {
+export function ReplyOptionPicker({ options, onPick, onRequestMore }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const handlePick = (opt: ReplyOption) => {
@@ -90,6 +92,33 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
             onPick={() => handlePick(opt)}
           />
         ))}
+
+        {/* どれも違うとき → 別の3案を作る導線（末尾カード） */}
+        {onRequestMore && (
+          <button
+            type="button"
+            onClick={onRequestMore}
+            disabled={!!selectedId}
+            className={cn(
+              "flex-shrink-0 w-[58vw] max-w-[190px] snap-start rounded-card border border-dashed border-gold/40 bg-pearl-warm/40",
+              "flex flex-col items-center justify-center gap-2 px-4 py-6 text-center transition-all",
+              "self-stretch active:scale-[0.98]",
+              selectedId ? "opacity-50 cursor-not-allowed" : "hover:bg-pearl-warm/70 hover:border-gold/60",
+            )}
+          >
+            <span className="flex items-center justify-center w-9 h-9 rounded-full bg-champagne-soft/70 text-wine-deep">
+              <Wand2 size={16} />
+            </span>
+            <span className="text-label-sm font-semibold text-wine-deep">
+              どれも違う？
+            </span>
+            <span className="text-[11px] leading-snug text-ink-soft">
+              別の切り口で
+              <br />
+              もう3案つくる
+            </span>
+          </button>
+        )}
       </div>
 
       {selectedId && (
