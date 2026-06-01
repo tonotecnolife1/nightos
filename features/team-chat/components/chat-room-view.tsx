@@ -35,6 +35,7 @@ import { ChatComposer, type ComposerPayload } from "./chat-composer";
 import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
 import { MessagePinSheet } from "./message-pin-sheet";
 import {
+  type AnchorRect,
   MessageActionSheet,
   PartialCopyModal,
 } from "./message-action-sheet";
@@ -89,9 +90,11 @@ export function ChatRoomView({
   const [pinSheetFor, setPinSheetFor] = useState<ChatMessage | null>(null);
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
   // LINE風の長押しメニュー対象（canReply はスレッド内かどうかで切替）。
+  // anchor は長押しした吹き出しの画面上の矩形（メニューの配置に使う）。
   const [actionFor, setActionFor] = useState<{
     msg: ChatMessage;
     canReply: boolean;
+    anchor: AnchorRect;
   } | null>(null);
   const [partialCopyFor, setPartialCopyFor] = useState<string | null>(null);
   const [copiedToast, setCopiedToast] = useState(false);
@@ -594,8 +597,8 @@ export function ChatRoomView({
               showAvatar={true}
               showName={true}
               isPinned={pinnedIds.has(activeThread.id)}
-              onLongPress={() =>
-                setActionFor({ msg: activeThread, canReply: false })
+              onLongPress={(anchor) =>
+                setActionFor({ msg: activeThread, canReply: false, anchor })
               }
               editingId={editingId}
               editDraft={editDraft}
@@ -620,7 +623,9 @@ export function ChatRoomView({
                   showAvatar={!isGrouped}
                   showName={!isGrouped}
                   isPinned={pinnedIds.has(m.id)}
-                  onLongPress={() => setActionFor({ msg: m, canReply: false })}
+                  onLongPress={(anchor) =>
+                    setActionFor({ msg: m, canReply: false, anchor })
+                  }
                   editingId={editingId}
                   editDraft={editDraft}
                   setEditDraft={setEditDraft}
@@ -710,7 +715,9 @@ export function ChatRoomView({
                 showAvatar={!isGrouped}
                 showName={!isGrouped}
                 isPinned={pinnedIds.has(msg.id)}
-                onLongPress={() => setActionFor({ msg, canReply: true })}
+                onLongPress={(anchor) =>
+                  setActionFor({ msg, canReply: true, anchor })
+                }
                 highlight={isSearching ? normalizedQuery : undefined}
                 editingId={editingId}
                 editDraft={editDraft}
@@ -826,7 +833,8 @@ export function ChatRoomView({
       {/* 吹き出し長押し → LINE風アクションメニュー */}
       {actionFor && (
         <MessageActionSheet
-          message={actionFor.msg}
+          anchorRect={actionFor.anchor}
+          hasText={actionFor.msg.content.trim().length > 0}
           isPinned={pinnedIds.has(actionFor.msg.id)}
           canReply={actionFor.canReply}
           canEdit={
@@ -904,8 +912,9 @@ interface MessageRowProps {
   showName: boolean;
   /** Whether this message is currently pinned (ピン留め). */
   isPinned?: boolean;
-  /** Long-press (touch) / right-click (desktop) opens the LINE風 action menu. */
-  onLongPress?: () => void;
+  /** Long-press (touch) / right-click (desktop) opens the LINE風 action menu,
+   *  anchored to the bubble's on-screen rect. */
+  onLongPress?: (anchor: AnchorRect) => void;
   /** Lowercased search query to highlight; if set, matching substrings get wrapped. */
   highlight?: string;
   editingId: string | null;
@@ -936,10 +945,16 @@ function MessageRow({
   const isEditing = editingId === msg.id;
   const isDeleted = !!msg.deleted_at;
 
+  const bubbleRef = useRef<HTMLDivElement>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fireLongPress = () => {
+    if (!onLongPress || !bubbleRef.current) return;
+    const r = bubbleRef.current.getBoundingClientRect();
+    onLongPress({ top: r.top, bottom: r.bottom, left: r.left, width: r.width });
+  };
   const handleTouchStart = () => {
     if (!onLongPress || isDeleted) return;
-    longPressTimer.current = setTimeout(() => onLongPress(), 500);
+    longPressTimer.current = setTimeout(fireLongPress, 500);
   };
   const handleTouchEnd = () => {
     if (longPressTimer.current) {
@@ -983,6 +998,7 @@ function MessageRow({
 
       {/* Bubble + meta */}
       <div
+        ref={bubbleRef}
         className={cn(
           "flex flex-col max-w-[72%]",
           isMe ? "items-end" : "items-start",
@@ -997,7 +1013,7 @@ function MessageRow({
         onContextMenu={(e) => {
           if (!onLongPress || isDeleted) return;
           e.preventDefault();
-          onLongPress();
+          fireLongPress();
         }}
       >
         {/* Sender name (others, first in group) */}
