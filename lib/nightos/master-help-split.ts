@@ -124,6 +124,76 @@ export function aggregateHelpVisitsByCustomer(
 }
 
 /**
+ * 1顧客に入った1人のヘルプの集計。
+ * 「歴代ヘルプ」= マスターでも主要担当でもないキャストの来店。
+ */
+export interface HelpCastTally {
+  cast: Cast;
+  visitCount: number;
+  firstHelpedAt: string; // ISO
+  lastHelpedAt: string; // ISO
+}
+
+/** ある顧客の「歴代ヘルプ」名簿（複数キャストが時系列で入りうる）。 */
+export interface CustomerHelpRoster {
+  customer: Customer;
+  masterCastId: string | null;
+  masterName: string | null;
+  /** lastHelpedAt 降順。同顧客に入った全ヘルプ。 */
+  helps: HelpCastTally[];
+}
+
+/**
+ * ある顧客に入った歴代ヘルプを接客者ごとに集約する。
+ *
+ * help = `visit.cast_id` が「その顧客のマスターでも主要担当でもない」来店。
+ * 「初回はキャストA、2回目はキャストB」のように来店ごとに入れ替わっても、
+ * その全員が `helps` に並ぶ（多対多）。
+ */
+export function aggregateHelpCastsByCustomer(args: {
+  customer: Customer;
+  visits: Visit[];
+  allCasts: Cast[];
+}): CustomerHelpRoster {
+  const { customer, visits, allCasts } = args;
+  const castById = new Map(allCasts.map((c) => [c.id, c]));
+  const masterCastId = customer.manager_cast_id ?? null;
+  const masterName = masterCastId
+    ? (castById.get(masterCastId)?.name ?? null)
+    : null;
+
+  const tallyByCast = new Map<string, HelpCastTally>();
+  for (const v of visits) {
+    if (v.customer_id !== customer.id) continue;
+    // マスター・主要担当の接客はヘルプではない
+    if (v.cast_id === masterCastId) continue;
+    if (v.cast_id === customer.cast_id) continue;
+    const cast = castById.get(v.cast_id);
+    if (!cast) continue;
+
+    const existing = tallyByCast.get(v.cast_id);
+    if (existing) {
+      existing.visitCount += 1;
+      if (v.visited_at > existing.lastHelpedAt) existing.lastHelpedAt = v.visited_at;
+      if (v.visited_at < existing.firstHelpedAt) existing.firstHelpedAt = v.visited_at;
+    } else {
+      tallyByCast.set(v.cast_id, {
+        cast,
+        visitCount: 1,
+        firstHelpedAt: v.visited_at,
+        lastHelpedAt: v.visited_at,
+      });
+    }
+  }
+
+  const helps = Array.from(tallyByCast.values()).sort((a, b) =>
+    b.lastHelpedAt.localeCompare(a.lastHelpedAt),
+  );
+
+  return { customer, masterCastId, masterName, helps };
+}
+
+/**
  * 指定期間でヘルプ実績を絞り込む。デフォルトは今月。
  */
 export function filterHelpVisitsByPeriod(

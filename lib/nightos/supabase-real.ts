@@ -196,6 +196,20 @@ export async function getCustomerContextReal(
   };
 }
 
+/** 指定顧客群の全来店（接客者を問わず）。歴代ヘルプの多対多集約に使う。 */
+export async function getVisitsForCustomersReal(
+  customerIds: string[],
+): Promise<Visit[]> {
+  if (customerIds.length === 0) return [];
+  const supabase = createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("visits")
+    .select("*")
+    .in("customer_id", customerIds);
+  if (error) throw error;
+  return (data ?? []).map(rowToVisit);
+}
+
 export async function getCastHomeDataReal(
   castId: string,
   today: Date,
