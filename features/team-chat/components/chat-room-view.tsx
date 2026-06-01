@@ -1199,14 +1199,14 @@ function PinBar({
   if (!pickerOpen) {
     if (customers.length === 0) return null;
     return (
-      <div className="shrink-0 px-4 py-1.5 border-b border-ink/[0.06] bg-pearl-soft/30">
+      <div className="shrink-0 px-4 py-2 border-b border-ink/[0.06] bg-pearl-soft/30">
         <button
           type="button"
           onClick={onOpenPicker}
-          className="inline-flex items-center gap-1 text-[11px] text-ink-soft hover:text-wine-deep"
+          className="inline-flex items-center gap-1.5 rounded-pill border border-gold/40 bg-champagne-soft/50 px-3 py-1.5 text-[12px] font-medium text-wine-deep shadow-soft transition-colors hover:bg-champagne-soft/80"
         >
-          <UserPlus size={12} className="text-gold-deep" />
-          この相談を顧客に紐づける
+          <UserPlus size={13} className="text-gold-deep" />
+          この相談をお客様に紐づける
         </button>
       </div>
     );
