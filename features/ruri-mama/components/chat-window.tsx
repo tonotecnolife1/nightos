@@ -118,6 +118,9 @@ interface Props {
   customers: Customer[];
   helpCastNames?: Record<string, string>;
   initialCustomerId?: string;
+  /** 「文面を作る」から来た時 true。過去の会話を復元せず、LINE 連絡前提の
+   *  新規セッション（follow ヒアリング）を即開始する。 */
+  initialCompose?: boolean;
   initialIsStubMode?: boolean;
 }
 
@@ -153,6 +156,7 @@ export function ChatWindow({
   customers,
   helpCastNames = {},
   initialCustomerId,
+  initialCompose = false,
   initialIsStubMode = false,
 }: Props) {
   const castId = useCastId();
@@ -206,6 +210,31 @@ export function ChatWindow({
   // On mount, restore persisted chat history (if any) + 成績ページからの
   // 引き継ぎ (handoff) があれば会話の続きとして追記する。
   useEffect(() => {
+    // 「文面を作る」から来た場合は過去の会話を復元しない。
+    // LINE 連絡前提の新規セッションを起こし、follow ヒアリングを即開始する。
+    // （復元してしまうと過去の相談セッションに着地してしまうため）
+    if (initialCompose) {
+      clearStoredMessages(castId);
+      const customerName = initialCustomerId
+        ? customers.find((c) => c.id === initialCustomerId)?.name ?? null
+        : null;
+      const subject = customerName ? `${customerName}さま` : "お客様";
+      setMessages([
+        {
+          role: "assistant",
+          content: `${subject}へのLINE、一緒に考えましょう。\nまずは下からいくつか教えてね。`,
+        },
+      ]);
+      setPhase({
+        name: "hearing",
+        intent: "follow",
+        flow: HEARING_FLOWS.follow,
+        step: 0,
+        answers: {},
+      });
+      setHistoryLoaded(true);
+      return;
+    }
     const stored = loadStoredMessages(castId);
     const handoff = takeStatsConsultHandoff(castId);
     // 復元する会話には、それを保存した時と同じセッション id を引き継ぐ。
