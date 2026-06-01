@@ -727,6 +727,7 @@ export function ChatWindow({
 
         {currentHearingStep && (
           <ChipOptions
+            key={currentHearingStep.id}
             question={currentHearingStep.question}
             options={currentHearingStep.options}
             onPick={handleChipPick}
