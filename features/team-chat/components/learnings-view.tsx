@@ -121,7 +121,7 @@ export function LearningsView() {
         <EmptyState
           icon={<BookOpen size={22} />}
           title="学びはまだありません"
-          description={`会話をキープすると、${SAKURA_MAMA_DISPLAY_NAME}がその内容を読み取って、お客様ごとに覚えておくべき学びへ整理します。気に入った学びはストックして残せます。`}
+          description={`会話を保存すると、${SAKURA_MAMA_DISPLAY_NAME}がその内容を読み取って、お客様ごとに覚えておくべき学びへ整理します。気に入った学びはストックして残せます。`}
           tone="amethyst"
         />
       </div>
@@ -191,7 +191,7 @@ function CurrentView({
   if (pins.length === 0) {
     return (
       <p className="text-center text-body-sm text-ink-mute py-6">
-        キープがないため、今回整理できる学びはありません。
+        保存がないため、今回整理できる学びはありません。
         <br />
         過去にストックした学びは「ストック」タブで確認できます。
       </p>
@@ -209,7 +209,7 @@ function CurrentView({
           </span>
         </div>
         <p className="text-body-sm text-ink-soft leading-relaxed">
-          キープした{pins.length}件の会話を、お客様ごとに覚えておくべきことへまとめます。気に入った学びは
+          保存した{pins.length}件の会話を、お客様ごとに覚えておくべきことへまとめます。気に入った学びは
           <Bookmark size={11} className="inline-block mx-0.5 -mt-0.5 text-gold-deep" />
           でストックできます。
         </p>
@@ -230,7 +230,7 @@ function CurrentView({
         )}
         {isStale && !loading && (
           <p className="mt-1.5 text-[11px] text-gold-deep">
-キープが更新されています。整理し直すと最新になります。
+保存が更新されています。整理し直すと最新になります。
           </p>
         )}
         {error && (

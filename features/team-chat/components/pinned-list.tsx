@@ -29,8 +29,8 @@ export function PinnedList() {
       <div className="p-5">
         <EmptyState
           icon={<Bookmark size={22} />}
-          title="キープはまだありません"
-          description="大事な会話の吹き出しを長押しして、キープ・顧客の紐づけ・メモを残すとここに溜まっていきます。"
+          title="保存はまだありません"
+          description="大事な会話の吹き出しを長押しして、保存・顧客の紐づけ・メモを残すとここに溜まっていきます。"
           tone="amethyst"
         />
       </div>
@@ -59,8 +59,8 @@ function PinCard({ pin, onRemove }: { pin: PinnedMessage; onRemove: () => void }
           type="button"
           onClick={onRemove}
           className="w-6 h-6 rounded-full flex items-center justify-center text-ink-mute hover:bg-pearl-soft shrink-0"
-          aria-label="キープを外す"
-          title="キープを外す"
+          aria-label="保存を外す"
+          title="保存を外す"
         >
           <X size={13} />
         </button>

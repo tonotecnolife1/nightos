@@ -84,7 +84,7 @@ export function MessagePinSheet({
         <div className="flex items-center gap-2 mb-3">
           <Bookmark size={15} className="text-gold-deep shrink-0" />
           <h2 className="font-serif text-[16px] font-medium text-ink">
-            {existing ? "キープを編集" : "この会話をキープ"}
+            {existing ? "保存を編集" : "この会話を保存"}
           </h2>
           <button
             type="button"
@@ -198,7 +198,7 @@ export function MessagePinSheet({
             className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-pill bg-wine-deep text-pearl-light px-4 py-2.5 text-body-md font-medium shadow-warm"
           >
             <Bookmark size={14} />
-            {existing ? "更新する" : "キープする"}
+            {existing ? "更新する" : "保存する"}
           </button>
           {existing && (
             <button

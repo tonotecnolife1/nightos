@@ -94,7 +94,7 @@ export function MessageActionSheet({
     {
       key: "keep",
       icon: <Bookmark size={20} />,
-      label: isPinned ? "キープ編集" : "キープ",
+      label: isPinned ? "保存を編集" : "保存",
       onClick: onPin,
       active: isPinned,
     },

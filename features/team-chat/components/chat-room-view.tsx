@@ -1153,7 +1153,7 @@ function MessageRow({
             {isPinned && (
               <span className="inline-flex items-center gap-1 rounded-pill bg-champagne-soft/70 border border-gold/45 px-2 py-0.5 text-[10px] font-medium text-wine-deep shadow-soft">
                 <Bookmark size={10} className="text-gold-deep" />
-                キープ済み
+                保存済み
               </span>
             )}
             {msg.content.trim().length > 0 && (
