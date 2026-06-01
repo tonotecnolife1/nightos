@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   BookOpen,
+  Bookmark,
   Hash,
   type LucideIcon,
   MessageCircle,
@@ -48,7 +49,7 @@ const ROOM_TABS: { id: FilterTab; label: string }[] = [
  */
 const COLLECTION_TABS: { id: "pinned" | "learnings"; label: string; Icon: LucideIcon }[] =
   [
-    { id: "pinned", label: "キープ", Icon: Pin },
+    { id: "pinned", label: "保存", Icon: Bookmark },
     { id: "learnings", label: "学び", Icon: BookOpen },
   ];
 
@@ -221,10 +222,7 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
                   : "bg-champagne-soft/25 text-gold-deep border border-gold/15 hover:bg-champagne-soft/45 hover:text-wine-deep",
               )}
             >
-              <Icon
-                size={13}
-                className={cn("shrink-0", id === "pinned" && "-rotate-45")}
-              />
+              <Icon size={13} className="shrink-0" />
               {label}
             </button>
           );
@@ -299,6 +297,8 @@ function RoomRow({
   onTogglePin: () => void;
 }) {
   const memberCount = room.member_ids.length;
+  // メニューを開いている行は、隣接する行より前面に出す（半透明化・クリック不能の回避）。
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const lastMsg = room.last_message;
   const timeStr = lastMsg
@@ -306,7 +306,13 @@ function RoomRow({
     : "";
 
   return (
-    <div className={cn("relative", isPinned && "bg-champagne-soft/25")}>
+    <div
+      className={cn(
+        "relative",
+        menuOpen && "z-40",
+        isPinned && "bg-champagne-soft/25",
+      )}
+    >
       <Link
         href={`/cast/chat/${room.id}`}
         className="flex items-center gap-3 px-5 py-3.5 pr-14 hover:bg-pearl-soft/50 active:bg-pearl-soft transition-colors"
@@ -370,6 +376,8 @@ function RoomRow({
       </Link>
 
       <RoomRowMenu
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
         canRename={canRename}
         isPinned={isPinned}
         onEdit={onEdit}
@@ -381,26 +389,29 @@ function RoomRow({
 
 /** 行右端の「···」メニュー。グループ名の編集 / ピン留めの選択肢を出す。 */
 function RoomRowMenu({
+  open,
+  onOpenChange,
   canRename,
   isPinned,
   onEdit,
   onTogglePin,
 }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   canRename: boolean;
   isPinned: boolean;
   onEdit: () => void;
   onTogglePin: () => void;
 }) {
-  const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") onOpenChange(false);
     };
     const onPointer = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+      if (!rootRef.current?.contains(e.target as Node)) onOpenChange(false);
     };
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onPointer);
@@ -408,7 +419,7 @@ function RoomRowMenu({
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("pointerdown", onPointer);
     };
-  }, [open]);
+  }, [open, onOpenChange]);
 
   return (
     <div
@@ -417,7 +428,7 @@ function RoomRowMenu({
     >
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => onOpenChange(!open)}
         aria-label="トークの操作"
         aria-expanded={open}
         title="トークの操作"
@@ -438,7 +449,7 @@ function RoomRowMenu({
             type="button"
             role="menuitem"
             onClick={() => {
-              setOpen(false);
+              onOpenChange(false);
               onTogglePin();
             }}
             className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-body-sm text-ink hover:bg-pearl-soft transition-colors"
@@ -455,7 +466,7 @@ function RoomRowMenu({
               type="button"
               role="menuitem"
               onClick={() => {
-                setOpen(false);
+                onOpenChange(false);
                 onEdit();
               }}
               className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-body-sm text-ink hover:bg-pearl-soft transition-colors"
