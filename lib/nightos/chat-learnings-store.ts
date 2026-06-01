@@ -7,6 +7,8 @@
 // re-organise when the pins actually changed.
 
 export interface Learning {
+  /** Customer this learning is about; null/「全般」 when it isn't tied to one. */
+  customer?: string | null;
   category: string;
   title: string;
   body: string;

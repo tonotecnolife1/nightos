@@ -1,7 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { BookOpen, Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import {
+  Bookmark,
+  BookmarkCheck,
+  BookOpen,
+  ChevronRight,
+  Loader2,
+  RefreshCw,
+  Sparkles,
+  User,
+} from "lucide-react";
 import { EmptyState } from "@/components/nightos/empty-state";
 import { SAKURA_MAMA_DISPLAY_NAME } from "@/lib/nightos/constants";
 import {
@@ -16,23 +26,56 @@ import {
   pinsSignature,
   setLearningsSnapshot,
 } from "@/lib/nightos/chat-learnings-store";
+import {
+  type StockedLearning,
+  getStockedIds,
+  getStockedLearnings,
+  learningKey,
+  subscribeStock,
+  toggleStock,
+} from "@/lib/nightos/learning-stock-store";
+
+type SubView = "current" | "stock";
 
 /**
  * 学び tab — asks さくらママ (AI) to read the pinned conversations and organise
- * them into a few remember-this cards. Results are cached until the pins change.
+ * them into per-customer remember-this cards. Results are cached until the pins
+ * change. Good cards can be ストック (stocked) so they survive re-organising.
  */
 export function LearningsView() {
   const [pins, setPins] = useState<PinnedMessage[]>([]);
   const [snapshot, setSnapshot] = useState<LearningsSnapshot | null>(null);
+  const [stocked, setStocked] = useState<StockedLearning[]>([]);
+  const [stockedIds, setStockedIds] = useState<Set<string>>(new Set());
+  const [view, setView] = useState<SubView>("current");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const refresh = () => setPins(getPinnedMessages());
-    refresh();
+    const refreshPins = () => setPins(getPinnedMessages());
+    const refreshStock = () => {
+      setStocked(getStockedLearnings());
+      setStockedIds(getStockedIds());
+    };
+    refreshPins();
+    refreshStock();
     setSnapshot(getLearningsSnapshot());
-    return subscribePins(refresh);
+    const unsubPins = subscribePins(refreshPins);
+    const unsubStock = subscribeStock(refreshStock);
+    return () => {
+      unsubPins();
+      unsubStock();
+    };
   }, []);
+
+  // Map customer name → id so per-customer sections can link to the カルテ.
+  const customerIdByName = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const p of pins) {
+      if (p.customerName && p.customerId) m.set(p.customerName, p.customerId);
+    }
+    return m;
+  }, [pins]);
 
   const signature = pinsSignature(pins);
   const isStale = !!snapshot && snapshot.signature !== signature;
@@ -71,13 +114,14 @@ export function LearningsView() {
     }
   };
 
-  if (pins.length === 0) {
+  // Nothing to show at all — no pins to organise and nothing stocked yet.
+  if (pins.length === 0 && stocked.length === 0) {
     return (
       <div className="p-5">
         <EmptyState
           icon={<BookOpen size={22} />}
           title="学びはまだありません"
-          description={`会話をピン留めすると、${SAKURA_MAMA_DISPLAY_NAME}がその内容を読み取って、覚えておくべき学びに自動で整理します。`}
+          description={`会話をピン留めすると、${SAKURA_MAMA_DISPLAY_NAME}がその内容を読み取って、お客様ごとに覚えておくべき学びへ整理します。気に入った学びはストックして残せます。`}
           tone="amethyst"
         />
       </div>
@@ -86,6 +130,76 @@ export function LearningsView() {
 
   return (
     <div className="px-5 py-4 space-y-3">
+      {/* Sub-view switch */}
+      <div className="flex gap-1 rounded-pill bg-champagne-soft/40 border border-gold/20 p-0.5">
+        <SubTab
+          active={view === "current"}
+          onClick={() => setView("current")}
+          label="今回の整理"
+        />
+        <SubTab
+          active={view === "stock"}
+          onClick={() => setView("stock")}
+          label={`ストック${stocked.length > 0 ? ` ${stocked.length}` : ""}`}
+        />
+      </div>
+
+      {view === "current" ? (
+        <CurrentView
+          pins={pins}
+          snapshot={snapshot}
+          isStale={isStale}
+          hasFresh={hasFresh}
+          loading={loading}
+          error={error}
+          organise={organise}
+          stockedIds={stockedIds}
+          customerIdByName={customerIdByName}
+        />
+      ) : (
+        <StockView
+          stocked={stocked}
+          stockedIds={stockedIds}
+          customerIdByName={customerIdByName}
+        />
+      )}
+    </div>
+  );
+}
+
+function CurrentView({
+  pins,
+  snapshot,
+  isStale,
+  hasFresh,
+  loading,
+  error,
+  organise,
+  stockedIds,
+  customerIdByName,
+}: {
+  pins: PinnedMessage[];
+  snapshot: LearningsSnapshot | null;
+  isStale: boolean;
+  hasFresh: boolean;
+  loading: boolean;
+  error: boolean;
+  organise: () => void;
+  stockedIds: Set<string>;
+  customerIdByName: Map<string, string>;
+}) {
+  if (pins.length === 0) {
+    return (
+      <p className="text-center text-body-sm text-ink-mute py-6">
+        ピン留めがないため、今回整理できる学びはありません。
+        <br />
+        過去にストックした学びは「ストック」タブで確認できます。
+      </p>
+    );
+  }
+
+  return (
+    <>
       {/* Intro / action header */}
       <div className="rounded-card border border-gold/20 bg-champagne-soft/30 px-4 py-3">
         <div className="flex items-center gap-2 mb-1">
@@ -95,7 +209,9 @@ export function LearningsView() {
           </span>
         </div>
         <p className="text-body-sm text-ink-soft leading-relaxed">
-          ピン留めした{pins.length}件の会話から、覚えておくべきことをまとめます。
+          ピン留めした{pins.length}件の会話を、お客様ごとに覚えておくべきことへまとめます。気に入った学びは
+          <Bookmark size={11} className="inline-block mx-0.5 -mt-0.5 text-gold-deep" />
+          でストックできます。
         </p>
         {(isStale || !snapshot) && (
           <button
@@ -124,12 +240,14 @@ export function LearningsView() {
         )}
       </div>
 
-      {/* Learning cards */}
+      {/* Learning cards, grouped by customer */}
       {snapshot && snapshot.learnings.length > 0 && (
         <>
-          {snapshot.learnings.map((l, i) => (
-            <LearningCard key={i} learning={l} />
-          ))}
+          <GroupedLearnings
+            items={snapshot.learnings}
+            stockedIds={stockedIds}
+            customerIdByName={customerIdByName}
+          />
           <div className="flex items-center justify-between pt-1">
             <span className="text-[10px] text-ink-mute">
               {formatGeneratedAt(snapshot.generatedAt)}に整理
@@ -158,16 +276,143 @@ export function LearningsView() {
           まだ学びを抽出できませんでした。メモを足してから整理し直してみてください。
         </p>
       )}
-    </div>
+    </>
   );
 }
 
-function LearningCard({ learning }: { learning: Learning }) {
+function StockView({
+  stocked,
+  stockedIds,
+  customerIdByName,
+}: {
+  stocked: StockedLearning[];
+  stockedIds: Set<string>;
+  customerIdByName: Map<string, string>;
+}) {
+  if (stocked.length === 0) {
+    return (
+      <div className="pt-2">
+        <EmptyState
+          icon={<Bookmark size={22} />}
+          title="ストックはまだありません"
+          description="「今回の整理」で気に入った学びのしおりアイコンを押すと、整理し直しても消えずにここへ残ります。"
+          tone="amethyst"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <GroupedLearnings
+      items={stocked}
+      stockedIds={stockedIds}
+      customerIdByName={customerIdByName}
+    />
+  );
+}
+
+/** Renders learnings grouped into per-customer sections (全般 last). */
+function GroupedLearnings({
+  items,
+  stockedIds,
+  customerIdByName,
+}: {
+  items: Learning[];
+  stockedIds: Set<string>;
+  customerIdByName: Map<string, string>;
+}) {
+  const groups = groupByCustomer(items);
+  return (
+    <>
+      {groups.map((g) => (
+        <div key={g.customer ?? "__general__"} className="space-y-2">
+          <CustomerHeader
+            name={g.customer}
+            customerId={g.customer ? customerIdByName.get(g.customer) : undefined}
+          />
+          {g.items.map((l, i) => (
+            <LearningCard
+              key={`${learningKey(l)}-${i}`}
+              learning={l}
+              stocked={stockedIds.has(learningKey(l))}
+              onToggleStock={() => toggleStock(l)}
+            />
+          ))}
+        </div>
+      ))}
+    </>
+  );
+}
+
+function CustomerHeader({
+  name,
+  customerId,
+}: {
+  name: string | null;
+  customerId?: string;
+}) {
+  if (name === null) {
+    return (
+      <div className="flex items-center gap-1.5 pt-1">
+        <Sparkles size={12} className="text-gold-deep" />
+        <span className="text-label-sm font-medium text-ink-soft tracking-[0.06em]">
+          全般
+        </span>
+      </div>
+    );
+  }
+  const inner = (
+    <>
+      <User size={13} className="text-wine-deep shrink-0" />
+      <span className="font-serif text-[14px] font-medium text-wine-deep tracking-[0.02em]">
+        {name}さん
+      </span>
+      {customerId && <ChevronRight size={13} className="text-ink-mute ml-auto" />}
+    </>
+  );
+  return customerId ? (
+    <Link
+      href={`/cast/customers/${customerId}`}
+      className="flex items-center gap-1.5 pt-1 hover:underline"
+    >
+      {inner}
+    </Link>
+  ) : (
+    <div className="flex items-center gap-1.5 pt-1">{inner}</div>
+  );
+}
+
+function LearningCard({
+  learning,
+  stocked,
+  onToggleStock,
+}: {
+  learning: Learning;
+  stocked: boolean;
+  onToggleStock: () => void;
+}) {
   return (
     <div className="rounded-card border border-ink/[0.08] bg-pearl-light shadow-soft px-4 py-3">
-      <span className="inline-block rounded-pill bg-success/10 border border-success/20 px-2 py-0.5 text-[10px] font-medium text-success tracking-[0.04em] mb-1.5">
-        {learning.category}
-      </span>
+      <div className="flex items-start justify-between gap-2">
+        <span className="inline-block rounded-pill bg-success/10 border border-success/20 px-2 py-0.5 text-[10px] font-medium text-success tracking-[0.04em] mb-1.5">
+          {learning.category}
+        </span>
+        <button
+          type="button"
+          onClick={onToggleStock}
+          className={
+            "w-7 h-7 -mt-1 -mr-1 rounded-full flex items-center justify-center shrink-0 transition-colors " +
+            (stocked
+              ? "text-gold-deep hover:bg-champagne-soft/50"
+              : "text-ink-mute hover:bg-pearl-soft hover:text-gold-deep")
+          }
+          aria-label={stocked ? "ストックから外す" : "ストックに追加"}
+          aria-pressed={stocked}
+          title={stocked ? "ストックから外す" : "ストックに追加"}
+        >
+          {stocked ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
+        </button>
+      </div>
       <h3 className="font-serif text-[15px] leading-snug font-medium text-ink mb-1">
         {learning.title}
       </h3>
@@ -176,6 +421,50 @@ function LearningCard({ learning }: { learning: Learning }) {
       </p>
     </div>
   );
+}
+
+function SubTab({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={
+        "flex-1 rounded-pill px-3 py-1.5 text-label-sm font-medium tracking-[0.04em] transition-colors " +
+        (active
+          ? "bg-pearl-light text-wine-deep shadow-soft"
+          : "text-ink-mute hover:text-ink-soft")
+      }
+    >
+      {label}
+    </button>
+  );
+}
+
+/** Group learnings by customer, keeping first-seen order with 全般 pinned last. */
+function groupByCustomer<T extends Learning>(
+  items: T[],
+): { customer: string | null; items: T[] }[] {
+  const map = new Map<string, T[]>();
+  const order: string[] = [];
+  for (const it of items) {
+    const key = it.customer && it.customer !== "全般" ? it.customer : "";
+    if (!map.has(key)) {
+      map.set(key, []);
+      order.push(key);
+    }
+    map.get(key)!.push(it);
+  }
+  return order
+    .map((k) => ({ customer: k === "" ? null : k, items: map.get(k)! }))
+    .sort((a, b) => (a.customer === null ? 1 : b.customer === null ? -1 : 0));
 }
 
 function formatGeneratedAt(iso: string): string {
