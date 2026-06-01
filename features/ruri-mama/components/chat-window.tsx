@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Info, PanelLeftOpen, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Info, PanelLeftOpen, Plus, Sparkles } from "lucide-react";
 import { useCastId } from "@/lib/nightos/cast-context";
 import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 import { detectIntent } from "@/lib/nightos/intent-detector";
@@ -267,13 +267,6 @@ export function ChatWindow({
       behavior: "smooth",
     });
   }, [messages, phase]);
-
-  const handleClearHistory = () => {
-    if (!confirm("これまでの相談履歴を全部削除しますか？")) return;
-    clearStoredMessages(castId);
-    setMessages([GREETING]);
-    setPhase({ name: "intent-pick" });
-  };
 
   // ─────────────────────────────────────────────────────────────
   // 相談履歴サイドバー（ChatGPT / Claude 風）
@@ -792,16 +785,6 @@ export function ChatWindow({
               <Plus size={14} />
               新しい相談を始める
             </button>
-            {messages.length > 3 && (
-              <button
-                type="button"
-                onClick={handleClearHistory}
-                className="flex items-center gap-1 text-label-sm text-ink-mute hover:text-wine-deep underline underline-offset-2"
-              >
-                <Trash2 size={11} />
-                履歴を全部クリアする
-              </button>
-            )}
           </div>
         )}
       </div>
