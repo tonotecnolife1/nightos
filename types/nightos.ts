@@ -42,6 +42,10 @@ export interface Cast {
   club_role?: ClubRole;
   /** Club only: the oneesan this help is assigned to */
   assigned_oneesan_id?: string;
+  /** Storage path of the cast's own avatar image in the private
+   *  `cast-avatars` bucket (migration 019). The display layer re-signs
+   *  this into a URL on read. Null/undefined when no avatar is set. */
+  avatar_path?: string | null;
 }
 
 // ═══════════════ Club-specific types ═══════════════
