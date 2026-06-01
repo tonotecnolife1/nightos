@@ -404,27 +404,31 @@ caller が ヘルプのみ       → addProfileChangeRequest()（pending を作�
   （`features/cast-customers/components/help-visits-section.tsx`）
 - `/cast/stats` にヘルプ実績カウント追加
 
-### Phase C（改訂で再定義 — 本ドキュメントは設計のみ）
-- `aggregateHelpCastsByCustomer` 追加（顧客視点の歴代ヘルプ集約）
-- 顧客カルテに「歴代ヘルプ」セクション追加
-- `getCustomersForOneesan` / `customer-select-inline` / `ViewGroupingToggle`
-  を **多対多前提** に改修（上記「改訂方針」4）
-- `/mama/team/[castId]` に同様の分離セクション追加
-- 店舗ダッシュボードで姉さん別ヘルプ件数集計
+### Phase C（歴代ヘルプ・多対多）
+- ✅ `aggregateHelpCastsByCustomer` / `CustomerHelpRoster` / `HelpCastTally`（`master-help-split.ts`、テスト付）
+- ✅ 顧客カルテに「歴代ヘルプ」セクション追加（`help-roster-section.tsx`）
+- ⏳ `getCustomersForOneesan` / `customer-select-inline` / `ViewGroupingToggle`
+  の **多対多前提** 改修（上記「改訂方針」4）→ 一覧グルーピングの再設計が要るため次バッチ
+- ⏳ `/mama/team/[castId]` の分離セクション
+- ⏳ 店舗ダッシュボードで姉さん別ヘルプ件数集計
 
-### Phase D（UI 改善 — 本ドキュメントは設計のみ）
-- **重複防止**: 新規登録フォームに既存顧客のインクリメンタル検索＋「このお客様ですか？」導線
-  （[UI 改善 A](#a-新規登録の重複防止最優先)）。ヒット時最小情報のみ返す照合クエリを追加
-- **ヘルプ顧客の管理化**: 「ヘルプで入ったお客様」をカルテ導線つきに、関係性バッジ表示
-  （[UI 改善 B](#b-ヘルプ顧客を管理可能にする)）
-- **編集権限**: 関係性レイヤーに応じたカルテ編集ガードを導入
-  （[UI 改善 C](#c-編集権限の明確化現状の誰でも編集可を是正)）
+### Phase D（UI 改善）
+- ✅ **重複防止**: 新規登録に同名候補の提示＋既存カルテ導線
+  （`duplicate-candidates.ts` / `customer-form.tsx`、テスト付）
+- ✅ **ヘルプ顧客の管理化**: 関係性バッジ表示（`relationship-badge.tsx`）。
+  「ヘルプで入ったお客様」は既存カルテ導線あり
+- ✅ **編集権限**: 関係性ガード（`customer-relationship.ts` + `updateCustomerProfileAction`）
 
-### Phase E（プロフィール変更提案 — 本ドキュメントは設計のみ）
-- `features/customer-management/lib/profile-change-store.ts`（`ProfileChangeRequest` + 履歴、`manager-change-store` を踏襲）
-- `updateCustomerProfileAction` を関係性で分岐（マスター/担当=直接 / ヘルプ=提案）
-- 承認 UI: カルテ内インライン承認 + cast バッジ、`/store/approvals` に合算
+### Phase E（プロフィール変更提案）
+- ✅ `profile-change-store.ts`（`ProfileChangeRequest` + 履歴 + override + 競合自動却下、テスト付）
+- ✅ `updateCustomerProfileAction` を関係性で分岐（マスター/担当=直接 / ヘルプ=提案）
+- ✅ 承認 UI: カルテ内インライン承認（`profile-proposals-inline.tsx`）+
+  顧客一覧の承認待ちインボックス（`profile-proposal-inbox.tsx`）
+- ⏳ `/store/approvals`（オーナー）への合算表示
 - 詳細は [プロフィール変更提案フロー](#プロフィール変更提案フロー提案までの完結)
+
+> 実装メモ: 既存 `manager-change` と同様に MVP はクライアント localStorage で完結。
+> Supabase 移行時に `customer_profile_change_requests` テーブルへ移植する。
 
 ---
 

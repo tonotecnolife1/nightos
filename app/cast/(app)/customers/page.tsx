@@ -5,6 +5,7 @@ import { MoreMenu } from "@/components/nightos/more-menu";
 import { PageHeader } from "@/components/nightos/page-header";
 import { StatCard } from "@/components/nightos/stat-card";
 import { CustomerPageShell } from "@/features/cast-customers/components/customer-page-shell";
+import { ProfileProposalInbox } from "@/features/customer-card/components/profile-proposal-inbox";
 import {
   getAllCasts,
   getCustomersForCast,
@@ -44,6 +45,9 @@ export default async function CastCustomerListPage() {
         right={<MoreMenu />}
       />
       <div className="px-5 pt-3 pb-6 space-y-5">
+        {/* 承認待ちの変更提案（ヘルプからの提案に気づく導線） */}
+        <ProfileProposalInbox castId={castId} />
+
         {/* Funnel snapshot */}
         <div className="grid grid-cols-2 gap-2.5">
           <StatCard
