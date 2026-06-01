@@ -79,8 +79,8 @@ export function ReplyOptionPicker({ options, onPick }: Props) {
         3つの文面から選んでください
       </div>
 
-      {/* Vertical stack — A/B/C を上下に並べて文面を見比べやすく */}
-      <div className="space-y-2.5">
+      {/* Horizontal scroll — A/B/C を横に並べてスワイプで見比べ */}
+      <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory items-start">
         {options.map((opt) => (
           <OptionCard
             key={opt.id}
@@ -129,7 +129,7 @@ function OptionCard({
   return (
     <div
       className={cn(
-        "rounded-card border bg-pearl-light transition-all",
+        "flex-shrink-0 w-[78vw] max-w-[260px] snap-start rounded-card border bg-pearl-light transition-all",
         isSelected
           ? "border-gold/60 shadow-warm scale-[1.01]"
           : "border-gold/25 shadow-soft",
