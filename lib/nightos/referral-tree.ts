@@ -4,19 +4,19 @@ import type { Cast, Customer, CustomerReferralNode, CustomerFunnelStats } from "
 
 /**
  * キャストベースのツリーノード。
- * 管理者（ママ/姉さん）→ 担当キャスト → 顧客 の3階層。
+ * 担当（メインのホステス）→ ヘルプ → 顧客 の3階層。
  */
 export interface CastBasedNode {
-  manager: Cast | null; // null = 管理者未割り当て
+  manager: Cast | null; // null = 担当未割り当て
   byCast: Array<{
-    cast: Cast | null; // null = 担当者未割り当て
+    cast: Cast | null; // null = ヘルプ未割り当て
     customers: Customer[];
   }>;
   totalCustomers: number;
 }
 
 /**
- * 顧客データを「管理者→担当者→顧客」の3階層にまとめる。
+ * 顧客データを「担当→ヘルプ→顧客」の3階層にまとめる。
  */
 export function buildCastBasedTree(args: {
   customers: Customer[];

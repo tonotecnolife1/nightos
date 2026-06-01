@@ -212,11 +212,11 @@ export function CustomerForm({
         </select>
       </div>
 
-      {/* 管理者 */}
+      {/* 担当 */}
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5">
           <Crown size={13} className="text-gold-deep" />
-          <label className="text-label-md text-ink font-medium">管理者</label>
+          <label className="text-label-md text-ink font-medium">担当</label>
         </div>
         <select
           value={managerId}
