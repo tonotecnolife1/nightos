@@ -133,18 +133,22 @@ export function ReplyOptionPicker({ options, onPick, onRequestMore }: Props) {
 
 function OptionCard({
   option,
-  isSelected,
-  locked,
+  isSelected = false,
+  locked = false,
+  picked = false,
   onPick,
 }: {
   option: ReplyOption;
-  isSelected: boolean;
-  locked: boolean;
-  onPick: () => void;
+  isSelected?: boolean;
+  locked?: boolean;
+  /** 選択確定後の読み取り専用表示（全幅・CTAなし・選択済みスタイル）。 */
+  picked?: boolean;
+  onPick?: () => void;
 }) {
   const [showDetail, setShowDetail] = useState(false);
   const Icon = STYLE_ICON[option.style];
   const tone = STYLE_TONE[option.style];
+  const chosen = picked || isSelected;
 
   const sections = parseSections(option.content);
   const messageSection = sections.find((s) => s.name.includes("文面"));
@@ -158,16 +162,18 @@ function OptionCard({
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-[78vw] max-w-[260px] snap-start rounded-card border bg-pearl-light transition-all",
-        isSelected
-          ? "border-gold/60 shadow-warm scale-[1.01]"
-          : "border-gold/25 shadow-soft",
+        "rounded-card border bg-pearl-light transition-all",
+        picked
+          ? "w-full"
+          : "flex-shrink-0 w-[78vw] max-w-[260px] snap-start",
+        chosen ? "border-gold/60 shadow-warm" : "border-gold/25 shadow-soft",
+        isSelected && "scale-[1.01]",
       )}
     >
       {/* Header */}
-      <div className="flex items-center px-3 pt-2.5 pb-1.5">
+      <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5">
         <div className={cn("flex items-center gap-1.5 text-label-sm font-semibold", tone.accent)}>
-          {isSelected ? (
+          {chosen ? (
             <Check size={13} className="animate-fade-in" />
           ) : (
             <Icon size={13} />
@@ -175,10 +181,13 @@ function OptionCard({
           <span>パターン{option.id}</span>
           <span className="text-[10px] font-normal text-ink-mute">· {option.label}</span>
         </div>
+        {picked && (
+          <span className="text-[10px] font-medium text-gold-deep">選択済み</span>
+        )}
       </div>
 
       {/* 文面 — 送る本文。LINE プレビュー風の淡いボックスで見比べやすく */}
-      <div className="px-3 pb-2.5">
+      <div className={cn("px-3", picked ? "pb-3" : "pb-2.5")}>
         {hasMessage && (
           <div className="flex items-center gap-1 text-[10px] text-ink-mute mb-1">
             <MessageSquareQuote size={10} className="text-gold-deep" />
@@ -226,51 +235,44 @@ function OptionCard({
         )}
       </div>
 
-      {/* Action */}
-      <div className="px-3 pb-3">
-        <button
-          type="button"
-          onClick={onPick}
-          disabled={locked}
-          className={cn(
-            "w-full h-9 rounded-full text-label-sm font-semibold transition-all active:scale-[0.98]",
-            isSelected
-              ? "bg-wine-deep text-pearl-light"
-              : locked
-                ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
-                : "bg-wine-deep text-pearl-light shadow-warm hover:opacity-90",
-          )}
-        >
-          {isSelected ? (
-            <span className="inline-flex items-center gap-1">
-              <Check size={13} /> 選択済み
-            </span>
-          ) : hasMessage ? (
-            "この文面を使う"
-          ) : (
-            "このアドバイスを使う"
-          )}
-        </button>
-      </div>
+      {/* Action — 選択確定後 (picked) は CTA を出さない */}
+      {!picked && (
+        <div className="px-3 pb-3">
+          <button
+            type="button"
+            onClick={onPick}
+            disabled={locked}
+            className={cn(
+              "w-full h-9 rounded-full text-label-sm font-semibold transition-all active:scale-[0.98]",
+              isSelected
+                ? "bg-wine-deep text-pearl-light"
+                : locked
+                  ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
+                  : "bg-wine-deep text-pearl-light shadow-warm hover:opacity-90",
+            )}
+          >
+            {isSelected ? (
+              <span className="inline-flex items-center gap-1">
+                <Check size={13} /> 選択済み
+              </span>
+            ) : hasMessage ? (
+              "この文面を使う"
+            ) : (
+              "このアドバイスを使う"
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-export function PickedOptionBadge({ option }: { option: ReplyOption }) {
-  const tone = STYLE_TONE[option.style];
-  const Icon = STYLE_ICON[option.style];
-  return (
-    <div
-      className={cn(
-        "inline-flex items-center gap-1 px-2 py-0.5 rounded-badge text-[10px] font-medium mb-1",
-        tone.chip,
-      )}
-    >
-      <Check size={10} />
-      <Icon size={9} />
-      パターン{option.id} · {option.label}
-    </div>
-  );
+/**
+ * 選択確定後に表示する「選んだパターン」カード。
+ * 選択前と同じカードUI（送る文面ボックス＋解説折りたたみ）を全幅で維持する。
+ */
+export function PickedOptionCard({ option }: { option: ReplyOption }) {
+  return <OptionCard option={option} picked />;
 }
 
 export function RefineTriggerButton({

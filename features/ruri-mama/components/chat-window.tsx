@@ -23,7 +23,7 @@ import { FeedbackButtons } from "./feedback-buttons";
 import { IntentPicker } from "./intent-picker";
 import { MessageBubble } from "./message-bubble";
 import {
-  PickedOptionBadge,
+  PickedOptionCard,
   RefineTriggerButton,
   ReplyOptionPicker,
 } from "./reply-option-picker";
@@ -689,11 +689,11 @@ export function ChatWindow({
                   onPick={(opt) => handleOptionPick(i, opt)}
                   onRequestMore={() => handleRequestMore(i)}
                 />
+              ) : pickedOpt ? (
+                // 選択確定後も選択前と同じカードUIを維持（フラットなバブルにしない）
+                <PickedOptionCard option={pickedOpt} />
               ) : (
-                <>
-                  {pickedOpt && <PickedOptionBadge option={pickedOpt} />}
-                  <MessageBubble message={m} />
-                </>
+                <MessageBubble message={m} />
               )}
 
               {/* Inline customer picker — shown below the very first greeting
