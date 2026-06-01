@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronRight, Crown, Star, User, Users } from "lucide-react";
-import type { Cast, Customer } from "@/types/nightos";
+import { ChevronDown, ChevronRight, Crown, HandHelping, Star, User, Users } from "lucide-react";
+import type { Cast, Customer, Visit } from "@/types/nightos";
 import {
   buildCastBasedTree,
   buildReferralTree,
@@ -17,6 +17,8 @@ interface Props {
   customers: Customer[];
   casts: Cast[];
   mode: "customer" | "cast";
+  /** ヘルプ（cast モード）の多対多バケット導出に使う来店履歴 */
+  visits?: Visit[];
   /** 星をつけた顧客の id 集合（指定時のみ星 UI を表示） */
   starredIds?: Set<string>;
   /** 星のオン/オフ切替。未指定なら星ボタン・ピン留め帯を出さない */
@@ -78,6 +80,7 @@ export function CustomerMapView({
   customers,
   casts,
   mode,
+  visits,
   starredIds,
   onToggleStar,
 }: Props) {
@@ -105,7 +108,7 @@ export function CustomerMapView({
       {mode === "customer" ? (
         <CustomerBasedMap customers={customers} casts={casts} />
       ) : (
-        <CastBasedMap customers={customers} casts={casts} />
+        <CastBasedMap customers={customers} casts={casts} visits={visits} />
       )}
     </StarContext.Provider>
   );
@@ -375,11 +378,13 @@ function ReferralNodeCard({
 function CastBasedMap({
   customers,
   casts,
+  visits,
 }: {
   customers: Customer[];
   casts: Cast[];
+  visits?: Visit[];
 }) {
-  const tree = buildCastBasedTree({ customers, casts });
+  const tree = buildCastBasedTree({ customers, casts, visits });
 
   return (
     <div className="space-y-3">
@@ -433,12 +438,13 @@ function ManagerBlock({
 function CastBucket({
   bucket,
 }: {
-  bucket: import("@/lib/nightos/referral-tree").CastBasedNode["byCast"][number];
+  bucket: import("@/lib/nightos/referral-tree").CastBucketNode;
 }) {
   const [expanded, setExpanded] = useState(true);
   const starCtx = useContext(StarContext);
+  const isHelp = bucket.kind === "help";
   const castLabel = bucket.cast
-    ? `${bucket.cast.name}さん担当`
+    ? `${bucket.cast.name}さん${isHelp ? "ヘルプ" : "担当"}`
     : "担当未割り当て";
   const sortedCustomers = sortStarredFirst(
     bucket.customers,
@@ -447,13 +453,27 @@ function CastBucket({
   );
 
   return (
-    <div className="rounded-btn bg-pearl-warm border border-pearl-soft overflow-hidden">
+    <div
+      className={cn(
+        "rounded-btn border overflow-hidden",
+        isHelp
+          ? "bg-champagne/20 border-champagne-dark/30"
+          : "bg-pearl-warm border-pearl-soft",
+      )}
+    >
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-left hover:bg-pearl-soft"
+        className={cn(
+          "w-full flex items-center gap-1.5 px-2.5 py-1.5 text-left",
+          isHelp ? "hover:bg-champagne/30" : "hover:bg-pearl-soft",
+        )}
       >
-        <Users size={11} className="text-wine-deep shrink-0" />
+        {isHelp ? (
+          <HandHelping size={11} className="text-champagne-dark shrink-0" />
+        ) : (
+          <Users size={11} className="text-wine-deep shrink-0" />
+        )}
         <span className="text-[11px] font-medium text-ink flex-1 truncate">
           {castLabel}
         </span>
