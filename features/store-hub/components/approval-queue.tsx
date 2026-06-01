@@ -47,7 +47,7 @@ export function ApprovalQueue() {
       <EmptyState
         icon={<Check size={22} />}
         title="承認待ちの申請はありません"
-        description="キャストから管理者変更の申請が出ると、ここに表示されます。"
+        description="キャストから担当変更の申請が出ると、ここに表示されます。"
       />
     );
   }
