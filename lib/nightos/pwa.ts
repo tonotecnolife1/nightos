@@ -30,8 +30,32 @@ export function isInstalledPwa(): boolean {
   );
 }
 
-export function isIosSafari(): boolean {
+export function isIos(): boolean {
   if (typeof window === "undefined") return false;
   const ua = window.navigator.userAgent;
-  return /iPhone|iPad|iPod/.test(ua) && !/CriOS|FxiOS/.test(ua);
+  // iPadOS 13+ reports a Mac UA; fall back to touch-point heuristic.
+  return (
+    /iPhone|iPad|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
+
+// True Safari only. Real Safari carries both "Safari" and "Version/" tokens.
+// Chrome/Firefox/Edge on iOS (CriOS/FxiOS/EdgiOS) and in-app WebViews
+// (LINE / Instagram / Facebook etc.) lack the "Version/" token, so they
+// are excluded — those browsers cannot add to the home screen.
+export function isIosSafari(): boolean {
+  if (!isIos()) return false;
+  const ua = window.navigator.userAgent;
+  return (
+    /Safari/.test(ua) &&
+    /Version\//.test(ua) &&
+    !/CriOS|FxiOS|EdgiOS/.test(ua)
+  );
+}
+
+// iOS device, but inside an in-app browser / non-Safari browser where
+// "ホーム画面に追加" is unavailable. The user must open the page in Safari.
+export function isIosInAppBrowser(): boolean {
+  return isIos() && !isIosSafari();
 }

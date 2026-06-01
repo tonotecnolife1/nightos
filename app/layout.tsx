@@ -67,8 +67,10 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;500;600&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        {/* Apple touch icon for "Add to Home Screen" */}
-        <link rel="apple-touch-icon" href="/ruri-mama-b.svg" />
+        {/* Apple touch icon for "Add to Home Screen".
+            iOS ignores SVG here and falls back to a page screenshot, so this
+            must point at a raster (PNG/JPEG) image. */}
+        <link rel="apple-touch-icon" href="/cast/sakura-mama.jpg" />
       </head>
       <body className="font-sans bg-pearl text-ink antialiased">
         <NavigationProgress />
