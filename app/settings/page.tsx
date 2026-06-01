@@ -23,6 +23,15 @@ export default async function SettingsPage() {
 
   const cast = await getCurrentCast();
 
+  // Re-sign the avatar path into a short-lived URL for display (private bucket).
+  let avatarUrl: string | null = null;
+  if (cast?.avatar_path) {
+    const { data } = await supabase.storage
+      .from("cast-avatars")
+      .createSignedUrl(cast.avatar_path, 60 * 60);
+    avatarUrl = data?.signedUrl ?? null;
+  }
+
   // Look up the cast's store name (everyone) + invite code (owners only).
   let currentStoreName: string | null = null;
   let storeInviteInfo: { name: string; inviteCode: string } | null = null;
@@ -48,6 +57,9 @@ export default async function SettingsPage() {
       email={user.email ?? ""}
       castName={cast?.name ?? null}
       userRole={cast?.user_role ?? null}
+      castId={cast?.id ?? null}
+      storeId={cast?.store_id ?? null}
+      avatarUrl={avatarUrl}
       currentStoreName={currentStoreName}
       storeInviteInfo={storeInviteInfo}
     />
