@@ -16,8 +16,9 @@ import { reportError } from "@/lib/nightos/error-reporter";
  * そこでこの境界では:
  *  1. チャンク読み込み失敗（デプロイ版ずれ / 回線瞬断）は一度だけ
  *     ハードリロードして取り直す。
- *  2. それ以外は、まず「もう一度試す」(reset) を出しつつ、保存済みの
- *     相談履歴を消して確実に復帰できる「履歴を消して開き直す」も用意する。
+ *  2. それ以外は、まず「もう一度試す」(reset) を出しつつ、進行中の会話の
+ *     一時状態だけを消して確実に復帰できる「会話をリセットして開き直す」も
+ *     用意する。保存済みの相談履歴（資産）は消さない。
  *
  * (app) レイアウト配下にネストしているので、この画面でも下部タブバーは
  * 残り、ユーザーは他ページへ離脱できる。
@@ -35,18 +36,26 @@ function isChunkLoadError(error: Error): boolean {
   );
 }
 
-/** さくらママのチャット関連 localStorage を全消去する。 */
-function clearRuriMamaStorage(): void {
+/**
+ * 復帰のため、いま開いている会話の一時状態だけを消す。
+ *
+ * 消すのは「進行中の会話バッファ（nightos.chat.<castId>）」「そのセッション id
+ * （nightos.chat-sid.<castId>）」「成績ページからの引き継ぎ」のみ。
+ * 保存済みの相談履歴（nightos.chat-sessions）はユーザーの資産であり、
+ * サーバー同期 (migration 020) の対象でもあるため、ここでは消さない。
+ * 相談履歴自体は loadSessions 側で sanitize 済みなので、壊れたデータが
+ * 画面を巻き込んで落とすことはもう無く、全消去する必要がない。
+ */
+function clearRuriMamaTransient(): void {
   if (typeof window === "undefined") return;
   try {
     const keysToDrop: string[] = [];
     for (let i = 0; i < window.localStorage.length; i++) {
       const key = window.localStorage.key(i);
       if (!key) continue;
-      // 個別の会話キャッシュ（nightos.chat.<castId>）/ セッション一覧 /
-      // 成績ページからの引き継ぎ。チャットの復元に関わるものをすべて落とす。
       if (
-        key.startsWith("nightos.chat") ||
+        key.startsWith("nightos.chat.") ||
+        key.startsWith("nightos.chat-sid.") ||
         key === "nightos.stats-consult-handoff"
       ) {
         keysToDrop.push(key);
@@ -108,9 +117,9 @@ export default function RuriMamaError({
     reset();
   };
 
-  // 履歴を消してから reset。壊れた保存データが原因の手詰まりを確実に解く。
+  // 進行中の会話だけ消してから reset。保存済みの相談履歴は残す。
   const handleClearAndReset = () => {
-    clearRuriMamaStorage();
+    clearRuriMamaTransient();
     reset();
   };
 
@@ -124,7 +133,7 @@ export default function RuriMamaError({
     ? "電波の届く場所で、もう一度お試しください。"
     : chunkError
       ? "アプリが更新されました。読み込み直すと最新の状態になります。"
-      : "通信状況を確認して、もう一度お試しください。直らないときは、相談履歴をリセットすると開けるようになります。";
+      : "通信状況を確認して、もう一度お試しください。直らないときは、開いている会話をリセットすると開けるようになります（保存済みの相談履歴は消えません）。";
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-6 bg-pearl">
@@ -149,7 +158,7 @@ export default function RuriMamaError({
               className="inline-flex items-center gap-1 text-label-sm text-ink-mute hover:text-wine-deep underline underline-offset-2"
             >
               <Trash2 size={12} />
-              相談履歴をリセットして開き直す
+              開いている会話をリセットして開き直す
             </button>
           )}
         </div>
