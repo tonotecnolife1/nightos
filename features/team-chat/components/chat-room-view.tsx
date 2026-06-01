@@ -1092,6 +1092,13 @@ function MessageRow({
         ) : (
           /* Bubble */
           <div className={cn("flex flex-col gap-1.5", isMe ? "items-end" : "items-start")}>
+            {/* キープ済みタグ（吹き出しの上に明示） */}
+            {isPinned && (
+              <span className="inline-flex items-center gap-1 rounded-pill bg-champagne-soft/70 border border-gold/45 px-2 py-0.5 text-[10px] font-medium text-wine-deep shadow-soft">
+                <Bookmark size={10} className="text-gold-deep" />
+                キープ済み
+              </span>
+            )}
             {msg.content.trim().length > 0 && (
               <div
                 className={cn(
@@ -1099,6 +1106,8 @@ function MessageRow({
                   isMe
                     ? "bg-wine-deep text-pearl-light rounded-2xl rounded-br-sm shadow-luxe"
                     : "bg-pearl-light border border-ink/[0.08] text-ink rounded-2xl rounded-bl-sm shadow-soft",
+                  // キープ済みはシャンパンゴールドの枠線で強調（塗りには使わない）
+                  isPinned && "ring-[1.5px] ring-gold/70 ring-offset-2 ring-offset-pearl",
                 )}
               >
                 {renderContentParts(msg.content, highlight)}
@@ -1114,9 +1123,6 @@ function MessageRow({
         {!isDeleted && !isEditing && (
           <div className={cn("flex items-center gap-1.5 mt-0.5 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
             <span className="text-[10px] text-ink-mute">{timeStr}</span>
-            {isPinned && (
-              <Bookmark size={9} className="text-gold-deep" aria-label="キープ済み" />
-            )}
             {msg.id.startsWith("tmp_") && (
               <Clock size={9} className="text-ink-mute animate-pulse" />
             )}
