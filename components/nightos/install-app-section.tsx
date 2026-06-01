@@ -1,22 +1,50 @@
 "use client";
 
-import { CheckCircle, Download, Share2 } from "lucide-react";
+import { CheckCircle, Download, Share, PlusSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   clearInstallPrompt,
   getInstallPrompt,
   isInstalledPwa,
   isIosSafari,
+  isIosInAppBrowser,
 } from "@/lib/nightos/pwa";
 
-type InstallStatus = "loading" | "installed" | "available" | "ios" | "unavailable";
+type InstallStatus =
+  | "loading"
+  | "installed"
+  | "available"
+  | "ios"
+  | "ios-inapp"
+  | "unavailable";
 
-const shareToInstall = async () => {
-  if (typeof navigator === "undefined" || !navigator.share) return;
-  try {
-    await navigator.share({ title: "NIGHTOS", url: window.location.origin });
-  } catch {}
-};
+// iOS Safari: "ホーム画面に追加" lives only in Safari's toolbar Share button,
+// not in the navigator.share() sheet. So we render the exact toolbar steps.
+function IosSafariSteps() {
+  return (
+    <p className="text-[11px] text-ink-muted leading-relaxed">
+      画面下の
+      <Share size={13} className="inline-block mx-1 -mt-0.5 align-middle text-wine-deep" />
+      （共有）を押して、
+      <span className="inline-flex items-center gap-0.5 mx-0.5 align-middle font-medium text-ink">
+        <PlusSquare size={13} className="-mt-0.5" />
+        ホーム画面に追加
+      </span>
+      を選んでください。
+    </p>
+  );
+}
+
+// In-app browser (LINE / Instagram など): cannot add to home screen at all.
+function IosInAppSteps() {
+  return (
+    <p className="text-[11px] text-ink-muted leading-relaxed">
+      このアプリ内ブラウザではホーム画面に追加できません。右上のメニューから{" "}
+      <span className="font-medium text-ink">「Safariで開く」</span>{" "}
+      を選んでから追加してください。
+    </p>
+  );
+}
 
 export function InstallAppSection() {
   const [status, setStatus] = useState<InstallStatus>("loading");
@@ -27,6 +55,7 @@ export function InstallAppSection() {
       if (isInstalledPwa()) { setStatus("installed"); return; }
       if (getInstallPrompt()) { setStatus("available"); return; }
       if (isIosSafari()) { setStatus("ios"); return; }
+      if (isIosInAppBrowser()) { setStatus("ios-inapp"); return; }
       setStatus("unavailable");
     };
     check();
@@ -72,21 +101,9 @@ export function InstallAppSection() {
         </>
       )}
 
-      {status === "ios" && (
-        <>
-          <p className="text-[11px] text-ink-muted leading-relaxed">
-            「共有」→「ホーム画面に追加」をタップしてください
-          </p>
-          <button
-            type="button"
-            onClick={shareToInstall}
-            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-wine-deep text-pearl-light text-body-sm font-medium shadow-soft hover:brightness-[1.02] transition"
-          >
-            <Share2 size={14} />
-            共有を開く
-          </button>
-        </>
-      )}
+      {status === "ios" && <IosSafariSteps />}
+
+      {status === "ios-inapp" && <IosInAppSteps />}
 
       {status === "unavailable" && (
         <p className="text-[11px] text-ink-muted leading-relaxed">
@@ -108,6 +125,7 @@ export function InstallAppSectionAlways() {
       if (isInstalledPwa()) { setStatus("installed"); return; }
       if (getInstallPrompt()) { setStatus("available"); return; }
       if (isIosSafari()) { setStatus("ios"); return; }
+      if (isIosInAppBrowser()) { setStatus("ios-inapp"); return; }
       setStatus("unavailable");
     };
     check();
@@ -167,21 +185,9 @@ export function InstallAppSectionAlways() {
         </>
       )}
 
-      {status === "ios" && (
-        <>
-          <p className="text-[11px] text-ink-muted leading-relaxed">
-            「共有」→「ホーム画面に追加」をタップしてください
-          </p>
-          <button
-            type="button"
-            onClick={shareToInstall}
-            className="inline-flex items-center gap-1.5 mt-1 px-5 py-2.5 rounded-pill bg-wine-deep text-pearl-light text-body-sm font-medium shadow-soft hover:brightness-[1.02] transition"
-          >
-            <Share2 size={14} />
-            共有を開く
-          </button>
-        </>
-      )}
+      {status === "ios" && <IosSafariSteps />}
+
+      {status === "ios-inapp" && <IosInAppSteps />}
 
       {status === "unavailable" && (
         <p className="text-[11px] text-ink-muted leading-relaxed">
