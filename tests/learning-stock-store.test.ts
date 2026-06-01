@@ -94,4 +94,18 @@ describe("learning-stock-store", () => {
     stockLearning({ ...sample, title: "別の学び" });
     expect(getStockedLearnings()).toHaveLength(2);
   });
+
+  it("keys per customer so the same text under different customers is distinct", () => {
+    stockLearning({ ...sample, customer: "田中" });
+    stockLearning({ ...sample, customer: "佐藤" });
+    expect(getStockedLearnings()).toHaveLength(2);
+    expect(learningKey({ ...sample, customer: "田中" })).not.toBe(
+      learningKey({ ...sample, customer: "佐藤" }),
+    );
+  });
+
+  it("carries the customer field into the stocked entry", () => {
+    stockLearning({ ...sample, customer: "田中" });
+    expect(getStockedLearnings()[0].customer).toBe("田中");
+  });
 });

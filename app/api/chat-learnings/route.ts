@@ -8,19 +8,20 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 const SYSTEM_PROMPT = `あなたは「さくらママ」です。銀座の高級クラブで30年間ママを務めた夜の世界のプロフェッショナル。
-キャストがチャットでピン留め（保存）した会話を読み、「覚えておくべき学び」として整理します。
+キャストがチャットでピン留め（保存）した会話を読み、「お客様ごとに覚えておくべきこと」として整理します。
 
 # やること
-- ピン留めされた会話・メモを読み、共通するテーマでまとめる
-- 「次に活かせる行動」「お客様対応のコツ」「自分の気づき」など、実務で思い出せる形にする
-- 個別の出来事ではなく、再現できる学びに昇華する
+- ピン留めされた会話・メモを、登場するお客様ごとにまとめる
+- 各お客様について、好み・注意点・話題・来店傾向など、次の接客で役立つ"その人固有の情報"を抜き出す
+- 一般論ではなく、そのお客様にしか当てはまらない具体的な事実・気づきに落とす
+- お客様が特定できないピンは customer を「全般」とし、再現できる学びとしてまとめる
 
 # ルール
-- 学びは3〜6件にまとめる（無理に増やさない）
-- 各学びは category（短いテーマ名・最大8文字）, title（一文の要点）, body（2〜3行の具体策）で構成
-- title は体言止め or 「〜する」、抽象論は禁止。具体的な行動まで落とす
+- 1人のお客様につき学びは1〜3件。お客様の数だけ繰り返してよい（全体で最大8件）
+- 各学びは customer（お客様の名前。特定できなければ「全般」）, category（短いタグ・最大6文字。例: 好み / 注意 / 話題 / 来店）, title（一文の要点）, body（2〜3行の具体策）で構成
+- title は体言止め or 「〜する」、抽象論は禁止。具体的な事実・行動まで落とす
 - 出力は必ず次のJSONのみ。前置き・説明・コードフェンスは禁止:
-{"learnings":[{"category":"...","title":"...","body":"..."}]}
+{"learnings":[{"customer":"...","category":"...","title":"...","body":"..."}]}
 `;
 
 interface Pin {
@@ -31,6 +32,7 @@ interface Pin {
 }
 
 export interface Learning {
+  customer?: string | null;
   category: string;
   title: string;
   body: string;
@@ -95,56 +97,52 @@ function parseLearnings(text: string): Learning[] {
     return obj.learnings
       .map((l) => {
         const item = l as Partial<Learning>;
+        const customer = String(item.customer ?? "").trim();
         return {
+          customer: customer.length > 0 ? customer : null,
           category: String(item.category ?? "学び").slice(0, 12),
           title: String(item.title ?? "").trim(),
           body: String(item.body ?? "").trim(),
         };
       })
       .filter((l) => l.title.length > 0)
-      .slice(0, 6);
+      .slice(0, 8);
   } catch {
     return [];
   }
 }
 
 /**
- * Offline / no-key fallback: bucket pins by simple keyword themes so the 学び
- * tab still produces something coherent from the cast's pins + memos.
+ * Offline / no-key fallback: group pins by customer so the 学び tab still
+ * produces something coherent (per-customer notes + a 全般 bucket) from the
+ * cast's pins + memos.
  */
 function stubLearnings(pins: Pin[]): Learning[] {
-  const buckets: { category: string; keys: string[]; hits: string[] }[] = [
-    { category: "同伴", keys: ["同伴", "食事", "ご飯", "ランチ"], hits: [] },
-    { category: "連絡", keys: ["LINE", "連絡", "メッセージ", "お礼"], hits: [] },
-    { category: "ドリンク", keys: ["ボトル", "キープ", "シャンパン", "ドリンク"], hits: [] },
-    { category: "接客", keys: ["接客", "席", "会話", "話題"], hits: [] },
-  ];
-  const other: string[] = [];
-
+  const groups = new Map<string, string[]>();
   for (const p of pins) {
-    const text = `${p.content} ${p.memo ?? ""}`;
-    const tag = p.customerName ? `（${p.customerName}さん）` : "";
-    const snippet = `${tag}${(p.memo?.trim() || p.content).trim()}`.slice(0, 120);
-    const bucket = buckets.find((b) => b.keys.some((k) => text.includes(k)));
-    if (bucket) bucket.hits.push(snippet);
-    else other.push(snippet);
+    const key = p.customerName?.trim() || "全般";
+    const snippet = (p.memo?.trim() || p.content).trim().slice(0, 120);
+    if (!snippet) continue;
+    const list = groups.get(key) ?? [];
+    list.push(snippet);
+    groups.set(key, list);
   }
 
-  const learnings: Learning[] = buckets
-    .filter((b) => b.hits.length > 0)
-    .map((b) => ({
-      category: b.category,
-      title: `${b.category}で覚えておくこと（${b.hits.length}件）`,
-      body: b.hits.slice(0, 4).map((h) => `・${h}`).join("\n"),
-    }));
-
-  if (other.length > 0) {
+  const learnings: Learning[] = [];
+  groups.forEach((snippets, customer) => {
+    const isGeneral = customer === "全般";
     learnings.push({
-      category: "気づき",
-      title: `その他の気づき（${other.length}件）`,
-      body: other.slice(0, 4).map((h) => `・${h}`).join("\n"),
+      customer: isGeneral ? null : customer,
+      category: isGeneral ? "気づき" : "メモ",
+      title: isGeneral
+        ? `全般で覚えておくこと（${snippets.length}件）`
+        : `${customer}さんについて覚えておくこと（${snippets.length}件）`,
+      body: snippets.slice(0, 4).map((h) => `・${h}`).join("\n"),
     });
-  }
+  });
 
-  return learnings;
+  // Per-customer notes first, 全般 last.
+  return learnings
+    .sort((a, b) => (a.customer === null ? 1 : b.customer === null ? -1 : 0))
+    .slice(0, 8);
 }

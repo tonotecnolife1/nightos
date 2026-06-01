@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   Bookmark,
   BookmarkCheck,
   BookOpen,
+  ChevronRight,
   Loader2,
   RefreshCw,
   Sparkles,
+  User,
 } from "lucide-react";
 import { EmptyState } from "@/components/nightos/empty-state";
 import { SAKURA_MAMA_DISPLAY_NAME } from "@/lib/nightos/constants";
@@ -30,15 +33,14 @@ import {
   learningKey,
   subscribeStock,
   toggleStock,
-  unstockLearning,
 } from "@/lib/nightos/learning-stock-store";
 
 type SubView = "current" | "stock";
 
 /**
  * 学び tab — asks さくらママ (AI) to read the pinned conversations and organise
- * them into a few remember-this cards. Results are cached until the pins change.
- * Good cards can be ストック (stocked) so they survive re-organising.
+ * them into per-customer remember-this cards. Results are cached until the pins
+ * change. Good cards can be ストック (stocked) so they survive re-organising.
  */
 export function LearningsView() {
   const [pins, setPins] = useState<PinnedMessage[]>([]);
@@ -65,6 +67,15 @@ export function LearningsView() {
       unsubStock();
     };
   }, []);
+
+  // Map customer name → id so per-customer sections can link to the カルテ.
+  const customerIdByName = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const p of pins) {
+      if (p.customerName && p.customerId) m.set(p.customerName, p.customerId);
+    }
+    return m;
+  }, [pins]);
 
   const signature = pinsSignature(pins);
   const isStale = !!snapshot && snapshot.signature !== signature;
@@ -110,7 +121,7 @@ export function LearningsView() {
         <EmptyState
           icon={<BookOpen size={22} />}
           title="学びはまだありません"
-          description={`会話をピン留めすると、${SAKURA_MAMA_DISPLAY_NAME}がその内容を読み取って、覚えておくべき学びに自動で整理します。気に入った学びはストックして残せます。`}
+          description={`会話をピン留めすると、${SAKURA_MAMA_DISPLAY_NAME}がその内容を読み取って、お客様ごとに覚えておくべき学びへ整理します。気に入った学びはストックして残せます。`}
           tone="amethyst"
         />
       </div>
@@ -143,9 +154,14 @@ export function LearningsView() {
           error={error}
           organise={organise}
           stockedIds={stockedIds}
+          customerIdByName={customerIdByName}
         />
       ) : (
-        <StockView stocked={stocked} />
+        <StockView
+          stocked={stocked}
+          stockedIds={stockedIds}
+          customerIdByName={customerIdByName}
+        />
       )}
     </div>
   );
@@ -160,6 +176,7 @@ function CurrentView({
   error,
   organise,
   stockedIds,
+  customerIdByName,
 }: {
   pins: PinnedMessage[];
   snapshot: LearningsSnapshot | null;
@@ -169,6 +186,7 @@ function CurrentView({
   error: boolean;
   organise: () => void;
   stockedIds: Set<string>;
+  customerIdByName: Map<string, string>;
 }) {
   if (pins.length === 0) {
     return (
@@ -191,7 +209,7 @@ function CurrentView({
           </span>
         </div>
         <p className="text-body-sm text-ink-soft leading-relaxed">
-          ピン留めした{pins.length}件の会話から、覚えておくべきことをまとめます。気に入った学びは
+          ピン留めした{pins.length}件の会話を、お客様ごとに覚えておくべきことへまとめます。気に入った学びは
           <Bookmark size={11} className="inline-block mx-0.5 -mt-0.5 text-gold-deep" />
           でストックできます。
         </p>
@@ -222,17 +240,14 @@ function CurrentView({
         )}
       </div>
 
-      {/* Learning cards */}
+      {/* Learning cards, grouped by customer */}
       {snapshot && snapshot.learnings.length > 0 && (
         <>
-          {snapshot.learnings.map((l, i) => (
-            <LearningCard
-              key={i}
-              learning={l}
-              stocked={stockedIds.has(learningKey(l))}
-              onToggleStock={() => toggleStock(l)}
-            />
-          ))}
+          <GroupedLearnings
+            items={snapshot.learnings}
+            stockedIds={stockedIds}
+            customerIdByName={customerIdByName}
+          />
           <div className="flex items-center justify-between pt-1">
             <span className="text-[10px] text-ink-mute">
               {formatGeneratedAt(snapshot.generatedAt)}に整理
@@ -265,7 +280,15 @@ function CurrentView({
   );
 }
 
-function StockView({ stocked }: { stocked: StockedLearning[] }) {
+function StockView({
+  stocked,
+  stockedIds,
+  customerIdByName,
+}: {
+  stocked: StockedLearning[];
+  stockedIds: Set<string>;
+  customerIdByName: Map<string, string>;
+}) {
   if (stocked.length === 0) {
     return (
       <div className="pt-2">
@@ -280,16 +303,82 @@ function StockView({ stocked }: { stocked: StockedLearning[] }) {
   }
 
   return (
+    <GroupedLearnings
+      items={stocked}
+      stockedIds={stockedIds}
+      customerIdByName={customerIdByName}
+    />
+  );
+}
+
+/** Renders learnings grouped into per-customer sections (全般 last). */
+function GroupedLearnings({
+  items,
+  stockedIds,
+  customerIdByName,
+}: {
+  items: Learning[];
+  stockedIds: Set<string>;
+  customerIdByName: Map<string, string>;
+}) {
+  const groups = groupByCustomer(items);
+  return (
     <>
-      {stocked.map((s) => (
-        <LearningCard
-          key={s.id}
-          learning={s}
-          stocked
-          onToggleStock={() => unstockLearning(s.id)}
-        />
+      {groups.map((g) => (
+        <div key={g.customer ?? "__general__"} className="space-y-2">
+          <CustomerHeader
+            name={g.customer}
+            customerId={g.customer ? customerIdByName.get(g.customer) : undefined}
+          />
+          {g.items.map((l, i) => (
+            <LearningCard
+              key={`${learningKey(l)}-${i}`}
+              learning={l}
+              stocked={stockedIds.has(learningKey(l))}
+              onToggleStock={() => toggleStock(l)}
+            />
+          ))}
+        </div>
       ))}
     </>
+  );
+}
+
+function CustomerHeader({
+  name,
+  customerId,
+}: {
+  name: string | null;
+  customerId?: string;
+}) {
+  if (name === null) {
+    return (
+      <div className="flex items-center gap-1.5 pt-1">
+        <Sparkles size={12} className="text-gold-deep" />
+        <span className="text-label-sm font-medium text-ink-soft tracking-[0.06em]">
+          全般
+        </span>
+      </div>
+    );
+  }
+  const inner = (
+    <>
+      <User size={13} className="text-wine-deep shrink-0" />
+      <span className="font-serif text-[14px] font-medium text-wine-deep tracking-[0.02em]">
+        {name}さん
+      </span>
+      {customerId && <ChevronRight size={13} className="text-ink-mute ml-auto" />}
+    </>
+  );
+  return customerId ? (
+    <Link
+      href={`/cast/customers/${customerId}`}
+      className="flex items-center gap-1.5 pt-1 hover:underline"
+    >
+      {inner}
+    </Link>
+  ) : (
+    <div className="flex items-center gap-1.5 pt-1">{inner}</div>
   );
 }
 
@@ -357,6 +446,25 @@ function SubTab({
       {label}
     </button>
   );
+}
+
+/** Group learnings by customer, keeping first-seen order with 全般 pinned last. */
+function groupByCustomer<T extends Learning>(
+  items: T[],
+): { customer: string | null; items: T[] }[] {
+  const map = new Map<string, T[]>();
+  const order: string[] = [];
+  for (const it of items) {
+    const key = it.customer && it.customer !== "全般" ? it.customer : "";
+    if (!map.has(key)) {
+      map.set(key, []);
+      order.push(key);
+    }
+    map.get(key)!.push(it);
+  }
+  return order
+    .map((k) => ({ customer: k === "" ? null : k, items: map.get(k)! }))
+    .sort((a, b) => (a.customer === null ? 1 : b.customer === null ? -1 : 0));
 }
 
 function formatGeneratedAt(iso: string): string {
