@@ -7,7 +7,7 @@ import { CURRENT_CAST_ID } from "@/lib/nightos/constants";
 import { getCustomersForCast } from "@/lib/nightos/supabase-queries";
 
 interface Props {
-  searchParams: { customerId?: string };
+  searchParams: { customerId?: string; compose?: string };
 }
 
 export default async function RuriMamaPage({ searchParams }: Props) {
@@ -40,6 +40,7 @@ export default async function RuriMamaPage({ searchParams }: Props) {
         customers={customers}
         helpCastNames={helpCastNames}
         initialCustomerId={searchParams.customerId}
+        initialCompose={searchParams.compose === "1"}
         initialIsStubMode={isStubMode}
       />
     </div>
