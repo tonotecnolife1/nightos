@@ -407,10 +407,14 @@ caller が ヘルプのみ       → addProfileChangeRequest()（pending を作�
 ### Phase C（歴代ヘルプ・多対多）
 - ✅ `aggregateHelpCastsByCustomer` / `CustomerHelpRoster` / `HelpCastTally`（`master-help-split.ts`、テスト付）
 - ✅ 顧客カルテに「歴代ヘルプ」セクション追加（`help-roster-section.tsx`）
-- ⏳ `getCustomersForOneesan` / `customer-select-inline` / `ViewGroupingToggle`
-  の **多対多前提** 改修（上記「改訂方針」4）→ 一覧グルーピングの再設計が要るため次バッチ
-- ⏳ `/mama/team/[castId]` の分離セクション
+- ✅ `ViewGroupingToggle`「ヘルプ」ビューの **多対多グルーピング**
+  （`buildCastBasedTree` に visits を渡し管理者ブロック内へ「ヘルプ」バケットを追加。
+  `CastBucketNode.kind`、`getVisitsForCustomers` 追加。テスト付）
+- ✅ `/mama/team/[castId]` に「ヘルプ実績」セクション（`splitMasterAndHelp` 流用）
 - ⏳ 店舗ダッシュボードで姉さん別ヘルプ件数集計
+- 補足: `customer-select-inline.tsx:142` は単一 `cast_id` を「{名前}担当」と表示しており
+  **担当ラベルとしては正しい**ため現状維持（ヘルプ名と誤認させてはいない）。
+  歴代ヘルプ表示が必要になれば visits を渡して拡張する。
 
 ### Phase D（UI 改善）
 - ✅ **重複防止**: 新規登録に同名候補の提示＋既存カルテ導線
