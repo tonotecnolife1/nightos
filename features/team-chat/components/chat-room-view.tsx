@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
+  Bookmark,
   BookOpen,
   Check,
   Clock,
   Loader2,
   MessageCircle,
-  Pin,
   Search,
   Sparkles,
   User,
@@ -105,7 +105,7 @@ export function ChatRoomView({
     setPin(getRoomPin(room.id));
   }, [room.id]);
 
-  // Track which messages are pinned (these collect in the ピン留め tab).
+  // Track which messages are kept (these collect in the キープ tab).
   useEffect(() => {
     const refresh = () => setPinnedIds(getPinnedIds());
     refresh();
@@ -878,7 +878,7 @@ export function ChatRoomView({
         />
       )}
 
-      {/* ピン留め / 顧客紐づけ / メモ */}
+      {/* キープ / 顧客紐づけ / メモ */}
       {pinSheetFor && (
         <MessagePinSheet
           message={pinSheetFor}
@@ -910,7 +910,7 @@ interface MessageRowProps {
   isCoaching?: boolean;
   showAvatar: boolean;
   showName: boolean;
-  /** Whether this message is currently pinned (ピン留め). */
+  /** Whether this message is currently kept (キープ). */
   isPinned?: boolean;
   /** Long-press (touch) / right-click (desktop) opens the LINE風 action menu,
    *  anchored to the bubble's on-screen rect. */
@@ -1115,7 +1115,7 @@ function MessageRow({
           <div className={cn("flex items-center gap-1.5 mt-0.5 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
             <span className="text-[10px] text-ink-mute">{timeStr}</span>
             {isPinned && (
-              <Pin size={9} className="text-gold-deep" aria-label="ピン留め済み" />
+              <Bookmark size={9} className="text-gold-deep" aria-label="キープ済み" />
             )}
             {msg.id.startsWith("tmp_") && (
               <Clock size={9} className="text-ink-mute animate-pulse" />

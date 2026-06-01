@@ -2,10 +2,10 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import {
+  Bookmark,
   Check,
   Copy,
   Pencil,
-  Pin,
   Reply,
   TextCursorInput,
   Trash2,
@@ -92,9 +92,9 @@ export function MessageActionSheet({
       onClick: onPartialCopy,
     },
     {
-      key: "pin",
-      icon: <Pin size={20} />,
-      label: isPinned ? "ピン編集" : "ピン留め",
+      key: "keep",
+      icon: <Bookmark size={20} />,
+      label: isPinned ? "キープ編集" : "キープ",
       onClick: onPin,
       active: isPinned,
     },

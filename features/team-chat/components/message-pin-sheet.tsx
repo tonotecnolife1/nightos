@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pin, PinOff, Search, User, X } from "lucide-react";
+import { Bookmark, BookmarkX, Search, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   type PinnedMessage,
@@ -25,7 +25,7 @@ interface Props {
 /**
  * Bottom sheet shown when a message bubble is long-pressed. Lets the cast pin
  * the message, link it to a customer, and attach a memo. The result is stored
- * in `chat-pin-store` and surfaces in the ピン留め / 学び tabs.
+ * in `chat-pin-store` and surfaces in the キープ / 学び tabs.
  */
 export function MessagePinSheet({
   message,
@@ -82,9 +82,9 @@ export function MessagePinSheet({
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-ink/15" />
 
         <div className="flex items-center gap-2 mb-3">
-          <Pin size={15} className="text-gold-deep shrink-0" />
+          <Bookmark size={15} className="text-gold-deep shrink-0" />
           <h2 className="font-serif text-[16px] font-medium text-ink">
-            {existing ? "ピン留めを編集" : "この会話をピン留め"}
+            {existing ? "キープを編集" : "この会話をキープ"}
           </h2>
           <button
             type="button"
@@ -197,8 +197,8 @@ export function MessagePinSheet({
             onClick={save}
             className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-pill bg-wine-deep text-pearl-light px-4 py-2.5 text-body-md font-medium shadow-warm"
           >
-            <Pin size={14} />
-            {existing ? "更新する" : "ピン留めする"}
+            <Bookmark size={14} />
+            {existing ? "更新する" : "キープする"}
           </button>
           {existing && (
             <button
@@ -206,7 +206,7 @@ export function MessagePinSheet({
               onClick={unpin}
               className="inline-flex items-center justify-center gap-1.5 rounded-pill border border-ink/15 px-4 py-2.5 text-body-md text-ink-soft hover:bg-pearl-soft"
             >
-              <PinOff size={14} />
+              <BookmarkX size={14} />
               外す
             </button>
           )}

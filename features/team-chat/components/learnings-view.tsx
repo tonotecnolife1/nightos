@@ -77,7 +77,7 @@ export function LearningsView() {
         <EmptyState
           icon={<BookOpen size={22} />}
           title="学びはまだありません"
-          description={`会話をピン留めすると、${SAKURA_MAMA_DISPLAY_NAME}がその内容を読み取って、覚えておくべき学びに自動で整理します。`}
+          description={`会話をキープすると、${SAKURA_MAMA_DISPLAY_NAME}がその内容を読み取って、覚えておくべき学びに自動で整理します。`}
           tone="amethyst"
         />
       </div>
@@ -95,7 +95,7 @@ export function LearningsView() {
           </span>
         </div>
         <p className="text-body-sm text-ink-soft leading-relaxed">
-          ピン留めした{pins.length}件の会話から、覚えておくべきことをまとめます。
+キープした{pins.length}件の会話から、覚えておくべきことをまとめます。
         </p>
         {(isStale || !snapshot) && (
           <button
@@ -114,7 +114,7 @@ export function LearningsView() {
         )}
         {isStale && !loading && (
           <p className="mt-1.5 text-[11px] text-gold-deep">
-            ピン留めが更新されています。整理し直すと最新になります。
+キープが更新されています。整理し直すと最新になります。
           </p>
         )}
         {error && (
