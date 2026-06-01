@@ -16,8 +16,8 @@ interface Props {
   customers: Customer[];
   /** Eyebrow date label e.g. "5月30日 (土)" */
   dateLabel?: string;
-  /** Notification dot visible */
-  hasNotification?: boolean;
+  /** 未読通知の件数 (店舗メッセージ + 直近の来店)。メニューのバッジに出す。 */
+  notificationCount?: number;
 }
 
 interface TonightEvent {
@@ -57,7 +57,7 @@ export function CastHomeHero({
   castId,
   customers,
   dateLabel,
-  hasNotification = false,
+  notificationCount = 0,
 }: Props) {
   const [events, setEvents] = useState<TonightEvent[]>([]);
   const [nextEvent, setNextEvent] = useState<
@@ -193,7 +193,7 @@ export function CastHomeHero({
             </span>
           )}
         </div>
-        <CastHomeMenu hasNotification={hasNotification} />
+        <CastHomeMenu notificationCount={notificationCount} />
       </div>
 
       {/* Small eyebrow above headline */}
