@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ImagePlus, Loader2, Send, Sparkles, X } from "lucide-react";
+import { ImagePlus, Loader2, Send, Sparkles, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SAKURA_MAMA_CHAT_NAME } from "@/lib/nightos/constants";
 import type { ChatAttachment } from "../types";
@@ -27,15 +27,27 @@ export interface ComposerPayload {
   customerId: string | null;
 }
 
+/** A group member (cast/staff in the room) that can be @mentioned. */
+export interface MentionMember {
+  id: string;
+  name: string;
+}
+
 interface Props {
   value: string;
   onChange: (v: string) => void;
   onSend: (payload: ComposerPayload) => void;
   sending: boolean;
   customers: MentionCustomer[];
+  /** Other members in this room (excluding self), for @関係者 mentions. */
+  members?: MentionMember[];
   storeId: string;
   roomId: string;
   placeholder?: string;
+}
+
+function normalize(s: string): string {
+  return s.toLowerCase().replace(/\s|　/g, "");
 }
 
 /** Trailing `@token` (no whitespace) at the end of the text. */
@@ -47,6 +59,7 @@ export function ChatComposer({
   onSend,
   sending,
   customers,
+  members = [],
   storeId,
   roomId,
   placeholder = "メッセージを入力...",
@@ -76,6 +89,13 @@ export function ChatComposer({
 
   const pickMentionAi = () => {
     const replaced = value.replace(MENTION_RE, `@${SAKURA_MAMA_CHAT_NAME} `);
+    onChange(replaced);
+    setMentionQuery(null);
+  };
+
+  // 関係者（同室メンバー）メンション — 顧客と違いカルテ連携は伴わない。
+  const pickMentionMember = (m: MentionMember) => {
+    const replaced = value.replace(MENTION_RE, `@${m.name} `);
     onChange(replaced);
     setMentionQuery(null);
   };
@@ -154,12 +174,20 @@ export function ChatComposer({
 
   const mentionResults =
     mentionQuery !== null ? searchCustomers(customers, mentionQuery) : [];
+  const memberResults =
+    mentionQuery !== null
+      ? members.filter((m) => {
+          const q = normalize(mentionQuery);
+          return q === "" || normalize(m.name).includes(q);
+        })
+      : [];
   const showAiOption =
     mentionQuery !== null &&
     SAKURA_MAMA_CHAT_NAME.includes(mentionQuery) &&
     mentionQuery.length <= SAKURA_MAMA_CHAT_NAME.length;
   const showMentions =
-    mentionQuery !== null && (mentionResults.length > 0 || showAiOption);
+    mentionQuery !== null &&
+    (mentionResults.length > 0 || memberResults.length > 0 || showAiOption);
 
   return (
     <div
@@ -191,6 +219,30 @@ export function ChatComposer({
               </span>
               <span className="ml-auto text-[10px] text-ink-mute">AIに相談</span>
             </button>
+          )}
+          {memberResults.length > 0 && (
+            <div className="px-3 pt-2 pb-1 text-[10px] font-medium tracking-wide text-ink-mute">
+              関係者
+            </div>
+          )}
+          {memberResults.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => pickMentionMember(m)}
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-pearl-soft"
+            >
+              <span className="w-7 h-7 rounded-full bg-pearl-soft border border-ink/[0.08] flex items-center justify-center text-ink-soft">
+                <User size={13} />
+              </span>
+              <span className="text-body-sm text-ink font-medium">{m.name}</span>
+              <span className="ml-auto text-[10px] text-ink-mute">メンバー</span>
+            </button>
+          ))}
+          {mentionResults.length > 0 && (memberResults.length > 0 || showAiOption) && (
+            <div className="px-3 pt-2 pb-1 text-[10px] font-medium tracking-wide text-ink-mute">
+              お客様
+            </div>
           )}
           {mentionResults.map((c) => (
             <button
