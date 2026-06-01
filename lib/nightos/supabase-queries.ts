@@ -63,6 +63,7 @@ import {
   getCustomersForCastReal,
   getCustomersForOnesanReal,
   getHelpCastNamesForOnesanReal,
+  getVisitsForCustomersReal,
   getRecentVisitsForCastReal,
   getRecentVisitsReal,
   getScreenshotsForCustomerReal,
@@ -306,6 +307,20 @@ async function getTeamCustomersMock(
  * All customers in the store, sorted so recently-visited ones are on top
  * (matches spec: "最近の来店客が上位表示").
  */
+/** 指定顧客群の全来店（接客者を問わず）。歴代ヘルプの多対多集約に使う。 */
+export async function getVisitsForCustomers(
+  customerIds: string[],
+): Promise<Visit[]> {
+  return withFallback(
+    "getVisitsForCustomers",
+    () => getVisitsForCustomersReal(customerIds),
+    () => {
+      const set = new Set(customerIds);
+      return mockVisits.filter((v) => set.has(v.customer_id));
+    },
+  );
+}
+
 export async function getAllCustomers(): Promise<Customer[]> {
   return withFallback(
     "getAllCustomers",

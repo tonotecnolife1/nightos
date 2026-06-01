@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, Lock, Pencil } from "lucide-react";
+import { AlertTriangle, Lock, MessageSquarePlus, Pencil } from "lucide-react";
 import { Card, StoreInfoCard } from "@/components/nightos/card";
 import type { Customer } from "@/types/nightos";
 import { CustomerEditSheet } from "./customer-edit-sheet";
 
 interface Props {
   customer: Customer;
+  /** マスター/担当なら直接編集、それ以外（ヘルプ）は「変更を提案」 */
+  canEditDirectly: boolean;
+  requesterCastId: string;
+  requesterName: string;
+  approverCastId: string | null;
 }
 
 /**
@@ -18,12 +23,18 @@ interface Props {
  *
  * 「編集」ボタン → CustomerEditSheet（BottomSheet）で一括編集。
  */
-export function CustomerInfoSection({ customer }: Props) {
+export function CustomerInfoSection({
+  customer,
+  canEditDirectly,
+  requesterCastId,
+  requesterName,
+  approverCastId,
+}: Props) {
   const [editing, setEditing] = useState(false);
 
   return (
     <section className="space-y-3">
-      {/* セクション見出し + 編集ボタン */}
+      {/* セクション見出し + 編集 / 提案ボタン */}
       <header className="flex items-center justify-between px-1">
         <h2 className="font-display text-[20px] leading-tight font-medium text-ink">
           顧客情報
@@ -33,8 +44,17 @@ export function CustomerInfoSection({ customer }: Props) {
           onClick={() => setEditing(true)}
           className="inline-flex items-center gap-1 h-8 px-3 rounded-pill border border-ink/[0.10] bg-pearl-warm text-label-sm text-ink-secondary hover:border-gold/40 hover:text-ink transition"
         >
-          <Pencil size={12} />
-          編集
+          {canEditDirectly ? (
+            <>
+              <Pencil size={12} />
+              編集
+            </>
+          ) : (
+            <>
+              <MessageSquarePlus size={12} />
+              変更を提案
+            </>
+          )}
         </button>
       </header>
 
@@ -51,6 +71,10 @@ export function CustomerInfoSection({ customer }: Props) {
         customer={customer}
         isOpen={editing}
         onClose={() => setEditing(false)}
+        canEditDirectly={canEditDirectly}
+        requesterCastId={requesterCastId}
+        requesterName={requesterName}
+        approverCastId={approverCastId}
       />
     </section>
   );

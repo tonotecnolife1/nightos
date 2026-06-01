@@ -11,6 +11,7 @@ import {
   MessageCircle,
   MoreHorizontal,
   Pencil,
+  Pin,
   Search,
   Sparkles,
   Trash2,
@@ -33,10 +34,15 @@ import {
   getRoomName,
   setRoomName,
 } from "@/lib/nightos/chat-room-name-store";
+import {
+  getPinnedIds,
+  subscribePins,
+} from "@/lib/nightos/chat-pin-store";
 import type { ChatAttachment, ChatMessage, ChatRoom } from "../types";
 import { ChatComposer, type ComposerPayload, type MentionMember } from "./chat-composer";
 import { GroupNameModal } from "./group-name-modal";
 import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
+import { MessagePinSheet } from "./message-pin-sheet";
 import {
   type MentionCustomer,
   detectCustomer,
@@ -87,6 +93,8 @@ export function ChatRoomView({
   const [pinPickerOpen, setPinPickerOpen] = useState(false);
   const [nameOverride, setNameOverride] = useState<string | null>(null);
   const [nameEditOpen, setNameEditOpen] = useState(false);
+  const [pinSheetFor, setPinSheetFor] = useState<ChatMessage | null>(null);
+  const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Load the room's pinned customer (mechanism C) and any custom name on
@@ -95,6 +103,13 @@ export function ChatRoomView({
     setPin(getRoomPin(room.id));
     setNameOverride(getRoomName(room.id));
   }, [room.id]);
+
+  // Track which messages are pinned (these collect in the ピン留め tab).
+  useEffect(() => {
+    const refresh = () => setPinnedIds(getPinnedIds());
+    refresh();
+    return subscribePins(refresh);
+  }, []);
 
   // 同室の関係者（自分以外のメンバー）— @メンション候補に使う。
   const members: MentionMember[] = room.member_ids
@@ -606,6 +621,8 @@ export function ChatRoomView({
               showAvatar={true}
               showName={true}
               mentionNames={mentionNames}
+              isPinned={pinnedIds.has(activeThread.id)}
+              onLongPress={() => setPinSheetFor(activeThread)}
               editingId={editingId}
               editDraft={editDraft}
               setEditDraft={setEditDraft}
@@ -632,6 +649,8 @@ export function ChatRoomView({
                   showAvatar={!isGrouped}
                   showName={!isGrouped}
                   mentionNames={mentionNames}
+                  isPinned={pinnedIds.has(m.id)}
+                  onLongPress={() => setPinSheetFor(m)}
                   editingId={editingId}
                   editDraft={editDraft}
                   setEditDraft={setEditDraft}
@@ -724,6 +743,8 @@ export function ChatRoomView({
                 showAvatar={!isGrouped}
                 showName={!isGrouped}
                 mentionNames={mentionNames}
+                isPinned={pinnedIds.has(msg.id)}
+                onLongPress={() => setPinSheetFor(msg)}
                 onOpenThread={() => setThreadOpen(msg.id)}
                 highlight={isSearching ? normalizedQuery : undefined}
                 editingId={editingId}
@@ -849,6 +870,18 @@ export function ChatRoomView({
           onSubmit={commitName}
         />
       )}
+
+      {/* 吹き出し長押し → ピン留め / 顧客紐づけ / メモ */}
+      {pinSheetFor && (
+        <MessagePinSheet
+          message={pinSheetFor}
+          roomId={room.id}
+          roomName={displayName}
+          customers={customers}
+          onClose={() => setPinSheetFor(null)}
+          onChanged={() => setPinnedIds(getPinnedIds())}
+        />
+      )}
     </div>
   );
 }
@@ -861,8 +894,12 @@ interface MessageRowProps {
   isCoaching?: boolean;
   showAvatar: boolean;
   showName: boolean;
-  /** Known @mention names (members + customers) for chip rendering. */
+  /** Known @mention names (members) for chip rendering. */
   mentionNames: string[];
+  /** Whether this message is currently pinned (ピン留め). */
+  isPinned?: boolean;
+  /** Long-press (or the ピン button) opens the pin / customer / memo sheet. */
+  onLongPress?: () => void;
   onOpenThread?: () => void;
   /** Lowercased search query to highlight; if set, matching substrings get wrapped. */
   highlight?: string;
@@ -883,6 +920,8 @@ function MessageRow({
   showAvatar,
   showName,
   mentionNames,
+  isPinned,
+  onLongPress,
   onOpenThread,
   highlight,
   editingId,
@@ -917,7 +956,8 @@ function MessageRow({
 
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleTouchStart = () => {
-    longPressTimer.current = setTimeout(() => setMenuOpen(true), 500);
+    if (!onLongPress || isDeleted) return;
+    longPressTimer.current = setTimeout(() => onLongPress(), 500);
   };
   const handleTouchEnd = () => {
     if (longPressTimer.current) {
@@ -1067,6 +1107,9 @@ function MessageRow({
         {!isDeleted && !isEditing && (
           <div className={cn("flex items-center gap-1.5 mt-0.5 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
             <span className="text-[10px] text-ink-mute">{timeStr}</span>
+            {isPinned && (
+              <Pin size={9} className="text-gold-deep" aria-label="ピン留め済み" />
+            )}
             {msg.id.startsWith("tmp_") && (
               <Clock size={9} className="text-ink-mute animate-pulse" />
             )}
@@ -1097,6 +1140,19 @@ function MessageRow({
               <Copy size={10} />
               コピー
             </button>
+            {onLongPress && (
+              <button
+                type="button"
+                onClick={onLongPress}
+                className={cn(
+                  "flex items-center gap-0.5 text-[10px] hover:text-ink-soft",
+                  isPinned ? "text-gold-deep" : "text-ink-mute",
+                )}
+              >
+                <Pin size={10} />
+                {isPinned ? "ピン済み" : "ピン"}
+              </button>
+            )}
             {canEdit && (
               <div ref={menuRef} className="relative">
                 <button

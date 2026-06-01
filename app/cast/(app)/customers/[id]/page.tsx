@@ -14,6 +14,15 @@ import { MemoSection } from "@/features/customer-card/components/memo-section";
 import { RefreshMemoButton } from "@/features/customer-card/components/refresh-memo-button";
 import { VisitInfoSection } from "@/features/customer-card/components/visit-info-section";
 import { CollapsibleSection } from "@/features/customer-card/components/collapsible-section";
+import { RelationshipBadge } from "@/features/customer-card/components/relationship-badge";
+import { HelpRosterSection } from "@/features/customer-card/components/help-roster-section";
+import { ProfileProposalsInline } from "@/features/customer-card/components/profile-proposals-inline";
+import { aggregateHelpCastsByCustomer } from "@/lib/nightos/master-help-split";
+import {
+  canEditCustomerDirectly,
+  getCustomerRelationship,
+  resolveApproverCastId,
+} from "@/lib/nightos/customer-relationship";
 import { getCurrentCastId, getCurrentVenueType } from "@/lib/nightos/auth";
 import { mockCustomers } from "@/lib/nightos/mock-data";
 import {
@@ -48,12 +57,31 @@ export default async function CustomerCardPage({
     ? mockCustomers.find((c) => c.id === customer.referred_by_customer_id)
     : null;
 
+  // 関係性（マスター / 担当 / ヘルプ）— 編集 vs 提案の分岐に使う
+  const relationship = getCustomerRelationship(customer, castId);
+  const canEdit = canEditCustomerDirectly(relationship);
+  const approverCastId = resolveApproverCastId(customer);
+  const castName = allCasts.find((c) => c.id === castId)?.name ?? "キャスト";
+  const masterName = customer.manager_cast_id
+    ? (allCasts.find((c) => c.id === customer.manager_cast_id)?.name ?? null)
+    : null;
+  const helpRoster = aggregateHelpCastsByCustomer({
+    customer,
+    visits: context.visits,
+    allCasts,
+  });
+
   return (
     <div className="animate-fade-in">
       <PageHeader title="お客様カルテ" showBack />
       <div className="px-5 pt-4 pb-6 space-y-5">
         {/* ── Header ─────────────────────────────────── */}
         <CustomerHeader customer={customer} />
+
+        {/* あなたとこのお客様の関係 */}
+        <div>
+          <RelationshipBadge relationship={relationship} masterName={masterName} />
+        </div>
 
         {/* Funnel + referrer */}
         <div className="flex items-center gap-2 flex-wrap">
@@ -113,13 +141,33 @@ export default async function CustomerCardPage({
 
         {/* ── §1 顧客情報 ─────────────────────────────── */}
         <div className="border-t border-line pt-4">
-          <CustomerInfoSection customer={customer} />
+          <CustomerInfoSection
+            customer={customer}
+            canEditDirectly={canEdit}
+            requesterCastId={castId}
+            requesterName={castName}
+            approverCastId={approverCastId}
+          />
         </div>
+
+        {/* 変更提案（承認者には承認/却下、提案者には進捗） */}
+        <ProfileProposalsInline
+          customerId={customer.id}
+          canApprove={canEdit}
+          approverName={castName}
+        />
 
         {/* ── §2 来店情報 ─────────────────────────────── */}
         <div className="border-t border-ink/[0.06] pt-4">
           <VisitInfoSection context={context} />
         </div>
+
+        {/* 歴代ヘルプ（来店ごとに入れ替わる複数ヘルプ） */}
+        {helpRoster.helps.length > 0 && (
+          <div className="border-t border-ink/[0.06] pt-4">
+            <HelpRosterSection helps={helpRoster.helps} />
+          </div>
+        )}
 
         {/* ── §3 その他メモ ──────────────────────────── */}
         <div className="border-t border-ink/[0.06] pt-2">

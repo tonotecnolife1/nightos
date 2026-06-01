@@ -4,6 +4,7 @@ import {
   BookOpen,
   Calendar,
   ChevronRight,
+  HandHelping,
   Heart,
   User,
 } from "lucide-react";
@@ -15,7 +16,12 @@ import { GoalSettingCard } from "@/features/team-management/components/goal-sett
 import {
   getCastGoal,
   getCastStatsData,
+  getVisitsForCustomers,
 } from "@/lib/nightos/supabase-queries";
+import {
+  aggregateHelpVisitsByCustomer,
+  splitMasterAndHelp,
+} from "@/lib/nightos/master-help-split";
 import {
   mockCasts,
   mockCustomers,
@@ -46,6 +52,16 @@ export default async function MamaTeamCastDetailPage({
   const castCustomers = mockCustomers.filter(
     (c) => c.cast_id === params.castId,
   );
+
+  // ヘルプ実績（他担当のお客様にこのキャストが来店で入った実績）
+  const allVisits = await getVisitsForCustomers(mockCustomers.map((c) => c.id));
+  const split = splitMasterAndHelp({
+    castId: params.castId,
+    customers: mockCustomers,
+    visits: allVisits,
+    allCasts: mockCasts,
+  });
+  const helpSummary = aggregateHelpVisitsByCustomer(split.helpVisits);
 
   return (
     <div className="animate-fade-in">
@@ -157,6 +173,50 @@ export default async function MamaTeamCastDetailPage({
             ))
           )}
         </section>
+
+        {/* ヘルプ実績（他担当のお客様） */}
+        {helpSummary.length > 0 && (
+          <section className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5">
+                <HandHelping size={16} className="text-champagne-dark" />
+                ヘルプ実績
+              </h2>
+              <span className="text-label-sm text-ink-mute">
+                {helpSummary.length}人
+              </span>
+            </div>
+            {helpSummary.map((e) => (
+              <Link
+                key={e.customer.id}
+                href={`/mama/customers/${e.customer.id}`}
+                className="block active:scale-[0.99] transition-transform"
+              >
+                <Card className="p-3 flex items-center gap-3 !bg-champagne/20">
+                  <div className="w-9 h-9 rounded-full bg-champagne-dark/30 flex items-center justify-center shrink-0">
+                    <User size={14} className="text-ink-soft" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-1.5 flex-wrap">
+                      <span className="text-body-sm font-medium text-ink truncate">
+                        {formatCustomerName(e.customer.name)}
+                      </span>
+                      {e.masterName && (
+                        <span className="text-[10px] text-ink-mute shrink-0">
+                          （{e.masterName}管理）
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[10px] text-ink-mute mt-0.5">
+                      {e.visitCount}回ヘルプ
+                    </div>
+                  </div>
+                  <ChevronRight size={14} className="text-ink-mute" />
+                </Card>
+              </Link>
+            ))}
+          </section>
+        )}
 
         {/* Cancelled douhans */}
         <CancelledDouhanSection

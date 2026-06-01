@@ -3,6 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { getCurrentCastId } from "@/lib/nightos/auth";
 import {
+  canEditCustomerDirectly,
+  getCustomerRelationship,
+} from "@/lib/nightos/customer-relationship";
+import {
   deleteScreenshot,
   getCustomerContext,
   saveScreenshot,
@@ -117,6 +121,16 @@ export async function updateCustomerProfileAction(args: {
     return { ok: false, error: "顧客が見つかりません" };
   }
   const current = context.customer;
+
+  // 関係性ガード: 共有プロフィールの直接編集はマスター/担当のみ。
+  // ヘルプは「変更を提案」フロー（クライアント側）を使う想定。
+  const relationship = getCustomerRelationship(current, castId);
+  if (!canEditCustomerDirectly(relationship)) {
+    return {
+      ok: false,
+      error: "このお客様の情報はマスター/担当のみ編集できます。「変更を提案」をご利用ください",
+    };
+  }
 
   const customer = await updateCustomer(args.customerId, {
     name: args.input.name.trim(),

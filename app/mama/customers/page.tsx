@@ -5,6 +5,7 @@ import { getCurrentManagerId } from "@/lib/nightos/auth";
 import {
   getAllCasts,
   getTeamCustomers,
+  getVisitsForCustomers,
 } from "@/lib/nightos/supabase-queries";
 import { calculateFunnelStats } from "@/lib/nightos/referral-tree";
 
@@ -14,6 +15,8 @@ export default async function MamaCustomersPage() {
     getTeamCustomers(managerId),
     getAllCasts(),
   ]);
+  // 「ヘルプ」ビューの多対多導出に来店履歴を渡す
+  const visits = await getVisitsForCustomers(customers.map((c) => c.id));
 
   const funnel = calculateFunnelStats(customers);
 
@@ -47,7 +50,11 @@ export default async function MamaCustomersPage() {
           />
         </div>
 
-        <MamaCustomerPageShell customers={customers} allCasts={allCasts} />
+        <MamaCustomerPageShell
+          customers={customers}
+          allCasts={allCasts}
+          visits={visits}
+        />
       </div>
     </div>
   );
