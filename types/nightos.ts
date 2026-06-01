@@ -390,6 +390,12 @@ export interface ChatMessage {
    */
   options?: ReplyOption[];
   pickedOptionId?: string;
+  /**
+   * この assistant メッセージ（3案）を生成したときの intent / ヒアリング内容。
+   * 「どれもしっくりこない → 別の3案を作る」導線で同じ文脈から再生成するために保持する。
+   */
+  genIntent?: Intent;
+  genHearing?: Record<string, string>;
 }
 
 export type ReplyOptionStyle = "safe" | "practical" | "warm";

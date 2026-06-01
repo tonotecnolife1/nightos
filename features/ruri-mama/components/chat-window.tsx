@@ -343,6 +343,8 @@ export function ChatWindow({
           content: data.reply,
           isStub: data.isStub,
           options: data.options && data.options.length >= 2 ? data.options : undefined,
+          genIntent: intent,
+          genHearing: hearingContext,
         },
       ]);
       setPhase({ name: "responded" });
@@ -430,6 +432,8 @@ export function ChatWindow({
           content: data.reply,
           isStub: data.isStub,
           options: data.options && data.options.length >= 2 ? data.options : undefined,
+          genIntent: "freeform",
+          genHearing: {},
         },
       ]);
       setPhase({ name: "responded" });
@@ -444,6 +448,23 @@ export function ChatWindow({
       ]);
       setPhase({ name: "responded" });
     }
+  };
+
+  /**
+   * 「3案どれもしっくりこない → 別の3案を作る」導線。
+   * その案を生成した時と同じ intent / ヒアリング文脈のまま、
+   * 「違う切り口で」と添えて再生成する。
+   */
+  const handleRequestMore = (messageIndex: number) => {
+    if (phase.name === "loading") return;
+    const src = messages[messageIndex];
+    const intent: Intent = src?.genIntent ?? "freeform";
+    const hearing = src?.genHearing ?? {};
+    sendNewMessage(
+      "うーん、この3つはどれもしっくりこないかも。違う切り口で、別の3案を出してくれる？",
+      intent,
+      hearing,
+    );
   };
 
   /** Adds a NEW user message, then fires the API call with the updated history. */
@@ -666,6 +687,7 @@ export function ChatWindow({
                 <ReplyOptionPicker
                   options={m.options!}
                   onPick={(opt) => handleOptionPick(i, opt)}
+                  onRequestMore={() => handleRequestMore(i)}
                 />
               ) : (
                 <>
