@@ -203,31 +203,32 @@ export function ChatWindow({
   }, [phase, messages, selectedCustomerId, customers, currentSessionId]);
 
   // On mount, restore persisted chat history (if any) + 成績ページからの
-  // 引き継ぎ (handoff) があれば会話の続きとして追記する。
+  // 引き継ぎ (handoff) を処理する。
   useEffect(() => {
-    const stored = loadStoredMessages(castId);
     const handoff = takeStatsConsultHandoff(castId);
-    // 復元する会話には、それを保存した時と同じセッション id を引き継ぐ。
-    // これがないとリロードのたびに新しい id になり履歴が重複する。
-    if (stored && stored.length > 0) {
-      const storedSid = loadStoredSessionId(castId);
-      if (storedSid) setCurrentSessionId(storedSid);
-    }
-    let base: ChatMessage[] = [GREETING];
-    if (stored && stored.length > 0) {
-      base = [GREETING, ...stored];
-    }
     if (handoff) {
-      // 成績の分析を会話として持ち込み、そのまま相談を続けられるようにする
-      base = [
-        ...base,
+      // 成績ページの「もっと相談する」は、必ず新しいセッションとして開始する。
+      // 以前の会話バッファに追記すると別の話題が混ざって管理しづらいため、
+      // 進行中の会話は履歴 (nightos.chat-sessions) に保存済みなのでそちらに残し、
+      // 現在の会話バッファはクリアして、新しいセッション id で分析だけを持ち込む。
+      clearStoredMessages(castId);
+      setCurrentSessionId(newSessionId());
+      setMessages([
+        GREETING,
         { role: "user", content: handoff.userText },
         { role: "assistant", content: handoff.assistantReply },
-      ];
-      setMessages(base);
+      ]);
       setPhase({ name: "responded" });
-    } else if (stored && stored.length > 0) {
-      setMessages(base);
+      setHistoryLoaded(true);
+      return;
+    }
+    const stored = loadStoredMessages(castId);
+    if (stored && stored.length > 0) {
+      // 復元する会話には、それを保存した時と同じセッション id を引き継ぐ。
+      // これがないとリロードのたびに新しい id になり履歴が重複する。
+      const storedSid = loadStoredSessionId(castId);
+      if (storedSid) setCurrentSessionId(storedSid);
+      setMessages([GREETING, ...stored]);
       // If the last persisted message was an assistant reply, mark as
       // "responded" so the cast can immediately tap "新しい相談" or
       // continue typing
