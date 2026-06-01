@@ -31,11 +31,16 @@ import {
   type RoomCustomerPin,
 } from "@/lib/nightos/chat-room-pin-store";
 import {
+  getRoomName,
+  setRoomName,
+} from "@/lib/nightos/chat-room-name-store";
+import {
   getPinnedIds,
   subscribePins,
 } from "@/lib/nightos/chat-pin-store";
 import type { ChatAttachment, ChatMessage, ChatRoom } from "../types";
-import { ChatComposer, type ComposerPayload } from "./chat-composer";
+import { ChatComposer, type ComposerPayload, type MentionMember } from "./chat-composer";
+import { GroupNameModal } from "./group-name-modal";
 import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
 import { MessagePinSheet } from "./message-pin-sheet";
 import {
@@ -86,13 +91,17 @@ export function ChatRoomView({
   >({});
   const [pin, setPin] = useState<RoomCustomerPin | null>(null);
   const [pinPickerOpen, setPinPickerOpen] = useState(false);
+  const [nameOverride, setNameOverride] = useState<string | null>(null);
+  const [nameEditOpen, setNameEditOpen] = useState(false);
   const [pinSheetFor, setPinSheetFor] = useState<ChatMessage | null>(null);
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Load the room's pinned customer (mechanism C) on mount / room change.
+  // Load the room's pinned customer (mechanism C) and any custom name on
+  // mount / room change.
   useEffect(() => {
     setPin(getRoomPin(room.id));
+    setNameOverride(getRoomName(room.id));
   }, [room.id]);
 
   // Track which messages are pinned (these collect in the ピン留め tab).
@@ -101,6 +110,14 @@ export function ChatRoomView({
     refresh();
     return subscribePins(refresh);
   }, []);
+
+  // 同室の関係者（自分以外のメンバー）— @メンション候補に使う。
+  const members: MentionMember[] = room.member_ids
+    .map((id, i) => ({ id, name: room.member_names[i] ?? id }))
+    .filter((m) => m.id !== currentCastId);
+
+  // 本文中の @メンション（さくらママ / 関係者）をチップ表示するための名前一覧。
+  const mentionNames = members.map((m) => m.name);
 
   const customerName = (id: string) =>
     customers.find((c) => c.id === id)?.name ?? "お客様";
@@ -115,10 +132,10 @@ export function ChatRoomView({
     const note =
       payload.text.replace(/@\S+\s?/g, "").trim() || payload.text.trim();
 
-    // 対象顧客を特定: 明示メンション → 受動検出（本文の名前）→ ルームのピン。
-    let customerId = payload.customerId ?? null;
+    // 対象顧客を特定: 受動検出（本文の名前）→ ルームのピン。
+    let customerId: string | null = null;
     let candidates: MentionCustomer[] = [];
-    if (!customerId && payload.text.trim()) {
+    if (payload.text.trim()) {
       const detected = detectCustomer(customers, payload.text);
       if (detected) {
         customerId = detected.customer.id;
@@ -301,15 +318,24 @@ export function ChatRoomView({
     return () => clearTimeout(t);
   }, [editingId]);
 
-  const displayName =
+  const baseName =
     room.type === "channel"
       ? room.name!
       : room.member_names
           .filter((_, i) => room.member_ids[i] !== currentCastId)
           .join(", ");
+  // ユーザーがつけたグループ名があれば優先。
+  const displayName = nameOverride || baseName;
 
   const memberCount = room.member_ids.length;
   const isCoaching = room.type === "coaching";
+  // 指導ノートは固定の意味を持つ名前なのでリネーム対象外。
+  const canRename = !isCoaching;
+
+  const commitName = (name: string) => {
+    setNameOverride(setRoomName(room.id, name) || null);
+    setNameEditOpen(false);
+  };
 
   const COACHING_CHIPS = [
     "✨ よかった点：",
@@ -335,12 +361,7 @@ export function ChatRoomView({
       )
     : topMessages;
 
-  const handleSend = async (rawPayload: ComposerPayload) => {
-    // ルームに顧客がピンされていれば、明示メンションが無くても既定の対象にする。
-    const payload: ComposerPayload =
-      rawPayload.customerId || !pin
-        ? rawPayload
-        : { ...rawPayload, customerId: pin.customerId };
+  const handleSend = async (payload: ComposerPayload) => {
     const text = payload.text.trim();
     const attachments = payload.attachments;
     if ((!text && attachments.length === 0) || sending) return;
@@ -349,6 +370,8 @@ export function ChatRoomView({
     setInput("");
 
     const mentionsAi = text.includes("@さくらママ");
+    // ルームに顧客がピンされていれば、その顧客にメッセージを関連付ける。
+    const linkedCustomerId = pin?.customerId ?? null;
     const targetId = threadOpen ?? null;
     const tempId = `tmp_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
@@ -359,7 +382,7 @@ export function ChatRoomView({
       sender_name: currentCastName,
       content: text,
       attachments,
-      customer_id: payload.customerId,
+      customer_id: linkedCustomerId,
       thread_parent_id: targetId,
       reply_count: 0,
       mentions_ai: mentionsAi,
@@ -390,7 +413,7 @@ export function ChatRoomView({
           content: text,
           threadParentId: targetId ?? undefined,
           attachments: attachments.length > 0 ? attachments : undefined,
-          customerId: payload.customerId ?? undefined,
+          customerId: linkedCustomerId ?? undefined,
         }),
       });
       if (res.ok) {
@@ -472,10 +495,27 @@ export function ChatRoomView({
           <ArrowLeft size={18} />
           <span className="text-label-sm">戻る</span>
         </Link>
-        <div className="flex-1 text-center">
-          <div className="text-body-md font-medium text-ink">
-            {displayName}
-          </div>
+        <div className="flex-1 min-w-0 text-center">
+          {canRename ? (
+            <button
+              type="button"
+              onClick={() => setNameEditOpen(true)}
+              className="inline-flex items-center gap-1 max-w-full group"
+              title="グループ名を編集"
+            >
+              <span className="text-body-md font-medium text-ink truncate">
+                {displayName}
+              </span>
+              <Pencil
+                size={12}
+                className="shrink-0 text-ink-mute group-hover:text-gold-deep"
+              />
+            </button>
+          ) : (
+            <div className="text-body-md font-medium text-ink truncate">
+              {displayName}
+            </div>
+          )}
           <div className="text-label-sm text-ink-mute">{memberCount}人</div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
@@ -580,6 +620,7 @@ export function ChatRoomView({
               isCoaching={isCoaching}
               showAvatar={true}
               showName={true}
+              mentionNames={mentionNames}
               isPinned={pinnedIds.has(activeThread.id)}
               onLongPress={() => setPinSheetFor(activeThread)}
               editingId={editingId}
@@ -607,6 +648,7 @@ export function ChatRoomView({
                   isCoaching={isCoaching}
                   showAvatar={!isGrouped}
                   showName={!isGrouped}
+                  mentionNames={mentionNames}
                   isPinned={pinnedIds.has(m.id)}
                   onLongPress={() => setPinSheetFor(m)}
                   editingId={editingId}
@@ -644,7 +686,7 @@ export function ChatRoomView({
                 onChange={setInput}
                 onSend={handleSend}
                 sending={sending}
-                customers={customers}
+                members={members}
                 storeId={room.store_id}
                 roomId={room.id}
               />
@@ -700,6 +742,7 @@ export function ChatRoomView({
                 isCoaching={isCoaching}
                 showAvatar={!isGrouped}
                 showName={!isGrouped}
+                mentionNames={mentionNames}
                 isPinned={pinnedIds.has(msg.id)}
                 onLongPress={() => setPinSheetFor(msg)}
                 onOpenThread={() => setThreadOpen(msg.id)}
@@ -797,12 +840,12 @@ export function ChatRoomView({
             onChange={setInput}
             onSend={handleSend}
             sending={sending}
-            customers={customers}
+            members={members}
             storeId={room.store_id}
             roomId={room.id}
           />
           <p className="text-[10px] text-ink-mute mt-1.5 pl-1">
-            画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@お客様名 でカルテ連携
+            画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@関係者 で呼びかけ。お客様との紐づけは上部から
           </p>
         </div>
       )}
@@ -815,6 +858,16 @@ export function ChatRoomView({
           image={extractSuggestion.image}
           onClose={() => setExtractFor(null)}
           onApplied={() => finishExtract(extractFor)}
+        />
+      )}
+
+      {/* グループ名の編集 */}
+      {nameEditOpen && (
+        <GroupNameModal
+          baseName={baseName}
+          initialName={nameOverride ?? ""}
+          onClose={() => setNameEditOpen(false)}
+          onSubmit={commitName}
         />
       )}
 
@@ -841,6 +894,8 @@ interface MessageRowProps {
   isCoaching?: boolean;
   showAvatar: boolean;
   showName: boolean;
+  /** Known @mention names (members) for chip rendering. */
+  mentionNames: string[];
   /** Whether this message is currently pinned (ピン留め). */
   isPinned?: boolean;
   /** Long-press (or the ピン button) opens the pin / customer / memo sheet. */
@@ -864,6 +919,7 @@ function MessageRow({
   isCoaching,
   showAvatar,
   showName,
+  mentionNames,
   isPinned,
   onLongPress,
   onOpenThread,
@@ -1038,7 +1094,7 @@ function MessageRow({
                     : "bg-pearl-light border border-ink/[0.08] text-ink rounded-2xl rounded-bl-sm shadow-soft",
                 )}
               >
-                {renderContentParts(msg.content, highlight)}
+                {renderContentParts(msg.content, mentionNames, highlight)}
               </div>
             )}
             {msg.attachments && msg.attachments.length > 0 && (
@@ -1146,22 +1202,44 @@ function MessageRow({
 
 // ═══════════════ Content renderer ═══════════════
 
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 /**
- * Split content into renderable pieces, giving the `@さくらママ` mention
- * its chip styling and (optionally) wrapping search matches in a
- * highlight <mark>.
+ * Split content into renderable pieces, giving any known @mention
+ * (さくらママ / 関係者 / お客様) its chip styling and (optionally) wrapping
+ * search matches in a highlight <mark>. `mentionNames` are matched
+ * longest-first so names containing spaces (e.g. "@小川 達也") chip whole.
  */
-function renderContentParts(content: string, highlight?: string) {
-  const mentionRe = /(@さくらママ)/g;
+function renderContentParts(
+  content: string,
+  mentionNames: string[],
+  highlight?: string,
+) {
+  const names = Array.from(new Set([SAKURA_MAMA_CHAT_NAME, ...mentionNames]))
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+  if (names.length === 0) {
+    return highlight ? (
+      <HighlightedText text={content} query={highlight} />
+    ) : (
+      <>{content}</>
+    );
+  }
+  const mentionRe = new RegExp(
+    `(@(?:${names.map(escapeRegExp).join("|")}))`,
+    "g",
+  );
   const chunks = content.split(mentionRe);
   return chunks.map((chunk, i) => {
-    if (chunk === "@さくらママ") {
+    if (chunk.startsWith("@") && names.includes(chunk.slice(1))) {
       return (
         <span
           key={i}
           className="px-1 py-0.5 rounded bg-champagne-soft/60 text-gold-deep font-medium text-body-sm"
         >
-          @さくらママ
+          {chunk}
         </span>
       );
     }
@@ -1255,14 +1333,14 @@ function PinBar({
   if (!pickerOpen) {
     if (customers.length === 0) return null;
     return (
-      <div className="shrink-0 px-4 py-1.5 border-b border-ink/[0.06] bg-pearl-soft/30">
+      <div className="shrink-0 px-4 py-2 border-b border-ink/[0.06] bg-pearl-soft/30">
         <button
           type="button"
           onClick={onOpenPicker}
-          className="inline-flex items-center gap-1 text-[11px] text-ink-soft hover:text-wine-deep"
+          className="inline-flex items-center gap-1.5 rounded-pill border border-gold/40 bg-champagne-soft/50 px-3 py-1.5 text-[12px] font-medium text-wine-deep shadow-soft transition-colors hover:bg-champagne-soft/80"
         >
-          <UserPlus size={12} className="text-gold-deep" />
-          この相談を顧客に紐づける
+          <UserPlus size={13} className="text-gold-deep" />
+          この相談をお客様に紐づける
         </button>
       </div>
     );
@@ -1343,7 +1421,7 @@ function KarteChip({
     return (
       <div
         className={cn(
-          "mt-1 mb-2 flex px-2",
+          "mt-1 mb-2 flex flex-wrap items-center gap-1.5 px-2",
           isMe ? "justify-end" : "justify-start ml-12",
         )}
       >
@@ -1352,6 +1430,13 @@ function KarteChip({
           {s.customerName}さんのカルテに
           {s.doneVia === "extract" ? "反映しました" : "追加しました"}
         </div>
+        <Link
+          href={`/cast/customers/${s.customerId}`}
+          className="inline-flex items-center gap-1 rounded-pill border border-gold/40 px-2.5 py-1.5 text-[12px] font-medium text-wine-deep hover:bg-champagne-soft/60"
+        >
+          <BookOpen size={12} />
+          カルテを見る
+        </Link>
       </div>
     );
   }

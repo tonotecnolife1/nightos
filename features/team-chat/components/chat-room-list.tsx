@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { BookOpen, Hash, MessageCircle, Search, Users, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BookOpen, Hash, MessageCircle, Pencil, Search, Users, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmptyState } from "@/components/nightos/empty-state";
+import { getRoomName, setRoomName } from "@/lib/nightos/chat-room-name-store";
+import { GroupNameModal } from "./group-name-modal";
 import type { ChatRoom } from "../types";
 import { PinnedList } from "./pinned-list";
 import { LearningsView } from "./learnings-view";
@@ -29,9 +31,43 @@ function isCollectionTab(tab: FilterTab): tab is "pinned" | "learnings" {
   return tab === "pinned" || tab === "learnings";
 }
 
+/** Channel name, or (for DMs/groups) the joined other-member names. */
+function baseRoomName(room: ChatRoom, currentCastId: string): string {
+  if (room.type === "channel") return room.name ?? "";
+  return room.member_names
+    .filter((_, i) => room.member_ids[i] !== currentCastId)
+    .join(", ");
+}
+
 export function ChatRoomList({ rooms, currentCastId }: Props) {
   const [tab, setTab] = useState<FilterTab>("all");
   const [query, setQuery] = useState("");
+  // ユーザーがつけたグループ名（localStorage）。一覧でも編集・反映する。
+  const [overrides, setOverrides] = useState<Record<string, string>>({});
+  const [editing, setEditing] = useState<ChatRoom | null>(null);
+
+  useEffect(() => {
+    const map: Record<string, string> = {};
+    for (const r of rooms) {
+      const n = getRoomName(r.id);
+      if (n) map[r.id] = n;
+    }
+    setOverrides(map);
+  }, [rooms]);
+
+  const nameOf = (room: ChatRoom) =>
+    overrides[room.id] || baseRoomName(room, currentCastId);
+
+  const commitName = (room: ChatRoom, name: string) => {
+    const saved = setRoomName(room.id, name);
+    setOverrides((prev) => {
+      const next = { ...prev };
+      if (saved) next[room.id] = saved;
+      else delete next[room.id];
+      return next;
+    });
+    setEditing(null);
+  };
 
   const sorted = [...rooms].sort((a, b) => {
     const aTime = a.last_message?.sent_at ?? a.created_at;
@@ -54,6 +90,7 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
           .join(" ");
         const haystack = [
           r.name ?? "",
+          overrides[r.id] ?? "",
           otherNames,
           r.last_message?.content ?? "",
           r.last_message?.sender_name ?? "",
@@ -126,7 +163,13 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
         <>
           <div className="divide-y divide-ink/[0.06]">
             {filtered.map((room) => (
-              <RoomRow key={room.id} room={room} currentCastId={currentCastId} />
+              <RoomRow
+                key={room.id}
+                room={room}
+                displayName={nameOf(room)}
+                canRename={room.type !== "coaching"}
+                onEdit={() => setEditing(room)}
+              />
             ))}
           </div>
 
@@ -148,26 +191,30 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
           )}
         </>
       )}
+
+      {editing && (
+        <GroupNameModal
+          baseName={baseRoomName(editing, currentCastId)}
+          initialName={overrides[editing.id] ?? ""}
+          onClose={() => setEditing(null)}
+          onSubmit={(name) => commitName(editing, name)}
+        />
+      )}
     </div>
   );
 }
 
 function RoomRow({
   room,
-  currentCastId,
+  displayName,
+  canRename,
+  onEdit,
 }: {
   room: ChatRoom;
-  currentCastId: string;
+  displayName: string;
+  canRename: boolean;
+  onEdit: () => void;
 }) {
-  const displayName =
-    room.type === "channel"
-      ? room.name!
-      : room.member_names
-          .filter(
-            (_, i) => room.member_ids[i] !== currentCastId,
-          )
-          .join(", ");
-
   const memberCount = room.member_ids.length;
 
   const lastMsg = room.last_message;
@@ -176,10 +223,14 @@ function RoomRow({
     : "";
 
   return (
-    <Link
-      href={`/cast/chat/${room.id}`}
-      className="flex items-center gap-3 px-5 py-3.5 hover:bg-pearl-soft/50 active:bg-pearl-soft transition-colors"
-    >
+    <div className="relative">
+      <Link
+        href={`/cast/chat/${room.id}`}
+        className={cn(
+          "flex items-center gap-3 px-5 py-3.5 hover:bg-pearl-soft/50 active:bg-pearl-soft transition-colors",
+          canRename && "pr-14",
+        )}
+      >
       {/* Avatar / icon */}
       <div
         className={cn(
@@ -229,7 +280,20 @@ function RoomRow({
           </p>
         )}
       </div>
-    </Link>
+      </Link>
+
+      {canRename && (
+        <button
+          type="button"
+          onClick={onEdit}
+          aria-label="グループ名を編集"
+          title="グループ名を編集"
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-ink-mute hover:text-gold-deep hover:bg-pearl-soft"
+        >
+          <Pencil size={15} />
+        </button>
+      )}
+    </div>
   );
 }
 
