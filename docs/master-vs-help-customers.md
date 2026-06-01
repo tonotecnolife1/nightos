@@ -287,6 +287,112 @@ export function aggregateHelpCastsByCustomer(args: {
 
 ---
 
+## プロフィール変更提案フロー（「提案まで」の完結）
+
+[UI 改善 C](#c-編集権限の明確化現状の誰でも編集可を是正) で「ヘルプは共有プロフィールを
+**直接編集せず提案まで**」と決めた。その提案がどう作られ、誰が承認し、どう反映されるかを定義する。
+
+### 既存基盤を流用する
+
+管理者変更（担当替え）の承認フローが既に存在し、**同じパターンを踏襲**できる:
+
+| 要素 | 既存（管理者変更） | プロフィール変更提案（新規） |
+|------|------------------|------------------------------|
+| レコード | `ManagerChangeRequest`（`features/customer-management/lib/manager-change-store.ts`） | `ProfileChangeRequest`（新規 `profile-change-store.ts`） |
+| 保存 | localStorage（Supabase 移行余地あり） | 同左（将来 `customer_profile_change_requests`） |
+| 履歴 | `ManagerChangeHistoryEntry`（監査証跡・上限500） | `ProfileChangeHistoryEntry` 同様 |
+| ライフサイクル | create→pending→approved/rejected→applied | 同左 |
+| **承認者** | **店舗オーナー**（`/store/approvals`・OwnerGuard） | **顧客のマスター/担当**（下記） ← ここが相違点 |
+
+### データモデル（新規 `profile-change-store.ts`）
+
+```ts
+import type { CustomerProfileEdit } from "@/features/customer-card/actions";
+// CustomerProfileEdit = { name, name_kana, nickname, birthday, job, favorite_drink, region }
+
+export interface ProfileChangeRequest {
+  id: string;
+  customerId: string;
+  customerName: string;
+  /** 差分のみ。{ 項目: { from, to } } */
+  changes: Partial<
+    Record<keyof CustomerProfileEdit, { from: string | null; to: string | null }>
+  >;
+  requestedByCastId: string;   // 提案したヘルプ
+  requestedByName: string;
+  /** 一次承認者（マスター優先・無ければ担当）。null = オーナーへ */
+  approverCastId: string | null;
+  reason: string | null;
+  status: "pending" | "approved" | "rejected" | "applied";
+  requestedAt: string;
+  resolvedAt: string | null;
+  resolvedByName: string | null;
+}
+```
+
+関数も既存 store と同形:
+`addProfileChangeRequest()` / `listPendingProfileRequests(approverCastId?)` /
+`resolveProfileRequest(id, "approve"|"reject", resolvedByName)`（承認時に
+`updateCustomer` で反映＋履歴 mode:"approved"、却下時は履歴 mode:"rejected"）。
+
+### 提案の作り方（ヘルプ側 UI）
+
+1. カルテのプロフィール項目はヘルプには 🔒。各項目（またはセクション）に **「変更を提案」**。
+2. ヘルプは新しい値を入力 → 「保存」ではなく **提案として送信**（複数項目を1提案にまとめ可、任意で理由）。
+3. 送信後、ヘルプには該当項目に **「提案中」バッジ**。
+   同一項目に未処理提案があれば **新規作成せずまとめる/上書き確認**（重複提案を作らない）。
+
+### 承認者ルーティング（既存との相違点）
+
+- 一次承認者 = 顧客の **マスター `manager_cast_id`**。未設定なら **担当 `cast_id`**。
+  どちらも不在なら **店舗オーナー** にフォールバック（`approverCastId = null`）。
+- 店舗オーナーは常に上位承認者として **全提案を承認/却下可能**（`/store/approvals` に合算表示）。
+
+### 承認者が気づく導線（通知）
+
+キャスト側にグローバル通知が無いため、軽量に追加（既存 `approval-link` バッジを cast 版に流用）:
+
+1. **カルテ内インライン** — マスター/担当が対象顧客を開くと「変更提案 N件」を差分プレビュー付きで表示、その場で承認/却下。
+2. **cast ナビのバッジ** — `/cast/home` または顧客一覧ヘッダに「承認待ちの提案 N件」。
+3. **オーナー** — `/store/approvals` のバッジ数に合算（`listPendingRequests().length + listPendingProfileRequests().length`）。
+
+### ライフサイクル
+
+```
+ヘルプが提案 (pending)
+  ↓  approverCastId = マスター || 担当 || null(=オーナー)
+マスター/担当（またはオーナー）が差分プレビューで判断
+  ├─ 承認 → resolveProfileRequest(id,"approve")
+  │         → updateCustomer(customerId, { to値 })  ← 既存の保存パス再利用
+  │         → status: applied / 履歴 mode:"approved"
+  │         → 同一項目の他 pending は自動却下（or 再確認）
+  │         → 提案者(ヘルプ)のバッジを「反映済み」に
+  └─ 却下 → resolveProfileRequest(id,"reject")
+            → 未反映 / 履歴 mode:"rejected" / バッジ「却下」
+```
+
+### `updateCustomerProfileAction` の分岐
+
+現在は誰でも直接 `updateCustomer` を呼ぶ（`features/customer-card/actions.ts`）。これを関係性で分岐:
+
+```
+caller が マスター or 担当 → 直接保存（現状どおり）
+caller が ヘルプのみ       → addProfileChangeRequest()（pending を作るだけ）
+```
+
+> 既存の owner/staff 分岐（`getStorePermission`）とは **別軸**。
+> 「店舗権限（owner/staff）」×「顧客との関係性（master/担当/help）」の2軸で判定する。
+
+### エッジケース
+
+- **マスター/担当が不在** → `approverCastId=null` でオーナー承認にフォールバック。
+- **競合提案**（複数ヘルプが別の値を提案）→ 全 pending を列挙し承認者が選ぶ。
+  1つ承認したら同項目の他 pending は自動却下（or 確認）。
+- **ヘルプが後に担当化** → 以後は直接編集に切替。既存 pending はそのまま有効。
+- **`name` は必須** → 空提案は不可（既存バリデーション流用）。自動マージはしない（[Q7](#q7-重複検知の照合キー-確定) と同方針）。
+
+---
+
 ## 実装範囲
 
 ### Phase A（完了・データ基盤）
@@ -314,6 +420,12 @@ export function aggregateHelpCastsByCustomer(args: {
 - **編集権限**: 関係性レイヤーに応じたカルテ編集ガードを導入
   （[UI 改善 C](#c-編集権限の明確化現状の誰でも編集可を是正)）
 
+### Phase E（プロフィール変更提案 — 本ドキュメントは設計のみ）
+- `features/customer-management/lib/profile-change-store.ts`（`ProfileChangeRequest` + 履歴、`manager-change-store` を踏襲）
+- `updateCustomerProfileAction` を関係性で分岐（マスター/担当=直接 / ヘルプ=提案）
+- 承認 UI: カルテ内インライン承認 + cast バッジ、`/store/approvals` に合算
+- 詳細は [プロフィール変更提案フロー](#プロフィール変更提案フロー提案までの完結)
+
 ---
 
 ## 決定事項（2026-06-01）
@@ -327,6 +439,7 @@ export function aggregateHelpCastsByCustomer(args: {
 | マスター切替時の集計基準 | 現在のマスターで集計（[Q2](#q2-マスターの切り替え頻度) のデフォルト採用） |
 | 同時同席の会計按分 | 回数のみ、金額按分なし（[Q4](#q4-同時同席の会計按分) のデフォルト採用） |
 | 主要担当 `cast_id` | 任意フィールドとして残置（[Q5](#q5-主要担当概念はクラブで生き残るか) のデフォルト採用） |
+| プロフィール変更提案の承認 | `ProfileChangeRequest` を新設。承認者は **マスター→担当→オーナー**、承認で反映（[Q8](#q8-提案の通知反映フロー-確定) / [提案フロー](#プロフィール変更提案フロー提案までの完結)） |
 
 ---
 
@@ -369,8 +482,13 @@ export function aggregateHelpCastsByCustomer(args: {
 - **決定（2026-06-01）**: 氏名/かな/ニックネームの部分一致で候補提示し、確定はキャスト判断に委ねる
   （自動マージはしない）。
 
-### Q8: 「提案」の通知・反映フロー（新規・未決）
+### Q8: 「提案」の通知・反映フロー ✅確定
 - ヘルプがプロフィール変更を「提案」したとき、誰にどう通知し、誰が承認・反映する？
-  （担当 or マスター宛て？ /store/approvals に乗せる？ その場で差分プレビュー？）
-- **提案**: 既存の承認導線 `/store/approvals` に「プロフィール変更提案」を追加し、担当/マスターが承認で反映。
-  → 次回決める。
+- **決定（2026-06-01）**: 既存 `manager-change-store` パターンを踏襲した `ProfileChangeRequest` を新設。
+  一次承認者は **顧客のマスター→担当→（不在時）オーナー**。承認者はカルテ内インライン＋ cast バッジで気づく。
+  承認で `updateCustomer` 反映。詳細は
+  [プロフィール変更提案フロー](#プロフィール変更提案フロー提案までの完結)。
+
+### Q9: 提案の有効期限・通知の置き場所（新規・低優先）
+- pending 提案を一定期間で自動失効させる？ cast バッジは `/cast/home` と顧客一覧どちらに置く？
+- **提案**: 失効はまず無し（手動で承認/却下）。バッジ位置は実装時に UI 最適化。
