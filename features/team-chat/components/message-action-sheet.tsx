@@ -113,7 +113,10 @@ export function MessageActionSheet({
     },
   ].filter(Boolean) as ActionItem[];
 
-  const cols = Math.min(items.length, 5);
+  // 1行3つ。最後の行に空きが出る場合は不透過のダミーで埋め、背景が透けないようにする。
+  const cols = Math.min(items.length, 3);
+  const remainder = items.length % cols;
+  const fillerCount = remainder === 0 ? 0 : cols - remainder;
 
   // Position the menu over the bubble: above if there's room, else below,
   // clamped to the viewport. Measured after render for accuracy.
@@ -159,7 +162,7 @@ export function MessageActionSheet({
         className="fixed transition-opacity duration-100"
       >
         <div
-          className="grid gap-px overflow-hidden rounded-[18px] bg-pearl-light/10 shadow-luxe"
+          className="grid gap-px overflow-hidden rounded-[18px] bg-[#3a313a] shadow-luxe"
           style={{
             gridTemplateColumns: `repeat(${cols}, 4rem)`,
           }}
@@ -170,7 +173,7 @@ export function MessageActionSheet({
               type="button"
               onClick={it.onClick}
               className={cn(
-                "flex flex-col items-center justify-center gap-1.5 h-[68px] bg-ink/95 active:bg-ink text-pearl-light",
+                "flex flex-col items-center justify-center gap-1.5 h-[68px] bg-ink active:bg-[#3a313a] text-pearl-light",
                 it.destructive && "text-[#e89aa0]",
                 it.active && "text-gold",
               )}
@@ -181,12 +184,15 @@ export function MessageActionSheet({
               </span>
             </button>
           ))}
+          {Array.from({ length: fillerCount }).map((_, i) => (
+            <div key={`filler-${i}`} aria-hidden className="h-[68px] bg-ink" />
+          ))}
         </div>
 
         {/* Pointer toward the bubble */}
         {pos && (
           <div
-            className="absolute w-3 h-3 rotate-45 bg-ink/95"
+            className="absolute w-3 h-3 rotate-45 bg-ink"
             style={{
               left: pos.pointerX - 6,
               ...(pos.placement === "top"
