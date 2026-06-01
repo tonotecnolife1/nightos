@@ -1,17 +1,20 @@
-// Pinned chat messages — localStorage store.
+// Kept (キープ) chat messages — localStorage store.
 //
-// A "ピン留め" is a single important message bubble that the cast long-pressed
+// A "キープ" is a single important message bubble that the cast long-pressed
 // and chose to keep. Unlike `chat-room-pin-store` (which pins a *customer* to a
 // whole room), this keeps a snapshot of one message plus an optional customer
-// link and a free-text memo. These accumulate in the ピン留め tab and feed the
+// link and a free-text memo. These accumulate in the キープ tab and feed the
 // 学び (AI-organised learnings) view.
+//
+// Note: internal identifiers still use "pin" for continuity; the user-facing
+// label is キープ (renamed to avoid clashing with LINE-style トーク/メッセージのピン留め).
 
 export interface PinnedMessage {
   /** Stable id for this pin (derived from the message id). */
   id: string;
   messageId: string;
   roomId: string;
-  /** Room display name at pin time (for the ピン留め list). */
+  /** Room display name at keep time (for the キープ list). */
   roomName: string;
   /** Snapshot of the message text. */
   content: string;

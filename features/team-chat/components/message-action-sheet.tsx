@@ -1,21 +1,29 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import {
+  Bookmark,
   Check,
   Copy,
   Pencil,
-  Pin,
   Reply,
   TextCursorInput,
   Trash2,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { ChatMessage } from "../types";
+
+/** Viewport-space rect of the long-pressed bubble (from getBoundingClientRect). */
+export interface AnchorRect {
+  top: number;
+  bottom: number;
+  left: number;
+  width: number;
+}
 
 interface ActionSheetProps {
-  message: ChatMessage;
+  anchorRect: AnchorRect;
+  hasText: boolean;
   isPinned?: boolean;
   canReply?: boolean;
   canEdit?: boolean;
@@ -28,13 +36,23 @@ interface ActionSheetProps {
   onClose: () => void;
 }
 
+interface ActionItem {
+  key: string;
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  destructive?: boolean;
+  active?: boolean;
+}
+
 /**
- * LINE風の長押しメニュー。吹き出しを長押し（PCは右クリック）で開き、
- * 返信・コピー・部分コピー・ピン留め・編集・取り消しを大きなタップ領域で出す。
- * 常時表示のアクション列を廃したので、スクロール中の誤タップが起きない。
+ * LINE風の長押しメニュー。吹き出しを長押し（PCは右クリック）で、その吹き出しに
+ * アンカーしたダークなアイコングリッドを浮かせる。常時表示のアクション列を廃した
+ * のでスクロール中の誤タップが起きない。
  */
 export function MessageActionSheet({
-  message,
+  anchorRect,
+  hasText,
   isPinned,
   canReply,
   canEdit,
@@ -46,110 +64,139 @@ export function MessageActionSheet({
   onDelete,
   onClose,
 }: ActionSheetProps) {
-  const hasText = message.content.trim().length > 0;
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{
+    left: number;
+    top: number;
+    placement: "top" | "bottom";
+    pointerX: number;
+  } | null>(null);
+
+  const items: ActionItem[] = [
+    canReply && {
+      key: "reply",
+      icon: <Reply size={20} />,
+      label: "リプライ",
+      onClick: onReply,
+    },
+    hasText && {
+      key: "copy",
+      icon: <Copy size={20} />,
+      label: "コピー",
+      onClick: onCopyAll,
+    },
+    hasText && {
+      key: "partial",
+      icon: <TextCursorInput size={20} />,
+      label: "部分コピー",
+      onClick: onPartialCopy,
+    },
+    {
+      key: "keep",
+      icon: <Bookmark size={20} />,
+      label: isPinned ? "キープ編集" : "キープ",
+      onClick: onPin,
+      active: isPinned,
+    },
+    canEdit && {
+      key: "edit",
+      icon: <Pencil size={20} />,
+      label: "編集",
+      onClick: onEdit,
+    },
+    canEdit && {
+      key: "delete",
+      icon: <Trash2 size={20} />,
+      label: "送信取消",
+      onClick: onDelete,
+      destructive: true,
+    },
+  ].filter(Boolean) as ActionItem[];
+
+  const cols = Math.min(items.length, 5);
+
+  // Position the menu over the bubble: above if there's room, else below,
+  // clamped to the viewport. Measured after render for accuracy.
+  useLayoutEffect(() => {
+    const el = menuRef.current;
+    if (!el) return;
+    const mw = el.offsetWidth;
+    const mh = el.offsetHeight;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const margin = 8;
+    const gap = 10;
+
+    const centerX = anchorRect.left + anchorRect.width / 2;
+    let left = centerX - mw / 2;
+    left = Math.max(margin, Math.min(left, vw - mw - margin));
+
+    let placement: "top" | "bottom" = "top";
+    let top = anchorRect.top - mh - gap;
+    if (top < margin) {
+      placement = "bottom";
+      top = anchorRect.bottom + gap;
+      if (top + mh > vh - margin) top = Math.max(margin, vh - mh - margin);
+    }
+
+    const pointerX = Math.max(14, Math.min(centerX - left, mw - 14));
+    setPos({ left, top, placement, pointerX });
+  }, [anchorRect]);
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-end justify-center bg-ink/40 backdrop-blur-sm"
+      className="fixed inset-0 z-[70] bg-ink/20 animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-t-[24px] bg-pearl border-t border-gold/20 shadow-luxe px-3 pt-3 pb-safe animate-slide-up"
+        ref={menuRef}
         onClick={(e) => e.stopPropagation()}
+        style={{
+          left: pos?.left ?? -9999,
+          top: pos?.top ?? -9999,
+          opacity: pos ? 1 : 0,
+        }}
+        className="fixed transition-opacity duration-100"
       >
-        <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-ink/15" />
-
-        {/* Message preview */}
-        <div className="rounded-card border border-ink/[0.08] bg-pearl-light px-3 py-2 mx-1 mb-2">
-          <p className="text-[11px] text-ink-mute mb-0.5">{message.sender_name}</p>
-          <p className="text-body-sm text-ink line-clamp-2 whitespace-pre-wrap break-words">
-            {message.content || "（画像）"}
-          </p>
-        </div>
-
-        <div className="flex flex-col">
-          {canReply && (
-            <ActionRow icon={<Reply size={18} />} label="返信" onClick={onReply} />
-          )}
-          {hasText && (
-            <ActionRow
-              icon={<Copy size={18} />}
-              label="全コピー"
-              onClick={onCopyAll}
-            />
-          )}
-          {hasText && (
-            <ActionRow
-              icon={<TextCursorInput size={18} />}
-              label="部分コピー"
-              sub="必要なところだけ選んでコピー"
-              onClick={onPartialCopy}
-            />
-          )}
-          <ActionRow
-            icon={<Pin size={18} className={isPinned ? "text-gold-deep" : undefined} />}
-            label={isPinned ? "ピン留めを編集" : "ピン留め"}
-            onClick={onPin}
-          />
-          {canEdit && (
-            <ActionRow
-              icon={<Pencil size={18} />}
-              label="編集"
-              onClick={onEdit}
-            />
-          )}
-          {canEdit && (
-            <ActionRow
-              icon={<Trash2 size={18} />}
-              label="取り消し"
-              destructive
-              onClick={onDelete}
-            />
-          )}
-        </div>
-
-        <button
-          type="button"
-          onClick={onClose}
-          className="mt-2 mb-1 w-full rounded-pill border border-ink/10 py-3 text-body-md text-ink-soft hover:bg-pearl-soft"
+        <div
+          className="grid gap-px overflow-hidden rounded-[18px] bg-pearl-light/10 shadow-luxe"
+          style={{
+            gridTemplateColumns: `repeat(${cols}, 4rem)`,
+          }}
         >
-          閉じる
-        </button>
+          {items.map((it) => (
+            <button
+              key={it.key}
+              type="button"
+              onClick={it.onClick}
+              className={cn(
+                "flex flex-col items-center justify-center gap-1.5 h-[68px] bg-ink/95 active:bg-ink text-pearl-light",
+                it.destructive && "text-[#e89aa0]",
+                it.active && "text-gold",
+              )}
+            >
+              {it.icon}
+              <span className="text-[10px] tracking-[0.02em] leading-none">
+                {it.label}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Pointer toward the bubble */}
+        {pos && (
+          <div
+            className="absolute w-3 h-3 rotate-45 bg-ink/95"
+            style={{
+              left: pos.pointerX - 6,
+              ...(pos.placement === "top"
+                ? { bottom: -5 }
+                : { top: -5 }),
+            }}
+          />
+        )}
       </div>
     </div>
-  );
-}
-
-function ActionRow({
-  icon,
-  label,
-  sub,
-  destructive,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  sub?: string;
-  destructive?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "flex items-center gap-3 px-3 py-3 rounded-btn text-left active:bg-pearl-soft hover:bg-pearl-soft transition-colors",
-        destructive ? "text-wine-deep" : "text-ink",
-      )}
-    >
-      <span className={cn("shrink-0", destructive ? "text-wine-deep" : "text-gold-deep")}>
-        {icon}
-      </span>
-      <span className="flex flex-col">
-        <span className="text-body-md font-medium leading-tight">{label}</span>
-        {sub && <span className="text-[11px] text-ink-mute mt-0.5">{sub}</span>}
-      </span>
-    </button>
   );
 }
 

@@ -38,7 +38,7 @@ const TAB_LABELS: Record<FilterTab, string> = {
   all: "すべて",
   channels: "グループ",
   dm: "個別連絡",
-  pinned: "📌 ピン留め",
+  pinned: "🔖 キープ",
   learnings: "📚 学び",
 };
 

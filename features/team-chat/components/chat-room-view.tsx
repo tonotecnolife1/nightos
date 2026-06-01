@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
+  Bookmark,
   BookOpen,
   Check,
   Clock,
   Loader2,
   MessageCircle,
   Pencil,
-  Pin,
   Search,
   Sparkles,
   User,
@@ -41,6 +41,7 @@ import { GroupNameModal } from "./group-name-modal";
 import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
 import { MessagePinSheet } from "./message-pin-sheet";
 import {
+  type AnchorRect,
   MessageActionSheet,
   PartialCopyModal,
 } from "./message-action-sheet";
@@ -97,9 +98,11 @@ export function ChatRoomView({
   const [pinSheetFor, setPinSheetFor] = useState<ChatMessage | null>(null);
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
   // LINE風の長押しメニュー対象（canReply はスレッド内かどうかで切替）。
+  // anchor は長押しした吹き出しの画面上の矩形（メニューの配置に使う）。
   const [actionFor, setActionFor] = useState<{
     msg: ChatMessage;
     canReply: boolean;
+    anchor: AnchorRect;
   } | null>(null);
   const [partialCopyFor, setPartialCopyFor] = useState<string | null>(null);
   const [copiedToast, setCopiedToast] = useState(false);
@@ -112,7 +115,7 @@ export function ChatRoomView({
     setNameOverride(getRoomName(room.id));
   }, [room.id]);
 
-  // Track which messages are pinned (these collect in the ピン留め tab).
+  // Track which messages are kept (these collect in the キープ tab).
   useEffect(() => {
     const refresh = () => setPinnedIds(getPinnedIds());
     refresh();
@@ -636,8 +639,8 @@ export function ChatRoomView({
               showName={true}
               mentionNames={mentionNames}
               isPinned={pinnedIds.has(activeThread.id)}
-              onLongPress={() =>
-                setActionFor({ msg: activeThread, canReply: false })
+              onLongPress={(anchor) =>
+                setActionFor({ msg: activeThread, canReply: false, anchor })
               }
               editingId={editingId}
               editDraft={editDraft}
@@ -663,7 +666,9 @@ export function ChatRoomView({
                   showName={!isGrouped}
                   mentionNames={mentionNames}
                   isPinned={pinnedIds.has(m.id)}
-                  onLongPress={() => setActionFor({ msg: m, canReply: false })}
+                  onLongPress={(anchor) =>
+                    setActionFor({ msg: m, canReply: false, anchor })
+                  }
                   editingId={editingId}
                   editDraft={editDraft}
                   setEditDraft={setEditDraft}
@@ -754,7 +759,9 @@ export function ChatRoomView({
                 showName={!isGrouped}
                 mentionNames={mentionNames}
                 isPinned={pinnedIds.has(msg.id)}
-                onLongPress={() => setActionFor({ msg, canReply: true })}
+                onLongPress={(anchor) =>
+                  setActionFor({ msg, canReply: true, anchor })
+                }
                 highlight={isSearching ? normalizedQuery : undefined}
                 editingId={editingId}
                 editDraft={editDraft}
@@ -880,7 +887,8 @@ export function ChatRoomView({
       {/* 吹き出し長押し → LINE風アクションメニュー */}
       {actionFor && (
         <MessageActionSheet
-          message={actionFor.msg}
+          anchorRect={actionFor.anchor}
+          hasText={actionFor.msg.content.trim().length > 0}
           isPinned={pinnedIds.has(actionFor.msg.id)}
           canReply={actionFor.canReply}
           canEdit={
@@ -924,7 +932,7 @@ export function ChatRoomView({
         />
       )}
 
-      {/* ピン留め / 顧客紐づけ / メモ */}
+      {/* キープ / 顧客紐づけ / メモ */}
       {pinSheetFor && (
         <MessagePinSheet
           message={pinSheetFor}
@@ -958,10 +966,11 @@ interface MessageRowProps {
   showName: boolean;
   /** Known @mention names (members) for chip rendering. */
   mentionNames: string[];
-  /** Whether this message is currently pinned (ピン留め). */
+  /** Whether this message is currently kept (キープ). */
   isPinned?: boolean;
-  /** Long-press (touch) / right-click (desktop) opens the LINE風 action menu. */
-  onLongPress?: () => void;
+  /** Long-press (touch) / right-click (desktop) opens the LINE風 action menu,
+   *  anchored to the bubble's on-screen rect. */
+  onLongPress?: (anchor: AnchorRect) => void;
   /** Lowercased search query to highlight; if set, matching substrings get wrapped. */
   highlight?: string;
   editingId: string | null;
@@ -993,10 +1002,16 @@ function MessageRow({
   const isEditing = editingId === msg.id;
   const isDeleted = !!msg.deleted_at;
 
+  const bubbleRef = useRef<HTMLDivElement>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fireLongPress = () => {
+    if (!onLongPress || !bubbleRef.current) return;
+    const r = bubbleRef.current.getBoundingClientRect();
+    onLongPress({ top: r.top, bottom: r.bottom, left: r.left, width: r.width });
+  };
   const handleTouchStart = () => {
     if (!onLongPress || isDeleted) return;
-    longPressTimer.current = setTimeout(() => onLongPress(), 500);
+    longPressTimer.current = setTimeout(fireLongPress, 500);
   };
   const handleTouchEnd = () => {
     if (longPressTimer.current) {
@@ -1040,6 +1055,7 @@ function MessageRow({
 
       {/* Bubble + meta */}
       <div
+        ref={bubbleRef}
         className={cn(
           "flex flex-col max-w-[72%]",
           isMe ? "items-end" : "items-start",
@@ -1054,7 +1070,7 @@ function MessageRow({
         onContextMenu={(e) => {
           if (!onLongPress || isDeleted) return;
           e.preventDefault();
-          onLongPress();
+          fireLongPress();
         }}
       >
         {/* Sender name (others, first in group) */}
@@ -1133,6 +1149,13 @@ function MessageRow({
         ) : (
           /* Bubble */
           <div className={cn("flex flex-col gap-1.5", isMe ? "items-end" : "items-start")}>
+            {/* キープ済みタグ（吹き出しの上に明示） */}
+            {isPinned && (
+              <span className="inline-flex items-center gap-1 rounded-pill bg-champagne-soft/70 border border-gold/45 px-2 py-0.5 text-[10px] font-medium text-wine-deep shadow-soft">
+                <Bookmark size={10} className="text-gold-deep" />
+                キープ済み
+              </span>
+            )}
             {msg.content.trim().length > 0 && (
               <div
                 className={cn(
@@ -1140,6 +1163,8 @@ function MessageRow({
                   isMe
                     ? "bg-wine-deep text-pearl-light rounded-2xl rounded-br-sm shadow-luxe"
                     : "bg-pearl-light border border-ink/[0.08] text-ink rounded-2xl rounded-bl-sm shadow-soft",
+                  // キープ済みはシャンパンゴールドの枠線で強調（塗りには使わない）
+                  isPinned && "ring-[1.5px] ring-gold/70 ring-offset-2 ring-offset-pearl",
                 )}
               >
                 {renderContentParts(msg.content, mentionNames, highlight)}
@@ -1155,9 +1180,6 @@ function MessageRow({
         {!isDeleted && !isEditing && (
           <div className={cn("flex items-center gap-1.5 mt-0.5 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
             <span className="text-[10px] text-ink-mute">{timeStr}</span>
-            {isPinned && (
-              <Pin size={9} className="text-gold-deep" aria-label="ピン留め済み" />
-            )}
             {msg.id.startsWith("tmp_") && (
               <Clock size={9} className="text-ink-mute animate-pulse" />
             )}

@@ -3,7 +3,7 @@
 // "ピン留め" here means keeping a whole talk (room) pinned to the top of the
 // チャット一覧. This is distinct from:
 //   - chat-room-pin-store: pins a *customer* to a room (karte linkage)
-//   - chat-pin-store:      pins a single *message* into the ピン留め tab
+//   - chat-pin-store:      keeps a single *message* into the キープ tab
 //
 // As with those stores, this stays client-side (localStorage) so it also works
 // for synthetic DM/group rooms that have no DB row. We keep an ordered list of

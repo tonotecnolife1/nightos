@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Pin, StickyNote, User, X } from "lucide-react";
+import { Bookmark, StickyNote, User, X } from "lucide-react";
 import { EmptyState } from "@/components/nightos/empty-state";
 import {
   type PinnedMessage,
@@ -12,7 +12,7 @@ import {
 } from "@/lib/nightos/chat-pin-store";
 
 /**
- * ピン留め tab — the running collection of message bubbles the cast pinned
+ * キープ tab — the running collection of message bubbles the cast kept
  * (via long-press), each with its optional customer link and memo.
  */
 export function PinnedList() {
@@ -28,9 +28,9 @@ export function PinnedList() {
     return (
       <div className="p-5">
         <EmptyState
-          icon={<Pin size={22} />}
-          title="ピン留めはまだありません"
-          description="大事な会話の吹き出しを長押しして、ピン留め・顧客の紐づけ・メモを残すとここに溜まっていきます。"
+          icon={<Bookmark size={22} />}
+          title="キープはまだありません"
+          description="大事な会話の吹き出しを長押しして、キープ・顧客の紐づけ・メモを残すとここに溜まっていきます。"
           tone="amethyst"
         />
       </div>
@@ -50,7 +50,7 @@ function PinCard({ pin, onRemove }: { pin: PinnedMessage; onRemove: () => void }
   return (
     <div className="rounded-card border border-ink/[0.08] bg-pearl-light shadow-soft px-4 py-3">
       <div className="flex items-center gap-1.5 mb-1.5">
-        <Pin size={12} className="text-gold-deep shrink-0" />
+        <Bookmark size={12} className="text-gold-deep shrink-0" />
         <span className="text-label-sm text-ink-soft truncate">{pin.roomName}</span>
         <span className="text-[10px] text-ink-mute ml-auto shrink-0 font-display tracking-[0.04em]">
           {formatDate(pin.pinnedAt)}
@@ -59,8 +59,8 @@ function PinCard({ pin, onRemove }: { pin: PinnedMessage; onRemove: () => void }
           type="button"
           onClick={onRemove}
           className="w-6 h-6 rounded-full flex items-center justify-center text-ink-mute hover:bg-pearl-soft shrink-0"
-          aria-label="ピン留めを外す"
-          title="ピン留めを外す"
+          aria-label="キープを外す"
+          title="キープを外す"
         >
           <X size={13} />
         </button>
