@@ -6,13 +6,28 @@ import { BookOpen, Hash, MessageCircle, Search, Users, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmptyState } from "@/components/nightos/empty-state";
 import type { ChatRoom } from "../types";
+import { PinnedList } from "./pinned-list";
+import { LearningsView } from "./learnings-view";
 
 interface Props {
   rooms: ChatRoom[];
   currentCastId: string;
 }
 
-type FilterTab = "all" | "channels" | "dm" | "coaching";
+type FilterTab = "all" | "channels" | "dm" | "pinned" | "learnings";
+
+const TAB_LABELS: Record<FilterTab, string> = {
+  all: "すべて",
+  channels: "グループ",
+  dm: "個別連絡",
+  pinned: "📌 ピン留め",
+  learnings: "📚 学び",
+};
+
+/** Tabs that show running collections (pins / learnings) rather than rooms. */
+function isCollectionTab(tab: FilterTab): tab is "pinned" | "learnings" {
+  return tab === "pinned" || tab === "learnings";
+}
 
 export function ChatRoomList({ rooms, currentCastId }: Props) {
   const [tab, setTab] = useState<FilterTab>("all");
@@ -29,9 +44,7 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
       ? sorted
       : tab === "channels"
         ? sorted.filter((r) => r.type === "channel")
-        : tab === "coaching"
-          ? sorted.filter((r) => r.type === "coaching")
-          : sorted.filter((r) => r.type === "dm");
+        : sorted.filter((r) => r.type === "dm");
 
   const q = query.trim().toLowerCase();
   const filtered = q
@@ -51,83 +64,89 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
       })
     : tabFiltered;
 
+  const collection = isCollectionTab(tab);
+
   return (
     <div>
-      {/* Search bar */}
-      <div className="px-5 pt-3">
-        <label className="flex items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 shadow-soft focus-within:border-wine-deep transition">
-          <Search size={14} className="text-ink-mute shrink-0" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="トーク・相手を検索..."
-            className="flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
-            style={{ fontSize: "16px" }}
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={() => setQuery("")}
-              className="text-ink-mute shrink-0"
-              aria-label="検索をクリア"
-            >
-              <X size={14} />
-            </button>
-          )}
-        </label>
-      </div>
+      {/* Search bar — room tabs only */}
+      {!collection && (
+        <div className="px-5 pt-3">
+          <label className="flex items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 shadow-soft focus-within:border-wine-deep transition">
+            <Search size={14} className="text-ink-mute shrink-0" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="トーク・相手を検索..."
+              className="flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
+              style={{ fontSize: "16px" }}
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                className="text-ink-mute shrink-0"
+                aria-label="検索をクリア"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </label>
+        </div>
+      )}
 
       {/* Filter tabs */}
-      <div className="flex gap-1 px-5 py-3 border-b border-ink/[0.08]">
-        {(["all", "channels", "dm", "coaching"] as FilterTab[]).map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => setTab(t)}
-            className={cn(
-              "px-3 py-1.5 rounded-pill text-label-sm font-medium transition-colors whitespace-nowrap tracking-[0.04em]",
-              tab === t
-                ? t === "coaching"
-                  ? "bg-success/15 text-success border border-success/25"
-                  : "bg-champagne-soft/60 text-wine-deep border border-gold/30"
-                : "text-ink-mute hover:text-ink-soft border border-transparent",
-            )}
-          >
-            {t === "all"
-              ? "すべて"
-              : t === "channels"
-              ? "グループ"
-              : t === "coaching"
-              ? "📚 指導"
-              : "個別連絡"}
-          </button>
-        ))}
+      <div className="flex gap-1 px-5 py-3 border-b border-ink/[0.08] overflow-x-auto">
+        {(["all", "channels", "dm", "pinned", "learnings"] as FilterTab[]).map(
+          (t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTab(t)}
+              className={cn(
+                "px-3 py-1.5 rounded-pill text-label-sm font-medium transition-colors whitespace-nowrap tracking-[0.04em]",
+                tab === t
+                  ? t === "learnings"
+                    ? "bg-success/15 text-success border border-success/25"
+                    : "bg-champagne-soft/60 text-wine-deep border border-gold/30"
+                  : "text-ink-mute hover:text-ink-soft border border-transparent",
+              )}
+            >
+              {TAB_LABELS[t]}
+            </button>
+          ),
+        )}
       </div>
+
+      {/* Collection tabs */}
+      {tab === "pinned" && <PinnedList />}
+      {tab === "learnings" && <LearningsView />}
 
       {/* Room list */}
-      <div className="divide-y divide-ink/[0.06]">
-        {filtered.map((room) => (
-          <RoomRow
-            key={room.id}
-            room={room}
-            currentCastId={currentCastId}
-          />
-        ))}
-      </div>
+      {!collection && (
+        <>
+          <div className="divide-y divide-ink/[0.06]">
+            {filtered.map((room) => (
+              <RoomRow key={room.id} room={room} currentCastId={currentCastId} />
+            ))}
+          </div>
 
-      {filtered.length === 0 && (
-        <div className="p-5">
-          <EmptyState
-            icon={<MessageCircle size={22} />}
-            title={q ? "一致するトークはありません" : "まだメッセージがありません"}
-            description={
-              q
-                ? "別のキーワードをお試しください。"
-                : "みんなとのやり取りや、@さくらママ(AI) への相談を始めるとここに表示されます。"
-            }
-            tone="amethyst"
-          />
-        </div>
+          {filtered.length === 0 && (
+            <div className="p-5">
+              <EmptyState
+                icon={<MessageCircle size={22} />}
+                title={
+                  q ? "一致するトークはありません" : "まだメッセージがありません"
+                }
+                description={
+                  q
+                    ? "別のキーワードをお試しください。"
+                    : "みんなとのやり取りや、@さくらママ(AI) への相談を始めるとここに表示されます。"
+                }
+                tone="amethyst"
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

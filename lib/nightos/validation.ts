@@ -79,6 +79,21 @@ export const chatAiSchema = z.object({
   castId,
 });
 
+/** 学び整理: pinned messages the AI should organise into remember-this cards. */
+export const chatLearningsSchema = z.object({
+  pins: z
+    .array(
+      z.object({
+        content: z.string().max(4000).default(""),
+        senderName: z.string().max(80).optional(),
+        memo: z.string().max(2000).optional(),
+        customerName: z.string().max(80).nullish(),
+      }),
+    )
+    .min(1)
+    .max(60),
+});
+
 // Team chat room messages ─ CRUD payloads ───────────────────────────
 
 const roomId = z.string().min(1).max(64);
