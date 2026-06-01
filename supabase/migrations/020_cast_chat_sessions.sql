@@ -43,6 +43,9 @@ revoke all on cast_chat_sessions from anon;
 grant select, insert, update, delete on cast_chat_sessions to authenticated;
 
 -- 相談履歴は本人のみ全操作可。マネージャー閲覧ポリシーはあえて付けない。
+-- ⚠️ create policy は `if not exists` を持たないため、冪等性のため
+--    先に drop policy if exists で落としてから作り直す。
+drop policy if exists "cast_chat_sessions: own cast" on cast_chat_sessions;
 create policy "cast_chat_sessions: own cast"
   on cast_chat_sessions
   for all
