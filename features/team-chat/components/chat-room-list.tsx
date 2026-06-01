@@ -1,11 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { BookOpen, Hash, MessageCircle, Pencil, Search, Users, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  BookOpen,
+  Hash,
+  MessageCircle,
+  MoreHorizontal,
+  Pencil,
+  Pin,
+  PinOff,
+  Search,
+  Users,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmptyState } from "@/components/nightos/empty-state";
 import { getRoomName, setRoomName } from "@/lib/nightos/chat-room-name-store";
+import {
+  getPinnedRoomIds,
+  subscribePinnedRooms,
+  toggleRoomPin,
+} from "@/lib/nightos/chat-pinned-rooms-store";
 import { GroupNameModal } from "./group-name-modal";
 import type { ChatRoom } from "../types";
 import { PinnedList } from "./pinned-list";
@@ -45,6 +61,8 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
   // ユーザーがつけたグループ名（localStorage）。一覧でも編集・反映する。
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<ChatRoom | null>(null);
+  // ピン留めしたトークの id（新しい順）。上部に固定表示する。
+  const [pinnedOrder, setPinnedOrder] = useState<string[]>([]);
 
   useEffect(() => {
     const map: Record<string, string> = {};
@@ -54,6 +72,20 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
     }
     setOverrides(map);
   }, [rooms]);
+
+  // ピン留め状態を購読（同タブ CustomEvent + タブ間 storage）。
+  useEffect(() => {
+    const refresh = () => setPinnedOrder(getPinnedRoomIds());
+    refresh();
+    return subscribePinnedRooms(refresh);
+  }, []);
+
+  const pinnedSet = new Set(pinnedOrder);
+  const togglePin = (room: ChatRoom) => {
+    toggleRoomPin(room.id);
+    // 購読側の refresh が state を更新するが、即時反映のため先に同期。
+    setPinnedOrder(getPinnedRoomIds());
+  };
 
   const nameOf = (room: ChatRoom) =>
     overrides[room.id] || baseRoomName(room, currentCastId);
@@ -69,7 +101,15 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
     setEditing(null);
   };
 
+  // ピン留めしたトークを最上部へ（ピンした新しい順）、残りは更新時刻の新しい順。
+  const pinRank = (id: string) => {
+    const i = pinnedOrder.indexOf(id);
+    return i === -1 ? Infinity : i;
+  };
   const sorted = [...rooms].sort((a, b) => {
+    const ra = pinRank(a.id);
+    const rb = pinRank(b.id);
+    if (ra !== rb) return ra - rb;
     const aTime = a.last_message?.sent_at ?? a.created_at;
     const bTime = b.last_message?.sent_at ?? b.created_at;
     return new Date(bTime).getTime() - new Date(aTime).getTime();
@@ -168,7 +208,9 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
                 room={room}
                 displayName={nameOf(room)}
                 canRename={room.type !== "coaching"}
+                isPinned={pinnedSet.has(room.id)}
                 onEdit={() => setEditing(room)}
+                onTogglePin={() => togglePin(room)}
               />
             ))}
           </div>
@@ -208,12 +250,16 @@ function RoomRow({
   room,
   displayName,
   canRename,
+  isPinned,
   onEdit,
+  onTogglePin,
 }: {
   room: ChatRoom;
   displayName: string;
   canRename: boolean;
+  isPinned: boolean;
   onEdit: () => void;
+  onTogglePin: () => void;
 }) {
   const memberCount = room.member_ids.length;
 
@@ -223,13 +269,10 @@ function RoomRow({
     : "";
 
   return (
-    <div className="relative">
+    <div className={cn("relative", isPinned && "bg-champagne-soft/25")}>
       <Link
         href={`/cast/chat/${room.id}`}
-        className={cn(
-          "flex items-center gap-3 px-5 py-3.5 hover:bg-pearl-soft/50 active:bg-pearl-soft transition-colors",
-          canRename && "pr-14",
-        )}
+        className="flex items-center gap-3 px-5 py-3.5 pr-14 hover:bg-pearl-soft/50 active:bg-pearl-soft transition-colors"
       >
       {/* Avatar / icon */}
       <div
@@ -263,7 +306,14 @@ function RoomRow({
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline justify-between">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 min-w-0">
+            {isPinned && (
+              <Pin
+                size={12}
+                className="shrink-0 text-gold-deep -rotate-45"
+                aria-label="ピン留め中"
+              />
+            )}
             <span className="font-serif text-[15px] leading-[1.2] font-medium tracking-[0.01em] text-ink truncate">
               {displayName}
             </span>
@@ -282,16 +332,102 @@ function RoomRow({
       </div>
       </Link>
 
-      {canRename && (
-        <button
-          type="button"
-          onClick={onEdit}
-          aria-label="グループ名を編集"
-          title="グループ名を編集"
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-ink-mute hover:text-gold-deep hover:bg-pearl-soft"
+      <RoomRowMenu
+        canRename={canRename}
+        isPinned={isPinned}
+        onEdit={onEdit}
+        onTogglePin={onTogglePin}
+      />
+    </div>
+  );
+}
+
+/** 行右端の「···」メニュー。グループ名の編集 / ピン留めの選択肢を出す。 */
+function RoomRowMenu({
+  canRename,
+  isPinned,
+  onEdit,
+  onTogglePin,
+}: {
+  canRename: boolean;
+  isPinned: boolean;
+  onEdit: () => void;
+  onTogglePin: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const onPointer = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+    };
+  }, [open]);
+
+  return (
+    <div
+      ref={rootRef}
+      className="absolute right-3 top-1/2 -translate-y-1/2"
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="トークの操作"
+        aria-expanded={open}
+        title="トークの操作"
+        className={cn(
+          "w-8 h-8 rounded-full flex items-center justify-center text-ink-mute hover:text-wine-deep hover:bg-pearl-soft transition-colors",
+          open && "bg-wine-deep/10 text-wine-deep",
+        )}
+      >
+        <MoreHorizontal size={18} />
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-full mt-1.5 z-30 w-44 origin-top-right rounded-2xl border border-ink/[0.08] bg-pearl shadow-warm p-1 animate-fade-in"
         >
-          <Pencil size={15} />
-        </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              onTogglePin();
+            }}
+            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-body-sm text-ink hover:bg-pearl-soft transition-colors"
+          >
+            {isPinned ? (
+              <PinOff size={15} className="shrink-0 text-ink-soft" />
+            ) : (
+              <Pin size={15} className="shrink-0 text-gold-deep -rotate-45" />
+            )}
+            {isPinned ? "ピン留めを解除" : "ピン留め"}
+          </button>
+          {canRename && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                onEdit();
+              }}
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-body-sm text-ink hover:bg-pearl-soft transition-colors"
+            >
+              <Pencil size={15} className="shrink-0 text-ink-soft" />
+              グループ名を編集
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
