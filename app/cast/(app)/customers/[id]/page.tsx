@@ -6,7 +6,6 @@ import { ChangeManagerButton } from "@/features/customer-management/components/c
 import { CustomerHeader } from "@/features/customer-card/components/customer-header";
 import { CustomerInfoSection } from "@/features/customer-card/components/customer-info-section";
 import { CustomerPhotoUpload } from "@/features/customer-card/components/customer-photo-upload";
-import { FunnelBadge } from "@/features/customer-card/components/funnel-badge";
 import { LineCommunicationSummary } from "@/features/customer-card/components/line-communication-summary";
 import { LineExchangeButton } from "@/features/customer-card/components/line-exchange-button";
 import { LineHistoryTimeline } from "@/features/customer-card/components/line-history-timeline";
@@ -16,7 +15,6 @@ import { RefreshMemoButton } from "@/features/customer-card/components/refresh-m
 import { VisitInfoSection } from "@/features/customer-card/components/visit-info-section";
 import { SectionHeader } from "@/features/customer-card/components/section-header";
 import { CollapsibleSection } from "@/features/customer-card/components/collapsible-section";
-import { RelationshipBadge } from "@/features/customer-card/components/relationship-badge";
 import { HelpRosterSection } from "@/features/customer-card/components/help-roster-section";
 import { ProfileProposalsInline } from "@/features/customer-card/components/profile-proposals-inline";
 import { aggregateHelpCastsByCustomer } from "@/lib/nightos/master-help-split";
@@ -64,9 +62,6 @@ export default async function CustomerCardPage({
   const canEdit = canEditCustomerDirectly(relationship);
   const approverCastId = resolveApproverCastId(customer);
   const castName = allCasts.find((c) => c.id === castId)?.name ?? "キャスト";
-  const masterName = customer.manager_cast_id
-    ? (allCasts.find((c) => c.id === customer.manager_cast_id)?.name ?? null)
-    : null;
   const helpRoster = aggregateHelpCastsByCustomer({
     customer,
     visits: context.visits,
@@ -80,14 +75,8 @@ export default async function CustomerCardPage({
         {/* ── Header ─────────────────────────────────── */}
         <CustomerHeader customer={customer} />
 
-        {/* あなたとこのお客様の関係 */}
-        <div>
-          <RelationshipBadge relationship={relationship} masterName={masterName} />
-        </div>
-
-        {/* Funnel + referrer */}
+        {/* 紹介元 / お連れ様登録（担当・ヘルプの表示は下部の担当セクションに集約） */}
         <div className="flex items-center gap-2 flex-wrap">
-          <FunnelBadge stage={customer.funnel_stage ?? "store_only"} />
           {referrer && (
             <span className="text-[10px] text-ink-mute">
               ご本人: {referrer.name}さま
