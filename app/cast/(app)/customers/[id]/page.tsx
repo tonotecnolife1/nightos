@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/nightos/page-header";
 import { ActionButtons } from "@/features/customer-card/components/action-buttons";
+import { BusinessCardSection } from "@/features/customer-card/components/business-card-section";
 import { ChangeManagerButton } from "@/features/customer-management/components/change-manager-button";
 import { CustomerHeader } from "@/features/customer-card/components/customer-header";
 import { CustomerInfoSection } from "@/features/customer-card/components/customer-info-section";
@@ -156,6 +157,16 @@ export default async function CustomerCardPage({
           canApprove={canEdit}
           approverName={castName}
         />
+
+        {/* 名刺（登録導線 + 登録済みの確認） */}
+        <div className="border-t border-ink/[0.06] pt-2">
+          <CollapsibleSection title="名刺">
+            <BusinessCardSection
+              customerId={customer.id}
+              customerName={customer.name}
+            />
+          </CollapsibleSection>
+        </div>
 
         {/* ── §2 来店情報 ─────────────────────────────── */}
         <div className="border-t border-ink/[0.06] pt-4">
