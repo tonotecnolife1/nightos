@@ -8,6 +8,7 @@ import {
   ChevronUp,
   History,
   Loader2,
+  PlayCircle,
   Sparkles,
   Trash2,
   X,
@@ -41,6 +42,12 @@ interface Props {
   memo: CastMemo | null;
   screenshots: LineScreenshot[];
 }
+
+/**
+ * LINEスクショ取り込みの使い方動画 URL。
+ * 動画が用意できたらここに URL を設定する（一旦は未設定 = 準備中表示）。
+ */
+const HOW_TO_VIDEO_URL: string | null = null;
 
 type Phase =
   | { name: "idle" }
@@ -233,6 +240,72 @@ function IdleState({
         ※ 写真ライブラリから選択 · 最大1400pxに自動圧縮
         {screenshotCount > 0 && ` · 過去${screenshotCount}件取り込み済み`}
       </p>
+      <HowToVideoButton />
+    </div>
+  );
+}
+
+/**
+ * 「動画で使い方を見る」ボタン。タップでモーダルを開く。
+ * 動画 URL が未設定のあいだは「準備中」を表示する。
+ */
+function HowToVideoButton() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-1.5 text-label-sm text-wine-deep underline underline-offset-2 hover:text-gold-deep transition-colors"
+      >
+        <PlayCircle size={14} />
+        動画で使い方を見る
+      </button>
+      {open && <HowToVideoModal onClose={() => setOpen(false)} />}
+    </>
+  );
+}
+
+function HowToVideoModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-[100] bg-ink/90 flex items-center justify-center p-5 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-card bg-pearl-light shadow-warm overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <header className="flex items-center justify-between px-4 py-3 border-b border-line">
+          <h4 className="text-label-md font-medium text-ink flex items-center gap-1.5">
+            <PlayCircle size={16} className="text-gold-deep" />
+            LINEスクショの使い方
+          </h4>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="閉じる"
+            className="text-ink-mute hover:text-ink transition-colors"
+          >
+            <X size={18} />
+          </button>
+        </header>
+
+        <div className="aspect-video bg-wine-deep/[0.04] flex items-center justify-center">
+          {HOW_TO_VIDEO_URL ? (
+            // eslint-disable-next-line jsx-a11y/media-has-caption
+            <video src={HOW_TO_VIDEO_URL} controls className="w-full h-full" />
+          ) : (
+            <div className="text-center px-6 py-10">
+              <PlayCircle size={36} className="text-ink-mute mx-auto mb-2" />
+              <p className="text-body-sm text-ink-soft">動画は準備中です</p>
+              <p className="text-label-sm text-ink-mute mt-1">
+                近日公開予定です。少々お待ちください。
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
