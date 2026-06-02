@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
-import { ArrowLeft, Building2, Settings, UserCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Building2,
+  MessageSquareText,
+  Settings,
+  UserCircle,
+} from "lucide-react";
 import { mockLogout } from "@/app/auth/actions";
 import { InstallAppSection } from "@/components/nightos/install-app-section";
 import type { CastUserRole } from "@/types/nightos";
@@ -121,6 +127,23 @@ export function MyPageClient({ castName, storeName, userRole, avatarUrl }: Props
               </div>
             </section>
           )}
+
+          {/* マイテンプレート（メッセージテンプレート集）への導線 */}
+          <Link
+            href="/cast/templates"
+            className="flex items-center justify-between w-full rounded-card border border-ink/[0.06] bg-pearl-warm p-4 shadow-soft hover:border-ink/15 transition"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <MessageSquareText size={16} className="text-ink-mute shrink-0" />
+              <div className="min-w-0">
+                <p className="text-body-md text-ink">マイテンプレート</p>
+                <p className="text-[11px] text-ink-mute truncate">
+                  お礼・お誘いの文面とさくらママ提案
+                </p>
+              </div>
+            </div>
+            <span className="text-ink-mute text-[12px]">›</span>
+          </Link>
 
           {/* ホーム画面に追加（インストール済みなら非表示） */}
           <InstallAppSection />
