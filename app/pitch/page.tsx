@@ -16,7 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
-import { BASE_PLAN_NAME } from "@/lib/nightos/billing";
+import { FREE_PLAN_LABEL, FREE_PERIOD_END, formatJpDate } from "@/lib/nightos/billing";
 
 export default function PitchPage() {
   return (
@@ -172,14 +172,11 @@ export default function PitchPage() {
         <SectionTitle emoji="💰" title="料金" />
         <div className="mt-4 rounded-card bg-gradient-champagne border border-champagne-dark p-5 text-center">
           <div className="text-label-sm tracking-luxe text-wine-deep uppercase">
-            {BASE_PLAN_NAME}
+            {FREE_PLAN_LABEL}
           </div>
           <div className="text-display-lg font-display text-ink mt-1">無料</div>
           <p className="text-body-md text-ink-soft mt-1">
-            基本機能はずっと無料でご利用いただけます
-          </p>
-          <p className="text-label-sm text-ink-mute mt-2">
-            カード登録をお願いしますが、必要に応じてだけ課金が発生します
+            {formatJpDate(FREE_PERIOD_END)}まで全機能を無制限で
           </p>
         </div>
       </section>
