@@ -44,7 +44,8 @@ export default async function CastStatsPage({ searchParams }: PageProps) {
 
       <main className="px-5 pt-[18px] flex flex-col gap-[22px]">
         {/* ── 月次成績 ── */}
-        <section className="flex flex-col gap-[22px]">
+        {/* id="nominations": キャバ用ホームの「指名」カードの着地点 (stats に指名指標が無いため月次成績の先頭へ) */}
+        <section id="nominations" className="flex flex-col gap-[22px] scroll-mt-24">
           {/* 年月は固定ヘッダーの chip に表示済みのため sub は出さない */}
           <StatsSectionHead title="月次成績" />
 
@@ -69,7 +70,8 @@ export default async function CastStatsPage({ searchParams }: PageProps) {
           </div>
 
           {/* 結果指標 */}
-          <div className="flex gap-2">
+          {/* id="new": ホームの「新規」カードの着地点 */}
+          <div id="new" className="flex gap-2 scroll-mt-24">
             <StatsMiniKpi
               label="担当顧客"
               value={data.monthly.totalCustomerCount}
@@ -86,7 +88,8 @@ export default async function CastStatsPage({ searchParams }: PageProps) {
               period="今月"
             />
           </div>
-          <div className="flex gap-2">
+          {/* id="repeat": ホームの「再来店率」カードの着地点 */}
+          <div id="repeat" className="flex gap-2 scroll-mt-24">
             <StatsMiniKpi
               label="再来店率"
               value={Math.round(data.monthly.repeatRate * 100)}

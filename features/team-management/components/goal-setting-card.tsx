@@ -27,11 +27,6 @@ export function GoalSettingCard({ castId, castName, goal, setterName }: Props) {
   const [douhanGoal, setDouhanGoal] = useState(String(goal.douhanGoal));
   const [note, setNote] = useState(goal.note ?? "");
 
-  const salesPct =
-    goal.salesGoal > 0
-      ? Math.min(1, 0) // will be replaced by actual data
-      : 0;
-
   const save = () => {
     const sg = Number(salesGoal.replace(/[^0-9]/g, ""));
     const dg = Number(douhanGoal.replace(/[^0-9]/g, ""));
