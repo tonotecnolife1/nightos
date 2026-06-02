@@ -16,13 +16,18 @@ interface Props {
   linkBase?: string;
   /** 件数ヘッダーと検索ボックスを表示する。 */
   searchable?: boolean;
+  /**
+   * 指定すると空状態の「QRで友達を追加」を画面遷移ではなく
+   * このハンドラで処理する（チャット内シートで連絡先交換タブを開く等）。
+   */
+  onAdd?: () => void;
 }
 
 /**
  * QR で交換した連絡先 (友達) の一覧。
  * localStorage の変化 (追加 / 削除 / 他タブ) を購読して即時反映する。
  */
-export function ContactList({ linkBase, searchable }: Props) {
+export function ContactList({ linkBase, searchable, onAdd }: Props) {
   const [contacts, setContacts] = useState<ExchangedContact[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [query, setQuery] = useState("");
@@ -55,13 +60,24 @@ export function ContactList({ linkBase, searchable }: Props) {
           <br />
           QR を読み取ると、ここに追加されます。
         </p>
-        <Link
-          href="/cast/connect"
-          className="inline-flex items-center gap-1.5 h-11 px-6 rounded-pill bg-wine-deep text-pearl-light text-label-md font-semibold shadow-warm transition active:scale-[0.98]"
-        >
-          <QrCode size={14} />
-          QRで友達を追加
-        </Link>
+        {onAdd ? (
+          <button
+            type="button"
+            onClick={onAdd}
+            className="inline-flex items-center gap-1.5 h-11 px-6 rounded-pill bg-wine-deep text-pearl-light text-label-md font-semibold shadow-warm transition active:scale-[0.98]"
+          >
+            <QrCode size={14} />
+            QRで友達を追加
+          </button>
+        ) : (
+          <Link
+            href="/cast/connect"
+            className="inline-flex items-center gap-1.5 h-11 px-6 rounded-pill bg-wine-deep text-pearl-light text-label-md font-semibold shadow-warm transition active:scale-[0.98]"
+          >
+            <QrCode size={14} />
+            QRで友達を追加
+          </Link>
+        )}
       </div>
     );
   }

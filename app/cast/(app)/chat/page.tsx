@@ -7,19 +7,32 @@ import {
   mockChatRooms,
 } from "@/features/team-chat/lib/mock-chat-data";
 import { loadChatRoomsForCast } from "@/features/team-chat/lib/supabase-queries";
-import { getCurrentCastId } from "@/lib/nightos/auth";
+import { getCurrentCast } from "@/lib/nightos/auth";
+import { CURRENT_CAST_ID } from "@/lib/nightos/constants";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import type { ContactPayload } from "@/features/qr-contact/lib/contact-payload";
 import type { ChatRoom } from "@/features/team-chat/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function ChatListPage() {
-  const castId = await getCurrentCastId();
+  const cast = await getCurrentCast();
+  const castId = cast?.id ?? CURRENT_CAST_ID;
 
-  const [rooms, storeCasts] = await Promise.all([
+  const [rooms, storeCasts, storeName] = await Promise.all([
     resolveRooms(castId),
     getStoreCastsAction(),
+    resolveStoreName(cast?.store_id),
   ]);
+
+  // 連絡先交換（マイQR）用の自分のペイロード。
+  const myPayload: ContactPayload = {
+    v: 1,
+    id: castId,
+    name: cast?.name ?? "キャスト",
+    role: "キャスト",
+    ...(storeName ? { store: storeName } : {}),
+  };
 
   return (
     <div className="animate-fade-in">
@@ -37,9 +50,32 @@ export default async function ChatListPage() {
           <MoreMenu />
         </div>
       </div>
-      <ChatRoomList rooms={rooms} currentCastId={castId} />
+      <ChatRoomList rooms={rooms} currentCastId={castId} myPayload={myPayload} />
     </div>
   );
+}
+
+async function resolveStoreName(
+  storeId: string | null | undefined,
+): Promise<string | undefined> {
+  if (!storeId) return undefined;
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    return undefined;
+  }
+  try {
+    const supabase = createServerSupabaseClient();
+    const { data } = await supabase
+      .from("nightos_stores")
+      .select("name")
+      .eq("id", storeId)
+      .maybeSingle();
+    return (data?.name as string) ?? undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 async function resolveRooms(castId: string): Promise<ChatRoom[]> {
