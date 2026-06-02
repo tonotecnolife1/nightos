@@ -45,9 +45,9 @@ METERED_BILLING_READY = false                  // 従量課金の対象機能・
 ## 3. 実装済み（このブランチ）
 
 - `lib/nightos/billing.ts` — プラン名 / タグライン / 従量課金フラグ + `getPlanStatus()`
-- `components/nightos/plan-banner.tsx` — 透明性バナー（「基本無料・必要に応じて課金」の 1 行）
+- `components/nightos/plan-banner.tsx` — 透明性バナー（「無制限プラン（無料）· 2026年8月31日まで」の 1 行）
 - cast / store / mama レイアウトにバナー設置
-- `app/pitch/page.tsx` 料金表記を「基本無料・必要に応じて課金」に更新
+- `app/pitch/page.tsx` 料金欄に「無制限プラン（無料）· 2026年8月31日まで全機能を無制限で」を表示
 - `tests/billing.test.ts`
 
 ---
