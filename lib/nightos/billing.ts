@@ -1,92 +1,41 @@
 // Billing / plan foundation.
 //
-// まだ Stripe は繋いでいない。ここは「無制限プラン (無料) は期間限定で、
-// 4ヶ月目から有料になる」という事実を UI に透明に伝えるための単一情報源。
-// 折衷案 (登録時カード任意・移行前に登録を促し、未登録なら 4ヶ月目に利用制限)
-// を採用しているため、課金状態の本体は将来 Stripe + Supabase 側に持つ。
-// このモジュールは「今が無料期間のどのフェーズか」を日付だけで判定する純粋関数。
+// 課金モデル: フリーミアム (pay-as-you-go)。
+//   - カード登録はお願いするが、基本機能はずっと無料で使える (期間制限なし)。
+//   - 一部の機能を必要に応じて使ったときだけ従量課金が発生する。
 //
-// 日付はすべて日本時間 (JST, UTC+9) の暦日で扱う。
-//
-// ── 期間設定 ──
-// リリース日基準。「今 (2026-06) から 3ヶ月 = 6/7/8 月が無料、4ヶ月目の
-// 9 月から有料」という想定。実際のリリース日が動いたらこの 2 行を直すだけでよい。
-export const FREE_PERIOD_END = "2026-08-31"; // 無制限プラン (無料) 最終日
-export const PAID_START = "2026-09-01"; // 有料プラン開始日 (= 4ヶ月目初日)
+// まだ Stripe は繋いでいないので、ここは課金モデルを UI に透明に伝えるための
+// 単一情報源。従量課金の対象機能 / 単価が固まるまでは「準備中」として最小限の
+// 情報だけを持ち、UI からは「基本無料・必要に応じて課金」という事実だけを伝える。
+// 実際の課金状態 (カード登録済みか・今月の従量利用額) は将来 Stripe + Supabase
+// 側に持つ。
 
-// 月額料金 (円, 税込)。確定したら数値を入れる。null の間は「準備中」と表示する。
-export const MONTHLY_PRICE_YEN: number | null = null;
+/** 基本プラン名 (UI 表示)。 */
+export const BASE_PLAN_NAME = "無料プラン";
 
-// 残りこの日数以内になったら「まもなく有料」の強調表示に切り替える。
-export const ENDING_SOON_DAYS = 14;
+/** バナー / 料金欄で使う一言。不安を煽らず事実だけを伝える。 */
+export const PLAN_TAGLINE = "基本無料・必要に応じて課金";
 
-export type PlanPhase = "free" | "ending_soon" | "paid";
+/**
+ * 従量課金の対象機能・単価が確定したら true にする。
+ * false の間は具体的な金額を出さず「必要に応じて課金」とだけ伝える。
+ */
+export const METERED_BILLING_READY = false;
 
 export interface PlanStatus {
-  /** free: 無料期間中 / ending_soon: 終了間近 / paid: 有料期間に入った */
-  phase: PlanPhase;
-  /** 無料期間最終日 (YYYY-MM-DD) */
-  freePeriodEnd: string;
-  /** 有料プラン開始日 (YYYY-MM-DD) */
-  paidStart: string;
-  /** 無料期間終了までの残り日数。終了後は 0。 */
-  daysRemaining: number;
-  /** 月額料金 (円)。未定の場合は null。 */
-  monthlyPriceYen: number | null;
+  /** 基本機能が無料で使えるか (本モデルでは常に true)。 */
+  freeBaseline: boolean;
+  /** 従量課金がすでに有効か (対象機能・単価の確定後に true)。 */
+  meteredBillingReady: boolean;
 }
 
-const MS_PER_DAY = 86_400_000;
-const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
-
-/** "YYYY-MM-DD" → その暦日 0:00 を表す UTC タイムスタンプ。 */
-function ymdToUtc(ymd: string): number {
-  const [y, m, d] = ymd.split("-").map(Number);
-  return Date.UTC(y, m - 1, d);
-}
-
-/** 任意の時刻 → JST での暦日 "YYYY-MM-DD"。 */
-export function toJstDate(now: Date): string {
-  const jst = new Date(now.getTime() + JST_OFFSET_MS);
-  const y = jst.getUTCFullYear();
-  const m = String(jst.getUTCMonth() + 1).padStart(2, "0");
-  const d = String(jst.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-/** 現在 (既定 = now) がどの料金フェーズかを日付だけで判定する。 */
-export function getPlanStatus(now: Date = new Date()): PlanStatus {
-  const todayUtc = ymdToUtc(toJstDate(now));
-  const endUtc = ymdToUtc(FREE_PERIOD_END);
-  const paidUtc = ymdToUtc(PAID_START);
-
-  const daysRemaining = Math.max(0, Math.round((endUtc - todayUtc) / MS_PER_DAY));
-
-  let phase: PlanPhase;
-  if (todayUtc >= paidUtc) {
-    phase = "paid";
-  } else if (daysRemaining <= ENDING_SOON_DAYS) {
-    phase = "ending_soon";
-  } else {
-    phase = "free";
-  }
-
+/**
+ * 現在の課金状態。基本無料は無期限なので日付には依存しない。
+ * 将来カード登録状態や今月の利用額を反映する拡張ポイントとして関数で包んでおく。
+ */
+export function getPlanStatus(): PlanStatus {
   return {
-    phase,
-    freePeriodEnd: FREE_PERIOD_END,
-    paidStart: PAID_START,
-    daysRemaining,
-    monthlyPriceYen: MONTHLY_PRICE_YEN,
+    freeBaseline: true,
+    meteredBillingReady: METERED_BILLING_READY,
   };
-}
-
-/** "2026-09-01" → "2026年9月1日"。 */
-export function formatJpDate(ymd: string): string {
-  const [y, m, d] = ymd.split("-").map(Number);
-  return `${y}年${m}月${d}日`;
-}
-
-/** 月額表示。未定なら「月額（準備中）」。 */
-export function formatMonthlyPrice(yen: number | null = MONTHLY_PRICE_YEN): string {
-  if (yen == null) return "月額（準備中）";
-  return `月額${yen.toLocaleString("ja-JP")}円`;
 }
