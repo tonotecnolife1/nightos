@@ -56,7 +56,12 @@ export function ContactExchangeSheet({
         </button>
       </div>
       <div className="flex-1 overflow-y-auto">
-        <ConnectClient myPayload={myPayload} initialTab={initialTab} />
+        {/* 一覧はチャットの「友達」タブに一本化。ここは交換アクションのみ。 */}
+        <ConnectClient
+          myPayload={myPayload}
+          initialTab={initialTab}
+          showContactsTab={false}
+        />
       </div>
     </div>
   );
