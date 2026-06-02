@@ -12,12 +12,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { Button } from "@/components/nightos/button";
 import { BirthdayInput } from "@/components/nightos/birthday-input";
 import { TextInput } from "@/components/nightos/input";
 import { TextAreaInput } from "@/components/nightos/textarea";
-import { inferManagerCastId } from "@/lib/nightos/manager-assignment";
 import { useAutoKana } from "@/lib/nightos/use-auto-kana";
 import type { Cast, Customer, CustomerCategory } from "@/types/nightos";
 import { createCustomerAction } from "../actions";
@@ -88,18 +87,13 @@ export function CustomerForm({
   const autoKana = useAutoKana({ setKana: setNameKana });
   const [birthday, setBirthday] = useState("");
   const [category, setCategory] = useState<CustomerCategory>("new");
-  const [castId, setCastId] = useState(defaultCastId);
   const [storeMemo, setStoreMemo] = useState("");
   const [referrerId, setReferrerId] = useState<string>(initialReferrerId ?? "");
 
-  const [managerId, setManagerId] = useState<string>(() =>
-    inferManagerCastId(defaultCastId, casts) ?? "",
-  );
-
-  useEffect(() => {
-    const inferred = inferManagerCastId(castId, casts);
-    if (inferred !== null) setManagerId(inferred);
-  }, [castId, casts]);
+  // 担当（= manager_cast_id）。ロール区分廃止後は担当者＝管理者なので項目は
+  // 1 つに統合した。キャスト導線では自分が serving 側（cast_id）固定で、ここで
+  // 自分を選べば担当客、別キャストを選べばその方が担当のヘルプ客になる。
+  const [tantouId, setTantouId] = useState(defaultCastId);
 
   const reset = () => {
     setName("");
@@ -107,10 +101,9 @@ export function CustomerForm({
     setNickname("");
     setBirthday("");
     setCategory("new");
-    setCastId(defaultCastId);
+    setTantouId(defaultCastId);
     setStoreMemo("");
     setReferrerId("");
-    setManagerId(inferManagerCastId(defaultCastId, casts) ?? "");
     setShowOptional(false);
   };
 
@@ -140,10 +133,12 @@ export function CustomerForm({
         favorite_drink: null,
         category,
         store_memo: storeMemo.trim() || null,
-        cast_id: castId,
+        // キャスト導線では登録者(自分)が serving 側。店舗導線では選んだ担当が
+        // そのまま cast_id を兼ねる。manager_cast_id は選んだ担当。
+        cast_id: lockedCastId ?? tantouId,
         referred_by_customer_id: referrerId || null,
         funnel_stage: lockedCastId ? "assigned" : "store_only",
-        manager_cast_id: managerId || null,
+        manager_cast_id: tantouId || null,
         region: null,
       });
       if (!res.ok) {
@@ -155,7 +150,7 @@ export function CustomerForm({
       // ヘルプ（担当は別キャスト）として登録したものとしてヘルプビューで開く。
       if (successListHref) {
         const scope =
-          lockedCastId && managerId === lockedCastId ? "tantou" : "help";
+          lockedCastId && tantouId === lockedCastId ? "tantou" : "help";
         router.push(`${successListHref}?scope=${scope}`);
         return;
       }
@@ -286,30 +281,17 @@ export function CustomerForm({
         </div>
       )}
 
-      {/* 担当キャスト */}
-      <div className="space-y-1.5">
-        <label className="text-label-md text-ink font-medium">担当キャスト</label>
-        <select
-          value={castId}
-          onChange={(e) => setCastId(e.target.value)}
-          className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
-          style={{ fontSize: "16px" }}
-        >
-          {casts.map((c) => (
-            <option key={c.id} value={c.id} style={OPTION_STYLE}>{c.name}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* 担当 */}
+      {/* 担当（= manager_cast_id）。ロール区分廃止に伴い担当キャストと統合。 */}
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5">
           <Crown size={13} className="text-gold-deep" />
-          <label className="text-label-md text-ink font-medium">担当</label>
+          <label className="text-label-md text-ink font-medium">
+            {lockedCastId ? "担当" : "担当キャスト"}
+          </label>
         </div>
         <select
-          value={managerId}
-          onChange={(e) => setManagerId(e.target.value)}
+          value={tantouId}
+          onChange={(e) => setTantouId(e.target.value)}
           className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
           style={{ fontSize: "16px" }}
         >
@@ -317,6 +299,11 @@ export function CustomerForm({
             <option key={c.id} value={c.id} style={OPTION_STYLE}>{c.name}</option>
           ))}
         </select>
+        {lockedCastId && (
+          <p className="text-[10px] text-ink-muted pl-1">
+            自分以外を選ぶと、その方が担当のヘルプ客として登録されます
+          </p>
+        )}
       </div>
 
       {/* 顧客カテゴリ */}
