@@ -139,8 +139,38 @@ export default async function CustomerCardPage({
           </div>
         )}
 
-        {/* ── §1 LINE・連絡 ── 重要なので常時表示（畳まない）──── */}
-        <div className="border-t border-line pt-4 space-y-4">
+        {/* ── §1 顧客情報 ── 覚えたら見ない情報なのでタップで開閉 ── */}
+        <div className="border-t border-line pt-4">
+          <CustomerInfoSection
+            customer={customer}
+            canEditDirectly={canEdit}
+            requesterCastId={castId}
+            requesterName={castName}
+            approverCastId={approverCastId}
+          />
+        </div>
+
+        {/* 変更提案（承認者には承認/却下、提案者には進捗） */}
+        <ProfileProposalsInline
+          customerId={customer.id}
+          canApprove={canEdit}
+          approverName={castName}
+        />
+
+        {/* ── §2 来店情報 ─────────────────────────────── */}
+        <div className="border-t border-ink/[0.06] pt-4">
+          <VisitInfoSection context={context} />
+        </div>
+
+        {/* 歴代ヘルプ（来店ごとに入れ替わる複数ヘルプ） */}
+        {helpRoster.helps.length > 0 && (
+          <div className="border-t border-ink/[0.06] pt-4">
+            <HelpRosterSection helps={helpRoster.helps} />
+          </div>
+        )}
+
+        {/* ── §3 連絡履歴（LINE・連絡）── 重要なので常時表示（畳まない）── */}
+        <div className="border-t border-ink/[0.06] pt-4 space-y-4">
           <SectionHeader title="LINE・連絡" />
           <LineExchangeButton
             customerId={customer.id}
@@ -165,7 +195,7 @@ export default async function CustomerCardPage({
           />
         </div>
 
-        {/* ── §2 個人メモ ── 重要なので常時表示（畳まない）──── */}
+        {/* ── §4 個人メモ ── 重要なので常時表示（畳まない）──── */}
         {/* 見出しは MemoCard（"個人メモ"）が持つので SectionHeader は不要 */}
         <div className="border-t border-ink/[0.06] pt-4 space-y-4">
           <MemoSection customer={customer} memo={context.memo} />
@@ -179,36 +209,6 @@ export default async function CustomerCardPage({
             }}
           />
         </div>
-
-        {/* ── §3 来店情報 ─────────────────────────────── */}
-        <div className="border-t border-ink/[0.06] pt-4">
-          <VisitInfoSection context={context} />
-        </div>
-
-        {/* 歴代ヘルプ（来店ごとに入れ替わる複数ヘルプ） */}
-        {helpRoster.helps.length > 0 && (
-          <div className="border-t border-ink/[0.06] pt-4">
-            <HelpRosterSection helps={helpRoster.helps} />
-          </div>
-        )}
-
-        {/* ── §4 顧客情報 ── 覚えたら見ない情報なのでタップで開閉 ── */}
-        <div className="border-t border-ink/[0.06] pt-4">
-          <CustomerInfoSection
-            customer={customer}
-            canEditDirectly={canEdit}
-            requesterCastId={castId}
-            requesterName={castName}
-            approverCastId={approverCastId}
-          />
-        </div>
-
-        {/* 変更提案（承認者には承認/却下、提案者には進捗） */}
-        <ProfileProposalsInline
-          customerId={customer.id}
-          canApprove={canEdit}
-          approverName={castName}
-        />
 
         <ActionButtons customerId={customer.id} />
       </div>
