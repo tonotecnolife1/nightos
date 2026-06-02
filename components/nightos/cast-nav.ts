@@ -2,6 +2,7 @@ import {
   CalendarDays,
   Home,
   MessageCircle,
+  QrCode,
   Sparkles,
   TrendingUp,
   Users,
@@ -65,6 +66,23 @@ export const CAST_NAV_ITEMS: CastNavItem[] = [
     href: "/cast/schedule",
     icon: CalendarDays,
     match: (p) => p.startsWith("/cast/schedule"),
+    inTabBar: false,
+  },
+  {
+    key: "connect",
+    label: "連絡先交換",
+    href: "/cast/connect",
+    icon: QrCode,
+    match: (p) =>
+      p.startsWith("/cast/connect") && !p.startsWith("/cast/connect/contacts"),
+    inTabBar: false,
+  },
+  {
+    key: "friends",
+    label: "友達一覧",
+    href: "/cast/connect/contacts",
+    icon: Users,
+    match: (p) => p.startsWith("/cast/connect/contacts"),
     inTabBar: false,
   },
   {
