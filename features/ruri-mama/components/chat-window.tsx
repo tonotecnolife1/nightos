@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Info, PanelLeftOpen, Plus, Sparkles } from "lucide-react";
 import { useCastId } from "@/lib/nightos/cast-context";
+import { cn } from "@/lib/utils";
 import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 import { detectIntent } from "@/lib/nightos/intent-detector";
 import { HEARING_FLOWS } from "../data/system-prompt";
@@ -179,8 +180,30 @@ export function ChatWindow({
   const [refiningMessageIdx, setRefiningMessageIdx] = useState<number | null>(
     null,
   );
+  /** 新しい相談を始めた瞬間に出す画面切り替え演出（true の間オーバーレイ表示） */
+  const [sessionTransition, setSessionTransition] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const transitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // 画面が切り替わったことが一目で伝わるよう、オーバーレイ演出を一瞬挟む。
+  // 演出が覆っている間に会話がリセットされ、フェードアウトで新しい挨拶が現れる。
+  const playSessionTransition = () => {
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    setSessionTransition(true);
+    transitionTimerRef.current = setTimeout(
+      () => setSessionTransition(false),
+      650,
+    );
+  };
+
+  // アンマウント時に演出タイマーを後片付け
+  useEffect(
+    () => () => {
+      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    },
+    [],
+  );
 
   // Save session to history whenever phase becomes "responded"
   useEffect(() => {
@@ -341,6 +364,7 @@ export function ChatWindow({
     setRefiningMessageIdx(null);
     setPhase({ name: "intent-pick" });
     setSidebarOpen(false);
+    playSessionTransition();
   };
 
   const lookupCustomerName = (id: string | undefined): string | null =>
@@ -639,6 +663,7 @@ export function ChatWindow({
     setCurrentSessionId(newSessionId());
     setRefiningMessageIdx(null);
     setPhase({ name: "intent-pick" });
+    playSessionTransition();
   };
 
   // ─────────────────────────────────────────────────────────────
@@ -662,6 +687,25 @@ export function ChatWindow({
 
   return (
     <div className="relative flex flex-col h-dvh overflow-hidden">
+      {/* 新しい相談を始めた瞬間の画面切り替え演出 — 一瞬パール地で覆い、
+          会話がまっさらになったことを視覚的に知らせてからフェードアウトする */}
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-0 z-50 flex items-center justify-center bg-pearl/95 backdrop-blur-sm transition-opacity duration-300",
+          sessionTransition ? "opacity-100" : "opacity-0",
+        )}
+      >
+        <div className="flex flex-col items-center gap-3">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-wine-deep text-pearl-light shadow-soft">
+            <Sparkles size={22} className="animate-shimmer" />
+          </span>
+          <p className="text-label-md tracking-luxe text-wine-deep">
+            新しい相談を始めます
+          </p>
+        </div>
+      </div>
+
       {stubMode && (
         <div className="px-4 pt-3">
           <div className="flex items-start gap-2 rounded-card bg-warning/10 border border-warning/40 text-ink px-3 py-2 text-body-sm">
