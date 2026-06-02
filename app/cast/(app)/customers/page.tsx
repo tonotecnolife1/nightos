@@ -15,8 +15,19 @@ import { calculateFunnelStats } from "@/lib/nightos/referral-tree";
 
 export const dynamic = "force-dynamic";
 
-export default async function CastCustomerListPage() {
+interface Props {
+  searchParams: { scope?: string };
+}
+
+export default async function CastCustomerListPage({ searchParams }: Props) {
   const castId = await getCurrentCastId();
+  // 登録直後の遷移などで初期表示するビュー（担当 / ヘルプ）を URL から受ける。
+  const initialScope =
+    searchParams.scope === "help"
+      ? "help"
+      : searchParams.scope === "tantou"
+        ? "tantou"
+        : undefined;
   const [allCasts, allCustomers, venueType] = await Promise.all([
     getAllCasts(),
     getCustomersForCast(castId),
@@ -34,6 +45,11 @@ export default async function CastCustomerListPage() {
     (c) => c.cast_id === castId && c.manager_cast_id && c.manager_cast_id !== castId,
   );
   const customers = isCabaret ? allCustomers : myCustomers;
+
+  // 担当が 0 人でもヘルプ顧客がいればリスト（ヘルプビュー）を表示する。
+  // 例: ヘルプとして初登録した直後に空状態へ落ちて顧客が見えないのを防ぐ。
+  const hasVisibleCustomers =
+    customers.length > 0 || (!isCabaret && helpCustomers.length > 0);
 
   const funnel = calculateFunnelStats(customers);
 
@@ -65,7 +81,7 @@ export default async function CastCustomerListPage() {
           />
         </div>
 
-        {customers.length === 0 ? (
+        {!hasVisibleCustomers ? (
           <Card className="p-8 text-center space-y-3">
             <p className="text-body-md text-ink">
               まだ顧客が登録されていません
@@ -87,6 +103,7 @@ export default async function CastCustomerListPage() {
             allCasts={allCasts}
             allMyCustomers={customers}
             helpCustomers={!isCabaret ? helpCustomers : []}
+            initialScope={initialScope}
           />
         )}
       </div>

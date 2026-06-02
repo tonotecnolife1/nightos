@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { Button } from "@/components/nightos/button";
 import { BirthdayInput } from "@/components/nightos/birthday-input";
@@ -38,6 +39,12 @@ interface Props {
   lockedCastId?: string;
   submitLabel?: string;
   successTemplate?: string;
+  /**
+   * 指定すると登録成功後にこのお客様リストへ遷移する（成功トーストは出さない）。
+   * 自分が担当（manager）なら担当ビュー、ヘルプなら ?scope=help を付けて
+   * 新規顧客がそのまま確認できる初期ビューで開く。キャスト導線でのみ使用。
+   */
+  successListHref?: string;
 }
 
 const CATEGORY_OPTIONS: { value: CustomerCategory; label: string }[] = [
@@ -63,7 +70,9 @@ export function CustomerForm({
   lockedCastId,
   submitLabel,
   successTemplate,
+  successListHref,
 }: Props) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -139,6 +148,15 @@ export function CustomerForm({
       });
       if (!res.ok) {
         setError(res.error);
+        return;
+      }
+      // 登録後はお客様リストへ遷移し、新規顧客をその場で確認できるようにする。
+      // 自分が担当（manager_cast_id === 自分）なら担当ビュー、そうでなければ
+      // ヘルプ（担当は別キャスト）として登録したものとしてヘルプビューで開く。
+      if (successListHref) {
+        const scope =
+          lockedCastId && managerId === lockedCastId ? "tantou" : "help";
+        router.push(`${successListHref}?scope=${scope}`);
         return;
       }
       const template =
