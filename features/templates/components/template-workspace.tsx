@@ -1,9 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { Loader2, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Card } from "@/components/nightos/card";
-import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
 import { CustomerContextPicker } from "@/features/ruri-mama/components/customer-context-picker";
 import { AI_FETCH_OPTIONS, apiFetchJson, toUserMessage } from "@/lib/nightos/api-fetch";
 import { useCastId } from "@/lib/nightos/cast-context";
@@ -136,51 +135,88 @@ export function TemplateWorkspace({
         </div>
       )}
 
-      {/* AI personalized template generator */}
+      {/* AI personalized template generator — V5 Bordeaux Salon */}
       {customerId && (
-        <div
-          className="relative overflow-hidden rounded-hero border border-ink/[0.08] shadow-warm p-4 space-y-3"
-          style={{
-            background:
-              "radial-gradient(ellipse at top left, var(--rose-gold-soft) 0%, transparent 55%)," +
-              "radial-gradient(ellipse at bottom right, var(--champagne-soft) 0%, transparent 60%)," +
-              "linear-gradient(180deg, var(--pearl-light) 0%, var(--pearl) 100%)",
-          }}
-        >
-          <div className="flex items-center gap-2.5">
-            <RuriMamaAvatar size={36} />
-            <div className="flex-1">
-              <div className="text-label-xs tracking-luxe text-wine-deep mb-1">
-                さくらママに専用文面を作ってもらう
+        <div className="v5-sakura-surface rounded-hero p-5 flex flex-col gap-4">
+          {/* Header: framed photo + eyebrow */}
+          <div className="flex items-center gap-3.5">
+            <div
+              className="w-12 h-12 rounded-full flex-shrink-0 p-[2px]"
+              style={{
+                background: "var(--v5-champ-gold)",
+                boxShadow: "0 6px 18px rgba(140,111,68,0.30)",
+              }}
+            >
+              <div
+                className="w-full h-full rounded-full overflow-hidden"
+                style={{ border: "1px solid #3A1F1F" }}
+              >
+                <Image
+                  src="/cast/sakura-mama.jpg"
+                  alt="さくらママ"
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="text-label-sm text-ink-soft">
-                この顧客のカルテを見て、ピッタリの一通を提案します
+            </div>
+            <div className="flex-1 min-w-0">
+              <div
+                className="inline-flex items-center gap-1.5 mb-1 font-sans font-medium"
+                style={{
+                  fontSize: 11,
+                  lineHeight: 1,
+                  letterSpacing: "0.32em",
+                  color: "var(--v5-gold-mid)",
+                }}
+              >
+                <Sparkles size={11} strokeWidth={1.8} />
+                <span>さくらママの専用文面</span>
+              </div>
+              <div
+                className="font-serif font-normal v5-metallic"
+                style={{ fontSize: 19, lineHeight: 1.2, letterSpacing: "0.04em" }}
+              >
+                この顧客にピッタリの一通
               </div>
             </div>
           </div>
+
+          <p
+            className="m-0 text-body-sm"
+            style={{ color: "var(--v5-ink-on-dark-soft)", lineHeight: 1.7 }}
+          >
+            前回の話題・ボトル・来店履歴を読んで、選んだカテゴリの文面を提案します。
+          </p>
 
           {!aiTemplate && !loading && (
             <button
               type="button"
               onClick={handleGenerateAi}
-              className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              className="v5-cta-primary w-full inline-flex items-center justify-center gap-1.5 h-11 rounded-pill font-sans font-semibold text-[13px] tracking-[0.04em] active:scale-[0.98] transition"
             >
-              <Sparkles size={16} />
-              <span className="text-label-md font-semibold tracking-[0.04em]">
-                専用文面を作ってもらう
-              </span>
+              <Sparkles size={14} strokeWidth={1.8} className="shrink-0" />
+              専用文面を作ってもらう
             </button>
           )}
 
           {loading && (
-            <div className="flex items-center justify-center gap-2 h-11 text-wine-deep">
+            <div
+              className="flex items-center justify-center gap-2 h-11 text-body-sm"
+              style={{ color: "var(--v5-ink-on-dark-soft)" }}
+            >
               <Loader2 size={16} className="animate-spin" />
-              <span className="text-body-sm">さくらママが考え中…</span>
+              <span>さくらママが考え中…</span>
             </div>
           )}
 
           {error && (
-            <div className="text-body-sm text-wine-deep">{error}</div>
+            <div
+              className="text-body-sm"
+              style={{ color: "var(--v5-ink-on-dark-soft)" }}
+            >
+              {error}
+            </div>
           )}
 
           {aiTemplate && (
@@ -284,7 +320,8 @@ function AiTemplateResult({
         type="button"
         onClick={onRegenerate}
         disabled={regenerating}
-        className="w-full text-label-sm text-gold-deep underline underline-offset-2 disabled:opacity-50"
+        className="w-full text-label-sm underline underline-offset-2 disabled:opacity-50"
+        style={{ color: "var(--v5-gold-on-dark)" }}
       >
         別の文面で作り直す
       </button>
