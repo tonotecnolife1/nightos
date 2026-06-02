@@ -2,15 +2,15 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { HandHelping, Loader2, UserPlus } from "lucide-react";
+import { Loader2, UserPlus } from "lucide-react";
 import type { Cast, Customer } from "@/types/nightos";
 import { Card } from "@/components/nightos/card";
 import { CustomerFilterBar } from "./customer-filter-bar";
 import { CustomerMapView } from "@/features/customer-map/components/customer-map-view";
 import {
-  ViewGroupingToggle,
-  type ViewGrouping,
-} from "@/features/mama-home/components/view-grouping-toggle";
+  CustomerScopeToggle,
+  type CustomerScope,
+} from "./customer-scope-toggle";
 import { loadPriorities, setPriority } from "../lib/priority-store";
 import {
   applyCustomerFilters,
@@ -20,7 +20,7 @@ import {
   type CustomerFilters,
 } from "@/lib/nightos/customer-filters";
 
-const LS_GROUPING = "nightos.customers.grouping";
+const LS_SCOPE = "nightos.customers.scope";
 const LS_FILTERS = "nightos.customers.filters";
 
 interface Props {
@@ -38,7 +38,7 @@ export function CustomerPageShell({
 }: Props) {
   const router = useRouter();
   const [navigating, startNavigation] = useTransition();
-  const [grouping, setGrouping] = useState<ViewGrouping>("customer");
+  const [scope, setScope] = useState<CustomerScope>("tantou");
   const [filters, setFilters] = useState<CustomerFilters>(
     DEFAULT_CUSTOMER_FILTERS,
   );
@@ -47,8 +47,8 @@ export function CustomerPageShell({
 
   useEffect(() => {
     try {
-      const g = localStorage.getItem(LS_GROUPING);
-      if (g === "customer" || g === "cast") setGrouping(g);
+      const s = localStorage.getItem(LS_SCOPE);
+      if (s === "tantou" || s === "help") setScope(s);
     } catch {}
     setFilters(loadFilters(LS_FILTERS));
     setStarred(new Set(Object.keys(loadPriorities(castId))));
@@ -57,10 +57,10 @@ export function CustomerPageShell({
     router.prefetch("/cast/customers/new");
   }, [router, castId]);
 
-  const updateGrouping = (g: ViewGrouping) => {
-    setGrouping(g);
+  const updateScope = (s: CustomerScope) => {
+    setScope(s);
     try {
-      localStorage.setItem(LS_GROUPING, g);
+      localStorage.setItem(LS_SCOPE, s);
     } catch {}
   };
   const updateFilters = (next: CustomerFilters) => {
@@ -96,12 +96,19 @@ export function CustomerPageShell({
     [helpCustomers, filters],
   );
 
+  // 担当: 自分の担当顧客を紹介チェーンで表示。
+  // ヘルプ: ヘルプで入った顧客を担当キャスト別にグルーピングして表示。
+  const isHelp = scope === "help";
+  const activeCustomers = isHelp ? filteredHelpCustomers : filteredMyCustomers;
+  const activeTotal = isHelp ? helpCustomers.length : allMyCustomers.length;
+  const activeMode = isHelp ? "cast" : "customer";
+
   if (!loaded) return null;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <ViewGroupingToggle value={grouping} onChange={updateGrouping} />
+        <CustomerScopeToggle value={scope} onChange={updateScope} />
         <button
           type="button"
           onClick={() => startNavigation(() => router.push("/cast/customers/new"))}
@@ -128,49 +135,24 @@ export function CustomerPageShell({
         onChange={updateFilters}
         managerOptions={managerOptions}
         castOptions={allCasts}
-        totalCount={allMyCustomers.length}
-        filteredCount={filteredMyCustomers.length}
+        totalCount={activeTotal}
+        filteredCount={activeCustomers.length}
       />
 
-      {filteredMyCustomers.length === 0 ? (
+      {activeCustomers.length === 0 ? (
         <Card className="p-8 text-center text-body-sm text-ink-soft">
-          該当する顧客が見つかりません
+          {isHelp
+            ? "ヘルプで入ったお客様はいません"
+            : "該当する顧客が見つかりません"}
         </Card>
       ) : (
         <CustomerMapView
-          customers={filteredMyCustomers}
+          customers={activeCustomers}
           casts={allCasts}
-          mode={grouping}
+          mode={activeMode}
           starredIds={starred}
           onToggleStar={toggleStar}
         />
-      )}
-
-      {helpCustomers.length > 0 && (
-        <div className="space-y-2 pt-2 border-t border-ink/[0.06]">
-          <div className="flex items-center gap-1.5 px-1">
-            <HandHelping size={13} className="text-champagne-dark" />
-            <h3 className="text-label-md text-ink-soft font-medium">
-              ヘルプで入ったお客様
-            </h3>
-            <span className="text-[10px] text-ink-mute ml-auto">
-              {filteredHelpCustomers.length}人
-            </span>
-          </div>
-          {filteredHelpCustomers.length === 0 ? (
-            <Card className="p-6 text-center text-body-sm text-ink-mute">
-              該当する顧客が見つかりません
-            </Card>
-          ) : (
-            <CustomerMapView
-              customers={filteredHelpCustomers}
-              casts={allCasts}
-              mode={grouping}
-              starredIds={starred}
-              onToggleStar={toggleStar}
-            />
-          )}
-        </div>
       )}
     </div>
   );
