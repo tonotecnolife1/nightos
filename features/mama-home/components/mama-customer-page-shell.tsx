@@ -96,6 +96,7 @@ export function MamaCustomerPageShell({ customers, allCasts, visits }: Props) {
           casts={allCasts}
           mode={grouping}
           visits={visits}
+          customerBasePath="/mama/customers"
         />
       )}
     </div>

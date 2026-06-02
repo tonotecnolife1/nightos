@@ -23,6 +23,8 @@ interface Props {
   starredIds?: Set<string>;
   /** 星のオン/オフ切替。未指定なら星ボタン・ピン留め帯を出さない */
   onToggleStar?: (customerId: string) => void;
+  /** 顧客カードの遷移先ベースパス。ロールごとに切り替える (cast: /cast/customers, mama: /mama/customers) */
+  customerBasePath?: string;
 }
 
 // 星の状態とハンドラをツリーの各階層へ配るためのコンテキスト。
@@ -31,6 +33,10 @@ const StarContext = createContext<{
   starred: Set<string>;
   toggle: (id: string) => void;
 } | null>(null);
+
+// 顧客カードの遷移先ベースパスをツリー各階層へ配るコンテキスト。
+// 同じ相関図コンポーネントを cast / mama で共有するため、ロール別のパスを渡せるようにする。
+const CustomerHrefContext = createContext<string>("/cast/customers");
 
 function StarButton({ id }: { id: string }) {
   const ctx = useContext(StarContext);
@@ -83,6 +89,7 @@ export function CustomerMapView({
   visits,
   starredIds,
   onToggleStar,
+  customerBasePath = "/cast/customers",
 }: Props) {
   const ctxValue = useMemo(
     () =>
@@ -104,13 +111,15 @@ export function CustomerMapView({
   }
 
   return (
-    <StarContext.Provider value={ctxValue}>
-      {mode === "customer" ? (
-        <CustomerBasedMap customers={customers} casts={casts} />
-      ) : (
-        <CastBasedMap customers={customers} casts={casts} visits={visits} />
-      )}
-    </StarContext.Provider>
+    <CustomerHrefContext.Provider value={customerBasePath}>
+      <StarContext.Provider value={ctxValue}>
+        {mode === "customer" ? (
+          <CustomerBasedMap customers={customers} casts={casts} />
+        ) : (
+          <CastBasedMap customers={customers} casts={casts} visits={visits} />
+        )}
+      </StarContext.Provider>
+    </CustomerHrefContext.Provider>
   );
 }
 
@@ -326,10 +335,11 @@ function ReferralNodeCard({
     ? castById.get(node.customer.manager_cast_id)
     : null;
   const cast = castById.get(node.customer.cast_id);
+  const basePath = useContext(CustomerHrefContext);
 
   return (
     <Link
-      href={`/cast/customers/${node.customer.id}`}
+      href={`${basePath}/${node.customer.id}`}
       className={cn(
         "block rounded-card bg-pearl-warm border shadow-soft px-3 py-2 active:scale-[0.99] transition-transform",
         isRoot ? "border-gold/30" : "border-pearl-soft",
@@ -524,9 +534,10 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
       : customer.category === "new"
         ? "bg-champagne-soft/60/50 text-gold-deep border-gold/30"
         : "bg-pearl-soft text-ink-soft border-pearl-soft";
+  const basePath = useContext(CustomerHrefContext);
   return (
     <Link
-      href={`/cast/customers/${customer.id}`}
+      href={`${basePath}/${customer.id}`}
       className="flex items-center gap-2 px-2 py-1.5 rounded-btn hover:bg-pearl-soft"
     >
       <StarButton id={customer.id} />
