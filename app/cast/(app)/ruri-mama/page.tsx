@@ -19,7 +19,7 @@ export default async function RuriMamaPage({ searchParams }: Props) {
   const helpCastNames = {};
 
   return (
-    <div className="flex flex-col h-dvh animate-fade-in">
+    <div className="flex flex-col flex-1 min-h-0 animate-fade-in">
       <PageHeader
         title="さくらママ"
         subtitle="銀座30年の経験者"
