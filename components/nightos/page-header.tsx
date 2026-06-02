@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, CalendarDays } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -89,7 +89,7 @@ export function PageHeader({
 
 /**
  * Default right-side actions for cast-area headers.
- * Always-on access to 予定 (1 タップ) and the ☰ menu (全タブ + 設定).
+ * ☰ メニュー (全タブ + 設定) への常時アクセスを提供する。
  *
  * `/store/*` `/mama/*` 配下は別ナビなので、`/cast/*` のときだけ自動付与する
  * （他ロールへの誤導線を防ぐ）。
@@ -98,25 +98,8 @@ function DefaultRightActions({ tone }: { tone: "default" | "ruri" }) {
   const pathname = usePathname() ?? "";
   if (!pathname.startsWith("/cast")) return null;
 
-  const isRuri = tone === "ruri";
-  // スケジュール画面では「予定」ショートカットは現在地そのものなので出さない。
-  const onSchedule = pathname.startsWith("/cast/schedule");
   return (
     <div className="flex items-center gap-1.5">
-      {!onSchedule && (
-        <Link
-          href="/cast/schedule"
-          aria-label="予定"
-          className={cn(
-            "w-9 h-9 rounded-full flex items-center justify-center transition",
-            isRuri
-              ? "bg-white/15 hover:bg-white/25 text-pearl-light"
-              : "bg-pearl-warm/70 hover:bg-pearl-warm text-ink-soft",
-          )}
-        >
-          <CalendarDays size={17} />
-        </Link>
-      )}
       <MoreMenu tone={tone} />
     </div>
   );

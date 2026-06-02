@@ -14,6 +14,15 @@ export interface ExtractedBusinessCard {
   confidence: "high" | "medium" | "low";
 }
 
+/** 反映対象として選べる項目（お名前は必須なので常に反映）。 */
+type SelectableField = "name_kana" | "job" | "store_memo";
+
+const DEFAULT_SELECTED: Record<SelectableField, boolean> = {
+  name_kana: true,
+  job: true,
+  store_memo: true,
+};
+
 interface Props {
   /**
    * 抽出された情報を「適用」ボタンで確定した時に呼ばれる。
@@ -37,12 +46,15 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ExtractedBusinessCard | null>(null);
+  const [selected, setSelected] =
+    useState<Record<SelectableField, boolean>>(DEFAULT_SELECTED);
   const [isStub, setIsStub] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const reset = () => {
     setPreview(null);
     setResult(null);
+    setSelected(DEFAULT_SELECTED);
     setIsStub(false);
     setError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -74,6 +86,11 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           ...AI_FETCH_OPTIONS,
         });
         setResult(data.result);
+        setSelected({
+          name_kana: !!data.result.name_kana,
+          job: !!data.result.job,
+          store_memo: !!data.result.store_memo,
+        });
         setIsStub(data.isStub);
       } catch (err) {
         console.error("[business-card-upload] failed:", err);
@@ -86,9 +103,31 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
   };
 
   const apply = () => {
-    if (!result) return;
-    onApply(result, preview);
+    if (!result || !result.name?.trim()) return;
+    // チェックを外した項目は反映しない（お名前は必須なので常に反映）。
+    onApply(
+      {
+        ...result,
+        name_kana: selected.name_kana ? result.name_kana : null,
+        job: selected.job ? result.job : null,
+        store_memo: selected.store_memo ? result.store_memo : null,
+      },
+      preview,
+    );
     reset();
+  };
+
+  const updateField = (key: keyof ExtractedBusinessCard, value: string) => {
+    const next = value.trim() === "" ? null : value;
+    setResult((prev) => (prev ? { ...prev, [key]: next } : prev));
+    // 空欄に手入力したら、その項目は自動でチェックを付ける。
+    if (next && key !== "name" && key !== "confidence") {
+      setSelected((prev) => ({ ...prev, [key]: true }));
+    }
+  };
+
+  const toggleField = (key: SelectableField) => {
+    setSelected((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const confidenceBadge =
@@ -172,6 +211,9 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
             <span className="text-label-sm text-ink-soft">
               抽出された情報
             </span>
+            <span className="text-[9px] text-ink-mute">
+              （登録する項目を選択・修正できます）
+            </span>
             <span
               className={cn(
                 "text-[9px] px-1.5 py-0.5 rounded-badge border font-medium",
@@ -185,27 +227,56 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
             )}
           </div>
 
-          <div className="space-y-1 text-body-sm bg-pearl-warm rounded-btn border border-pearl-soft px-2.5 py-2">
-            <ResultRow label="お名前" value={result.name} />
-            <ResultRow label="読み仮名" value={result.name_kana} />
-            <ResultRow label="職業" value={result.job} />
-            <ResultRow label="店舗メモ" value={result.store_memo} />
+          <div className="space-y-1.5 bg-pearl-warm rounded-btn border border-pearl-soft px-2.5 py-2.5">
+            <EditableRow
+              label="お名前"
+              value={result.name}
+              onChange={(v) => updateField("name", v)}
+              placeholder="例: 田中 太郎"
+              required
+            />
+            <EditableRow
+              label="読み仮名"
+              value={result.name_kana}
+              onChange={(v) => updateField("name_kana", v)}
+              placeholder="例: たなか たろう"
+              selected={selected.name_kana}
+              onToggle={() => toggleField("name_kana")}
+            />
+            <EditableRow
+              label="職業"
+              value={result.job}
+              onChange={(v) => updateField("job", v)}
+              placeholder="会社名・肩書など"
+              selected={selected.job}
+              onToggle={() => toggleField("job")}
+            />
+            <EditableRow
+              label="店舗メモ"
+              value={result.store_memo}
+              onChange={(v) => updateField("store_memo", v)}
+              placeholder="メモ（任意）"
+              multiline
+              selected={selected.store_memo}
+              onToggle={() => toggleField("store_memo")}
+            />
           </div>
 
-          {!result.name ? (
+          {!result.name?.trim() && (
             <p className="text-[10px] text-wine-deep">
-              お名前が読み取れませんでした。別の写真をお試しください。
+              お名前を入力すると反映できます。読み取れなかった場合は手で入力するか、別の写真をお試しください。
             </p>
-          ) : (
-            <button
-              type="button"
-              onClick={apply}
-              className="w-full h-10 rounded-pill bg-wine-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
-            >
-              <Check size={14} />
-              フォームに反映する
-            </button>
           )}
+
+          <button
+            type="button"
+            onClick={apply}
+            disabled={!result.name?.trim()}
+            className="w-full h-10 rounded-pill bg-wine-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em] disabled:opacity-40 disabled:shadow-none disabled:active:scale-100"
+          >
+            <Check size={14} />
+            フォームに反映する
+          </button>
         </div>
       )}
 
@@ -230,15 +301,65 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
   );
 }
 
-function ResultRow({ label, value }: { label: string; value: string | null }) {
+function EditableRow({
+  label,
+  value,
+  onChange,
+  placeholder,
+  multiline = false,
+  required = false,
+  selected = true,
+  onToggle,
+}: {
+  label: string;
+  value: string | null;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  multiline?: boolean;
+  /** お名前など、常に反映する必須項目。チェックは固定表示。 */
+  required?: boolean;
+  /** この項目を反映するか。required の場合は無視。 */
+  selected?: boolean;
+  onToggle?: () => void;
+}) {
+  const included = required || selected;
+  const fieldClass = cn(
+    "flex-1 min-w-0 rounded-btn border border-pearl-soft bg-pearl-light px-2 py-1.5",
+    "text-body-sm text-ink placeholder:text-ink-mute",
+    "focus:outline-none focus:border-gold/60 focus:ring-1 focus:ring-gold/30",
+    !included && "opacity-50",
+  );
   return (
-    <div className="flex gap-2">
-      <span className="text-[10px] text-ink-mute shrink-0 w-16 pt-0.5">
+    <div className="flex gap-2 items-start">
+      <input
+        type="checkbox"
+        checked={included}
+        disabled={required}
+        onChange={() => onToggle?.()}
+        aria-label={`${label}を登録する`}
+        className="mt-2 w-4 h-4 shrink-0 accent-wine-deep disabled:opacity-60"
+      />
+      <span className="text-[10px] text-ink-mute shrink-0 w-14 pt-2">
         {label}
+        {required && <span className="text-wine-deep">＊</span>}
       </span>
-      <span className="text-ink flex-1 break-words">
-        {value ?? <span className="text-ink-mute">—</span>}
-      </span>
+      {multiline ? (
+        <textarea
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          rows={2}
+          className={cn(fieldClass, "resize-none")}
+        />
+      ) : (
+        <input
+          type="text"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className={fieldClass}
+        />
+      )}
     </div>
   );
 }
