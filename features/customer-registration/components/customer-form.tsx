@@ -46,6 +46,10 @@ const CATEGORY_OPTIONS: { value: CustomerCategory; label: string }[] = [
   { value: "vip", label: "VIP" },
 ];
 
+// 紹介者は必須入力。ただし「紹介なし（直接来店・その他）」も明示的に選べる有効な選択肢。
+// 未選択（プレースホルダ）のままでは登録不可とするため、"紹介なし" には専用の番兵値を使う。
+const NO_REFERRER = "__none__";
+
 // ネイティブ <option> はスタイル指定がないと小さく描画される端末がある。
 // 開いたときのリストでも読めるよう、明示的に文字サイズ・配色・余白を与える。
 const OPTION_STYLE: React.CSSProperties = {
@@ -100,7 +104,7 @@ export function CustomerForm({
     setCategory("new");
     setCastId(defaultCastId);
     setStoreMemo("");
-    setReferrerId("");
+    setReferrerId(initialReferrerId ?? "");
     setManagerId(inferManagerCastId(defaultCastId, casts) ?? "");
     setShowOptional(false);
   };
@@ -121,6 +125,10 @@ export function CustomerForm({
   const submit = () => {
     setError(null);
     setSuccess(null);
+    if (!referrerId) {
+      setError("どなたのご紹介かを選択してください（紹介なしの場合は「紹介なし」を選択）。");
+      return;
+    }
     startTransition(async () => {
       const res = await createCustomerAction({
         name: name.trim(),
@@ -132,7 +140,8 @@ export function CustomerForm({
         category,
         store_memo: storeMemo.trim() || null,
         cast_id: castId,
-        referred_by_customer_id: referrerId || null,
+        referred_by_customer_id:
+          referrerId && referrerId !== NO_REFERRER ? referrerId : null,
         funnel_stage: lockedCastId ? "assigned" : "store_only",
         manager_cast_id: managerId || null,
         region: null,
@@ -322,6 +331,43 @@ export function CustomerForm({
         </div>
       </div>
 
+      {/* 紹介者（必須）— 「紹介なし」も明示的に選べる有効な選択肢 */}
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-2">
+          <Users size={13} className="text-gold-deep" />
+          <label className="text-label-md text-ink font-medium">
+            どなたのご紹介？
+          </label>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-badge bg-wine-deep text-pearl-light font-medium">
+            必須
+          </span>
+        </div>
+        <select
+          value={referrerId}
+          onChange={(e) => setReferrerId(e.target.value)}
+          required
+          className={`w-full h-11 rounded-2xl border bg-pearl-warm px-3 text-body-md text-ink ${
+            referrerId ? "border-ink/[0.06]" : "border-wine-deep/40"
+          }`}
+          style={{ fontSize: "16px" }}
+        >
+          <option value="" disabled style={OPTION_STYLE}>
+            選択してください
+          </option>
+          <option value={NO_REFERRER} style={OPTION_STYLE}>
+            紹介なし（直接来店・その他）
+          </option>
+          {referrerOptions.map((r) => (
+            <option key={r.value} value={r.value} style={OPTION_STYLE}>
+              {r.label}さま
+            </option>
+          ))}
+        </select>
+        <p className="text-[10px] text-ink-muted pl-1">
+          紹介経由でない場合は「紹介なし」を選んでください
+        </p>
+      </div>
+
       {/* AI補完ヒント */}
       <div className="flex items-start gap-2 px-3 py-2.5 rounded-2xl bg-success/5 border border-success/20">
         <Bot size={14} className="text-success mt-0.5 shrink-0" />
@@ -347,27 +393,6 @@ export function CustomerForm({
             onChange={(v) => setBirthday(v)}
           />
 
-          {/* 紹介元 */}
-          {referrerOptions.length > 0 && (
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-1.5">
-                <Users size={13} className="text-gold-deep" />
-                <label className="text-label-md text-ink font-medium">どなたのご紹介？</label>
-              </div>
-              <select
-                value={referrerId}
-                onChange={(e) => setReferrerId(e.target.value)}
-                className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
-                style={{ fontSize: "16px" }}
-              >
-                <option value="" style={OPTION_STYLE}>紹介なし</option>
-                {referrerOptions.map((r) => (
-                  <option key={r.value} value={r.value} style={OPTION_STYLE}>{r.label}さま</option>
-                ))}
-              </select>
-            </div>
-          )}
-
           {/* 気をつけること */}
           <TextAreaInput
             label="気をつけること（任意）"
@@ -392,7 +417,13 @@ export function CustomerForm({
         </div>
       )}
 
-      <Button type="submit" variant="primary" fullWidth size="lg" disabled={pending || !name.trim()}>
+      <Button
+        type="submit"
+        variant="primary"
+        fullWidth
+        size="lg"
+        disabled={pending || !name.trim() || !referrerId}
+      >
         {pending ? "登録中…" : submitLabel ?? "登録する"}
       </Button>
     </form>

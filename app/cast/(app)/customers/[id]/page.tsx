@@ -6,6 +6,7 @@ import { ChangeManagerButton } from "@/features/customer-management/components/c
 import { CustomerHeader } from "@/features/customer-card/components/customer-header";
 import { CustomerInfoSection } from "@/features/customer-card/components/customer-info-section";
 import { CustomerPhotoUpload } from "@/features/customer-card/components/customer-photo-upload";
+import { ReferrerSection } from "@/features/customer-card/components/referrer-section";
 import { LineCommunicationSummary } from "@/features/customer-card/components/line-communication-summary";
 import { LineExchangeButton } from "@/features/customer-card/components/line-exchange-button";
 import { LineHistoryTimeline } from "@/features/customer-card/components/line-history-timeline";
@@ -24,9 +25,9 @@ import {
   resolveApproverCastId,
 } from "@/lib/nightos/customer-relationship";
 import { getCurrentCastId, getCurrentVenueType } from "@/lib/nightos/auth";
-import { mockCustomers } from "@/lib/nightos/mock-data";
 import {
   getAllCasts,
+  getAllCustomers,
   getCustomerContext,
   getScreenshotsForCustomer,
 } from "@/lib/nightos/supabase-queries";
@@ -38,10 +39,11 @@ export default async function CustomerCardPage({
 }) {
   const castId = await getCurrentCastId();
 
-  const [context, allCasts, venueType] = await Promise.all([
+  const [context, allCasts, venueType, allCustomers] = await Promise.all([
     getCustomerContext(castId, params.id),
     getAllCasts(),
     getCurrentVenueType(),
+    getAllCustomers(),
   ]);
   if (!context) notFound();
   const isCabaret = venueType === "cabaret";
@@ -53,9 +55,15 @@ export default async function CustomerCardPage({
   );
 
   const customer = context.customer;
-  const referrer = customer.referred_by_customer_id
-    ? mockCustomers.find((c) => c.id === customer.referred_by_customer_id)
-    : null;
+
+  // 紹介者候補: 自分自身を除く店舗の全顧客（承認者の解決に担当 cast を持たせる）
+  const referrerCandidates = allCustomers
+    .filter((c) => c.id !== customer.id)
+    .map((c) => ({
+      id: c.id,
+      name: c.name,
+      managerCastId: c.manager_cast_id ?? c.cast_id ?? null,
+    }));
 
   // 関係性（マスター / 担当 / ヘルプ）— 編集 vs 提案の分岐に使う
   const relationship = getCustomerRelationship(customer, castId);
@@ -75,20 +83,16 @@ export default async function CustomerCardPage({
         {/* ── Header ─────────────────────────────────── */}
         <CustomerHeader customer={customer} />
 
-        {/* 紹介元 / お連れ様登録（担当・ヘルプの表示は下部の担当セクションに集約） */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {referrer && (
-            <span className="text-[10px] text-ink-mute">
-              ご本人: {referrer.name}さま
-            </span>
-          )}
-          <a
-            href={`/store/customers/new?referrer=${customer.id}`}
-            className="ml-auto text-[10px] text-wine-deep underline underline-offset-2"
-          >
-            + この方のお連れ様として登録
-          </a>
-        </div>
+        {/* 紹介者（表示 + 変更は紹介者の担当の承認が必要） */}
+        <ReferrerSection
+          customerId={customer.id}
+          customerName={customer.name}
+          initialReferrerId={customer.referred_by_customer_id ?? null}
+          candidates={referrerCandidates}
+          allCasts={allCasts}
+          currentCastId={castId}
+          currentCastName={castName}
+        />
 
         <CustomerPhotoUpload
           customerId={customer.id}
