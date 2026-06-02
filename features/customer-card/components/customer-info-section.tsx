@@ -208,20 +208,29 @@ function EditableAttributesCard({
   customer: Customer;
   onEdit: () => void;
 }) {
+  // カード全体をタップ領域にする（呼び名の行と同じく、行の値をタップしても
+  // 編集シートが開くように）。鉛筆アイコンは「編集できる」ことの目印。
   return (
-    <Card className="p-4">
+    <Card
+      role="button"
+      tabIndex={0}
+      onClick={onEdit}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onEdit();
+        }
+      }}
+      aria-label="基本情報を編集"
+      className="p-4 cursor-pointer hover:border-gold/40 transition"
+    >
       <div className="flex items-center justify-between mb-3">
         <span className="text-label-sm font-semibold text-ink-secondary">
           基本情報
         </span>
-        <button
-          type="button"
-          onClick={onEdit}
-          aria-label="編集"
-          className="text-ink-muted hover:text-ink-secondary"
-        >
+        <span className="text-ink-muted" aria-hidden>
           <Pencil size={13} />
-        </button>
+        </span>
       </div>
       <dl className="space-y-2.5">
         <AttrRow label="誕生日" value={formatBirthday(customer.birthday)} />
