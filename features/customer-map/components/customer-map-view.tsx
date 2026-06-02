@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronRight, Crown, User, Users } from "lucide-react";
-import type { Cast, Customer } from "@/types/nightos";
+import { ChevronDown, ChevronRight, Crown, HandHelping, Star, User, Users } from "lucide-react";
+import type { Cast, Customer, Visit } from "@/types/nightos";
 import {
   buildCastBasedTree,
   buildReferralTree,
@@ -17,9 +17,81 @@ interface Props {
   customers: Customer[];
   casts: Cast[];
   mode: "customer" | "cast";
+  /** ヘルプ（cast モード）の多対多バケット導出に使う来店履歴 */
+  visits?: Visit[];
+  /** 星をつけた顧客の id 集合（指定時のみ星 UI を表示） */
+  starredIds?: Set<string>;
+  /** 星のオン/オフ切替。未指定なら星ボタン・ピン留め帯を出さない */
+  onToggleStar?: (customerId: string) => void;
 }
 
-export function CustomerMapView({ customers, casts, mode }: Props) {
+// 星の状態とハンドラをツリーの各階層へ配るためのコンテキスト。
+// （prop drilling を避けるための内部利用）
+const StarContext = createContext<{
+  starred: Set<string>;
+  toggle: (id: string) => void;
+} | null>(null);
+
+function StarButton({ id }: { id: string }) {
+  const ctx = useContext(StarContext);
+  if (!ctx) return null;
+  const active = ctx.starred.has(id);
+  return (
+    <button
+      type="button"
+      aria-label={active ? "星を外す" : "星をつける"}
+      aria-pressed={active}
+      onClick={(e) => {
+        // 親が Link のためデフォルト遷移と伝播を止める
+        e.preventDefault();
+        e.stopPropagation();
+        ctx.toggle(id);
+      }}
+      className="shrink-0 w-7 h-7 -ml-1 flex items-center justify-center rounded-full hover:bg-pearl-soft active:scale-90 transition"
+    >
+      <Star
+        size={14}
+        className={cn(
+          active ? "fill-current text-gold-deep" : "text-ink-mute",
+        )}
+      />
+    </button>
+  );
+}
+
+/** 星をつけた顧客を先頭へ。元の並び順は安定的に保つ。 */
+function sortStarredFirst<T>(
+  items: T[],
+  getId: (item: T) => string,
+  starred: Set<string> | undefined,
+): T[] {
+  if (!starred || starred.size === 0) return items;
+  return items
+    .map((item, idx) => ({ item, idx }))
+    .sort((a, b) => {
+      const sa = starred.has(getId(a.item)) ? 0 : 1;
+      const sb = starred.has(getId(b.item)) ? 0 : 1;
+      return sa - sb || a.idx - b.idx;
+    })
+    .map((x) => x.item);
+}
+
+export function CustomerMapView({
+  customers,
+  casts,
+  mode,
+  visits,
+  starredIds,
+  onToggleStar,
+}: Props) {
+  const ctxValue = useMemo(
+    () =>
+      onToggleStar
+        ? { starred: starredIds ?? new Set<string>(), toggle: onToggleStar }
+        : null,
+    [starredIds, onToggleStar],
+  );
+
   if (customers.length === 0) {
     return (
       <EmptyState
@@ -31,10 +103,14 @@ export function CustomerMapView({ customers, casts, mode }: Props) {
     );
   }
 
-  return mode === "customer" ? (
-    <CustomerBasedMap customers={customers} casts={casts} />
-  ) : (
-    <CastBasedMap customers={customers} casts={casts} />
+  return (
+    <StarContext.Provider value={ctxValue}>
+      {mode === "customer" ? (
+        <CustomerBasedMap customers={customers} casts={casts} />
+      ) : (
+        <CastBasedMap customers={customers} casts={casts} visits={visits} />
+      )}
+    </StarContext.Provider>
   );
 }
 
@@ -51,15 +127,17 @@ function CustomerBasedMap({
 }) {
   const tree = buildReferralTree({ customers, casts });
   const castById = new Map(casts.map((c) => [c.id, c]));
+  const starCtx = useContext(StarContext);
+  const sortedTree = sortStarredFirst(
+    tree,
+    (node) => node.customer.id,
+    starCtx?.starred,
+  );
 
   return (
     <div className="space-y-3">
-      <div className="text-[10px] text-ink-mute px-1">
-        担当グループ {tree.length}件
-      </div>
-
       <div className="space-y-4">
-        {tree.map((node) => (
+        {sortedTree.map((node) => (
           <ReferralTree
             key={node.customer.id}
             node={node}
@@ -257,8 +335,9 @@ function ReferralNodeCard({
         isRoot ? "border-gold/30" : "border-pearl-soft",
       )}
     >
-      {/* 1行目: 名前 + ファネル状態バッジ（担当ありは表示しない） [余白] 紹介元ラベル */}
+      {/* 1行目: 星 + 名前 + ファネル状態バッジ（担当ありは表示しない） [余白] 紹介元ラベル */}
       <div className="flex items-center gap-2 min-w-0">
+        <StarButton id={node.customer.id} />
         <span className="text-body-sm font-semibold text-ink truncate">
           {formatCustomerName(node.customer.name)}
         </span>
@@ -274,13 +353,19 @@ function ReferralNodeCard({
           </span>
         )}
       </div>
-      {/* 2行目: 管理：X、担当：Y、職業 */}
+      {/* 2行目: 担当：X（、ヘルプ：Y）、職業 */}
       <div className="text-[11px] text-ink-soft mt-1 truncate">
-        <span>管理：</span>
-        <span className="text-ink font-medium">{manager?.name ?? "—"}</span>
-        <span className="text-ink-mute">、</span>
         <span>担当：</span>
-        <span className="text-ink font-medium">{cast?.name ?? "—"}</span>
+        <span className="text-ink font-medium">
+          {manager?.name ?? cast?.name ?? "—"}
+        </span>
+        {cast && manager && cast.id !== manager.id && (
+          <>
+            <span className="text-ink-mute">、</span>
+            <span>ヘルプ：</span>
+            <span className="text-ink font-medium">{cast.name}</span>
+          </>
+        )}
         {node.customer.job && (
           <>
             <span className="text-ink-mute">、</span>
@@ -292,18 +377,20 @@ function ReferralNodeCard({
   );
 }
 
-// ═══════════════ Cast-based (manager → cast → customers) ═══════════════
-// Layout: 管理者ごとに上から縦に階層で並べる。
-//         管理者ブロック内で 担当キャスト → 顧客 と更に字下げ。
+// ═══════════════ Cast-based (担当 → ヘルプ → customers) ═══════════════
+// Layout: 担当ごとに上から縦に階層で並べる。
+//         担当ブロック内で ヘルプ → 顧客 と更に字下げ。
 
 function CastBasedMap({
   customers,
   casts,
+  visits,
 }: {
   customers: Customer[];
   casts: Cast[];
+  visits?: Visit[];
 }) {
-  const tree = buildCastBasedTree({ customers, casts });
+  const tree = buildCastBasedTree({ customers, casts, visits });
 
   return (
     <div className="space-y-3">
@@ -324,7 +411,7 @@ function ManagerBlock({
 }) {
   const managerLabel = group.manager
     ? `${group.manager.name}さん`
-    : "管理者未割り当て";
+    : "担当未割り当て";
 
   return (
     <div className="flex flex-col gap-2 rounded-card bg-champagne-soft/60/20 border border-gold/30 p-2.5">
@@ -357,21 +444,42 @@ function ManagerBlock({
 function CastBucket({
   bucket,
 }: {
-  bucket: import("@/lib/nightos/referral-tree").CastBasedNode["byCast"][number];
+  bucket: import("@/lib/nightos/referral-tree").CastBucketNode;
 }) {
   const [expanded, setExpanded] = useState(true);
+  const starCtx = useContext(StarContext);
+  const isHelp = bucket.kind === "help";
   const castLabel = bucket.cast
-    ? `${bucket.cast.name}さん担当`
+    ? `${bucket.cast.name}さん${isHelp ? "ヘルプ" : "担当"}`
     : "担当未割り当て";
+  const sortedCustomers = sortStarredFirst(
+    bucket.customers,
+    (c) => c.id,
+    starCtx?.starred,
+  );
 
   return (
-    <div className="rounded-btn bg-pearl-warm border border-pearl-soft overflow-hidden">
+    <div
+      className={cn(
+        "rounded-btn border overflow-hidden",
+        isHelp
+          ? "bg-champagne/20 border-champagne-dark/30"
+          : "bg-pearl-warm border-pearl-soft",
+      )}
+    >
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-left hover:bg-pearl-soft"
+        className={cn(
+          "w-full flex items-center gap-1.5 px-2.5 py-1.5 text-left",
+          isHelp ? "hover:bg-champagne/30" : "hover:bg-pearl-soft",
+        )}
       >
-        <Users size={11} className="text-wine-deep shrink-0" />
+        {isHelp ? (
+          <HandHelping size={11} className="text-champagne-dark shrink-0" />
+        ) : (
+          <Users size={11} className="text-wine-deep shrink-0" />
+        )}
         <span className="text-[11px] font-medium text-ink flex-1 truncate">
           {castLabel}
         </span>
@@ -388,10 +496,10 @@ function CastBucket({
       {/* Cast → Customer connectors */}
       {expanded && (
         <div className="pl-2 pr-1.5 pb-1.5 pt-1">
-          {bucket.customers.map((c, idx) => (
+          {sortedCustomers.map((c, idx) => (
             <TreeChildWrapper
               key={c.id}
-              isLast={idx === bucket.customers.length - 1}
+              isLast={idx === sortedCustomers.length - 1}
               lineTone="soft"
             >
               <CustomerLeaf customer={c} />
@@ -421,6 +529,7 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
       href={`/cast/customers/${customer.id}`}
       className="flex items-center gap-2 px-2 py-1.5 rounded-btn hover:bg-pearl-soft"
     >
+      <StarButton id={customer.id} />
       <span className="text-[12px] text-ink flex-1 truncate">
         {formatCustomerName(customer.name)}
       </span>

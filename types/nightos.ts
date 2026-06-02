@@ -42,6 +42,10 @@ export interface Cast {
   club_role?: ClubRole;
   /** Club only: the oneesan this help is assigned to */
   assigned_oneesan_id?: string;
+  /** Storage path of the cast's own avatar image in the private
+   *  `cast-avatars` bucket (migration 019). The display layer re-signs
+   *  this into a URL on read. Null/undefined when no avatar is set. */
+  avatar_path?: string | null;
 }
 
 // ═══════════════ Club-specific types ═══════════════
@@ -113,9 +117,10 @@ export interface Customer {
   line_exchanged_at?: string | null;
 
   /**
-   * この顧客を「管理する」ママまたは姉さんの id。
-   * 現場の担当者 (cast_id) とは別概念で、上位ポジション。
-   * 担当者がキャスト(help)なら、管理者はその上の姉さんかママ。
+   * この顧客の「担当」（メインのホステス。地域により係/新地とも呼ぶ）の id。
+   * お客様を店に呼んだ本人で、売上や指名（同伴など）の成績はこの担当につく。
+   * 席についてサポートする現場のホステス (cast_id) が担当と異なる場合、
+   * その cast_id はヘルプとして扱う。
    */
   manager_cast_id?: string | null;
 
@@ -385,6 +390,12 @@ export interface ChatMessage {
    */
   options?: ReplyOption[];
   pickedOptionId?: string;
+  /**
+   * この assistant メッセージ（3案）を生成したときの intent / ヒアリング内容。
+   * 「どれもしっくりこない → 別の3案を作る」導線で同じ文脈から再生成するために保持する。
+   */
+  genIntent?: Intent;
+  genHearing?: Record<string, string>;
 }
 
 export type ReplyOptionStyle = "safe" | "practical" | "warm";

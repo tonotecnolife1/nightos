@@ -2,17 +2,16 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { HandHelping, Loader2, UserPlus } from "lucide-react";
-import type { Cast, Customer, Visit } from "@/types/nightos";
+import { Loader2, UserPlus } from "lucide-react";
+import type { Cast, Customer } from "@/types/nightos";
 import { Card } from "@/components/nightos/card";
 import { CustomerFilterBar } from "./customer-filter-bar";
-import {
-  CustomerViewToggle,
-  type CustomerView,
-} from "./customer-view-toggle";
-import { CustomerPriorityList } from "./customer-priority-list";
-import { SORT_OPTIONS, type SortKey } from "../lib/enrich";
 import { CustomerMapView } from "@/features/customer-map/components/customer-map-view";
+import {
+  CustomerScopeToggle,
+  type CustomerScope,
+} from "./customer-scope-toggle";
+import { loadPriorities, setPriority } from "../lib/priority-store";
 import {
   applyCustomerFilters,
   DEFAULT_CUSTOMER_FILTERS,
@@ -20,18 +19,15 @@ import {
   saveFilters,
   type CustomerFilters,
 } from "@/lib/nightos/customer-filters";
-import { cn } from "@/lib/utils";
 
-const LS_VIEW = "nightos.customers.grouping";
+const LS_SCOPE = "nightos.customers.scope";
 const LS_FILTERS = "nightos.customers.filters";
-const LS_SORT = "nightos.customers.sort";
 
 interface Props {
   castId: string;
   allCasts: Cast[];
   allMyCustomers: Customer[];
   helpCustomers?: Customer[];
-  visits?: Visit[];
 }
 
 export function CustomerPageShell({
@@ -39,47 +35,32 @@ export function CustomerPageShell({
   allCasts,
   allMyCustomers,
   helpCustomers = [],
-  visits = [],
 }: Props) {
   const router = useRouter();
   const [navigating, startNavigation] = useTransition();
-  const [view, setView] = useState<CustomerView>("priority");
-  const [sortKey, setSortKey] = useState<SortKey>("priority");
+  const [scope, setScope] = useState<CustomerScope>("tantou");
   const [filters, setFilters] = useState<CustomerFilters>(
     DEFAULT_CUSTOMER_FILTERS,
   );
+  const [starred, setStarred] = useState<Set<string>>(new Set());
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     try {
-      const g = localStorage.getItem(LS_VIEW);
-      if (g === "customer" || g === "cast" || g === "priority") setView(g);
-      const s = localStorage.getItem(LS_SORT);
-      if (
-        s === "priority" ||
-        s === "daysSince" ||
-        s === "visitCount" ||
-        s === "recentVisits" ||
-        s === "name"
-      )
-        setSortKey(s);
+      const s = localStorage.getItem(LS_SCOPE);
+      if (s === "tantou" || s === "help") setScope(s);
     } catch {}
     setFilters(loadFilters(LS_FILTERS));
+    setStarred(new Set(Object.keys(loadPriorities(castId))));
     setLoaded(true);
     // 「新規」ボタンの遷移先を先読みして体感速度を確保（Link の prefetch 相当）
     router.prefetch("/cast/customers/new");
-  }, [router]);
+  }, [router, castId]);
 
-  const updateView = (g: CustomerView) => {
-    setView(g);
+  const updateScope = (s: CustomerScope) => {
+    setScope(s);
     try {
-      localStorage.setItem(LS_VIEW, g);
-    } catch {}
-  };
-  const updateSort = (s: SortKey) => {
-    setSortKey(s);
-    try {
-      localStorage.setItem(LS_SORT, s);
+      localStorage.setItem(LS_SCOPE, s);
     } catch {}
   };
   const updateFilters = (next: CustomerFilters) => {
@@ -87,10 +68,23 @@ export function CustomerPageShell({
     saveFilters(LS_FILTERS, next);
   };
 
-  const managerOptions = useMemo(
-    () => allCasts,
-    [allCasts],
-  );
+  // 星のオン/オフ。priority-store を「星 = 優先度1 / なし = 0」として流用し
+  // キャストごとに localStorage 保存する。
+  const toggleStar = (customerId: string) => {
+    setStarred((prev) => {
+      const next = new Set(prev);
+      if (next.has(customerId)) {
+        next.delete(customerId);
+        setPriority(castId, customerId, 0);
+      } else {
+        next.add(customerId);
+        setPriority(castId, customerId, 1);
+      }
+      return next;
+    });
+  };
+
+  const managerOptions = useMemo(() => allCasts, [allCasts]);
 
   const filteredMyCustomers = useMemo(
     () => applyCustomerFilters(allMyCustomers, filters),
@@ -102,16 +96,19 @@ export function CustomerPageShell({
     [helpCustomers, filters],
   );
 
+  // 担当: 自分の担当顧客を紹介チェーンで表示。
+  // ヘルプ: ヘルプで入った顧客を担当キャスト別にグルーピングして表示。
+  const isHelp = scope === "help";
+  const activeCustomers = isHelp ? filteredHelpCustomers : filteredMyCustomers;
+  const activeTotal = isHelp ? helpCustomers.length : allMyCustomers.length;
+  const activeMode = isHelp ? "cast" : "customer";
+
   if (!loaded) return null;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <CustomerViewToggle
-          value={view}
-          onChange={updateView}
-          showHelp={helpCustomers.length > 0}
-        />
+        <CustomerScopeToggle value={scope} onChange={updateScope} />
         <button
           type="button"
           onClick={() => startNavigation(() => router.push("/cast/customers/new"))}
@@ -138,79 +135,24 @@ export function CustomerPageShell({
         onChange={updateFilters}
         managerOptions={managerOptions}
         castOptions={allCasts}
-        totalCount={allMyCustomers.length}
-        filteredCount={filteredMyCustomers.length}
+        totalCount={activeTotal}
+        filteredCount={activeCustomers.length}
       />
 
-      {view === "priority" && (
-        <div className="flex gap-1.5 overflow-x-auto pb-0.5">
-          {SORT_OPTIONS.map((o) => (
-            <button
-              key={o.value}
-              type="button"
-              onClick={() => updateSort(o.value)}
-              className={cn(
-                "shrink-0 h-7 px-3 rounded-pill text-[11px] font-medium whitespace-nowrap transition active:scale-95",
-                sortKey === o.value
-                  ? "bg-wine-deep text-pearl-light"
-                  : "bg-pearl-warm text-ink-soft border border-pearl-soft",
-              )}
-            >
-              {o.label}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {filteredMyCustomers.length === 0 ? (
+      {activeCustomers.length === 0 ? (
         <Card className="p-8 text-center text-body-sm text-ink-soft">
-          該当する顧客が見つかりません
+          {isHelp
+            ? "ヘルプで入ったお客様はいません"
+            : "該当する顧客が見つかりません"}
         </Card>
-      ) : view === "priority" ? (
-        <CustomerPriorityList
-          castId={castId}
-          customers={filteredMyCustomers}
-          visits={visits}
-          sortKey={sortKey}
-        />
       ) : (
         <CustomerMapView
-          customers={filteredMyCustomers}
+          customers={activeCustomers}
           casts={allCasts}
-          mode={view}
+          mode={activeMode}
+          starredIds={starred}
+          onToggleStar={toggleStar}
         />
-      )}
-
-      {helpCustomers.length > 0 && (
-        <div className="space-y-2 pt-2 border-t border-ink/[0.06]">
-          <div className="flex items-center gap-1.5 px-1">
-            <HandHelping size={13} className="text-champagne-dark" />
-            <h3 className="text-label-md text-ink-soft font-medium">
-              ヘルプで入ったお客様
-            </h3>
-            <span className="text-[10px] text-ink-mute ml-auto">
-              {filteredHelpCustomers.length}人
-            </span>
-          </div>
-          {filteredHelpCustomers.length === 0 ? (
-            <Card className="p-6 text-center text-body-sm text-ink-mute">
-              該当する顧客が見つかりません
-            </Card>
-          ) : view === "priority" ? (
-            <CustomerPriorityList
-              castId={castId}
-              customers={filteredHelpCustomers}
-              visits={visits}
-              sortKey={sortKey}
-            />
-          ) : (
-            <CustomerMapView
-              customers={filteredHelpCustomers}
-              casts={allCasts}
-              mode={view}
-            />
-          )}
-        </div>
       )}
     </div>
   );

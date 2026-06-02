@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Share2, X } from "lucide-react";
+import { Download, Share, PlusSquare, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   captureInstallPrompt,
@@ -8,15 +8,18 @@ import {
   getInstallPrompt,
   isInstalledPwa,
   isIosSafari,
+  isIosInAppBrowser,
 } from "@/lib/nightos/pwa";
 
 const DISMISS_KEY = "nightos.install-prompt.dismissed-at";
 const DISMISS_DAYS = 30;
 const SHOW_DELAY_MS = 3000;
 
+type IosMode = null | "safari" | "inapp";
+
 export function InstallPrompt() {
   const [ready, setReady] = useState(false);
-  const [showIosHint, setShowIosHint] = useState(false);
+  const [iosMode, setIosMode] = useState<IosMode>(null);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
@@ -38,8 +41,18 @@ export function InstallPrompt() {
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
 
-    if (isIosSafari()) {
-      const t = window.setTimeout(() => setShowIosHint(true), SHOW_DELAY_MS);
+    // iOS provides no programmatic install API (beforeinstallprompt is
+    // Chrome/Android only). "ホーム画面に追加" lives ONLY in Safari's own
+    // toolbar Share button — it is NOT in the navigator.share() sheet, and
+    // it does not exist at all inside in-app browsers (LINE / Instagram).
+    // So we show platform-accurate guidance instead of a misleading button.
+    const mode: IosMode = isIosSafari()
+      ? "safari"
+      : isIosInAppBrowser()
+        ? "inapp"
+        : null;
+    if (mode) {
+      const t = window.setTimeout(() => setIosMode(mode), SHOW_DELAY_MS);
       return () => {
         clearTimeout(t);
         window.removeEventListener("beforeinstallprompt", onPrompt);
@@ -53,7 +66,7 @@ export function InstallPrompt() {
     localStorage.setItem(DISMISS_KEY, String(Date.now()));
     clearInstallPrompt();
     setReady(false);
-    setShowIosHint(false);
+    setIosMode(null);
     setDismissed(true);
   };
 
@@ -67,20 +80,6 @@ export function InstallPrompt() {
       setReady(false);
     } else {
       dismiss();
-    }
-  };
-
-  // iOS Safari: navigator.share() opens the native share sheet where the user
-  // can tap "ホーム画面に追加". This is the closest iOS allows programmatically.
-  const shareToInstall = async () => {
-    if (typeof navigator === "undefined" || !navigator.share) return;
-    try {
-      await navigator.share({
-        title: "NIGHTOS",
-        url: window.location.origin,
-      });
-    } catch {
-      // user cancelled share sheet — ignore
     }
   };
 
@@ -109,25 +108,41 @@ export function InstallPrompt() {
     );
   }
 
-  if (showIosHint) {
+  if (iosMode === "safari") {
     return (
-      <PromptCard onDismiss={dismiss} onAction={shareToInstall}>
+      <PromptCard onDismiss={dismiss}>
         <div className="flex-1 min-w-0">
           <div className="text-body-sm font-medium text-ink">
             ホーム画面に追加
           </div>
-          <p className="text-[11px] text-ink-muted mt-0.5 leading-relaxed">
-            「共有」→「ホーム画面に追加」をタップしてください
+          <p className="text-[11px] text-ink-muted mt-1 leading-relaxed">
+            画面下の
+            <Share size={12} className="inline-block mx-1 -mt-0.5 align-middle text-wine-deep" />
+            （共有）を押して、
+            <span className="inline-flex items-center gap-0.5 mx-0.5 align-middle font-medium text-ink">
+              <PlusSquare size={12} className="-mt-0.5" />
+              ホーム画面に追加
+            </span>
+            を選んでください。
           </p>
         </div>
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); void shareToInstall(); }}
-          className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-pill bg-wine-deep text-pearl-light text-[12px] font-medium shadow-soft hover:brightness-[1.02] transition"
-        >
-          <Share2 size={12} />
-          共有
-        </button>
+      </PromptCard>
+    );
+  }
+
+  if (iosMode === "inapp") {
+    return (
+      <PromptCard onDismiss={dismiss}>
+        <div className="flex-1 min-w-0">
+          <div className="text-body-sm font-medium text-ink">
+            Safari で開いてください
+          </div>
+          <p className="text-[11px] text-ink-muted mt-1 leading-relaxed">
+            このアプリ内ブラウザではホーム画面に追加できません。右上のメニューから
+            <span className="font-medium text-ink">「Safariで開く」</span>
+            を選んでから追加してください。
+          </p>
+        </div>
       </PromptCard>
     );
   }
@@ -146,7 +161,7 @@ function PromptCard({
 }) {
   return (
     <div
-      className="fixed left-3 right-3 z-50 mx-auto max-w-md rounded-card border border-gold/30 bg-pearl-warm/95 backdrop-blur-md p-3 shadow-warm cursor-pointer"
+      className={`fixed left-3 right-3 z-50 mx-auto max-w-md rounded-card border border-gold/30 bg-pearl-warm/95 backdrop-blur-md p-3 shadow-warm${onAction ? " cursor-pointer" : ""}`}
       style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 4.5rem)" }}
       role="dialog"
       aria-label="アプリのインストール"

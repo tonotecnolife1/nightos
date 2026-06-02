@@ -249,7 +249,7 @@ export function FollowTargetCard({
               <div className="flex-1" />
             )}
             <Link
-              href={`/cast/ruri-mama?customerId=${customer.id}`}
+              href={`/cast/ruri-mama?customerId=${customer.id}&compose=1`}
               className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-pill text-[12px] font-medium tracking-[0.04em] border border-wine-deep bg-transparent text-wine-deep active:scale-[0.98] transition-transform"
               onClick={(e) => e.stopPropagation()}
             >

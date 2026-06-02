@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { StoreTabBar } from "@/components/nightos/store-tab-bar";
+import { PlanBanner } from "@/components/nightos/plan-banner";
 import {
   getCurrentCast,
   getCurrentRole,
@@ -33,7 +34,10 @@ export default async function StoreLayout({
 
   return (
     <div className="bg-pearl min-h-dvh">
-      <div className="mx-auto max-w-[520px] min-h-dvh pb-28">{children}</div>
+      <div className="mx-auto max-w-[520px] min-h-dvh pb-28">
+        <PlanBanner />
+        {children}
+      </div>
       <StoreTabBar />
     </div>
   );

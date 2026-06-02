@@ -12,6 +12,8 @@ interface Props {
   data: CastHomeData;
   storeMessages: { id: string; message: string; sent_at: string }[];
   customers: Customer[];
+  /** 未読通知の件数 (店舗メッセージ + 直近の来店)。メニューのバッジに出す。 */
+  notificationCount: number;
 }
 
 function formatDateLabel(date: Date): string {
@@ -19,10 +21,13 @@ function formatDateLabel(date: Date): string {
   return `${date.getMonth() + 1}月${date.getDate()}日 (${days[date.getDay()]})`;
 }
 
-export function CastHomeCabaret({ data, storeMessages }: Props) {
+export function CastHomeCabaret({
+  data,
+  storeMessages,
+  notificationCount,
+}: Props) {
   const repeatPct = Math.round(data.summary.repeatRate * 100);
   const dateLabel = formatDateLabel(new Date());
-  const hasNotification = storeMessages.length > 0;
 
   return (
     <div className="relative min-h-screen bg-pearl pb-28">
@@ -32,7 +37,7 @@ export function CastHomeCabaret({ data, storeMessages }: Props) {
         castId={data.cast.id}
         customers={[]}
         dateLabel={dateLabel}
-        hasNotification={hasNotification}
+        notificationCount={notificationCount}
       />
 
       <main className="px-5 flex flex-col gap-6">

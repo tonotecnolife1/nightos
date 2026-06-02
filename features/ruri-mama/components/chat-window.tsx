@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Info, PanelLeftOpen, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Info, PanelLeftOpen, Plus, Sparkles } from "lucide-react";
 import { useCastId } from "@/lib/nightos/cast-context";
 import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 import { detectIntent } from "@/lib/nightos/intent-detector";
@@ -13,6 +13,7 @@ import {
   saveSession,
   type ChatSession,
 } from "../lib/chat-session-store";
+import { pullChatSessions } from "../lib/chat-sync";
 import { ChatHistorySidebar } from "./chat-history-sidebar";
 import { takeStatsConsultHandoff } from "@/lib/nightos/stats-consult-store";
 import { ChatInput } from "./chat-input";
@@ -23,12 +24,13 @@ import { FeedbackButtons } from "./feedback-buttons";
 import { IntentPicker } from "./intent-picker";
 import { MessageBubble } from "./message-bubble";
 import {
-  PickedOptionBadge,
+  PickedOptionCard,
   RefineTriggerButton,
   ReplyOptionPicker,
 } from "./reply-option-picker";
 import { RefineDirectionPicker } from "./refine-direction-picker";
 import { recordChoice } from "../lib/option-choice-store";
+import { sanitizeStoredMessages } from "../lib/sanitize-messages";
 import type { RefineDirection } from "../data/refine-directions";
 import type {
   ChatMessage,
@@ -48,8 +50,12 @@ function loadStoredMessages(castId: string): ChatMessage[] | null {
   try {
     const raw = window.localStorage.getItem(`${STORAGE_KEY_PREFIX}.${castId}`);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as ChatMessage[];
-    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+    // JSON.parse はできても「描画すると落ちる」壊れたメッセージが
+    // 混ざっていることがある（古い版の形 / 不正な画像 src 等）。
+    // ここで安全な形だけに正規化してから返す。これをしないと壊れた
+    // 1 件がエラーバウンダリに落ち、リロードしても同じデータで再発する。
+    const parsed = sanitizeStoredMessages(JSON.parse(raw));
+    if (parsed.length === 0) return null;
     return parsed;
   } catch {
     return null;
@@ -83,10 +89,38 @@ function clearStoredMessages(castId: string) {
   }
 }
 
+// ── 進行中セッションの id 永続化 ──
+// 会話本文（上の message buffer）はリロードを跨いで復元されるが、
+// セッション id を保存していないと復元のたびに新しい id が振られ、
+// 同じ相談が履歴に二重登録されてしまう。本文とセットで id も保存し、
+// 復元時は同じ id を引き継いで履歴を上書き更新する。
+const SESSION_ID_KEY_PREFIX = "nightos.chat-sid";
+
+function loadStoredSessionId(castId: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage.getItem(`${SESSION_ID_KEY_PREFIX}.${castId}`);
+  } catch {
+    return null;
+  }
+}
+
+function saveSessionIdToStorage(castId: string, sessionId: string) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(`${SESSION_ID_KEY_PREFIX}.${castId}`, sessionId);
+  } catch {
+    // ignore quota errors
+  }
+}
+
 interface Props {
   customers: Customer[];
   helpCastNames?: Record<string, string>;
   initialCustomerId?: string;
+  /** 「文面を作る」から来た時 true。過去の会話を復元せず、LINE 連絡前提の
+   *  新規セッション（follow ヒアリング）を即開始する。 */
+  initialCompose?: boolean;
   initialIsStubMode?: boolean;
 }
 
@@ -122,6 +156,7 @@ export function ChatWindow({
   customers,
   helpCastNames = {},
   initialCustomerId,
+  initialCompose = false,
   initialIsStubMode = false,
 }: Props) {
   const castId = useCastId();
@@ -173,25 +208,57 @@ export function ChatWindow({
   }, [phase, messages, selectedCustomerId, customers, currentSessionId]);
 
   // On mount, restore persisted chat history (if any) + 成績ページからの
-  // 引き継ぎ (handoff) があれば会話の続きとして追記する。
+  // 引き継ぎ (handoff) を処理する。
   useEffect(() => {
-    const stored = loadStoredMessages(castId);
-    const handoff = takeStatsConsultHandoff(castId);
-    let base: ChatMessage[] = [GREETING];
-    if (stored && stored.length > 0) {
-      base = [GREETING, ...stored];
+    // 「文面を作る」から来た場合は過去の会話を復元しない。
+    // LINE 連絡前提の新規セッションを起こし、follow ヒアリングを即開始する。
+    // （復元してしまうと過去の相談セッションに着地してしまうため）
+    if (initialCompose) {
+      clearStoredMessages(castId);
+      const customerName = initialCustomerId
+        ? customers.find((c) => c.id === initialCustomerId)?.name ?? null
+        : null;
+      const subject = customerName ? `${customerName}さま` : "お客様";
+      setMessages([
+        {
+          role: "assistant",
+          content: `${subject}へのLINE、一緒に考えましょう。\nまずは下からいくつか教えてね。`,
+        },
+      ]);
+      setPhase({
+        name: "hearing",
+        intent: "follow",
+        flow: HEARING_FLOWS.follow,
+        step: 0,
+        answers: {},
+      });
+      setHistoryLoaded(true);
+      return;
     }
+    const handoff = takeStatsConsultHandoff(castId);
     if (handoff) {
-      // 成績の分析を会話として持ち込み、そのまま相談を続けられるようにする
-      base = [
-        ...base,
+      // 成績ページの「もっと相談する」は、必ず新しいセッションとして開始する。
+      // 以前の会話バッファに追記すると別の話題が混ざって管理しづらいため、
+      // 進行中の会話は履歴 (nightos.chat-sessions) に保存済みなのでそちらに残し、
+      // 現在の会話バッファはクリアして、新しいセッション id で分析だけを持ち込む。
+      clearStoredMessages(castId);
+      setCurrentSessionId(newSessionId());
+      setMessages([
+        GREETING,
         { role: "user", content: handoff.userText },
         { role: "assistant", content: handoff.assistantReply },
-      ];
-      setMessages(base);
+      ]);
       setPhase({ name: "responded" });
-    } else if (stored && stored.length > 0) {
-      setMessages(base);
+      setHistoryLoaded(true);
+      return;
+    }
+    const stored = loadStoredMessages(castId);
+    if (stored && stored.length > 0) {
+      // 復元する会話には、それを保存した時と同じセッション id を引き継ぐ。
+      // これがないとリロードのたびに新しい id になり履歴が重複する。
+      const storedSid = loadStoredSessionId(castId);
+      if (storedSid) setCurrentSessionId(storedSid);
+      setMessages([GREETING, ...stored]);
       // If the last persisted message was an assistant reply, mark as
       // "responded" so the cast can immediately tap "新しい相談" or
       // continue typing
@@ -203,11 +270,26 @@ export function ChatWindow({
     setHistoryLoaded(true);
   }, []);
 
+  // On mount, hydrate 相談履歴 from the server so the same account stays
+  // consistent across devices (PC で相談 → スマホでも見える)。mock/未認証
+  // では no-op。マージ結果（ローカル∪サーバー）で履歴一覧を更新する。
+  useEffect(() => {
+    let cancelled = false;
+    void pullChatSessions().then((merged) => {
+      if (!cancelled && merged) setHistorySessions(merged);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Save on every change after the initial restore
   useEffect(() => {
     if (!historyLoaded) return;
     saveMessagesToStorage(castId, messages);
-  }, [messages, historyLoaded]);
+    // 会話本文と一緒に現在のセッション id も保存しておく（リロード復元用）。
+    saveSessionIdToStorage(castId, currentSessionId);
+  }, [messages, historyLoaded, currentSessionId]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -215,13 +297,6 @@ export function ChatWindow({
       behavior: "smooth",
     });
   }, [messages, phase]);
-
-  const handleClearHistory = () => {
-    if (!confirm("これまでの相談履歴を全部削除しますか？")) return;
-    clearStoredMessages(castId);
-    setMessages([GREETING]);
-    setPhase({ name: "intent-pick" });
-  };
 
   // ─────────────────────────────────────────────────────────────
   // 相談履歴サイドバー（ChatGPT / Claude 風）
@@ -237,6 +312,10 @@ export function ChatWindow({
   const handleOpenSidebar = () => {
     refreshHistory();
     setSidebarOpen(true);
+    // 開くタイミングでもサーバーから最新を取りに行き、戻ったら一覧を更新。
+    void pullChatSessions().then((merged) => {
+      if (merged) setHistorySessions(merged);
+    });
   };
 
   /** 過去のセッションを読み込み、その続きから相談できる状態にする。 */
@@ -305,6 +384,8 @@ export function ChatWindow({
           content: data.reply,
           isStub: data.isStub,
           options: data.options && data.options.length >= 2 ? data.options : undefined,
+          genIntent: intent,
+          genHearing: hearingContext,
         },
       ]);
       setPhase({ name: "responded" });
@@ -392,6 +473,8 @@ export function ChatWindow({
           content: data.reply,
           isStub: data.isStub,
           options: data.options && data.options.length >= 2 ? data.options : undefined,
+          genIntent: "freeform",
+          genHearing: {},
         },
       ]);
       setPhase({ name: "responded" });
@@ -406,6 +489,23 @@ export function ChatWindow({
       ]);
       setPhase({ name: "responded" });
     }
+  };
+
+  /**
+   * 「3案どれもしっくりこない → 別の3案を作る」導線。
+   * その案を生成した時と同じ intent / ヒアリング文脈のまま、
+   * 「違う切り口で」と添えて再生成する。
+   */
+  const handleRequestMore = (messageIndex: number) => {
+    if (phase.name === "loading") return;
+    const src = messages[messageIndex];
+    const intent: Intent = src?.genIntent ?? "freeform";
+    const hearing = src?.genHearing ?? {};
+    sendNewMessage(
+      "うーん、この3つはどれもしっくりこないかも。違う切り口で、別の3案を出してくれる？",
+      intent,
+      hearing,
+    );
   };
 
   /** Adds a NEW user message, then fires the API call with the updated history. */
@@ -628,12 +728,13 @@ export function ChatWindow({
                 <ReplyOptionPicker
                   options={m.options!}
                   onPick={(opt) => handleOptionPick(i, opt)}
+                  onRequestMore={() => handleRequestMore(i)}
                 />
+              ) : pickedOpt ? (
+                // 選択確定後も選択前と同じカードUIを維持（フラットなバブルにしない）
+                <PickedOptionCard option={pickedOpt} />
               ) : (
-                <>
-                  {pickedOpt && <PickedOptionBadge option={pickedOpt} />}
-                  <MessageBubble message={m} />
-                </>
+                <MessageBubble message={m} />
               )}
 
               {/* Inline customer picker — shown below the very first greeting
@@ -689,6 +790,7 @@ export function ChatWindow({
 
         {currentHearingStep && (
           <ChipOptions
+            key={currentHearingStep.id}
             question={currentHearingStep.question}
             options={currentHearingStep.options}
             onPick={handleChipPick}
@@ -713,16 +815,6 @@ export function ChatWindow({
               <Plus size={14} />
               新しい相談を始める
             </button>
-            {messages.length > 3 && (
-              <button
-                type="button"
-                onClick={handleClearHistory}
-                className="flex items-center gap-1 text-label-sm text-ink-mute hover:text-wine-deep underline underline-offset-2"
-              >
-                <Trash2 size={11} />
-                履歴を全部クリアする
-              </button>
-            )}
           </div>
         )}
       </div>
@@ -763,21 +855,25 @@ function synthesizeIntentText(
 
   if (intent === "follow") {
     const purpose = answers.purpose ?? "メッセージ";
-    const moodLabel: Record<string, string> = {
-      盛り上がった: "前回は盛り上がった様子でした。",
-      落ち着いた: "前回は落ち着いた感じでした。",
-      元気なかった: "前回は少し元気がない様子でした。",
-      覚えてない: "前回の様子は覚えていません。",
+    const relationshipLabel: Record<string, string> = {
+      来たばかりの新規: "まだ来たばかりの新規の方です。",
+      育てたい常連候補: "これから常連にしたい育成中の方です。",
+      通ってくれる常連: "通ってくれている常連の方です。",
+      "VIP・太客": "VIP・太客の方です。",
+      しばらく来てない: "しばらく足が遠のいている方です。",
     };
-    const toneLabel: Record<string, string> = {
-      親しみやすく: "親しみやすいトーンで送りたいです。",
-      丁寧に: "丁寧なトーンで送りたいです。",
-      甘えた感じ: "少し甘えた感じで送りたいです。",
-      お任せ: "トーンはお任せします。",
+    const hookLabel: Record<string, string> = {
+      仕事の話: "前回は仕事の話で盛り上がりました。",
+      "趣味・遊び": "前回は趣味や遊びの話で盛り上がりました。",
+      "お酒・グルメ": "前回はお酒やグルメの話で盛り上がりました。",
+      "家族・プライベート": "前回は家族やプライベートの話で盛り上がりました。",
+      特になし: "これといった話のネタは思い出せません。",
     };
-    const mood = answers.mood ? (moodLabel[answers.mood] ?? "") : "";
-    const tone = answers.tone ? (toneLabel[answers.tone] ?? "") : "";
-    return `${subject}に「${purpose}」のLINEを送りたいです。${mood}${tone}`.trim();
+    const relationship = answers.relationship
+      ? (relationshipLabel[answers.relationship] ?? "")
+      : "";
+    const hook = answers.hook ? (hookLabel[answers.hook] ?? "") : "";
+    return `${subject}に「${purpose}」のLINEを送りたいです。${relationship}${hook}`.trim();
   }
 
   if (intent === "serving") {

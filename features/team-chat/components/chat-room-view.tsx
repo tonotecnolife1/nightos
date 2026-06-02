@@ -3,17 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
+  Bookmark,
   BookOpen,
   Check,
   Clock,
-  Copy,
   Loader2,
   MessageCircle,
-  MoreHorizontal,
   Pencil,
   Search,
   Sparkles,
-  Trash2,
   User,
   UserPlus,
   X,
@@ -29,9 +27,24 @@ import {
   setRoomPin,
   type RoomCustomerPin,
 } from "@/lib/nightos/chat-room-pin-store";
+import {
+  getRoomName,
+  setRoomName,
+} from "@/lib/nightos/chat-room-name-store";
+import {
+  getPinnedIds,
+  subscribePins,
+} from "@/lib/nightos/chat-pin-store";
 import type { ChatAttachment, ChatMessage, ChatRoom } from "../types";
-import { ChatComposer, type ComposerPayload } from "./chat-composer";
+import { ChatComposer, type ComposerPayload, type MentionMember } from "./chat-composer";
+import { GroupNameModal } from "./group-name-modal";
 import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
+import { MessagePinSheet } from "./message-pin-sheet";
+import {
+  type AnchorRect,
+  MessageActionSheet,
+  PartialCopyModal,
+} from "./message-action-sheet";
 import {
   type MentionCustomer,
   detectCustomer,
@@ -80,12 +93,42 @@ export function ChatRoomView({
   >({});
   const [pin, setPin] = useState<RoomCustomerPin | null>(null);
   const [pinPickerOpen, setPinPickerOpen] = useState(false);
+  const [nameOverride, setNameOverride] = useState<string | null>(null);
+  const [nameEditOpen, setNameEditOpen] = useState(false);
+  const [pinSheetFor, setPinSheetFor] = useState<ChatMessage | null>(null);
+  const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
+  // LINE風の長押しメニュー対象（canReply はスレッド内かどうかで切替）。
+  // anchor は長押しした吹き出しの画面上の矩形（メニューの配置に使う）。
+  const [actionFor, setActionFor] = useState<{
+    msg: ChatMessage;
+    canReply: boolean;
+    anchor: AnchorRect;
+  } | null>(null);
+  const [partialCopyFor, setPartialCopyFor] = useState<string | null>(null);
+  const [copiedToast, setCopiedToast] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Load the room's pinned customer (mechanism C) on mount / room change.
+  // Load the room's pinned customer (mechanism C) and any custom name on
+  // mount / room change.
   useEffect(() => {
     setPin(getRoomPin(room.id));
+    setNameOverride(getRoomName(room.id));
   }, [room.id]);
+
+  // Track which messages are kept (these collect in the キープ tab).
+  useEffect(() => {
+    const refresh = () => setPinnedIds(getPinnedIds());
+    refresh();
+    return subscribePins(refresh);
+  }, []);
+
+  // 同室の関係者（自分以外のメンバー）— @メンション候補に使う。
+  const members: MentionMember[] = room.member_ids
+    .map((id, i) => ({ id, name: room.member_names[i] ?? id }))
+    .filter((m) => m.id !== currentCastId);
+
+  // 本文中の @メンション（さくらママ / 関係者）をチップ表示するための名前一覧。
+  const mentionNames = members.map((m) => m.name);
 
   const customerName = (id: string) =>
     customers.find((c) => c.id === id)?.name ?? "お客様";
@@ -100,10 +143,10 @@ export function ChatRoomView({
     const note =
       payload.text.replace(/@\S+\s?/g, "").trim() || payload.text.trim();
 
-    // 対象顧客を特定: 明示メンション → 受動検出（本文の名前）→ ルームのピン。
-    let customerId = payload.customerId ?? null;
+    // 対象顧客を特定: 受動検出（本文の名前）→ ルームのピン。
+    let customerId: string | null = null;
     let candidates: MentionCustomer[] = [];
-    if (!customerId && payload.text.trim()) {
+    if (payload.text.trim()) {
       const detected = detectCustomer(customers, payload.text);
       if (detected) {
         customerId = detected.customer.id;
@@ -260,7 +303,13 @@ export function ChatRoomView({
 
   const handleCopy = (msg: ChatMessage) => {
     if (typeof navigator === "undefined" || !navigator.clipboard) return;
-    navigator.clipboard.writeText(msg.content).catch(() => {});
+    navigator.clipboard
+      .writeText(msg.content)
+      .then(() => {
+        setCopiedToast(true);
+        setTimeout(() => setCopiedToast(false), 1500);
+      })
+      .catch(() => {});
   };
 
   // Auto scroll to bottom
@@ -286,15 +335,24 @@ export function ChatRoomView({
     return () => clearTimeout(t);
   }, [editingId]);
 
-  const displayName =
+  const baseName =
     room.type === "channel"
       ? room.name!
       : room.member_names
           .filter((_, i) => room.member_ids[i] !== currentCastId)
           .join(", ");
+  // ユーザーがつけたグループ名があれば優先。
+  const displayName = nameOverride || baseName;
 
   const memberCount = room.member_ids.length;
   const isCoaching = room.type === "coaching";
+  // 指導ノートは固定の意味を持つ名前なのでリネーム対象外。
+  const canRename = !isCoaching;
+
+  const commitName = (name: string) => {
+    setNameOverride(setRoomName(room.id, name) || null);
+    setNameEditOpen(false);
+  };
 
   const COACHING_CHIPS = [
     "✨ よかった点：",
@@ -320,12 +378,7 @@ export function ChatRoomView({
       )
     : topMessages;
 
-  const handleSend = async (rawPayload: ComposerPayload) => {
-    // ルームに顧客がピンされていれば、明示メンションが無くても既定の対象にする。
-    const payload: ComposerPayload =
-      rawPayload.customerId || !pin
-        ? rawPayload
-        : { ...rawPayload, customerId: pin.customerId };
+  const handleSend = async (payload: ComposerPayload) => {
     const text = payload.text.trim();
     const attachments = payload.attachments;
     if ((!text && attachments.length === 0) || sending) return;
@@ -334,6 +387,8 @@ export function ChatRoomView({
     setInput("");
 
     const mentionsAi = text.includes("@さくらママ");
+    // ルームに顧客がピンされていれば、その顧客にメッセージを関連付ける。
+    const linkedCustomerId = pin?.customerId ?? null;
     const targetId = threadOpen ?? null;
     const tempId = `tmp_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
@@ -344,7 +399,7 @@ export function ChatRoomView({
       sender_name: currentCastName,
       content: text,
       attachments,
-      customer_id: payload.customerId,
+      customer_id: linkedCustomerId,
       thread_parent_id: targetId,
       reply_count: 0,
       mentions_ai: mentionsAi,
@@ -375,7 +430,7 @@ export function ChatRoomView({
           content: text,
           threadParentId: targetId ?? undefined,
           attachments: attachments.length > 0 ? attachments : undefined,
-          customerId: payload.customerId ?? undefined,
+          customerId: linkedCustomerId ?? undefined,
         }),
       });
       if (res.ok) {
@@ -457,10 +512,27 @@ export function ChatRoomView({
           <ArrowLeft size={18} />
           <span className="text-label-sm">戻る</span>
         </Link>
-        <div className="flex-1 text-center">
-          <div className="text-body-md font-medium text-ink">
-            {displayName}
-          </div>
+        <div className="flex-1 min-w-0 text-center">
+          {canRename ? (
+            <button
+              type="button"
+              onClick={() => setNameEditOpen(true)}
+              className="inline-flex items-center gap-1 max-w-full group"
+              title="グループ名を編集"
+            >
+              <span className="text-body-md font-medium text-ink truncate">
+                {displayName}
+              </span>
+              <Pencil
+                size={12}
+                className="shrink-0 text-ink-mute group-hover:text-gold-deep"
+              />
+            </button>
+          ) : (
+            <div className="text-body-md font-medium text-ink truncate">
+              {displayName}
+            </div>
+          )}
           <div className="text-label-sm text-ink-mute">{memberCount}人</div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
@@ -565,14 +637,16 @@ export function ChatRoomView({
               isCoaching={isCoaching}
               showAvatar={true}
               showName={true}
+              mentionNames={mentionNames}
+              isPinned={pinnedIds.has(activeThread.id)}
+              onLongPress={(anchor) =>
+                setActionFor({ msg: activeThread, canReply: false, anchor })
+              }
               editingId={editingId}
               editDraft={editDraft}
               setEditDraft={setEditDraft}
-              onStartEdit={startEdit}
               onCancelEdit={cancelEdit}
               onCommitEdit={commitEdit}
-              onDelete={handleDelete}
-              onCopy={handleCopy}
             />
             {activeThreadReplies.length > 0 && (
               <div className="text-label-sm text-ink-mute pl-2">
@@ -590,14 +664,16 @@ export function ChatRoomView({
                   isCoaching={isCoaching}
                   showAvatar={!isGrouped}
                   showName={!isGrouped}
+                  mentionNames={mentionNames}
+                  isPinned={pinnedIds.has(m.id)}
+                  onLongPress={(anchor) =>
+                    setActionFor({ msg: m, canReply: false, anchor })
+                  }
                   editingId={editingId}
                   editDraft={editDraft}
                   setEditDraft={setEditDraft}
-                  onStartEdit={startEdit}
                   onCancelEdit={cancelEdit}
                   onCommitEdit={commitEdit}
-                  onDelete={handleDelete}
-                  onCopy={handleCopy}
                 />
               );
             })}
@@ -625,7 +701,7 @@ export function ChatRoomView({
                 onChange={setInput}
                 onSend={handleSend}
                 sending={sending}
-                customers={customers}
+                members={members}
                 storeId={room.store_id}
                 roomId={room.id}
               />
@@ -681,16 +757,17 @@ export function ChatRoomView({
                 isCoaching={isCoaching}
                 showAvatar={!isGrouped}
                 showName={!isGrouped}
-                onOpenThread={() => setThreadOpen(msg.id)}
+                mentionNames={mentionNames}
+                isPinned={pinnedIds.has(msg.id)}
+                onLongPress={(anchor) =>
+                  setActionFor({ msg, canReply: true, anchor })
+                }
                 highlight={isSearching ? normalizedQuery : undefined}
                 editingId={editingId}
                 editDraft={editDraft}
                 setEditDraft={setEditDraft}
-                onStartEdit={startEdit}
                 onCancelEdit={cancelEdit}
                 onCommitEdit={commitEdit}
-                onDelete={handleDelete}
-                onCopy={handleCopy}
               />
               {/* Thread preview */}
               {(msg.reply_count > 0 || replies.length > 0) && (
@@ -776,12 +853,12 @@ export function ChatRoomView({
             onChange={setInput}
             onSend={handleSend}
             sending={sending}
-            customers={customers}
+            members={members}
             storeId={room.store_id}
             roomId={room.id}
           />
           <p className="text-[10px] text-ink-mute mt-1.5 pl-1">
-            画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@お客様名 でカルテ連携
+            画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@関係者 で呼びかけ・吹き出しを長押しでメニュー。お客様との紐づけは上部から
           </p>
         </div>
       )}
@@ -796,6 +873,85 @@ export function ChatRoomView({
           onApplied={() => finishExtract(extractFor)}
         />
       )}
+
+      {/* グループ名の編集 */}
+      {nameEditOpen && (
+        <GroupNameModal
+          baseName={baseName}
+          initialName={nameOverride ?? ""}
+          onClose={() => setNameEditOpen(false)}
+          onSubmit={commitName}
+        />
+      )}
+
+      {/* 吹き出し長押し → LINE風アクションメニュー */}
+      {actionFor && (
+        <MessageActionSheet
+          anchorRect={actionFor.anchor}
+          hasText={actionFor.msg.content.trim().length > 0}
+          isPinned={pinnedIds.has(actionFor.msg.id)}
+          canReply={actionFor.canReply}
+          canEdit={
+            actionFor.msg.sender_id === currentCastId &&
+            !actionFor.msg.is_bot &&
+            !actionFor.msg.deleted_at
+          }
+          onReply={() => {
+            setThreadOpen(actionFor.msg.id);
+            setActionFor(null);
+          }}
+          onCopyAll={() => {
+            handleCopy(actionFor.msg);
+            setActionFor(null);
+          }}
+          onPartialCopy={() => {
+            setPartialCopyFor(actionFor.msg.content);
+            setActionFor(null);
+          }}
+          onPin={() => {
+            setPinSheetFor(actionFor.msg);
+            setActionFor(null);
+          }}
+          onEdit={() => {
+            startEdit(actionFor.msg);
+            setActionFor(null);
+          }}
+          onDelete={() => {
+            const id = actionFor.msg.id;
+            setActionFor(null);
+            handleDelete(id);
+          }}
+          onClose={() => setActionFor(null)}
+        />
+      )}
+
+      {partialCopyFor !== null && (
+        <PartialCopyModal
+          content={partialCopyFor}
+          onClose={() => setPartialCopyFor(null)}
+        />
+      )}
+
+      {/* キープ / 顧客紐づけ / メモ */}
+      {pinSheetFor && (
+        <MessagePinSheet
+          message={pinSheetFor}
+          roomId={room.id}
+          roomName={displayName}
+          customers={customers}
+          onClose={() => setPinSheetFor(null)}
+          onChanged={() => setPinnedIds(getPinnedIds())}
+        />
+      )}
+
+      {copiedToast && (
+        <div className="fixed inset-x-0 bottom-24 z-[90] flex justify-center pointer-events-none">
+          <div className="inline-flex items-center gap-1.5 rounded-pill bg-ink/85 text-pearl-light px-4 py-2 text-body-sm shadow-luxe">
+            <Check size={13} />
+            コピーしました
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -808,17 +964,20 @@ interface MessageRowProps {
   isCoaching?: boolean;
   showAvatar: boolean;
   showName: boolean;
-  onOpenThread?: () => void;
+  /** Known @mention names (members) for chip rendering. */
+  mentionNames: string[];
+  /** Whether this message is currently kept (キープ). */
+  isPinned?: boolean;
+  /** Long-press (touch) / right-click (desktop) opens the LINE風 action menu,
+   *  anchored to the bubble's on-screen rect. */
+  onLongPress?: (anchor: AnchorRect) => void;
   /** Lowercased search query to highlight; if set, matching substrings get wrapped. */
   highlight?: string;
   editingId: string | null;
   editDraft: string;
   setEditDraft: (v: string) => void;
-  onStartEdit: (msg: ChatMessage) => void;
   onCancelEdit: () => void;
   onCommitEdit: (id: string) => void;
-  onDelete: (id: string) => void;
-  onCopy: (msg: ChatMessage) => void;
 }
 
 function MessageRow({
@@ -827,41 +986,32 @@ function MessageRow({
   isCoaching,
   showAvatar,
   showName,
-  onOpenThread,
+  mentionNames,
+  isPinned,
+  onLongPress,
   highlight,
   editingId,
   editDraft,
   setEditDraft,
-  onStartEdit,
   onCancelEdit,
   onCommitEdit,
-  onDelete,
-  onCopy,
 }: MessageRowProps) {
   const isMe = msg.sender_id === currentCastId;
   const time = new Date(msg.created_at);
   const timeStr = `${time.getHours()}:${String(time.getMinutes()).padStart(2, "0")}`;
   const isEditing = editingId === msg.id;
   const isDeleted = !!msg.deleted_at;
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [menuOpen]);
-
-  const canEdit = isMe && !msg.is_bot && !isDeleted;
-
+  const bubbleRef = useRef<HTMLDivElement>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fireLongPress = () => {
+    if (!onLongPress || !bubbleRef.current) return;
+    const r = bubbleRef.current.getBoundingClientRect();
+    onLongPress({ top: r.top, bottom: r.bottom, left: r.left, width: r.width });
+  };
   const handleTouchStart = () => {
-    longPressTimer.current = setTimeout(() => setMenuOpen(true), 500);
+    if (!onLongPress || isDeleted) return;
+    longPressTimer.current = setTimeout(fireLongPress, 500);
   };
   const handleTouchEnd = () => {
     if (longPressTimer.current) {
@@ -905,13 +1055,23 @@ function MessageRow({
 
       {/* Bubble + meta */}
       <div
+        ref={bubbleRef}
         className={cn(
           "flex flex-col max-w-[72%]",
           isMe ? "items-end" : "items-start",
+          // 長押しメニューを使うため、吹き出し自体の選択/iOSコールアウトは抑止。
+          // 文章の部分コピーはアクションメニューの「部分コピー」で行う。
+          !isEditing && "select-none",
         )}
+        style={!isEditing ? { WebkitTouchCallout: "none" } : undefined}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchEnd}
+        onContextMenu={(e) => {
+          if (!onLongPress || isDeleted) return;
+          e.preventDefault();
+          fireLongPress();
+        }}
       >
         {/* Sender name (others, first in group) */}
         {!isMe && showName && (
@@ -989,6 +1149,13 @@ function MessageRow({
         ) : (
           /* Bubble */
           <div className={cn("flex flex-col gap-1.5", isMe ? "items-end" : "items-start")}>
+            {/* キープ済みタグ（吹き出しの上に明示） */}
+            {isPinned && (
+              <span className="inline-flex items-center gap-1 rounded-pill bg-champagne-soft/70 border border-gold/45 px-2 py-0.5 text-[10px] font-medium text-wine-deep shadow-soft">
+                <Bookmark size={10} className="text-gold-deep" />
+                保存済み
+              </span>
+            )}
             {msg.content.trim().length > 0 && (
               <div
                 className={cn(
@@ -996,9 +1163,11 @@ function MessageRow({
                   isMe
                     ? "bg-wine-deep text-pearl-light rounded-2xl rounded-br-sm shadow-luxe"
                     : "bg-pearl-light border border-ink/[0.08] text-ink rounded-2xl rounded-bl-sm shadow-soft",
+                  // キープ済みはシャンパンゴールドの枠線で強調（塗りには使わない）
+                  isPinned && "ring-[1.5px] ring-gold/70 ring-offset-2 ring-offset-pearl",
                 )}
               >
-                {renderContentParts(msg.content, highlight)}
+                {renderContentParts(msg.content, mentionNames, highlight)}
               </div>
             )}
             {msg.attachments && msg.attachments.length > 0 && (
@@ -1019,70 +1188,6 @@ function MessageRow({
             )}
           </div>
         )}
-
-        {/* Action buttons (tap-revealed) */}
-        {!isEditing && !isDeleted && (
-          <div className={cn("flex items-center gap-2 mt-1 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
-            {onOpenThread && (
-              <button
-                type="button"
-                onClick={onOpenThread}
-                className="flex items-center gap-0.5 text-[10px] text-ink-mute hover:text-ink-soft"
-              >
-                <MessageCircle size={10} />
-                返信
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => onCopy(msg)}
-              className="flex items-center gap-0.5 text-[10px] text-ink-mute hover:text-ink-soft"
-            >
-              <Copy size={10} />
-              コピー
-            </button>
-            {canEdit && (
-              <div ref={menuRef} className="relative">
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen((v) => !v)}
-                  className="flex items-center gap-0.5 text-[10px] text-ink-mute hover:text-ink-soft"
-                >
-                  <MoreHorizontal size={12} />
-                </button>
-                {menuOpen && (
-                  <div className={cn(
-                    "absolute z-30 top-full mt-1 min-w-[140px] rounded-card border border-ink/[0.06] bg-pearl shadow-soft overflow-hidden",
-                    isMe ? "right-0" : "left-0",
-                  )}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onStartEdit(msg);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-left text-body-sm text-ink hover:bg-pearl-soft"
-                    >
-                      <Pencil size={13} />
-                      編集
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onDelete(msg.id);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-left text-body-sm text-[#c2575b] hover:bg-[#c2575b]/5"
-                    >
-                      <Trash2 size={13} />
-                      取り消し
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
@@ -1090,22 +1195,44 @@ function MessageRow({
 
 // ═══════════════ Content renderer ═══════════════
 
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 /**
- * Split content into renderable pieces, giving the `@さくらママ` mention
- * its chip styling and (optionally) wrapping search matches in a
- * highlight <mark>.
+ * Split content into renderable pieces, giving any known @mention
+ * (さくらママ / 関係者 / お客様) its chip styling and (optionally) wrapping
+ * search matches in a highlight <mark>. `mentionNames` are matched
+ * longest-first so names containing spaces (e.g. "@小川 達也") chip whole.
  */
-function renderContentParts(content: string, highlight?: string) {
-  const mentionRe = /(@さくらママ)/g;
+function renderContentParts(
+  content: string,
+  mentionNames: string[],
+  highlight?: string,
+) {
+  const names = Array.from(new Set([SAKURA_MAMA_CHAT_NAME, ...mentionNames]))
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+  if (names.length === 0) {
+    return highlight ? (
+      <HighlightedText text={content} query={highlight} />
+    ) : (
+      <>{content}</>
+    );
+  }
+  const mentionRe = new RegExp(
+    `(@(?:${names.map(escapeRegExp).join("|")}))`,
+    "g",
+  );
   const chunks = content.split(mentionRe);
   return chunks.map((chunk, i) => {
-    if (chunk === "@さくらママ") {
+    if (chunk.startsWith("@") && names.includes(chunk.slice(1))) {
       return (
         <span
           key={i}
           className="px-1 py-0.5 rounded bg-champagne-soft/60 text-gold-deep font-medium text-body-sm"
         >
-          @さくらママ
+          {chunk}
         </span>
       );
     }
@@ -1199,14 +1326,14 @@ function PinBar({
   if (!pickerOpen) {
     if (customers.length === 0) return null;
     return (
-      <div className="shrink-0 px-4 py-1.5 border-b border-ink/[0.06] bg-pearl-soft/30">
+      <div className="shrink-0 px-4 py-2 border-b border-ink/[0.06] bg-pearl-soft/30">
         <button
           type="button"
           onClick={onOpenPicker}
-          className="inline-flex items-center gap-1 text-[11px] text-ink-soft hover:text-wine-deep"
+          className="inline-flex items-center gap-1.5 rounded-pill border border-gold/40 bg-champagne-soft/50 px-3 py-1.5 text-[12px] font-medium text-wine-deep shadow-soft transition-colors hover:bg-champagne-soft/80"
         >
-          <UserPlus size={12} className="text-gold-deep" />
-          この相談を顧客に紐づける
+          <UserPlus size={13} className="text-gold-deep" />
+          この相談をお客様に紐づける
         </button>
       </div>
     );
@@ -1287,7 +1414,7 @@ function KarteChip({
     return (
       <div
         className={cn(
-          "mt-1 mb-2 flex px-2",
+          "mt-1 mb-2 flex flex-wrap items-center gap-1.5 px-2",
           isMe ? "justify-end" : "justify-start ml-12",
         )}
       >
@@ -1296,6 +1423,13 @@ function KarteChip({
           {s.customerName}さんのカルテに
           {s.doneVia === "extract" ? "反映しました" : "追加しました"}
         </div>
+        <Link
+          href={`/cast/customers/${s.customerId}`}
+          className="inline-flex items-center gap-1 rounded-pill border border-gold/40 px-2.5 py-1.5 text-[12px] font-medium text-wine-deep hover:bg-champagne-soft/60"
+        >
+          <BookOpen size={12} />
+          カルテを見る
+        </Link>
       </div>
     );
   }

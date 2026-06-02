@@ -18,8 +18,11 @@ interface Props {
   /**
    * 抽出された情報を「適用」ボタンで確定した時に呼ばれる。
    * フォーム側はこれを受けて state を更新する。
+   * 第2引数には読み取った名刺画像（data URL）を渡す。名刺そのものを
+   * 保存・閲覧したい呼び出し側（既存顧客の名刺登録）が使う。新規登録
+   * フォームのように画像が不要な呼び出しは無視してよい。
    */
-  onApply: (fields: ExtractedBusinessCard) => void;
+  onApply: (fields: ExtractedBusinessCard, imageDataUrl?: string | null) => void;
   /** 編集時、既存値を上書きしてよいか確認するため表示調整したい場合に使う */
   mode?: "new" | "edit";
 }
@@ -84,7 +87,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
 
   const apply = () => {
     if (!result) return;
-    onApply(result);
+    onApply(result, preview);
     reset();
   };
 

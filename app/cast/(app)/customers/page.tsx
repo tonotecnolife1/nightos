@@ -5,10 +5,10 @@ import { MoreMenu } from "@/components/nightos/more-menu";
 import { PageHeader } from "@/components/nightos/page-header";
 import { StatCard } from "@/components/nightos/stat-card";
 import { CustomerPageShell } from "@/features/cast-customers/components/customer-page-shell";
+import { ProfileProposalInbox } from "@/features/customer-card/components/profile-proposal-inbox";
 import {
   getAllCasts,
   getCustomersForCast,
-  getRecentVisitsForCast,
 } from "@/lib/nightos/supabase-queries";
 import { getCurrentCastId, getCurrentVenueType } from "@/lib/nightos/auth";
 import { calculateFunnelStats } from "@/lib/nightos/referral-tree";
@@ -17,22 +17,17 @@ export const dynamic = "force-dynamic";
 
 export default async function CastCustomerListPage() {
   const castId = await getCurrentCastId();
-  // 優先表示の自動判定（最終来店・来店頻度・状態）に使う来店履歴。
-  // 直近 18 ヶ月ぶんを取得して顧客ごとに集計する。
-  const sinceIso = new Date(
-    Date.now() - 18 * 30 * 24 * 60 * 60 * 1000,
-  ).toISOString();
-  const [allCasts, allCustomers, venueType, visits] = await Promise.all([
+  const [allCasts, allCustomers, venueType] = await Promise.all([
     getAllCasts(),
     getCustomersForCast(castId),
     getCurrentVenueType(),
-    getRecentVisitsForCast(castId, sinceIso),
   ]);
   const isCabaret = venueType === "cabaret";
 
-  // Split: customers this cast manages vs. customers they assist (not managing)
+  // 担当（メイン）= 自分が担当 (manager_cast_id) の顧客のみ表示する。
+  // ヘルプでのみ入った顧客や担当未割り当ての顧客は含めない。
   const myCustomers = allCustomers.filter(
-    (c) => c.manager_cast_id === castId || c.cast_id === castId && !c.manager_cast_id,
+    (c) => c.manager_cast_id === castId,
   );
   // Help customers: assigned to this cast but managed by someone else
   const helpCustomers = allCustomers.filter(
@@ -51,23 +46,20 @@ export default async function CastCustomerListPage() {
         right={<MoreMenu />}
       />
       <div className="px-5 pt-3 pb-6 space-y-5">
+        {/* 承認待ちの変更提案（ヘルプからの提案に気づく導線） */}
+        <ProfileProposalInbox castId={castId} />
+
         {/* Funnel snapshot */}
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-2 gap-2.5">
           <StatCard
-            label="店舗登録のみ"
-            value={funnel.storeOnly}
-            unit="人"
-            tone="default"
-          />
-          <StatCard
-            label={isCabaret ? "フリー" : "担当あり"}
+            label={isCabaret ? "フリー" : "担当"}
             value={funnel.assigned}
             unit="人"
             tone="rose"
           />
           <StatCard
-            label="LINE交換済み"
-            value={funnel.lineExchanged}
+            label="ヘルプ"
+            value={helpCustomers.length}
             unit="人"
             tone="amethyst"
           />
@@ -95,7 +87,6 @@ export default async function CastCustomerListPage() {
             allCasts={allCasts}
             allMyCustomers={customers}
             helpCustomers={!isCabaret ? helpCustomers : []}
-            visits={visits}
           />
         )}
       </div>

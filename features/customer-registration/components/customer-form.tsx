@@ -1,7 +1,17 @@
 "use client";
 
-import { Bot, Check, ChevronDown, ChevronUp, Crown, Users } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import {
+  AlertCircle,
+  Bot,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ChevronRight,
+  Crown,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { Button } from "@/components/nightos/button";
 import { BirthdayInput } from "@/components/nightos/birthday-input";
 import { TextInput } from "@/components/nightos/input";
@@ -11,6 +21,10 @@ import { useAutoKana } from "@/lib/nightos/use-auto-kana";
 import type { Cast, Customer, CustomerCategory } from "@/types/nightos";
 import { createCustomerAction } from "../actions";
 import {
+  findDuplicateCandidates,
+  type DuplicateCandidate,
+} from "../lib/duplicate-candidates";
+import {
   BusinessCardUpload,
   type ExtractedBusinessCard,
 } from "./business-card-upload";
@@ -18,6 +32,8 @@ import {
 interface Props {
   casts: Cast[];
   existingCustomers?: Customer[];
+  /** 重複登録チェック用の店舗全顧客インデックス（最小情報） */
+  duplicateIndex?: DuplicateCandidate[];
   initialReferrerId?: string;
   lockedCastId?: string;
   submitLabel?: string;
@@ -42,6 +58,7 @@ const OPTION_STYLE: React.CSSProperties = {
 export function CustomerForm({
   casts,
   existingCustomers = [],
+  duplicateIndex = [],
   initialReferrerId,
   lockedCastId,
   submitLabel,
@@ -137,6 +154,17 @@ export function CustomerForm({
     label: c.name,
   }));
 
+  // 重複登録防止: 入力中の氏名/読み/呼び名から既存顧客の候補を探す
+  const duplicateCandidates = useMemo(
+    () =>
+      findDuplicateCandidates(duplicateIndex, {
+        name: name.trim(),
+        nameKana: nameKana.trim(),
+        nickname: nickname.trim(),
+      }),
+    [duplicateIndex, name, nameKana, nickname],
+  );
+
   return (
     <form
       className="space-y-4"
@@ -197,6 +225,49 @@ export function CustomerForm({
         </p>
       </div>
 
+      {/* 重複登録防止: 同名の既存顧客候補 */}
+      {duplicateCandidates.length > 0 && (
+        <div className="rounded-2xl bg-warning/10 border border-warning/30 px-3 py-2.5 space-y-2">
+          <div className="flex items-center gap-1.5 text-warning">
+            <AlertCircle size={14} />
+            <p className="text-label-sm font-semibold">
+              同じお名前のお客様がいます
+            </p>
+          </div>
+          <p className="text-[11px] text-ink-soft">
+            既に登録済みなら、新規作成せずにそのお客様のカルテをご利用ください。
+          </p>
+          <ul className="space-y-1">
+            {duplicateCandidates.map((cand) => (
+              <li key={cand.id}>
+                <Link
+                  href={`/cast/customers/${cand.id}`}
+                  className="flex items-center gap-2 rounded-xl bg-white/70 border border-ink/[0.06] px-3 py-2 hover:border-warning/40 transition"
+                >
+                  <div className="flex-1 min-w-0">
+                    <span className="text-body-sm font-medium text-ink">
+                      {cand.name}さま
+                    </span>
+                    {cand.masterName && (
+                      <span className="text-[10px] text-ink-mute ml-1.5">
+                        （{cand.masterName}管理）
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-warning font-medium shrink-0">
+                    このお客様
+                  </span>
+                  <ChevronRight size={13} className="text-ink-mute shrink-0" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="text-[10px] text-ink-muted">
+            別の方であれば、そのまま下の「{submitLabel ?? "登録する"}」で新規登録できます。
+          </p>
+        </div>
+      )}
+
       {/* 担当キャスト */}
       <div className="space-y-1.5">
         <label className="text-label-md text-ink font-medium">担当キャスト</label>
@@ -212,11 +283,11 @@ export function CustomerForm({
         </select>
       </div>
 
-      {/* 管理者 */}
+      {/* 担当 */}
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5">
           <Crown size={13} className="text-gold-deep" />
-          <label className="text-label-md text-ink font-medium">管理者</label>
+          <label className="text-label-md text-ink font-medium">担当</label>
         </div>
         <select
           value={managerId}

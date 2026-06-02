@@ -79,6 +79,21 @@ export const chatAiSchema = z.object({
   castId,
 });
 
+/** 学び整理: pinned messages the AI should organise into remember-this cards. */
+export const chatLearningsSchema = z.object({
+  pins: z
+    .array(
+      z.object({
+        content: z.string().max(4000).default(""),
+        senderName: z.string().max(80).optional(),
+        memo: z.string().max(2000).optional(),
+        customerName: z.string().max(80).nullish(),
+      }),
+    )
+    .min(1)
+    .max(60),
+});
+
 // Team chat room messages ─ CRUD payloads ───────────────────────────
 
 const roomId = z.string().min(1).max(64);
@@ -160,6 +175,44 @@ export const castScheduleSyncSchema = z.object({
   shifts: z.array(shiftSyncEntry).max(400).optional(),
   plans: z.array(planSyncEntry).max(400).optional(),
   douhans: z.array(douhanSyncEntry).max(400).optional(),
+});
+
+// さくらママ 相談履歴の同期 (migration 020 / /api/cast-chat-sessions) ──
+
+/**
+ * 1 メッセージ。役割と本文は必須で検証しつつ、options / pickedOptionId /
+ * images / feedback などの付随フィールドはバージョン差を吸収するため
+ * passthrough で素通しする（サーバーは jsonb として丸ごと保存するだけ）。
+ */
+const chatSessionMessage = z
+  .object({
+    role: chatRole,
+    content: z.string().max(20_000),
+  })
+  .passthrough();
+
+const chatSessionEntry = z.object({
+  // localStorage の session id は `session_<ts>_<rand>` 形式。
+  id: z.string().min(1).max(80),
+  customerId: customerId.nullish(),
+  customerName: z.string().max(80).nullish(),
+  title: z.string().max(200),
+  messages: z.array(chatSessionMessage).max(60),
+  createdAt: z.string().max(40),
+  updatedAt: z.string().max(40),
+});
+
+/**
+ * Body for PUT /api/cast-chat-sessions. 渡されたセッションを id 単位で
+ * upsert する（他セッションは消さない＝端末をまたいだ履歴を失わない）。
+ */
+export const castChatSessionsSyncSchema = z.object({
+  sessions: z.array(chatSessionEntry).max(50),
+});
+
+/** Body for DELETE /api/cast-chat-sessions — 1 セッションを削除。 */
+export const castChatSessionDeleteSchema = z.object({
+  id: z.string().min(1).max(80),
 });
 
 // Signup / onboarding ─────────────────────────────────────────────

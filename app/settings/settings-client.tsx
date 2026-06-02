@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
-import { ArrowLeft, Check, Copy } from "lucide-react";
+import { useRef, useState, useTransition } from "react";
+import { ArrowLeft, Camera, Check, Copy, UserCircle } from "lucide-react";
 import { changeStore, deleteAccount, mockLogout } from "../auth/actions";
+import { removeCastAvatar, updateCastAvatar } from "./actions";
+import { uploadCastAvatar } from "@/lib/nightos/upload-cast-avatar";
 import type { CastUserRole } from "@/types/nightos";
 import { InstallAppSectionAlways } from "@/components/nightos/install-app-section";
 
@@ -11,6 +13,9 @@ interface Props {
   email: string;
   castName: string | null;
   userRole: CastUserRole | null;
+  castId: string | null;
+  storeId: string | null;
+  avatarUrl: string | null;
   currentStoreName: string | null;
   storeInviteInfo: { name: string; inviteCode: string } | null;
 }
@@ -25,6 +30,9 @@ export default function SettingsClient({
   email,
   castName,
   userRole,
+  castId,
+  storeId,
+  avatarUrl,
   currentStoreName,
   storeInviteInfo,
 }: Props) {
@@ -33,6 +41,55 @@ export default function SettingsClient({
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Avatar (アイコン画像)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(avatarUrl);
+  const [avatarBusy, setAvatarBusy] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const canEditAvatar = Boolean(castId && storeId);
+
+  const handlePickAvatar = () => {
+    setAvatarError(null);
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file || !castId || !storeId) return;
+
+    setAvatarError(null);
+    setAvatarBusy(true);
+    try {
+      const { url, path } = await uploadCastAvatar({ file, storeId, castId });
+      const result = await updateCastAvatar(path);
+      if (result?.error) {
+        setAvatarError(result.error);
+      } else {
+        setAvatarPreview(url || avatarPreview);
+      }
+    } catch (err) {
+      setAvatarError(
+        err instanceof Error ? err.message : "アップロードに失敗しました。",
+      );
+    } finally {
+      setAvatarBusy(false);
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatarError(null);
+    setAvatarBusy(true);
+    startTransition(async () => {
+      const result = await removeCastAvatar();
+      if (result?.error) setAvatarError(result.error);
+      else setAvatarPreview(null);
+      setAvatarBusy(false);
+    });
+  };
 
   // Store change (cast / store_staff only — owners can't transfer)
   const [showStoreChange, setShowStoreChange] = useState(false);
@@ -100,6 +157,86 @@ export default function SettingsClient({
 
       <div className="flex-1 px-6 pt-6 pb-12">
         <div className="max-w-sm mx-auto space-y-5">
+          {/* アイコン画像 */}
+          {canEditAvatar && (
+            <section className="rounded-card border border-ink/[0.06] bg-pearl-warm p-4 shadow-soft space-y-3">
+              <h2 className="font-display text-[18px] leading-tight font-medium text-ink">
+                アイコン画像
+              </h2>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={handlePickAvatar}
+                  disabled={avatarBusy || pending}
+                  aria-label="アイコン画像を変更"
+                  className="relative w-20 h-20 rounded-full shrink-0 overflow-hidden border border-gold/30 bg-pearl-soft flex items-center justify-center shadow-soft disabled:opacity-60"
+                >
+                  {avatarPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={avatarPreview}
+                      alt="アイコン画像"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <UserCircle
+                      size={36}
+                      strokeWidth={1.3}
+                      className="text-ink-mute"
+                    />
+                  )}
+                  <span className="absolute bottom-0 inset-x-0 flex items-center justify-center py-1 bg-ink/45">
+                    <Camera size={14} className="text-pearl-light" />
+                  </span>
+                </button>
+                <div className="space-y-1.5">
+                  <p className="text-[12px] text-ink-soft leading-relaxed">
+                    {avatarBusy
+                      ? "アップロード中..."
+                      : avatarPreview
+                        ? "写真をタップして変更できます"
+                        : "顔写真やお好きな画像を設定できます"}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={handlePickAvatar}
+                      disabled={avatarBusy || pending}
+                      className="inline-block px-4 py-2 rounded-pill border border-gold/30 bg-pearl-warm text-body-sm text-ink hover:border-gold/50 transition shadow-soft disabled:opacity-50"
+                    >
+                      写真を選ぶ
+                    </button>
+                    {avatarPreview && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveAvatar}
+                        disabled={avatarBusy || pending}
+                        className="inline-block px-4 py-2 rounded-pill border border-ink/15 bg-pearl-warm text-body-sm text-ink-soft hover:border-ink/30 transition disabled:opacity-50"
+                      >
+                        削除
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                onChange={handleAvatarChange}
+                className="hidden"
+              />
+              <p className="text-[11px] text-ink-mute leading-relaxed">
+                PNG / JPEG / WebP / GIF（5MB まで）
+              </p>
+              {avatarError && (
+                <p className="text-[12px] text-[#c2575b] leading-relaxed">
+                  {avatarError}
+                </p>
+              )}
+            </section>
+          )}
+
           {/* アカウント情報 */}
           <section className="rounded-card border border-ink/[0.06] bg-pearl-warm p-4 shadow-soft space-y-2">
             <h2 className="font-display text-[18px] leading-tight font-medium text-ink">
