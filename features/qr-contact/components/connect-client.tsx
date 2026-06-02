@@ -73,7 +73,9 @@ export function ConnectClient({ myPayload, initialTab = "my-qr" }: Props) {
           <QrScanner onFound={setFound} />
         ))}
 
-      {tab === "contacts" && <ContactList />}
+      {tab === "contacts" && (
+        <ContactList linkBase="/cast/connect/contacts" searchable />
+      )}
     </div>
   );
 }
