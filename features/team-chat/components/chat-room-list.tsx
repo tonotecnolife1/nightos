@@ -12,6 +12,7 @@ import {
   Pencil,
   Pin,
   PinOff,
+  ScanLine,
   Search,
   Users,
   X,
@@ -29,6 +30,10 @@ import type { ChatRoom } from "../types";
 import { PinnedList } from "./pinned-list";
 import { LearningsView } from "./learnings-view";
 import { FriendsTab } from "./friends-tab";
+import {
+  ContactExchangeSheet,
+  type ExchangeTab,
+} from "./contact-exchange-sheet";
 import type { ContactPayload } from "@/features/qr-contact/lib/contact-payload";
 
 interface Props {
@@ -85,6 +90,9 @@ export function ChatRoomList({ rooms, currentCastId, myPayload }: Props) {
   const [editing, setEditing] = useState<ChatRoom | null>(null);
   // ピン留めしたトークの id（新しい順）。上部に固定表示する。
   const [pinnedOrder, setPinnedOrder] = useState<string[]>([]);
+  // 連絡先交換シートの初期タブ。null のとき閉じている。
+  // 検索バーの読み取りから "scan"、友達タブから "my-qr" で開く。
+  const [exchangeTab, setExchangeTab] = useState<ExchangeTab | null>(null);
 
   useEffect(() => {
     const map: Record<string, string> = {};
@@ -189,6 +197,20 @@ export function ChatRoomList({ rooms, currentCastId, myPayload }: Props) {
                 <X size={14} />
               </button>
             )}
+            {/* LINE のトーク検索と同じく、右端に QR 読み取り導線を置く */}
+            <span
+              className="mx-0.5 h-4 w-px shrink-0 self-center bg-line-strong"
+              aria-hidden
+            />
+            <button
+              type="button"
+              onClick={() => setExchangeTab("scan")}
+              className="shrink-0 text-ink-mute hover:text-wine-deep transition-colors"
+              aria-label="QRコードを読み取る"
+              title="QRコードを読み取る"
+            >
+              <ScanLine size={17} />
+            </button>
           </label>
         </div>
       )}
@@ -241,7 +263,9 @@ export function ChatRoomList({ rooms, currentCastId, myPayload }: Props) {
       </div>
 
       {/* Collection tabs */}
-      {tab === "friends" && <FriendsTab myPayload={myPayload} />}
+      {tab === "friends" && (
+        <FriendsTab onExchange={() => setExchangeTab("my-qr")} />
+      )}
       {tab === "pinned" && <PinnedList />}
       {tab === "learnings" && <LearningsView />}
 
@@ -287,6 +311,14 @@ export function ChatRoomList({ rooms, currentCastId, myPayload }: Props) {
           initialName={overrides[editing.id] ?? ""}
           onClose={() => setEditing(null)}
           onSubmit={(name) => commitName(editing, name)}
+        />
+      )}
+
+      {exchangeTab && (
+        <ContactExchangeSheet
+          myPayload={myPayload}
+          initialTab={exchangeTab}
+          onClose={() => setExchangeTab(null)}
         />
       )}
     </div>
