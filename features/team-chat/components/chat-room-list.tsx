@@ -28,13 +28,17 @@ import { GroupNameModal } from "./group-name-modal";
 import type { ChatRoom } from "../types";
 import { PinnedList } from "./pinned-list";
 import { LearningsView } from "./learnings-view";
+import { FriendsTab } from "./friends-tab";
+import type { ContactPayload } from "@/features/qr-contact/lib/contact-payload";
 
 interface Props {
   rooms: ChatRoom[];
   currentCastId: string;
+  /** 「友達」タブ内の連絡先交換（マイQR）用の自分のペイロード。 */
+  myPayload: ContactPayload;
 }
 
-type FilterTab = "all" | "channels" | "dm" | "pinned" | "learnings";
+type FilterTab = "all" | "channels" | "dm" | "friends" | "pinned" | "learnings";
 
 /** トークの絞り込み（すべて / グループ / 個別連絡）。テキストだけのプレーンなピル。 */
 const ROOM_TABS: { id: FilterTab; label: string }[] = [
@@ -44,18 +48,25 @@ const ROOM_TABS: { id: FilterTab; label: string }[] = [
 ];
 
 /**
- * トークとは別概念の「集めたもの」。lucide アイコン付きで、常に champagne の地を
- * 敷いてトーク絞り込みと視覚的に区別する。
+ * トーク絞り込みとは別概念の「人・集めたもの」。lucide アイコン付きで、常に
+ * champagne の地を敷いてトーク絞り込みと視覚的に区別する。
+ * 「友達」は LINE の友だちタブ相当（チャットページ内の友達一覧）。
  */
-const COLLECTION_TABS: { id: "pinned" | "learnings"; label: string; Icon: LucideIcon }[] =
-  [
-    { id: "pinned", label: "保存", Icon: Bookmark },
-    { id: "learnings", label: "学び", Icon: BookOpen },
-  ];
+const COLLECTION_TABS: {
+  id: "friends" | "pinned" | "learnings";
+  label: string;
+  Icon: LucideIcon;
+}[] = [
+  { id: "friends", label: "友達", Icon: Users },
+  { id: "pinned", label: "保存", Icon: Bookmark },
+  { id: "learnings", label: "学び", Icon: BookOpen },
+];
 
-/** Tabs that show running collections (pins / learnings) rather than rooms. */
-function isCollectionTab(tab: FilterTab): tab is "pinned" | "learnings" {
-  return tab === "pinned" || tab === "learnings";
+/** Tabs that show people / collections (friends / pins / learnings) rather than rooms. */
+function isCollectionTab(
+  tab: FilterTab,
+): tab is "friends" | "pinned" | "learnings" {
+  return tab === "pinned" || tab === "learnings" || tab === "friends";
 }
 
 /** Channel name, or (for DMs/groups) the joined other-member names. */
@@ -66,7 +77,7 @@ function baseRoomName(room: ChatRoom, currentCastId: string): string {
     .join(", ");
 }
 
-export function ChatRoomList({ rooms, currentCastId }: Props) {
+export function ChatRoomList({ rooms, currentCastId, myPayload }: Props) {
   const [tab, setTab] = useState<FilterTab>("all");
   const [query, setQuery] = useState("");
   // ユーザーがつけたグループ名（localStorage）。一覧でも編集・反映する。
@@ -230,6 +241,7 @@ export function ChatRoomList({ rooms, currentCastId }: Props) {
       </div>
 
       {/* Collection tabs */}
+      {tab === "friends" && <FriendsTab myPayload={myPayload} />}
       {tab === "pinned" && <PinnedList />}
       {tab === "learnings" && <LearningsView />}
 

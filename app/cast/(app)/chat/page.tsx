@@ -1,5 +1,6 @@
-import { ChatHeaderActions } from "@/features/team-chat/components/chat-header-actions";
+import { MoreMenu } from "@/components/nightos/more-menu";
 import { ChatRoomList } from "@/features/team-chat/components/chat-room-list";
+import { NewDmSheet } from "@/features/team-chat/components/new-dm-sheet";
 import { getStoreCastsAction } from "@/features/team-chat/actions";
 import {
   mockChatMessages,
@@ -44,9 +45,12 @@ export default async function ChatListPage() {
             チャット
           </h1>
         </div>
-        <ChatHeaderActions storeCasts={storeCasts} myPayload={myPayload} />
+        <div className="flex items-center gap-1.5">
+          <NewDmSheet storeCasts={storeCasts} />
+          <MoreMenu />
+        </div>
       </div>
-      <ChatRoomList rooms={rooms} currentCastId={castId} />
+      <ChatRoomList rooms={rooms} currentCastId={castId} myPayload={myPayload} />
     </div>
   );
 }
