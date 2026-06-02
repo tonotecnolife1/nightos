@@ -686,7 +686,7 @@ export function ChatWindow({
             : "選ぶか自由に書いてもOK";
 
   return (
-    <div className="relative flex flex-col h-dvh overflow-hidden">
+    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* 新しい相談を始めた瞬間の画面切り替え演出 — 一瞬パール地で覆い、
           会話がまっさらになったことを視覚的に知らせてからフェードアウトする */}
       <div
