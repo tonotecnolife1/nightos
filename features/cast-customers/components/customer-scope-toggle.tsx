@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 
 export type CustomerScope = "tantou" | "help";
 
@@ -15,6 +16,7 @@ interface Props {
  * - ヘルプ: ヘルプで入った顧客（担当は他キャスト）
  */
 export function CustomerScopeToggle({ value, onChange }: Props) {
+  const relation = useVenueConfig().labels.customerRelation;
   return (
     <div className="inline-flex items-center rounded-full bg-champagne-soft/60/40 border border-gold/30 p-0.5">
       <button
@@ -27,7 +29,7 @@ export function CustomerScopeToggle({ value, onChange }: Props) {
             : "text-gold-deep",
         )}
       >
-        担当
+        {relation}
       </button>
       <button
         type="button"

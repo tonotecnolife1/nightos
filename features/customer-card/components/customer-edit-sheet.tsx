@@ -6,6 +6,7 @@ import { Check, MessageSquarePlus, X } from "lucide-react";
 import { BirthdayInput } from "@/components/nightos/birthday-input";
 import { TextInput } from "@/components/nightos/input";
 import { useAutoKana } from "@/lib/nightos/use-auto-kana";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 import { ALL_PREFECTURES } from "@/lib/nightos/regions";
 import type { Customer } from "@/types/nightos";
 import {
@@ -47,6 +48,7 @@ export function CustomerEditSheet({
   approverCastId,
 }: Props) {
   const router = useRouter();
+  const relation = useVenueConfig().labels.customerRelation;
   const nicknameRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -197,7 +199,7 @@ export function CustomerEditSheet({
             <p className="text-[11px] text-ink-muted mt-0.5">
               {canEditDirectly
                 ? "呼び名は入力推奨 ・ 店舗からの共有情報はここでは編集できません"
-                : "ヘルプは直接編集できません。マスター/担当の承認で反映されます"}
+                : `ヘルプは直接編集できません。マスター/${relation}の承認で反映されます`}
             </p>
           </div>
           <button

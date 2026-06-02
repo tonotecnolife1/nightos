@@ -5,6 +5,7 @@ import { Calendar, ChevronRight, HandHelping, User } from "lucide-react";
 import { Card } from "@/components/nightos/card";
 import { EmptyState } from "@/components/nightos/empty-state";
 import { formatCustomerName } from "@/lib/utils";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 import type { HelpSummaryEntry } from "@/lib/nightos/master-help-split";
 
 interface Props {
@@ -22,6 +23,7 @@ export function HelpVisitsSection({
   title = "ヘルプで入ったお客様",
   description,
 }: Props) {
+  const relation = useVenueConfig().labels.customerRelation;
   if (entries.length === 0) {
     return (
       <section className="space-y-2">
@@ -29,7 +31,7 @@ export function HelpVisitsSection({
         <EmptyState
           icon={<HandHelping size={20} />}
           title="ヘルプ実績はまだありません"
-          description="他の担当のお客様に接客した記録があればここに表示されます。"
+          description={`他の${relation}のお客様に接客した記録があればここに表示されます。`}
         />
       </section>
     );

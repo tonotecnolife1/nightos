@@ -3,6 +3,7 @@
 import { ChevronDown, ChevronUp, Filter, RotateCcw, Search, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 import {
   activeFilterCount,
   DEFAULT_CUSTOMER_FILTERS,
@@ -56,6 +57,11 @@ export function CustomerFilterBar({
 }: Props) {
   const [expanded, setExpanded] = useState(false);
   const activeCount = activeFilterCount(filters);
+  // 業態の関係性ラベル（club: 担当 / cabaret: 指名）。
+  const relation = useVenueConfig().labels.customerRelation;
+  const funnelOptions = FUNNEL_OPTIONS.map((opt) =>
+    opt.value === "assigned" ? { ...opt, label: `${relation}付き` } : opt,
+  );
 
   const update = <K extends keyof CustomerFilters>(
     key: K,
@@ -136,7 +142,7 @@ export function CustomerFilterBar({
           {/* Funnel stage */}
           <FilterRow label="ステージ">
             <div className="flex flex-wrap gap-1">
-              {FUNNEL_OPTIONS.map((opt) => (
+              {funnelOptions.map((opt) => (
                 <ChipButton
                   key={opt.value}
                   active={filters.funnelStage === opt.value}
@@ -151,7 +157,7 @@ export function CustomerFilterBar({
 
           {/* Manager + Cast (selects) */}
           <div className="grid grid-cols-2 gap-2">
-            <FilterRow label="担当">
+            <FilterRow label={relation}>
               <select
                 value={filters.managerId}
                 onChange={(e) => update("managerId", e.target.value)}
