@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, MessageSquarePlus, X } from "lucide-react";
 import { BirthdayInput } from "@/components/nightos/birthday-input";
@@ -18,6 +18,8 @@ interface Props {
   customer: Customer;
   isOpen: boolean;
   onClose: () => void;
+  /** 呼び名の行から開いた時に true。開いた直後に呼び名入力へフォーカスする。 */
+  autoFocusNickname?: boolean;
   /** マスター/担当なら直接保存、それ以外（ヘルプ）は提案として送信 */
   canEditDirectly: boolean;
   requesterCastId: string;
@@ -38,12 +40,14 @@ export function CustomerEditSheet({
   customer,
   isOpen,
   onClose,
+  autoFocusNickname = false,
   canEditDirectly,
   requesterCastId,
   requesterName,
   approverCastId,
 }: Props) {
   const router = useRouter();
+  const nicknameRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [reason, setReason] = useState("");
@@ -92,6 +96,25 @@ export function CustomerEditSheet({
       document.body.style.overflow = "";
     };
   }, [isOpen, onClose]);
+
+  // 呼び名の行から開いた時は、シートが出たフレームで入力欄へフォーカスして
+  // モバイルのソフトキーボードを立ち上げる。
+  useEffect(() => {
+    if (!isOpen || !autoFocusNickname) return;
+    const id = requestAnimationFrame(() => {
+      const el = nicknameRef.current;
+      if (!el) return;
+      el.focus();
+      // カーソルを末尾に置く（既存値がある場合）。
+      const len = el.value.length;
+      try {
+        el.setSelectionRange(len, len);
+      } catch {
+        /* 一部ブラウザで text 以外だと throw するので無視 */
+      }
+    });
+    return () => cancelAnimationFrame(id);
+  }, [isOpen, autoFocusNickname]);
 
   if (!isOpen) return null;
 
@@ -203,6 +226,7 @@ export function CustomerEditSheet({
               </span>
             </label>
             <input
+              ref={nicknameRef}
               type="text"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}

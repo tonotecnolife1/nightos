@@ -41,6 +41,14 @@ export function CustomerInfoSection({
   approverCastId,
 }: Props) {
   const [editing, setEditing] = useState(false);
+  // 呼び名の行から開いた時だけ、シート内の呼び名入力へ即フォーカスして
+  // モバイルのキーボードを立ち上げる（タップしてもキーが出ない問題の対策）。
+  const [focusNickname, setFocusNickname] = useState(false);
+
+  const openEditor = (target: "nickname" | null = null) => {
+    setFocusNickname(target === "nickname");
+    setEditing(true);
+  };
   // 覚えたら見ない情報なので、キャストが畳んだ状態を顧客ごとに記憶する。
   // 初期表示は「開いた」状態（店舗からの注意書きなどを隠さない）→ ハイドレーション後に復元。
   const [open, setOpen] = useState(true);
@@ -91,7 +99,7 @@ export function CustomerInfoSection({
         </button>
         <button
           type="button"
-          onClick={() => setEditing(true)}
+          onClick={() => openEditor()}
           className="inline-flex items-center gap-1 h-8 px-3 rounded-pill border border-ink/[0.10] bg-pearl-warm text-label-sm text-ink-secondary hover:border-gold/40 hover:text-ink transition"
         >
           {canEditDirectly ? (
@@ -113,11 +121,11 @@ export function CustomerInfoSection({
           {/* 🌸 入力推奨: 呼び名 */}
           <NicknameRow
             nickname={customer.nickname ?? null}
-            onEdit={() => setEditing(true)}
+            onEdit={() => openEditor("nickname")}
           />
 
           {/* ✏️ 編集可能: 誕生日 / 職業 / 好きなお酒 / 活動エリア */}
-          <EditableAttributesCard customer={customer} onEdit={() => setEditing(true)} />
+          <EditableAttributesCard customer={customer} onEdit={() => openEditor()} />
 
           {/* 🔒 閲覧のみ: 店舗からの共有情報 */}
           <StoreSharedInfoCard customer={customer} />
@@ -138,6 +146,7 @@ export function CustomerInfoSection({
         customer={customer}
         isOpen={editing}
         onClose={() => setEditing(false)}
+        autoFocusNickname={focusNickname}
         canEditDirectly={canEditDirectly}
         requesterCastId={requesterCastId}
         requesterName={requesterName}
@@ -199,20 +208,29 @@ function EditableAttributesCard({
   customer: Customer;
   onEdit: () => void;
 }) {
+  // カード全体をタップ領域にする（呼び名の行と同じく、行の値をタップしても
+  // 編集シートが開くように）。鉛筆アイコンは「編集できる」ことの目印。
   return (
-    <Card className="p-4">
+    <Card
+      role="button"
+      tabIndex={0}
+      onClick={onEdit}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onEdit();
+        }
+      }}
+      aria-label="基本情報を編集"
+      className="p-4 cursor-pointer hover:border-gold/40 transition"
+    >
       <div className="flex items-center justify-between mb-3">
         <span className="text-label-sm font-semibold text-ink-secondary">
           基本情報
         </span>
-        <button
-          type="button"
-          onClick={onEdit}
-          aria-label="編集"
-          className="text-ink-muted hover:text-ink-secondary"
-        >
+        <span className="text-ink-muted" aria-hidden>
           <Pencil size={13} />
-        </button>
+        </span>
       </div>
       <dl className="space-y-2.5">
         <AttrRow label="誕生日" value={formatBirthday(customer.birthday)} />
