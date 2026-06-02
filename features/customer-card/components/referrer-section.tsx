@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Clock, UserPlus, Users, X } from "lucide-react";
+import { Check, Clock, Search, UserPlus, Users, X } from "lucide-react";
 import { Card } from "@/components/nightos/card";
 import { cn } from "@/lib/utils";
 import {
@@ -53,6 +53,7 @@ export function ReferrerSection({
   const [editing, setEditing] = useState(false);
   const [selected, setSelected] = useState<string>("");
   const [reason, setReason] = useState("");
+  const [query, setQuery] = useState("");
   const [justSent, setJustSent] = useState(false);
 
   const refresh = () => {
@@ -73,6 +74,13 @@ export function ReferrerSection({
     for (const c of candidates) m.set(c.id, c);
     return m;
   }, [candidates]);
+
+  // 検索クエリで絞り込んだ候補
+  const filteredCandidates = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return candidates;
+    return candidates.filter((c) => c.name.toLowerCase().includes(q));
+  }, [candidates, query]);
 
   // 現在有効な紹介者ID（override 優先）
   const effectiveReferrerId =
@@ -118,6 +126,7 @@ export function ReferrerSection({
     setEditing(false);
     setSelected("");
     setReason("");
+    setQuery("");
     refresh();
     setTimeout(() => setJustSent(false), 2500);
   };
@@ -137,37 +146,39 @@ export function ReferrerSection({
 
   return (
     <section className="space-y-2">
-      <Card className="p-3.5 space-y-2.5">
+      <Card className="px-3 py-2.5 space-y-2">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5">
-            <Users size={14} className="text-gold-deep" />
-            <span className="text-label-md font-medium text-ink">紹介者</span>
+          {/* ラベル + 現在の紹介者を 1 行に圧縮（重要度低めの補助情報） */}
+          <div className="flex items-center gap-1.5 min-w-0">
+            <Users size={12} className="text-gold-deep shrink-0" />
+            <span className="text-[11px] font-medium text-ink-secondary shrink-0">
+              紹介者
+            </span>
+            {!editing && (
+              <span className="text-[12px] text-ink-soft truncate min-w-0">
+                {currentReferrer ? (
+                  <span className="text-ink">{currentReferrer.name}さま</span>
+                ) : (
+                  <span className="text-ink-mute">紹介なし（直接来店・その他）</span>
+                )}
+              </span>
+            )}
           </div>
           {!pending && !editing && (
             <button
               type="button"
               onClick={() => {
                 setSelected(effectiveReferrerId ?? NO_REFERRER);
+                setQuery("");
                 setEditing(true);
               }}
-              className="inline-flex items-center gap-1 h-7 px-2.5 rounded-pill border border-ink/[0.10] bg-pearl-warm text-[11px] text-ink-secondary hover:border-gold/40 hover:text-ink transition"
+              className="inline-flex items-center gap-1 h-6 px-2 rounded-pill border border-ink/[0.10] bg-pearl-warm text-[10px] text-ink-secondary hover:border-gold/40 hover:text-ink transition shrink-0"
             >
-              <UserPlus size={11} />
-              変更を依頼
+              <UserPlus size={10} />
+              変更
             </button>
           )}
         </div>
-
-        {/* 現在の紹介者 */}
-        {!editing && (
-          <p className="text-body-md text-ink pl-0.5">
-            {currentReferrer ? (
-              <span className="font-medium">{currentReferrer.name}さま</span>
-            ) : (
-              <span className="text-ink-muted">紹介なし（直接来店・その他）</span>
-            )}
-          </p>
-        )}
 
         {/* 送信直後フィードバック */}
         {justSent && (
@@ -236,19 +247,61 @@ export function ReferrerSection({
         {/* 変更フォーム */}
         {editing && (
           <div className="space-y-2.5 pt-0.5">
-            <select
-              value={selected}
-              onChange={(e) => setSelected(e.target.value)}
-              className="w-full h-10 rounded-btn border border-pearl-soft bg-pearl-warm px-3 text-body-sm text-ink"
-              style={{ fontSize: "16px" }}
-            >
-              <option value={NO_REFERRER}>紹介なし（直接来店・その他）</option>
-              {candidates.map((c) => (
-                <option key={c.id} value={c.id}>
+            {/* 検索付き紹介者ピッカー（候補が多くても探しやすいよう検索を用意） */}
+            <div className="relative">
+              <Search
+                size={15}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute pointer-events-none"
+              />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="紹介者を名前で検索"
+                className="w-full h-10 rounded-btn border border-pearl-soft bg-pearl-warm pl-9 pr-3 text-ink placeholder:text-ink-mute"
+                style={{ fontSize: "16px" }}
+              />
+            </div>
+            <div className="max-h-56 overflow-y-auto rounded-btn border border-pearl-soft bg-pearl-warm divide-y divide-pearl-soft/60">
+              <button
+                type="button"
+                onClick={() => setSelected(NO_REFERRER)}
+                className={cn(
+                  "flex items-center justify-between gap-2 w-full px-3 py-2.5 text-left text-[15px] transition",
+                  selected === NO_REFERRER
+                    ? "bg-wine-deep/[0.06] text-wine-deep font-medium"
+                    : "text-ink hover:bg-pearl-soft/50",
+                )}
+              >
+                紹介なし（直接来店・その他）
+                {selected === NO_REFERRER && (
+                  <Check size={16} className="text-wine-deep shrink-0" />
+                )}
+              </button>
+              {filteredCandidates.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => setSelected(c.id)}
+                  className={cn(
+                    "flex items-center justify-between gap-2 w-full px-3 py-2.5 text-left text-[15px] transition",
+                    selected === c.id
+                      ? "bg-wine-deep/[0.06] text-wine-deep font-medium"
+                      : "text-ink hover:bg-pearl-soft/50",
+                  )}
+                >
                   {c.name}さま
-                </option>
+                  {selected === c.id && (
+                    <Check size={16} className="text-wine-deep shrink-0" />
+                  )}
+                </button>
               ))}
-            </select>
+              {filteredCandidates.length === 0 && (
+                <p className="px-3 py-4 text-[13px] text-ink-mute text-center">
+                  「{query.trim()}」に一致する紹介者がいません
+                </p>
+              )}
+            </div>
             <input
               type="text"
               value={reason}
@@ -264,6 +317,7 @@ export function ReferrerSection({
                   setEditing(false);
                   setSelected("");
                   setReason("");
+                  setQuery("");
                 }}
                 className="flex-1 h-10 rounded-btn border border-ink/[0.10] bg-pearl-soft text-body-sm text-ink-secondary"
               >
