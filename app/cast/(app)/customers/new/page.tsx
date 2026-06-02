@@ -40,6 +40,7 @@ export default async function CastNewCustomerPage() {
           lockedCastId={currentCast.id}
           submitLabel="登録する"
           successTemplate="%name%さまを登録しました"
+          successListHref="/cast/customers"
         />
       </div>
     </div>

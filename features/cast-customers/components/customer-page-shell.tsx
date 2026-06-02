@@ -28,6 +28,8 @@ interface Props {
   allCasts: Cast[];
   allMyCustomers: Customer[];
   helpCustomers?: Customer[];
+  /** 登録直後の遷移などで初期表示するビュー。localStorage より優先する。 */
+  initialScope?: CustomerScope;
 }
 
 export function CustomerPageShell({
@@ -35,10 +37,18 @@ export function CustomerPageShell({
   allCasts,
   allMyCustomers,
   helpCustomers = [],
+  initialScope,
 }: Props) {
   const router = useRouter();
   const [navigating, startNavigation] = useTransition();
-  const [scope, setScope] = useState<CustomerScope>("tantou");
+  // ヘルプ顧客が居ない（キャバ等）のに help 指定が来た場合は担当へフォールバック。
+  const resolvedInitialScope: CustomerScope | undefined =
+    initialScope === "help" && helpCustomers.length === 0
+      ? "tantou"
+      : initialScope;
+  const [scope, setScope] = useState<CustomerScope>(
+    resolvedInitialScope ?? "tantou",
+  );
   const [filters, setFilters] = useState<CustomerFilters>(
     DEFAULT_CUSTOMER_FILTERS,
   );
@@ -46,16 +56,24 @@ export function CustomerPageShell({
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const s = localStorage.getItem(LS_SCOPE);
-      if (s === "tantou" || s === "help") setScope(s);
-    } catch {}
+    if (resolvedInitialScope) {
+      // 明示指定（登録直後の遷移など）を優先し、次回の手動表示にも残す。
+      setScope(resolvedInitialScope);
+      try {
+        localStorage.setItem(LS_SCOPE, resolvedInitialScope);
+      } catch {}
+    } else {
+      try {
+        const s = localStorage.getItem(LS_SCOPE);
+        if (s === "tantou" || s === "help") setScope(s);
+      } catch {}
+    }
     setFilters(loadFilters(LS_FILTERS));
     setStarred(new Set(Object.keys(loadPriorities(castId))));
     setLoaded(true);
     // 「新規」ボタンの遷移先を先読みして体感速度を確保（Link の prefetch 相当）
     router.prefetch("/cast/customers/new");
-  }, [router, castId]);
+  }, [router, castId, resolvedInitialScope]);
 
   const updateScope = (s: CustomerScope) => {
     setScope(s);
