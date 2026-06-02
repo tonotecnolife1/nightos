@@ -1,4 +1,4 @@
-import { Flame, JapaneseYen, Users, UsersRound } from "lucide-react";
+import { JapaneseYen, Users, UsersRound } from "lucide-react";
 import { StatsSubHeader } from "@/features/cast-stats/components/stats-sub-header";
 import { StatsGoalCard } from "@/features/cast-stats/components/stats-goal-card";
 import { StatsMiniKpi } from "@/features/cast-stats/components/stats-mini-kpi";
@@ -68,7 +68,7 @@ export default async function CastStatsPage({ searchParams }: PageProps) {
             )}
           </div>
 
-          {/* 上段: 結果指標 */}
+          {/* 結果指標 */}
           <div className="flex gap-2">
             <StatsMiniKpi
               label="担当顧客"
@@ -85,31 +85,14 @@ export default async function CastStatsPage({ searchParams }: PageProps) {
               accent="wine"
               period="今月"
             />
+          </div>
+          <div className="flex gap-2">
             <StatsMiniKpi
               label="再来店率"
               value={Math.round(data.monthly.repeatRate * 100)}
               unit="%"
               accent="rose"
               period="今月"
-            />
-          </div>
-
-          {/* 下段: アクション指標 */}
-          <div className="flex gap-2">
-            <StatsMiniKpi
-              label="連絡達成率"
-              value={Math.round(data.monthly.followRate * 100)}
-              unit="%"
-              accent="ink"
-              period="今月"
-            />
-            <StatsMiniKpi
-              label="連続連絡"
-              value={data.followStreakDays}
-              unit="日"
-              accent="amber"
-              icon={<Flame size={11} strokeWidth={1.7} />}
-              period="累計"
             />
             <StatsWorkDaysKpi />
           </div>
@@ -118,7 +101,7 @@ export default async function CastStatsPage({ searchParams }: PageProps) {
         {/* ── さくらママ活用度 ── */}
         <AiUsageSummary />
 
-        {/* ── 再来店率の動き (月次) ── */}
+        {/* ── 再来店率 (月次) ── */}
         <StatsTrendChart points={data.repeatTrendMonthly} />
 
         {/* ── 年間成績 ── */}

@@ -71,7 +71,7 @@ export function StatsTrendChart({ points }: Props) {
             className="mt-1.5 font-serif text-[16px] leading-none font-medium text-ink"
             style={{ letterSpacing: "0.02em" }}
           >
-            再来店率の動き
+            再来店率
           </div>
         </div>
         <div className="text-right">

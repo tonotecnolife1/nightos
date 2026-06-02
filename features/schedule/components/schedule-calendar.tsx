@@ -274,7 +274,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
         </span>
         <span className="flex items-center gap-1">
           <span className="w-3 h-3 rounded bg-pearl-soft border border-ink/[0.08] inline-block" />
-          公休
+          休み
         </span>
         <span className="flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-gold inline-block" />
@@ -282,7 +282,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
         </span>
         <span className="flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-wine-soft inline-block" />
-          予定あり
+          その他の予定
         </span>
       </div>
 
@@ -580,7 +580,7 @@ function DaySheet({
                 onClick={openShiftForm}
                 className="w-full flex items-center justify-between rounded-2xl bg-pearl-soft border border-ink/[0.08] px-3 py-2.5"
               >
-                <span className="text-body-sm font-medium text-ink-soft">公休</span>
+                <span className="text-body-sm font-medium text-ink-soft">休み</span>
                 <Pencil size={14} className="text-ink-mute" />
               </button>
             )}
@@ -653,7 +653,7 @@ function DaySheet({
                   {KIND_META[k].label}
                 </span>
                 <span className="text-body-md text-ink">
-                  {k === "shift" ? "出勤・公休を登録" : k === "douhan" ? "同伴を登録" : "その他の予定を登録"}
+                  {k === "shift" ? "出勤・休みを登録" : k === "douhan" ? "同伴を登録" : "その他の予定を登録"}
                 </span>
                 <ChevronRight size={18} className="ml-auto text-ink-mute" />
               </button>
@@ -678,7 +678,7 @@ function DaySheet({
                       : "bg-pearl-warm border-ink/[0.06] text-ink-soft hover:border-wine-deep/30",
                   )}
                 >
-                  {s === "working" ? "出勤" : "公休"}
+                  {s === "working" ? "出勤" : "休み"}
                 </button>
               ))}
             </div>
