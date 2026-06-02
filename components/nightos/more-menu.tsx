@@ -11,6 +11,13 @@ import { CAST_NAV_ITEMS, isTabBarVisible } from "./cast-nav";
 interface Props {
   /** 配色トーン。"ruri" だと半透明白文字（gradient ヒーロー用）。 */
   tone?: "default" | "ruri";
+  /**
+   * 特定のナビ項目を画面遷移ではなくその場のハンドラで処理する。
+   * key は {@link CAST_NAV_ITEMS} の `key`（例: "connect" / "friends"）。
+   * 指定された項目は Link ではなく button としてレンダリングされ、
+   * クリック時にメニューを閉じてから handler を呼ぶ。
+   */
+  overrides?: Record<string, () => void>;
 }
 
 /**
@@ -27,7 +34,7 @@ interface Props {
  * 吹き出しはボタンの相対配置に対する `absolute` で出すため、PageHeader の
  * `backdrop-blur` 内でも画面外へはみ出さない（`fixed` を使わない）。
  */
-export function MoreMenu({ tone = "default" }: Props) {
+export function MoreMenu({ tone = "default", overrides }: Props) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() ?? "";
@@ -121,39 +128,60 @@ export function MoreMenu({ tone = "default" }: Props) {
             <ul className="flex flex-col">
               {items.map((it) => {
                 const Icon = it.icon;
+                const override = overrides?.[it.key];
+                const itemClass = cn(
+                  "group flex w-full items-center justify-between gap-3 rounded-[12px] pl-3.5 pr-2 py-2.5 transition-colors",
+                  it.active
+                    ? "bg-[rgba(20,10,10,0.45)]"
+                    : "hover:bg-[rgba(20,10,10,0.28)]",
+                );
+                const inner = (
+                  <>
+                    <span
+                      className="text-[13px] font-medium tracking-[0.06em]"
+                      style={{
+                        color: it.active
+                          ? "var(--v5-gold-on-dark)"
+                          : "var(--v5-ink-on-dark)",
+                      }}
+                    >
+                      {it.label}
+                    </span>
+                    <span
+                      className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center"
+                      style={{
+                        background: "rgba(235,217,168,0.12)",
+                        color: "var(--v5-gold-on-dark)",
+                      }}
+                    >
+                      <Icon size={14} />
+                    </span>
+                  </>
+                );
                 return (
                   <li key={it.key}>
-                    <Link
-                      href={it.href}
-                      role="menuitem"
-                      onClick={() => setOpen(false)}
-                      className={cn(
-                        "group flex items-center justify-between gap-3 rounded-[12px] pl-3.5 pr-2 py-2.5 transition-colors",
-                        it.active
-                          ? "bg-[rgba(20,10,10,0.45)]"
-                          : "hover:bg-[rgba(20,10,10,0.28)]",
-                      )}
-                    >
-                      <span
-                        className="text-[13px] font-medium tracking-[0.06em]"
-                        style={{
-                          color: it.active
-                            ? "var(--v5-gold-on-dark)"
-                            : "var(--v5-ink-on-dark)",
+                    {override ? (
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setOpen(false);
+                          override();
                         }}
+                        className={cn(itemClass, "text-left")}
                       >
-                        {it.label}
-                      </span>
-                      <span
-                        className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center"
-                        style={{
-                          background: "rgba(235,217,168,0.12)",
-                          color: "var(--v5-gold-on-dark)",
-                        }}
+                        {inner}
+                      </button>
+                    ) : (
+                      <Link
+                        href={it.href}
+                        role="menuitem"
+                        onClick={() => setOpen(false)}
+                        className={itemClass}
                       >
-                        <Icon size={14} />
-                      </span>
-                    </Link>
+                        {inner}
+                      </Link>
+                    )}
                   </li>
                 );
               })}
