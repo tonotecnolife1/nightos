@@ -57,10 +57,6 @@ export function PlanBanner() {
       <Sparkles size={11} className="text-gold-deep shrink-0" />
       <span className="text-label-sm text-ink-mute">
         無制限プラン（無料）· {formatJpDate(status.freePeriodEnd)}まで
-        <span className="text-ink-soft/70">
-          {" "}
-          / {formatJpDate(status.paidStart)}から有料
-        </span>
       </span>
     </div>
   );
