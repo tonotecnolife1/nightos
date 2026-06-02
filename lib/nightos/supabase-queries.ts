@@ -809,11 +809,14 @@ export async function createCustomer(
   input: CreateCustomerInput,
 ): Promise<Customer> {
   const storeId = input.store_id ?? (await resolveStoreIdForCast(input.cast_id));
-  return withFallback(
-    "createCustomer",
-    () => createCustomerReal({ ...input, storeId }),
-    () => createCustomerMock({ ...input, store_id: storeId }),
-  );
+  // 書き込みは読み取りと違い、サイレントに mock へフォールバックしてはいけない。
+  // フォールバックするとメモリ上のモックにだけ保存され、本番DBには残らないため
+  // 「登録しました」と表示されるのに一覧・重複チェックから見えなくなる
+  // （= 今回のバグ）。Supabase 設定時は失敗を必ず呼び出し側へ伝える。
+  if (!isSupabaseConfigured()) {
+    return createCustomerMock({ ...input, store_id: storeId });
+  }
+  return createCustomerReal({ ...input, storeId });
 }
 
 /**

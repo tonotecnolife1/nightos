@@ -24,10 +24,15 @@ export default async function CastCustomerListPage() {
   ]);
   const isCabaret = venueType === "cabaret";
 
-  // 担当（メイン）= 自分が担当 (manager_cast_id) の顧客のみ表示する。
-  // ヘルプでのみ入った顧客や担当未割り当ての顧客は含めない。
+  // 担当（メイン）= 自分が担当の顧客を表示する。
+  // 自分が担当 (manager_cast_id === castId) の顧客に加えて、
+  // 自分の顧客 (cast_id === castId) で manager_cast_id が未設定のものも含める。
+  // （新規登録直後に manager_cast_id が埋まらないケースで一覧から消える事故を防ぐ）。
+  // 他キャストが担当 (manager_cast_id が別人) のヘルプ顧客のみ除外する。
   const myCustomers = allCustomers.filter(
-    (c) => c.manager_cast_id === castId,
+    (c) =>
+      c.manager_cast_id === castId ||
+      (c.cast_id === castId && !c.manager_cast_id),
   );
   // Help customers: assigned to this cast but managed by someone else
   const helpCustomers = allCustomers.filter(
