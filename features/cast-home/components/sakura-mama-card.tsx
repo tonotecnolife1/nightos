@@ -188,21 +188,21 @@ export function SakuraMamaCard({ castId }: Props) {
       ) : null}
 
       {/* Actions */}
-      <div className="flex items-stretch gap-2.5">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch gap-2.5">
         <button
           type="button"
           onClick={() => void fetchBriefing(true)}
           disabled={loading}
-          className="v5-cta-ghost inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-pill font-sans font-medium text-[13px] tracking-[0.04em] active:scale-[0.98] transition disabled:opacity-50"
+          className="v5-cta-ghost inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-pill font-sans font-medium text-[13px] tracking-[0.04em] whitespace-nowrap active:scale-[0.98] transition disabled:opacity-50"
         >
-          <RefreshCw size={13} strokeWidth={1.8} />
+          <RefreshCw size={13} strokeWidth={1.8} className="shrink-0" />
           メッセージを更新
         </button>
         <Link
           href="/cast/ruri-mama"
-          className="v5-cta-primary flex-1 inline-flex items-center justify-center gap-1.5 h-11 rounded-pill font-sans font-semibold text-[13px] tracking-[0.04em] active:scale-[0.98] transition"
+          className="v5-cta-primary flex-1 inline-flex items-center justify-center gap-1.5 h-11 rounded-pill font-sans font-semibold text-[13px] tracking-[0.04em] whitespace-nowrap active:scale-[0.98] transition"
         >
-          <MessageCircle size={14} strokeWidth={1.8} />
+          <MessageCircle size={14} strokeWidth={1.8} className="shrink-0" />
           さくらママに相談する
         </Link>
       </div>

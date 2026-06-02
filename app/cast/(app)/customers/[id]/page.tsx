@@ -13,6 +13,7 @@ import { LineImportPanel } from "@/features/customer-card/components/line-import
 import { MemoSection } from "@/features/customer-card/components/memo-section";
 import { RefreshMemoButton } from "@/features/customer-card/components/refresh-memo-button";
 import { VisitInfoSection } from "@/features/customer-card/components/visit-info-section";
+import { SectionHeader } from "@/features/customer-card/components/section-header";
 import { CollapsibleSection } from "@/features/customer-card/components/collapsible-section";
 import { HelpRosterSection } from "@/features/customer-card/components/help-roster-section";
 import { ProfileProposalsInline } from "@/features/customer-card/components/profile-proposals-inline";
@@ -129,7 +130,7 @@ export default async function CustomerCardPage({
           </div>
         )}
 
-        {/* ── §1 顧客情報 ─────────────────────────────── */}
+        {/* ── §1 顧客情報 ── 覚えたら見ない情報なのでタップで開閉 ── */}
         <div className="border-t border-line pt-4">
           <CustomerInfoSection
             customer={customer}
@@ -169,49 +170,45 @@ export default async function CustomerCardPage({
           </div>
         )}
 
-        {/* ── §3 その他メモ ──────────────────────────── */}
-        <div className="border-t border-ink/[0.06] pt-2">
-          <CollapsibleSection title="その他メモ">
-            <MemoSection customer={customer} memo={context.memo} />
-            <RefreshMemoButton
-              customerId={customer.id}
-              castId={castId}
-              current={{
-                last_topic: context.memo?.last_topic ?? null,
-                service_tips: context.memo?.service_tips ?? null,
-                next_topics: context.memo?.next_topics ?? null,
-              }}
-            />
-          </CollapsibleSection>
+        {/* ── §3 連絡履歴（LINE・連絡）── 重要なので常時表示（畳まない）── */}
+        <div className="border-t border-ink/[0.06] pt-4 space-y-4">
+          <SectionHeader title="LINE・連絡" />
+          <LineExchangeButton
+            customerId={customer.id}
+            castId={castId}
+            initiallyExchanged={customer.funnel_stage === "line_exchanged"}
+            initialExchangedAt={customer.line_exchanged_at ?? null}
+          />
+          <LineCommunicationSummary
+            customerId={customer.id}
+            customerName={customer.name}
+            castName={allCasts.find((c) => c.id === castId)?.name ?? "キャスト"}
+            screenshots={screenshots}
+          />
+          <LineImportPanel
+            customer={customer}
+            memo={context.memo}
+            screenshots={screenshots}
+          />
+          <LineHistoryTimeline
+            screenshots={screenshots}
+            customerName={customer.name}
+          />
         </div>
 
-        {/* ── §4 LINE・連絡 ──────────────────────────── */}
-        <div className="border-t border-ink/[0.06] pt-2">
-          <CollapsibleSection title="LINE・連絡">
-            <LineExchangeButton
-              customerId={customer.id}
-              castId={castId}
-              initiallyExchanged={customer.funnel_stage === "line_exchanged"}
-              initialExchangedAt={customer.line_exchanged_at ?? null}
-            />
-            <LineCommunicationSummary
-              customerId={customer.id}
-              customerName={customer.name}
-              castName={
-                allCasts.find((c) => c.id === castId)?.name ?? "キャスト"
-              }
-              screenshots={screenshots}
-            />
-            <LineImportPanel
-              customer={customer}
-              memo={context.memo}
-              screenshots={screenshots}
-            />
-            <LineHistoryTimeline
-              screenshots={screenshots}
-              customerName={customer.name}
-            />
-          </CollapsibleSection>
+        {/* ── §4 個人メモ ── 重要なので常時表示（畳まない）──── */}
+        {/* 見出しは MemoCard（"個人メモ"）が持つので SectionHeader は不要 */}
+        <div className="border-t border-ink/[0.06] pt-4 space-y-4">
+          <MemoSection customer={customer} memo={context.memo} />
+          <RefreshMemoButton
+            customerId={customer.id}
+            castId={castId}
+            current={{
+              last_topic: context.memo?.last_topic ?? null,
+              service_tips: context.memo?.service_tips ?? null,
+              next_topics: context.memo?.next_topics ?? null,
+            }}
+          />
         </div>
 
         <ActionButtons customerId={customer.id} />

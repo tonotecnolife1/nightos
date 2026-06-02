@@ -1,10 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { AlertTriangle, Lock, MessageSquarePlus, Pencil } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  Lock,
+  MessageSquarePlus,
+  Pencil,
+} from "lucide-react";
 import { Card, StoreInfoCard } from "@/components/nightos/card";
 import type { Customer } from "@/types/nightos";
 import { CustomerEditSheet } from "./customer-edit-sheet";
+
+/** 顧客ごとに「閉じた」状態を覚えるための localStorage キー接頭辞 */
+const COLLAPSED_PREFIX = "nightos:customer-info-collapsed:";
 
 interface Props {
   customer: Customer;
@@ -31,14 +41,54 @@ export function CustomerInfoSection({
   approverCastId,
 }: Props) {
   const [editing, setEditing] = useState(false);
+  // 覚えたら見ない情報なので、キャストが畳んだ状態を顧客ごとに記憶する。
+  // 初期表示は「開いた」状態（店舗からの注意書きなどを隠さない）→ ハイドレーション後に復元。
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.localStorage.getItem(COLLAPSED_PREFIX + customer.id) === "1") {
+      setOpen(false);
+    }
+  }, [customer.id]);
+
+  const toggle = () => {
+    setOpen((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(
+          COLLAPSED_PREFIX + customer.id,
+          next ? "0" : "1",
+        );
+      }
+      return next;
+    });
+  };
+
+  // 畳んだときに「誰か」だけは分かるよう、ひと目の要約を作る
+  const summary =
+    [customer.nickname, customer.job].filter(Boolean).join(" ・ ") ||
+    "呼び名・基本情報・店舗からの共有メモ";
 
   return (
     <section className="space-y-3">
-      {/* セクション見出し + 編集 / 提案ボタン */}
+      {/* セクション見出し（タップで開閉） + 編集 / 提案ボタン */}
       <header className="flex items-center justify-between px-1">
-        <h2 className="font-display text-[20px] leading-tight font-medium text-ink">
-          顧客情報
-        </h2>
+        <button
+          type="button"
+          onClick={toggle}
+          aria-expanded={open}
+          className="flex items-center gap-1.5 text-left"
+        >
+          <h2 className="font-display text-[20px] leading-tight font-medium text-ink">
+            顧客情報
+          </h2>
+          {open ? (
+            <ChevronUp size={16} className="text-ink-mute" />
+          ) : (
+            <ChevronDown size={16} className="text-ink-mute" />
+          )}
+        </button>
         <button
           type="button"
           onClick={() => setEditing(true)}
@@ -58,14 +108,31 @@ export function CustomerInfoSection({
         </button>
       </header>
 
-      {/* 🌸 入力推奨: 呼び名 */}
-      <NicknameRow nickname={customer.nickname ?? null} onEdit={() => setEditing(true)} />
+      {open ? (
+        <>
+          {/* 🌸 入力推奨: 呼び名 */}
+          <NicknameRow
+            nickname={customer.nickname ?? null}
+            onEdit={() => setEditing(true)}
+          />
 
-      {/* ✏️ 編集可能: 誕生日 / 職業 / 好きなお酒 / 活動エリア */}
-      <EditableAttributesCard customer={customer} onEdit={() => setEditing(true)} />
+          {/* ✏️ 編集可能: 誕生日 / 職業 / 好きなお酒 / 活動エリア */}
+          <EditableAttributesCard customer={customer} onEdit={() => setEditing(true)} />
 
-      {/* 🔒 閲覧のみ: 店舗からの共有情報 */}
-      <StoreSharedInfoCard customer={customer} />
+          {/* 🔒 閲覧のみ: 店舗からの共有情報 */}
+          <StoreSharedInfoCard customer={customer} />
+        </>
+      ) : (
+        // 畳んだ状態: ひと目の要約だけ。タップで再表示。
+        <button
+          type="button"
+          onClick={toggle}
+          className="w-full text-left rounded-card border border-ink/[0.06] bg-pearl-warm/40 px-4 py-2.5 hover:border-gold/40 transition"
+        >
+          <p className="text-body-sm text-ink-soft truncate">{summary}</p>
+          <p className="text-[10px] text-ink-mute mt-0.5">タップで詳しく表示</p>
+        </button>
+      )}
 
       <CustomerEditSheet
         customer={customer}
