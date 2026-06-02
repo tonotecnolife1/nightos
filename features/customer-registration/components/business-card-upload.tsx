@@ -86,9 +86,15 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
   };
 
   const apply = () => {
-    if (!result) return;
+    if (!result || !result.name?.trim()) return;
     onApply(result, preview);
     reset();
+  };
+
+  const updateField = (key: keyof ExtractedBusinessCard, value: string) => {
+    setResult((prev) =>
+      prev ? { ...prev, [key]: value.trim() === "" ? null : value } : prev,
+    );
   };
 
   const confidenceBadge =
@@ -172,6 +178,9 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
             <span className="text-label-sm text-ink-soft">
               抽出された情報
             </span>
+            <span className="text-[9px] text-ink-mute">
+              （修正できます）
+            </span>
             <span
               className={cn(
                 "text-[9px] px-1.5 py-0.5 rounded-badge border font-medium",
@@ -185,27 +194,49 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
             )}
           </div>
 
-          <div className="space-y-1 text-body-sm bg-pearl-warm rounded-btn border border-pearl-soft px-2.5 py-2">
-            <ResultRow label="お名前" value={result.name} />
-            <ResultRow label="読み仮名" value={result.name_kana} />
-            <ResultRow label="職業" value={result.job} />
-            <ResultRow label="店舗メモ" value={result.store_memo} />
+          <div className="space-y-1.5 bg-pearl-warm rounded-btn border border-pearl-soft px-2.5 py-2.5">
+            <EditableRow
+              label="お名前"
+              value={result.name}
+              onChange={(v) => updateField("name", v)}
+              placeholder="例: 田中 太郎"
+            />
+            <EditableRow
+              label="読み仮名"
+              value={result.name_kana}
+              onChange={(v) => updateField("name_kana", v)}
+              placeholder="例: たなか たろう"
+            />
+            <EditableRow
+              label="職業"
+              value={result.job}
+              onChange={(v) => updateField("job", v)}
+              placeholder="会社名・肩書など"
+            />
+            <EditableRow
+              label="店舗メモ"
+              value={result.store_memo}
+              onChange={(v) => updateField("store_memo", v)}
+              placeholder="メモ（任意）"
+              multiline
+            />
           </div>
 
-          {!result.name ? (
+          {!result.name?.trim() && (
             <p className="text-[10px] text-wine-deep">
-              お名前が読み取れませんでした。別の写真をお試しください。
+              お名前を入力すると反映できます。読み取れなかった場合は手で入力するか、別の写真をお試しください。
             </p>
-          ) : (
-            <button
-              type="button"
-              onClick={apply}
-              className="w-full h-10 rounded-pill bg-wine-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em]"
-            >
-              <Check size={14} />
-              フォームに反映する
-            </button>
           )}
+
+          <button
+            type="button"
+            onClick={apply}
+            disabled={!result.name?.trim()}
+            className="w-full h-10 rounded-pill bg-wine-deep text-pearl-light shadow-luxe inline-flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform text-label-md font-semibold tracking-[0.04em] disabled:opacity-40 disabled:shadow-none disabled:active:scale-100"
+          >
+            <Check size={14} />
+            フォームに反映する
+          </button>
         </div>
       )}
 
@@ -230,15 +261,46 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
   );
 }
 
-function ResultRow({ label, value }: { label: string; value: string | null }) {
+function EditableRow({
+  label,
+  value,
+  onChange,
+  placeholder,
+  multiline = false,
+}: {
+  label: string;
+  value: string | null;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  multiline?: boolean;
+}) {
+  const fieldClass = cn(
+    "flex-1 min-w-0 rounded-btn border border-pearl-soft bg-pearl-light px-2 py-1.5",
+    "text-body-sm text-ink placeholder:text-ink-mute",
+    "focus:outline-none focus:border-gold/60 focus:ring-1 focus:ring-gold/30",
+  );
   return (
-    <div className="flex gap-2">
-      <span className="text-[10px] text-ink-mute shrink-0 w-16 pt-0.5">
+    <label className="flex gap-2 items-start">
+      <span className="text-[10px] text-ink-mute shrink-0 w-16 pt-2">
         {label}
       </span>
-      <span className="text-ink flex-1 break-words">
-        {value ?? <span className="text-ink-mute">—</span>}
-      </span>
-    </div>
+      {multiline ? (
+        <textarea
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          rows={2}
+          className={cn(fieldClass, "resize-none")}
+        />
+      ) : (
+        <input
+          type="text"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className={fieldClass}
+        />
+      )}
+    </label>
   );
 }
