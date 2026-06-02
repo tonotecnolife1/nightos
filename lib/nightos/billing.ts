@@ -13,6 +13,12 @@
 /** 基本プラン名 (UI 表示)。 */
 export const BASE_PLAN_NAME = "無料プラン";
 
+/** バナーに表示する無料プランの呼称。 */
+export const FREE_PLAN_LABEL = "無制限プラン（無料）";
+
+/** 無料期間最終日 (YYYY-MM-DD)。バナー表示用。 */
+export const FREE_PERIOD_END = "2026-08-31";
+
 /** バナー / 料金欄で使う一言。不安を煽らず事実だけを伝える。 */
 export const PLAN_TAGLINE = "基本無料・必要に応じて課金";
 
@@ -38,4 +44,10 @@ export function getPlanStatus(): PlanStatus {
     freeBaseline: true,
     meteredBillingReady: METERED_BILLING_READY,
   };
+}
+
+/** "2026-08-31" → "2026年8月31日"。 */
+export function formatJpDate(ymd: string): string {
+  const [y, m, d] = ymd.split("-").map(Number);
+  return `${y}年${m}月${d}日`;
 }
