@@ -14,6 +14,15 @@ export interface ExtractedBusinessCard {
   confidence: "high" | "medium" | "low";
 }
 
+/** 反映対象として選べる項目（お名前は必須なので常に反映）。 */
+type SelectableField = "name_kana" | "job" | "store_memo";
+
+const DEFAULT_SELECTED: Record<SelectableField, boolean> = {
+  name_kana: true,
+  job: true,
+  store_memo: true,
+};
+
 interface Props {
   /**
    * 抽出された情報を「適用」ボタンで確定した時に呼ばれる。
@@ -37,12 +46,15 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ExtractedBusinessCard | null>(null);
+  const [selected, setSelected] =
+    useState<Record<SelectableField, boolean>>(DEFAULT_SELECTED);
   const [isStub, setIsStub] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const reset = () => {
     setPreview(null);
     setResult(null);
+    setSelected(DEFAULT_SELECTED);
     setIsStub(false);
     setError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -74,6 +86,11 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
           ...AI_FETCH_OPTIONS,
         });
         setResult(data.result);
+        setSelected({
+          name_kana: !!data.result.name_kana,
+          job: !!data.result.job,
+          store_memo: !!data.result.store_memo,
+        });
         setIsStub(data.isStub);
       } catch (err) {
         console.error("[business-card-upload] failed:", err);
@@ -87,14 +104,30 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
 
   const apply = () => {
     if (!result || !result.name?.trim()) return;
-    onApply(result, preview);
+    // チェックを外した項目は反映しない（お名前は必須なので常に反映）。
+    onApply(
+      {
+        ...result,
+        name_kana: selected.name_kana ? result.name_kana : null,
+        job: selected.job ? result.job : null,
+        store_memo: selected.store_memo ? result.store_memo : null,
+      },
+      preview,
+    );
     reset();
   };
 
   const updateField = (key: keyof ExtractedBusinessCard, value: string) => {
-    setResult((prev) =>
-      prev ? { ...prev, [key]: value.trim() === "" ? null : value } : prev,
-    );
+    const next = value.trim() === "" ? null : value;
+    setResult((prev) => (prev ? { ...prev, [key]: next } : prev));
+    // 空欄に手入力したら、その項目は自動でチェックを付ける。
+    if (next && key !== "name" && key !== "confidence") {
+      setSelected((prev) => ({ ...prev, [key]: true }));
+    }
+  };
+
+  const toggleField = (key: SelectableField) => {
+    setSelected((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const confidenceBadge =
@@ -179,7 +212,7 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
               抽出された情報
             </span>
             <span className="text-[9px] text-ink-mute">
-              （修正できます）
+              （登録する項目を選択・修正できます）
             </span>
             <span
               className={cn(
@@ -200,18 +233,23 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
               value={result.name}
               onChange={(v) => updateField("name", v)}
               placeholder="例: 田中 太郎"
+              required
             />
             <EditableRow
               label="読み仮名"
               value={result.name_kana}
               onChange={(v) => updateField("name_kana", v)}
               placeholder="例: たなか たろう"
+              selected={selected.name_kana}
+              onToggle={() => toggleField("name_kana")}
             />
             <EditableRow
               label="職業"
               value={result.job}
               onChange={(v) => updateField("job", v)}
               placeholder="会社名・肩書など"
+              selected={selected.job}
+              onToggle={() => toggleField("job")}
             />
             <EditableRow
               label="店舗メモ"
@@ -219,6 +257,8 @@ export function BusinessCardUpload({ onApply, mode = "new" }: Props) {
               onChange={(v) => updateField("store_memo", v)}
               placeholder="メモ（任意）"
               multiline
+              selected={selected.store_memo}
+              onToggle={() => toggleField("store_memo")}
             />
           </div>
 
@@ -267,22 +307,41 @@ function EditableRow({
   onChange,
   placeholder,
   multiline = false,
+  required = false,
+  selected = true,
+  onToggle,
 }: {
   label: string;
   value: string | null;
   onChange: (value: string) => void;
   placeholder?: string;
   multiline?: boolean;
+  /** お名前など、常に反映する必須項目。チェックは固定表示。 */
+  required?: boolean;
+  /** この項目を反映するか。required の場合は無視。 */
+  selected?: boolean;
+  onToggle?: () => void;
 }) {
+  const included = required || selected;
   const fieldClass = cn(
     "flex-1 min-w-0 rounded-btn border border-pearl-soft bg-pearl-light px-2 py-1.5",
     "text-body-sm text-ink placeholder:text-ink-mute",
     "focus:outline-none focus:border-gold/60 focus:ring-1 focus:ring-gold/30",
+    !included && "opacity-50",
   );
   return (
-    <label className="flex gap-2 items-start">
-      <span className="text-[10px] text-ink-mute shrink-0 w-16 pt-2">
+    <div className="flex gap-2 items-start">
+      <input
+        type="checkbox"
+        checked={included}
+        disabled={required}
+        onChange={() => onToggle?.()}
+        aria-label={`${label}を登録する`}
+        className="mt-2 w-4 h-4 shrink-0 accent-wine-deep disabled:opacity-60"
+      />
+      <span className="text-[10px] text-ink-mute shrink-0 w-14 pt-2">
         {label}
+        {required && <span className="text-wine-deep">＊</span>}
       </span>
       {multiline ? (
         <textarea
@@ -301,6 +360,6 @@ function EditableRow({
           className={fieldClass}
         />
       )}
-    </label>
+    </div>
   );
 }
