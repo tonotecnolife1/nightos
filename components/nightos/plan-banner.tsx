@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Clock, Sparkles } from "lucide-react";
 import {
   formatJpDate,
-  formatMonthlyPrice,
   getPlanStatus,
   type PlanStatus,
 } from "@/lib/nightos/billing";
@@ -39,11 +38,6 @@ export function PlanBanner() {
               <div className="text-body-md font-semibold text-ink">
                 無料期間はあと{status.daysRemaining}日
               </div>
-              <p className="text-body-sm text-ink-soft mt-1">
-                {formatJpDate(status.paidStart)}から
-                {formatMonthlyPrice(status.monthlyPriceYen)}の有料プランに移行します。
-                お支払い方法を登録すると、利用が途切れず自動で継続できます。
-              </p>
             </div>
           </div>
         </div>
