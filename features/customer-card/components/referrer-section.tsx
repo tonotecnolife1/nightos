@@ -12,6 +12,7 @@ import {
   resolveReferrerRequest,
   type ReferrerChangeRequest,
 } from "@/features/customer-management/lib/referrer-change-store";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 
 export interface ReferrerCandidate {
   id: string;
@@ -48,6 +49,7 @@ export function ReferrerSection({
   currentCastName,
 }: Props) {
   const router = useRouter();
+  const relation = useVenueConfig().labels.customerRelation;
   const [override, setOverride] = useState<string | null | undefined>(undefined);
   const [pending, setPending] = useState<ReferrerChangeRequest | null>(null);
   const [editing, setEditing] = useState(false);
@@ -185,7 +187,7 @@ export function ReferrerSection({
           <div className="flex items-start gap-1.5 rounded-xl bg-warning/10 border border-warning/30 px-3 py-2">
             <Clock size={13} className="text-warning shrink-0 mt-0.5" />
             <p className="text-[11px] text-ink-soft leading-relaxed">
-              紹介者の担当へ変更依頼を送信しました。承認されると反映されます。
+              紹介者の{relation}へ変更依頼を送信しました。承認されると反映されます。
             </p>
           </div>
         )}
@@ -342,7 +344,7 @@ export function ReferrerSection({
               </button>
             </div>
             <p className="text-[10px] text-ink-mute leading-relaxed">
-              紹介者の担当キャストの承認後に反映されます。
+              紹介者の{relation}キャストの承認後に反映されます。
             </p>
           </div>
         )}
