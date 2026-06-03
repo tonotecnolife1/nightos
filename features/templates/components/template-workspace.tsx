@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Loader2, Sparkles } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CustomerContextPicker } from "@/features/ruri-mama/components/customer-context-picker";
 import { AI_FETCH_OPTIONS, apiFetchJson, toUserMessage } from "@/lib/nightos/api-fetch";
 import { useCastId } from "@/lib/nightos/cast-context";
@@ -17,7 +17,14 @@ import {
   type Template,
   type TemplateCategory,
 } from "../data/templates";
-import type { CustomTemplate } from "../lib/custom-template-store";
+import {
+  applyOverride,
+  loadTemplateOverrides,
+  resetTemplateOverride,
+  saveTemplateOverride,
+  type CustomTemplate,
+  type TemplateOverride,
+} from "../lib/custom-template-store";
 
 export interface CustomerLookup {
   customer: Customer;
@@ -58,6 +65,28 @@ export function TemplateWorkspace({
   // Custom user templates loaded from localStorage
   const [allCustom, setAllCustom] = useState<CustomTemplate[]>([]);
   const customForCategory = allCustom.filter((t) => t.category === category);
+
+  // Per-cast edits applied on top of the built-in (定型) templates
+  const [overrides, setOverrides] = useState<Record<string, TemplateOverride>>(
+    {},
+  );
+
+  useEffect(() => {
+    setOverrides(loadTemplateOverrides(castId));
+  }, [castId]);
+
+  const handleSaveOverride = (
+    templateId: string,
+    next: { label: string; body: string; description: string },
+  ) => {
+    saveTemplateOverride(castId, templateId, next);
+    setOverrides(loadTemplateOverrides(castId));
+  };
+
+  const handleResetOverride = (templateId: string) => {
+    resetTemplateOverride(castId, templateId);
+    setOverrides(loadTemplateOverrides(castId));
+  };
 
   const cacheKey = customerId ? `${customerId}::${category}` : "";
   const aiTemplate = cacheKey ? aiTemplates[cacheKey] : undefined;
@@ -258,15 +287,22 @@ export function TemplateWorkspace({
         <h3 className="text-label-md text-ink-soft font-medium">
           定型テンプレート
         </h3>
-        {visibleTemplates.map((t) => (
-          <TemplateCard
-            key={t.id}
-            template={t}
-            filled={ctx ? fillTemplate(t.body, ctx) : t.body}
-            customerId={customerId}
-            disabled={!customerId}
-          />
-        ))}
+        {visibleTemplates.map((base) => {
+          const t = applyOverride(base, overrides);
+          return (
+            <TemplateCard
+              key={t.id}
+              template={t}
+              filled={ctx ? fillTemplate(t.body, ctx) : t.body}
+              customerId={customerId}
+              disabled={!customerId}
+              editable
+              isOverridden={!!overrides[t.id]}
+              onSaveEdit={(next) => handleSaveOverride(t.id, next)}
+              onResetEdit={() => handleResetOverride(t.id)}
+            />
+          );
+        })}
       </div>
     </div>
   );
