@@ -204,7 +204,9 @@ function OptionCard({
         )}
         <div
           className={cn(
-            "rounded-btn px-3 py-2 text-body-sm whitespace-pre-wrap leading-relaxed text-ink",
+            // 通常のチャット文（message-bubble の text-[12px]/leading-[1.7]）と
+            // サイズを完全に揃え、文面とやり取りの文字サイズの差をなくす
+            "rounded-btn px-3 py-2 text-[12px] whitespace-pre-wrap leading-[1.7] text-ink",
             hasMessage ? "bg-champagne-soft/60 border border-gold/20" : "",
           )}
         >
