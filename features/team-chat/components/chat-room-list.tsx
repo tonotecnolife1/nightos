@@ -59,17 +59,26 @@ const ROOM_TABS: { id: FilterTab; label: string }[] = [
   { id: "dm", label: "個別連絡" },
 ];
 
-/**
- * トーク絞り込みとは別概念の「人・集めたもの」。lucide アイコン付きで、常に
- * champagne の地を敷いてトーク絞り込みと視覚的に区別する。
- * 「友達」は LINE の友だちタブ相当（チャットページ内の友達一覧）。
- */
-const COLLECTION_TABS: {
+type CollectionTab = {
   id: "friends" | "pinned" | "learnings";
   label: string;
   Icon: LucideIcon;
-}[] = [
+};
+
+/**
+ * 連絡先セクション。「友達」は LINE の友だちタブ相当（チャットページ内の
+ * 友達一覧）で、人とのつながりを表す。トーク絞り込み・保存/学びのどちらとも
+ * 別概念なので独立したセクションとして hairline で区切る。
+ */
+const CONTACT_TABS: CollectionTab[] = [
   { id: "friends", label: "友達", Icon: Users },
+];
+
+/**
+ * 「集めたもの」セクション。メッセージから保存したもの（保存）と、そこから
+ * さくらママが整理した学び（学び）。連絡先（人）とは別概念。
+ */
+const COLLECTION_TABS: CollectionTab[] = [
   { id: "pinned", label: "保存", Icon: Bookmark },
   { id: "learnings", label: "学び", Icon: BookOpen },
 ];
@@ -246,33 +255,35 @@ export function ChatRoomList({
           </button>
         ))}
 
-        {/* champagne hairline — ここから先はトークではなく「集めたもの」 */}
+        {/* champagne hairline — ここから先はトークではなく「連絡先（人）」 */}
         <span
           className="mx-1.5 h-5 w-px shrink-0 self-center bg-gradient-to-b from-transparent via-gold/40 to-transparent"
           aria-hidden
         />
 
-        {COLLECTION_TABS.map(({ id, label, Icon }) => {
-          const active = tab === id;
-          return (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setTab(id)}
-              className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-pill text-label-sm font-medium transition-colors whitespace-nowrap tracking-[0.04em]",
-                active
-                  ? id === "learnings"
-                    ? "bg-success/15 text-success border border-success/30"
-                    : "bg-champagne-soft/70 text-wine-deep border border-gold/40"
-                  : "bg-champagne-soft/25 text-gold-deep border border-gold/15 hover:bg-champagne-soft/45 hover:text-wine-deep",
-              )}
-            >
-              <Icon size={13} className="shrink-0" />
-              {label}
-            </button>
-          );
-        })}
+        {CONTACT_TABS.map((t) => (
+          <CollectionTabButton
+            key={t.id}
+            tab={t}
+            active={tab === t.id}
+            onClick={() => setTab(t.id)}
+          />
+        ))}
+
+        {/* champagne hairline — ここから先は「集めたもの（保存 / 学び）」 */}
+        <span
+          className="mx-1.5 h-5 w-px shrink-0 self-center bg-gradient-to-b from-transparent via-gold/40 to-transparent"
+          aria-hidden
+        />
+
+        {COLLECTION_TABS.map((t) => (
+          <CollectionTabButton
+            key={t.id}
+            tab={t}
+            active={tab === t.id}
+            onClick={() => setTab(t.id)}
+          />
+        ))}
       </div>
 
       {/* Collection tabs */}
@@ -335,6 +346,36 @@ export function ChatRoomList({
         />
       )}
     </div>
+  );
+}
+
+/** 連絡先 / 集めたもののピル。champagne の地で、トーク絞り込みと視覚的に区別する。 */
+function CollectionTabButton({
+  tab,
+  active,
+  onClick,
+}: {
+  tab: CollectionTab;
+  active: boolean;
+  onClick: () => void;
+}) {
+  const { id, label, Icon } = tab;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-pill text-label-sm font-medium transition-colors whitespace-nowrap tracking-[0.04em]",
+        active
+          ? id === "learnings"
+            ? "bg-success/15 text-success border border-success/30"
+            : "bg-champagne-soft/70 text-wine-deep border border-gold/40"
+          : "bg-champagne-soft/25 text-gold-deep border border-gold/15 hover:bg-champagne-soft/45 hover:text-wine-deep",
+      )}
+    >
+      <Icon size={13} className="shrink-0" />
+      {label}
+    </button>
   );
 }
 
