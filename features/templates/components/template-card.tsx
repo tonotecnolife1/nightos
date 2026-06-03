@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, Check, Copy, Users } from "lucide-react";
+import { AlertCircle, Check, Copy } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { Badge } from "@/components/nightos/badge";
 import { Card } from "@/components/nightos/card";
@@ -77,16 +77,19 @@ export function TemplateCard({
   }, [customerId, template.id]);
 
   const handleCopy = () => {
-    if (disabled || !customerId) return;
+    if (disabled) return;
     startTransition(async () => {
       await copyToClipboard(filled);
-      await recordFollowLogAction({
-        customerId,
-        templateType: template.category,
-      });
-      recordUsage(template.id, customerId, castId);
+      // Only record a follow-up log when a customer is in context.
+      if (customerId) {
+        await recordFollowLogAction({
+          customerId,
+          templateType: template.category,
+        });
+        recordUsage(template.id, customerId, castId);
+        setUsedBefore(true);
+      }
       setCopied(true);
-      setUsedBefore(true);
       setTimeout(() => setCopied(false), 2200);
     });
   };
@@ -116,10 +119,10 @@ export function TemplateCard({
         <button
           type="button"
           onClick={handleCopy}
-          disabled={disabled || pending || !customerId}
+          disabled={disabled || pending}
           className={cn(
             "inline-flex items-center gap-1.5 h-10 px-5 rounded-pill text-label-md font-semibold tracking-[0.04em] transition-all",
-            disabled || !customerId
+            disabled
               ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
               : copied
                 ? "bg-success text-pearl-light shadow-soft"
@@ -129,12 +132,12 @@ export function TemplateCard({
           {copied ? (
             <>
               <Check size={14} />
-              コピー＆記録完了
+              {customerId ? "コピー＆記録完了" : "コピーしました"}
             </>
           ) : (
             <>
               <Copy size={14} />
-              コピーしてLINEへ
+              {customerId ? "コピーしてLINEへ" : "コピー"}
             </>
           )}
         </button>
