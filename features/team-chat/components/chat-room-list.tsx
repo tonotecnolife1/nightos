@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import {
   BookOpen,
   Bookmark,
@@ -41,6 +41,13 @@ interface Props {
   currentCastId: string;
   /** 「友達」タブ内の連絡先交換（マイQR）用の自分のペイロード。 */
   myPayload: ContactPayload;
+  /**
+   * 新規チャット作成ボタン (NewDmSheet)。検索バーの横に並べる。
+   * ボトムシートは position:fixed なので、backdrop-filter を持つヘッダーの
+   * 内側に置くと fixed の基準がずれてシートが画面外に出る。検索バー横
+   * (filter 祖先なし) に置くことでビューポート基準に保つ。
+   */
+  newChatButton?: ReactNode;
 }
 
 type FilterTab = "all" | "channels" | "dm" | "friends" | "pinned" | "learnings";
@@ -82,7 +89,12 @@ function baseRoomName(room: ChatRoom, currentCastId: string): string {
     .join(", ");
 }
 
-export function ChatRoomList({ rooms, currentCastId, myPayload }: Props) {
+export function ChatRoomList({
+  rooms,
+  currentCastId,
+  myPayload,
+  newChatButton,
+}: Props) {
   const [tab, setTab] = useState<FilterTab>("all");
   const [query, setQuery] = useState("");
   // ユーザーがつけたグループ名（localStorage）。一覧でも編集・反映する。
@@ -175,10 +187,10 @@ export function ChatRoomList({ rooms, currentCastId, myPayload }: Props) {
 
   return (
     <div>
-      {/* Search bar — room tabs only */}
+      {/* Search bar — room tabs only。新規チャット作成ボタンを右隣に並べる。 */}
       {!collection && (
-        <div className="px-5 pt-3">
-          <label className="flex items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 shadow-soft focus-within:border-wine-deep transition">
+        <div className="px-5 pt-3 flex items-center gap-2">
+          <label className="flex flex-1 min-w-0 items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 shadow-soft focus-within:border-wine-deep transition">
             <Search size={14} className="text-ink-mute shrink-0" />
             <input
               value={query}
@@ -212,6 +224,7 @@ export function ChatRoomList({ rooms, currentCastId, myPayload }: Props) {
               <ScanLine size={17} />
             </button>
           </label>
+          {newChatButton}
         </div>
       )}
 
