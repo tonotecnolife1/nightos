@@ -12,6 +12,7 @@ import {
 } from "@/lib/nightos/supabase-queries";
 import { getCurrentCastId, getCurrentVenueType } from "@/lib/nightos/auth";
 import { calculateFunnelStats } from "@/lib/nightos/referral-tree";
+import { getVenueConfig } from "@/lib/nightos/venue-config";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,7 @@ export default async function CastCustomerListPage({ searchParams }: Props) {
     getCurrentVenueType(),
   ]);
   const isCabaret = venueType === "cabaret";
+  const relation = getVenueConfig(venueType).labels.customerRelation;
 
   // 担当（メイン）= 自分が担当の顧客を表示する。
   // 自分が担当 (manager_cast_id === castId) の顧客に加えて、
@@ -92,7 +94,7 @@ export default async function CastCustomerListPage({ searchParams }: Props) {
               まだ顧客が登録されていません
             </p>
             <p className="text-body-sm text-ink-soft">
-              担当のお客様を追加すると、ここから来店履歴やボトル、メモを管理できます。
+              {relation}のお客様を追加すると、ここから来店履歴やボトル、メモを管理できます。
             </p>
             <Link
               href="/cast/customers/new"

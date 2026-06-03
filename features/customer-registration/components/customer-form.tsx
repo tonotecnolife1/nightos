@@ -18,6 +18,7 @@ import { BirthdayInput } from "@/components/nightos/birthday-input";
 import { TextInput } from "@/components/nightos/input";
 import { TextAreaInput } from "@/components/nightos/textarea";
 import { useAutoKana } from "@/lib/nightos/use-auto-kana";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 import type { Cast, Customer, CustomerCategory } from "@/types/nightos";
 import { createCustomerAction } from "../actions";
 import {
@@ -82,6 +83,10 @@ export function CustomerForm({
   const [showOptional, setShowOptional] = useState(false);
 
   const defaultCastId = lockedCastId ?? casts[0]?.id ?? "";
+
+  // 業態別の関係性ラベル（club: 担当 / cabaret: 指名）。
+  const { labels } = useVenueConfig();
+  const relation = labels.customerRelation;
 
   const [name, setName] = useState("");
   const [nameKana, setNameKana] = useState("");
@@ -295,7 +300,7 @@ export function CustomerForm({
         <div className="flex items-center gap-1.5">
           <Crown size={13} className="text-gold-deep" />
           <label className="text-label-md text-ink font-medium">
-            {lockedCastId ? "担当" : "担当キャスト"}
+            {lockedCastId ? relation : `${relation}キャスト`}
           </label>
         </div>
         <select
@@ -310,7 +315,7 @@ export function CustomerForm({
         </select>
         {lockedCastId && (
           <p className="text-[10px] text-ink-muted pl-1">
-            自分以外を選ぶと、その方が担当のヘルプ客として登録されます
+            自分以外を選ぶと、その方が{relation}のヘルプ客として登録されます
           </p>
         )}
       </div>

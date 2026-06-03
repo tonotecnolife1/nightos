@@ -10,6 +10,7 @@ import {
   countReferrals,
 } from "@/lib/nightos/referral-tree";
 import { cn, formatCustomerName } from "@/lib/utils";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 import { FunnelBadge } from "@/features/customer-card/components/funnel-badge";
 import { EmptyState } from "@/components/nightos/empty-state";
 
@@ -336,6 +337,7 @@ function ReferralNodeCard({
     : null;
   const cast = castById.get(node.customer.cast_id);
   const basePath = useContext(CustomerHrefContext);
+  const relation = useVenueConfig().labels.customerRelation;
 
   return (
     <Link
@@ -365,7 +367,7 @@ function ReferralNodeCard({
       </div>
       {/* 2行目: 担当：X（、ヘルプ：Y）、職業 */}
       <div className="text-[11px] text-ink-soft mt-1 truncate">
-        <span>担当：</span>
+        <span>{relation}：</span>
         <span className="text-ink font-medium">
           {manager?.name ?? cast?.name ?? "—"}
         </span>
@@ -419,9 +421,10 @@ function ManagerBlock({
 }: {
   group: import("@/lib/nightos/referral-tree").CastBasedNode;
 }) {
+  const relation = useVenueConfig().labels.customerRelation;
   const managerLabel = group.manager
     ? `${group.manager.name}さん`
-    : "担当未割り当て";
+    : `${relation}未割り当て`;
 
   return (
     <div className="flex flex-col gap-2 rounded-card bg-champagne-soft/60/20 border border-gold/30 p-2.5">
@@ -459,9 +462,10 @@ function CastBucket({
   const [expanded, setExpanded] = useState(true);
   const starCtx = useContext(StarContext);
   const isHelp = bucket.kind === "help";
+  const relation = useVenueConfig().labels.customerRelation;
   const castLabel = bucket.cast
-    ? `${bucket.cast.name}さん${isHelp ? "ヘルプ" : "担当"}`
-    : "担当未割り当て";
+    ? `${bucket.cast.name}さん${isHelp ? "ヘルプ" : relation}`
+    : `${relation}未割り当て`;
   const sortedCustomers = sortStarredFirst(
     bucket.customers,
     (c) => c.id,
