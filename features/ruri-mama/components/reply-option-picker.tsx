@@ -205,11 +205,12 @@ function OptionCard({
             送る文面
           </div>
         )}
-        {/* iPhone mini でもカード全体が画面に収まるよう、本文は小さめ (11px) +
-            行間も詰めて縦の高さを抑える */}
+        {/* 送る文面は実際にコピーして送る本文。通常のチャット文
+            （message-bubble の text-[12px]/leading-[1.7]）とサイズを揃え、
+            やり取りとパターン文面の文字サイズの段差をなくす */}
         <div
           className={cn(
-            "rounded-btn px-2.5 py-2 text-[11px] whitespace-pre-wrap leading-[1.5] text-ink",
+            "rounded-btn px-3 py-2 text-[12px] whitespace-pre-wrap leading-[1.7] text-ink",
             hasMessage ? "bg-champagne-soft/60 border border-gold/20" : "",
           )}
         >
