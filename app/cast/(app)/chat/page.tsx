@@ -1,4 +1,5 @@
 import { MoreMenu } from "@/components/nightos/more-menu";
+import { PageHeader } from "@/components/nightos/page-header";
 import { ChatRoomList } from "@/features/team-chat/components/chat-room-list";
 import { NewDmSheet } from "@/features/team-chat/components/new-dm-sheet";
 import { getStoreCastsAction } from "@/features/team-chat/actions";
@@ -36,20 +37,15 @@ export default async function ChatListPage() {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex items-center justify-between px-5 pt-10 pb-3">
-        <div>
-          <div className="text-label-xs tracking-luxe text-wine-deep mb-1.5">
-            NIGHTOS
+      <PageHeader
+        title="チャット"
+        right={
+          <div className="flex items-center gap-1.5">
+            <NewDmSheet storeCasts={storeCasts} />
+            <MoreMenu />
           </div>
-          <h1 className="font-serif text-[28px] leading-[1.2] font-medium tracking-[0.02em] text-ink">
-            チャット
-          </h1>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <NewDmSheet storeCasts={storeCasts} />
-          <MoreMenu />
-        </div>
-      </div>
+        }
+      />
       <ChatRoomList rooms={rooms} currentCastId={castId} myPayload={myPayload} />
     </div>
   );
