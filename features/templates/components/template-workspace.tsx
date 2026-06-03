@@ -1,11 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { Loader2, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CustomerContextPicker } from "@/features/ruri-mama/components/customer-context-picker";
-import { AI_FETCH_OPTIONS, apiFetchJson, toUserMessage } from "@/lib/nightos/api-fetch";
-import { useCastId } from "@/lib/nightos/cast-context";
 import type { Bottle, CastMemo, Customer } from "@/types/nightos";
 import { CategoryTabs } from "./category-tabs";
 import { TemplateCard } from "./template-card";
@@ -14,7 +13,6 @@ import {
   TEMPLATES,
   fillTemplate,
   surnameOf,
-  type Template,
   type TemplateCategory,
 } from "../data/templates";
 import type { CustomTemplate } from "../lib/custom-template-store";
@@ -31,36 +29,19 @@ interface Props {
   initialCustomerId?: string;
 }
 
-interface AiTemplate {
-  body: string;
-  isStub: boolean;
-  generatedAt: number;
-}
-
 export function TemplateWorkspace({
   customers,
   lookups,
   initialCustomerId,
 }: Props) {
-  const castId = useCastId();
   const [category, setCategory] = useState<TemplateCategory>("thanks");
   const [customerId, setCustomerId] = useState<string | undefined>(
     initialCustomerId,
   );
 
-  // Cache AI-generated templates by customerId+category
-  const [aiTemplates, setAiTemplates] = useState<
-    Record<string, AiTemplate>
-  >({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
   // Custom user templates loaded from localStorage
   const [allCustom, setAllCustom] = useState<CustomTemplate[]>([]);
   const customForCategory = allCustom.filter((t) => t.category === category);
-
-  const cacheKey = customerId ? `${customerId}::${category}` : "";
-  const aiTemplate = cacheKey ? aiTemplates[cacheKey] : undefined;
 
   const ctx = useMemo(() => {
     if (!customerId) return null;
@@ -76,45 +57,12 @@ export function TemplateWorkspace({
 
   const visibleTemplates = TEMPLATES.filter((t) => t.category === category);
 
-  const handleGenerateAi = async () => {
-    if (!customerId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await apiFetchJson<{ isStub: boolean; body: string }>(
-        "/api/generate-template",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            customerId,
-            castId: castId,
-            category,
-          }),
-          ...AI_FETCH_OPTIONS,
-        },
-      );
-      setAiTemplates((prev) => ({
-        ...prev,
-        [cacheKey]: {
-          body: data.body,
-          isStub: data.isStub,
-          generatedAt: Date.now(),
-        },
-      }));
-    } catch (err) {
-      console.error(err);
-      setError(toUserMessage(err));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // When category changes, clear error
-  const handleCategoryChange = (next: TemplateCategory) => {
-    setCategory(next);
-    setError(null);
-  };
+  // 専用文面づくりはさくらママページに委ねる。テンプレートページは
+  // 「すぐ使える定型／マイテンプレート」、さくらママは「一から相談して作る」
+  // と役割を分け、ここからは新しいセッションへ送り出すだけにする。
+  const composeHref = customerId
+    ? `/cast/ruri-mama?customerId=${encodeURIComponent(customerId)}&compose=1`
+    : "/cast/ruri-mama?compose=1";
 
   return (
     <div className="space-y-5">
@@ -123,11 +71,10 @@ export function TemplateWorkspace({
         selectedId={customerId}
         onSelect={(id) => {
           setCustomerId(id);
-          setError(null);
         }}
       />
 
-      <CategoryTabs value={category} onChange={handleCategoryChange} />
+      <CategoryTabs value={category} onChange={setCategory} />
 
       {!customerId && (
         <div className="rounded-card bg-champagne-soft/40 border border-gold/30 px-4 py-3.5 text-body-sm text-gold-deep">
@@ -135,7 +82,7 @@ export function TemplateWorkspace({
         </div>
       )}
 
-      {/* AI personalized template generator — V5 Bordeaux Salon */}
+      {/* さくらママ専用文面づくりへの入口 — V5 Bordeaux Salon */}
       {customerId && (
         <div className="v5-sakura-surface rounded-hero p-5 flex flex-col gap-4">
           {/* Header: framed photo + eyebrow */}
@@ -186,49 +133,17 @@ export function TemplateWorkspace({
             className="m-0 text-body-sm"
             style={{ color: "var(--v5-ink-on-dark-soft)", lineHeight: 1.7 }}
           >
-            前回の話題・ボトル・来店履歴を読んで、選んだカテゴリの文面を提案します。
+            前回の話題・ボトル・来店履歴をもとに、さくらママと相談しながら一通を仕上げます。新しい相談がさくらママページで始まります。
           </p>
 
-          {!aiTemplate && !loading && (
-            <button
-              type="button"
-              onClick={handleGenerateAi}
-              className="v5-cta-primary w-full inline-flex items-center justify-center gap-1.5 h-11 rounded-pill font-sans font-semibold text-[13px] tracking-[0.04em] active:scale-[0.98] transition"
-            >
-              <Sparkles size={14} strokeWidth={1.8} className="shrink-0" />
-              専用文面を作ってもらう
-            </button>
-          )}
-
-          {loading && (
-            <div
-              className="flex items-center justify-center gap-2 h-11 text-body-sm"
-              style={{ color: "var(--v5-ink-on-dark-soft)" }}
-            >
-              <Loader2 size={16} className="animate-spin" />
-              <span>さくらママが考え中…</span>
-            </div>
-          )}
-
-          {error && (
-            <div
-              className="text-body-sm"
-              style={{ color: "var(--v5-ink-on-dark-soft)" }}
-            >
-              {error}
-            </div>
-          )}
-
-          {aiTemplate && (
-            <AiTemplateResult
-              template={aiTemplate}
-              ctx={ctx}
-              customerId={customerId}
-              category={category}
-              onRegenerate={handleGenerateAi}
-              regenerating={loading}
-            />
-          )}
+          <Link
+            href={composeHref}
+            className="v5-cta-primary w-full inline-flex items-center justify-center gap-1.5 h-11 rounded-pill font-sans font-semibold text-[13px] tracking-[0.04em] active:scale-[0.98] transition"
+          >
+            <Sparkles size={14} strokeWidth={1.8} className="shrink-0" />
+            ママに専用文面を作ってもらう
+            <ArrowRight size={14} strokeWidth={1.8} className="shrink-0" />
+          </Link>
         </div>
       )}
 
@@ -268,63 +183,6 @@ export function TemplateWorkspace({
           />
         ))}
       </div>
-    </div>
-  );
-}
-
-interface AiTemplateResultProps {
-  template: AiTemplate;
-  ctx: {
-    customerName: string;
-    surname: string;
-    bottleBrand: string | null;
-    lastTopic: string | null;
-  } | null;
-  customerId: string;
-  category: TemplateCategory;
-  onRegenerate: () => void;
-  regenerating: boolean;
-}
-
-function AiTemplateResult({
-  template,
-  ctx,
-  customerId,
-  category,
-  onRegenerate,
-  regenerating,
-}: AiTemplateResultProps) {
-  // Replace {姓} with the actual surname
-  const filled = ctx ? template.body.split("{姓}").join(ctx.surname) : template.body;
-
-  // Reuse TemplateCard for the copy/log behavior
-  const aiAsTemplate: Template = {
-    id: `ai-${customerId}-${category}`,
-    category,
-    label: "さくらママ提案",
-    description: template.isStub
-      ? "デモ応答（API キー未設定）"
-      : "この顧客向けに生成",
-    body: template.body,
-  };
-
-  return (
-    <div className="space-y-2">
-      <TemplateCard
-        template={aiAsTemplate}
-        filled={filled}
-        customerId={customerId}
-        disabled={false}
-      />
-      <button
-        type="button"
-        onClick={onRegenerate}
-        disabled={regenerating}
-        className="w-full text-label-sm underline underline-offset-2 disabled:opacity-50"
-        style={{ color: "var(--v5-gold-on-dark)" }}
-      >
-        別の文面で作り直す
-      </button>
     </div>
   );
 }
