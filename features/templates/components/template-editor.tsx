@@ -19,8 +19,8 @@ import {
 
 interface Props {
   category: TemplateCategory;
-  /** Notifies the parent when the custom template list changes. */
-  onChange: (templates: CustomTemplate[]) => void;
+  /** Notifies the parent when the custom template list changes (optional). */
+  onChange?: (templates: CustomTemplate[]) => void;
 }
 
 interface EditorState {
@@ -46,14 +46,14 @@ export function TemplateEditor({ category, onChange }: Props) {
   useEffect(() => {
     const all = loadCustomTemplates(castId);
     setCustoms(all.filter((t) => t.category === category));
-    onChange(all);
+    onChange?.(all);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
   const refresh = () => {
     const all = loadCustomTemplates(castId);
     setCustoms(all.filter((t) => t.category === category));
-    onChange(all);
+    onChange?.(all);
   };
 
   const startNew = () => {

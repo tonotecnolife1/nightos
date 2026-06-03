@@ -49,13 +49,16 @@ export function TemplateCard({
   });
 
   const handleCopy = () => {
-    if (disabled || !customerId) return;
+    if (disabled) return;
     startTransition(async () => {
       await copyToClipboard(filled);
-      await recordFollowLogAction({
-        customerId,
-        templateType: template.category,
-      });
+      // Only record a follow-up log when a customer is in context.
+      if (customerId) {
+        await recordFollowLogAction({
+          customerId,
+          templateType: template.category,
+        });
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     });
@@ -202,10 +205,10 @@ export function TemplateCard({
           <button
             type="button"
             onClick={handleCopy}
-            disabled={disabled || pending || !customerId}
+            disabled={disabled || pending}
             className={cn(
               "inline-flex items-center gap-1.5 h-10 px-5 rounded-pill text-label-md font-semibold tracking-[0.04em] transition-all",
-              disabled || !customerId
+              disabled
                 ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
                 : copied
                   ? "bg-success text-pearl-light shadow-soft"
@@ -220,7 +223,7 @@ export function TemplateCard({
             ) : (
               <>
                 <Copy size={14} />
-                コピーしてLINEへ
+                {customerId ? "コピーしてLINEへ" : "コピー"}
               </>
             )}
           </button>
