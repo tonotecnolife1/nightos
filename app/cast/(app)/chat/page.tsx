@@ -37,16 +37,13 @@ export default async function ChatListPage() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader
-        title="チャット"
-        right={
-          <div className="flex items-center gap-1.5">
-            <NewDmSheet storeCasts={storeCasts} />
-            <MoreMenu />
-          </div>
-        }
+      <PageHeader title="チャット" right={<MoreMenu />} />
+      <ChatRoomList
+        rooms={rooms}
+        currentCastId={castId}
+        myPayload={myPayload}
+        newChatButton={<NewDmSheet storeCasts={storeCasts} />}
       />
-      <ChatRoomList rooms={rooms} currentCastId={castId} myPayload={myPayload} />
     </div>
   );
 }
