@@ -69,6 +69,15 @@ export function templatesForRequest(
     .map((t) => ({ category: t.category, label: t.label, body: t.body }));
 }
 
+/** このキャストが該当カテゴリに保存している「自分の」テンプレ数。 */
+export function customTemplateCount(
+  castId: string,
+  category: TemplateCategory,
+): number {
+  return loadCustomTemplates(castId).filter((t) => t.category === category)
+    .length;
+}
+
 /**
  * id からテンプレを解決する。マイテンプレ（custom）か定型（default）かも返す。
  * 保存時に「上書き先」を正しく選ぶために使う。

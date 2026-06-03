@@ -1,4 +1,5 @@
 import type { CustomerContext, Intent, ReplyOption } from "@/types/nightos";
+import { fillTemplate } from "@/features/templates/data/templates";
 
 /**
  * Deterministic 3-option "さくらママ" replies used when ANTHROPIC_API_KEY is unset
@@ -10,8 +11,12 @@ export function generateStubOptions(opts: {
   hearingContext: Record<string, string>;
   customer?: CustomerContext | null;
   userText: string;
+  /** キャストのマイテンプレ（該当カテゴリ）。デモ応答でも型を反映するため。 */
+  castTemplates?: { category: string; label: string; body: string }[];
+  /** 「この型をベースに」と明示指定されたテンプレ。 */
+  templateSeed?: { label: string; body: string };
 }): ReplyOption[] {
-  const { intent, customer } = opts;
+  const { intent, customer, castTemplates, templateSeed } = opts;
   const name = customer?.customer.name ?? "お客様";
   const surname = (customer?.customer.name ?? "お客様").split(/\s|　/)[0];
   const lastTopic = customer?.memo?.last_topic ?? null;
@@ -22,7 +27,7 @@ export function generateStubOptions(opts: {
     const topicHint = lastTopic
       ? `${lastTopic}のお話`
       : `この前のお話`;
-    return [
+    const options: ReplyOption[] = [
       {
         id: "A",
         style: "safe",
@@ -42,6 +47,34 @@ export function generateStubOptions(opts: {
         content: `【文面例】\n「${surname}さま、昨日は私ずっと笑ってしまって、今朝ちょっと頬が痛いくらいです🌸 また元気をいただきに、お顔見せてくださいね。」\n\n【なぜ効く】\n自分の不完全さを軽く自開示する型。相手との距離を縮めるのに効くわよ。${isVip ? "VIPはこういう人間らしさに弱いの。" : ""}`,
       },
     ];
+
+    // API キー無しのデモでも「キャストの型」が反映されるよう、テンプレを差し込む。
+    const fillCtx = {
+      customerName: customer?.customer.name ?? undefined,
+      surname,
+      bottleBrand: bottle?.brand ?? undefined,
+      lastTopic: lastTopic ?? undefined,
+    };
+    if (templateSeed) {
+      // 明示シード → A案をテンプレ忠実版に差し替え
+      options[0] = {
+        id: "A",
+        style: "safe",
+        label: `${templateSeed.label}（あなたの型）`,
+        content: `【文面例】\n「${fillTemplate(templateSeed.body, fillCtx)}」\n\n【なぜ効く】\nあなたが保存した型を${name}さま向けに整えた版。デモ応答では原文を差し込んでいるわ（本番ではさくらママが状況に合わせて磨くわよ）。`,
+      };
+    } else if (castTemplates && castTemplates.length > 0) {
+      // ソフト参照 → B案をテンプレ調整版に差し替え
+      const t = castTemplates[0];
+      options[1] = {
+        id: "B",
+        style: "practical",
+        label: `${t.label}（あなたの型）`,
+        content: `【文面例】\n「${fillTemplate(t.body, fillCtx)}」\n\n【なぜ効く】\nあなたが普段使っている型。慣れた言い回しは外さないのが一番なのよ。`,
+      };
+    }
+
+    return options;
   }
 
   if (intent === "serving") {

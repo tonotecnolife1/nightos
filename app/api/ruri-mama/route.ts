@@ -75,6 +75,8 @@ export async function POST(req: Request) {
       hearingContext: body.hearingContext ?? {},
       customer: customerContext,
       userText,
+      castTemplates: body.castTemplates,
+      templateSeed: body.templateSeed,
     });
     return NextResponse.json<RuriMamaResponse>({
       options,
@@ -156,6 +158,8 @@ export async function POST(req: Request) {
         hearingContext: body.hearingContext ?? {},
         customer: customerContext,
         userText,
+        castTemplates: body.castTemplates,
+        templateSeed: body.templateSeed,
       });
       return NextResponse.json<RuriMamaResponse>({
         options: stubOptions,
@@ -176,6 +180,8 @@ export async function POST(req: Request) {
       hearingContext: body.hearingContext ?? {},
       customer: customerContext,
       userText,
+      castTemplates: body.castTemplates,
+      templateSeed: body.templateSeed,
     });
     return NextResponse.json<RuriMamaResponse>({
       options,

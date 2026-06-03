@@ -13,7 +13,7 @@ import {
   saveCustomTemplate,
   saveTemplateOverride,
 } from "@/features/templates/lib/custom-template-store";
-import { findTemplateById } from "../lib/template-bridge";
+import { customTemplateCount, findTemplateById } from "../lib/template-bridge";
 
 type Mode = "new" | "update";
 
@@ -47,16 +47,23 @@ export function SaveTemplateButton({
     label: string;
   } | null>(null);
 
+  // このカテゴリに「自分の」テンプレがまだ無ければ、初回登録をそっと促す。
+  // 1件でも保存すると次回から消える、自己消滅型のナッジ。
+  const [firstInCategory, setFirstInCategory] = useState(false);
+
   useEffect(() => {
     if (!seedTemplateId) {
       setSeedTemplate(null);
-      return;
+    } else {
+      const resolved = findTemplateById(castId, seedTemplateId);
+      setSeedTemplate(
+        resolved
+          ? { id: resolved.template.id, label: resolved.template.label }
+          : null,
+      );
     }
-    const resolved = findTemplateById(castId, seedTemplateId);
-    setSeedTemplate(
-      resolved ? { id: resolved.template.id, label: resolved.template.label } : null,
-    );
-  }, [castId, seedTemplateId]);
+    setFirstInCategory(customTemplateCount(castId, defaultCategory) === 0);
+  }, [castId, seedTemplateId, defaultCategory]);
 
   const openNew = () => {
     setLabel("");
@@ -126,6 +133,11 @@ export function SaveTemplateButton({
   if (!mode) {
     return (
       <div className="inline-flex items-center gap-2 flex-wrap">
+        {!seedTemplate && firstInCategory && (
+          <span className="text-[11px] text-ink-mute italic">
+            気に入ったら保存→次から一瞬よ
+          </span>
+        )}
         {seedTemplate && (
           <button
             type="button"
