@@ -61,6 +61,16 @@ export const ruriMamaSchema = z.object({
       notHelpful: z.array(z.string().max(500)).max(20),
     })
     .optional(),
+  castTemplates: z
+    .array(
+      z.object({
+        category: z.string().max(40),
+        label: z.string().max(120),
+        body: z.string().max(800),
+      }),
+    )
+    .max(10)
+    .optional(),
 });
 
 export const extractMemoSchema = z.object({

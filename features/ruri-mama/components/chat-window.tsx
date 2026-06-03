@@ -30,6 +30,14 @@ import {
   ReplyOptionPicker,
 } from "./reply-option-picker";
 import { RefineDirectionPicker } from "./refine-direction-picker";
+import { TemplateReferenceForMessage } from "./template-reference";
+import { SaveTemplateButton } from "./save-template-button";
+import {
+  extractMessageText,
+  purposeToCategory,
+  templatesForRequest,
+  templatize,
+} from "../lib/template-bridge";
 import { recordChoice } from "../lib/option-choice-store";
 import { sanitizeStoredMessages } from "../lib/sanitize-messages";
 import type { RefineDirection } from "../data/refine-directions";
@@ -386,6 +394,12 @@ export function ChatWindow({
     setPhase({ name: "loading" });
     try {
       const feedbackContext = recentFeedbackSamples(castId, 8);
+      // follow の相談では、このキャストのマイテンプレ（該当カテゴリ）を
+      // 渡して「キャスト自身の言い回し」に寄せた文面を作らせる。
+      const castTemplates =
+        intent === "follow"
+          ? templatesForRequest(castId, hearingContext.purpose)
+          : [];
       const data = await apiFetchJson<RuriMamaResponse>("/api/ruri-mama", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -396,6 +410,7 @@ export function ChatWindow({
           castId: castId,
           intent,
           recentFeedback: feedbackContext,
+          castTemplates: castTemplates.length > 0 ? castTemplates : undefined,
         }),
         signal: controller.signal,
         ...AI_FETCH_OPTIONS,
@@ -769,11 +784,19 @@ export function ChatWindow({
           return (
             <div key={i} className="space-y-2">
               {showPicker ? (
-                <ReplyOptionPicker
-                  options={m.options!}
-                  onPick={(opt) => handleOptionPick(i, opt)}
-                  onRequestMore={() => handleRequestMore(i)}
-                />
+                <>
+                  <TemplateReferenceForMessage
+                    castId={castId}
+                    intent={m.genIntent}
+                    purpose={m.genHearing?.purpose}
+                    customerName={lookupCustomerName(selectedCustomerId)}
+                  />
+                  <ReplyOptionPicker
+                    options={m.options!}
+                    onPick={(opt) => handleOptionPick(i, opt)}
+                    onRequestMore={() => handleRequestMore(i)}
+                  />
+                </>
               ) : pickedOpt ? (
                 // 選択確定後も選択前と同じカードUIを維持（フラットなバブルにしない）
                 <PickedOptionCard option={pickedOpt} />
@@ -815,6 +838,18 @@ export function ChatWindow({
                     {canRefine && !isRefiningThis && (
                       <RefineTriggerButton
                         onClick={() => handleRefineTrigger(i)}
+                      />
+                    )}
+                    {/* 採用した文面（LINE 連絡）はマイテンプレに保存して育てられる */}
+                    {pickedOpt && m.genIntent === "follow" && (
+                      <SaveTemplateButton
+                        defaultBody={templatize(
+                          extractMessageText(pickedOpt.content),
+                          { fullName: lookupCustomerName(selectedCustomerId) },
+                        )}
+                        defaultCategory={
+                          purposeToCategory(m.genHearing?.purpose) ?? "thanks"
+                        }
                       />
                     )}
                   </div>

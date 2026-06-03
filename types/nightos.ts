@@ -436,6 +436,12 @@ export interface RuriMamaRequest {
     notHelpful: string[];
   };
   /**
+   * このキャストのマイテンプレ（相談カテゴリに該当する分）。
+   * さくらママが「このキャスト自身の言い回し」として参考にし、
+   * 3案のうち1つをテンプレ調整版に寄せるために使う。label + body のみ。
+   */
+  castTemplates?: { category: string; label: string; body: string }[];
+  /**
    * ブラッシュアップフロー制御
    * - undefined: 通常（最初のアドバイス）
    * - "apply": 既存回答を指定方向でブラッシュアップ
