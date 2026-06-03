@@ -59,6 +59,7 @@ export async function POST(req: Request) {
     today,
     recentFeedback: body.recentFeedback,
     castTemplates: body.castTemplates,
+    templateSeed: body.templateSeed,
   });
 
   // Last user message is the actual query
@@ -356,6 +357,7 @@ function buildContextPrefix(opts: {
   today: Date;
   recentFeedback?: { helpful: string[]; notHelpful: string[] };
   castTemplates?: { category: string; label: string; body: string }[];
+  templateSeed?: { label: string; body: string };
 }): string {
   const lines: string[] = [];
 
@@ -474,10 +476,33 @@ function buildContextPrefix(opts: {
     }
   }
 
+  // Explicit "use this template as the base" seed — the cast tapped a specific
+  // template to grow. A案=テンプレ忠実版、B/C案=発展版 にする。
+  if (opts.templateSeed) {
+    lines.push("[ベースにするテンプレート]");
+    lines.push(
+      `このキャストが「この型をベースに」と指定したテンプレートです:`,
+    );
+    const seedBody =
+      opts.templateSeed.body.length > 300
+        ? `${opts.templateSeed.body.slice(0, 300)}…`
+        : opts.templateSeed.body;
+    lines.push(`「${opts.templateSeed.label}」: ${seedBody}`);
+    lines.push(
+      "→ A案は、このテンプレートにできるだけ忠実なまま、プレースホルダ（{姓}/{ボトル名}/{前回の話題}等）や",
+    );
+    lines.push("  内容を今の顧客・状況に置き換えた版にしてください。");
+    lines.push(
+      "→ B案・C案は、このテンプレートを土台に、今の状況により合うよう発展させた版にしてください。",
+    );
+    lines.push("");
+  }
+
   // Cast's own saved templates — anchor the generated 文面 to this cast's
   // actual voice (vocabulary, emoji density, distance) so the output reads
   // like her, not like generic AI.
-  if (opts.castTemplates && opts.castTemplates.length > 0) {
+  // 明示シード指定時は重複を避けてこのソフトブロックは出さない。
+  if (!opts.templateSeed && opts.castTemplates && opts.castTemplates.length > 0) {
     lines.push("[あなた（このキャスト）が普段使っているテンプレート]");
     lines.push(
       "このキャストが保存している文面です。語彙・絵文字の量・距離感・口調を参考にし、",

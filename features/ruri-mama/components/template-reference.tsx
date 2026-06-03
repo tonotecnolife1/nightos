@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, FolderHeart } from "lucide-react";
+import { Check, Copy, FolderHeart, Wand2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn, copyToClipboard } from "@/lib/utils";
 import {
@@ -19,9 +19,12 @@ import { purposeToCategory, referenceTemplates } from "../lib/template-bridge";
 export function TemplateReference({
   templates,
   customerName,
+  onUseSeed,
 }: {
   templates: Template[];
   customerName?: string | null;
+  /** 「この型でさくらママに整えてもらう」。指定時のみ各行に表示。 */
+  onUseSeed?: (template: Template) => void;
 }) {
   if (templates.length === 0) return null;
   return (
@@ -32,7 +35,12 @@ export function TemplateReference({
       </div>
       <div className="space-y-1.5">
         {templates.map((t) => (
-          <TemplateRow key={t.id} template={t} customerName={customerName} />
+          <TemplateRow
+            key={t.id}
+            template={t}
+            customerName={customerName}
+            onUseSeed={onUseSeed}
+          />
         ))}
       </div>
     </div>
@@ -42,9 +50,11 @@ export function TemplateReference({
 function TemplateRow({
   template,
   customerName,
+  onUseSeed,
 }: {
   template: Template;
   customerName?: string | null;
+  onUseSeed?: (template: Template) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -90,6 +100,16 @@ function TemplateRow({
           {filled}
         </p>
       )}
+      {onUseSeed && (
+        <button
+          type="button"
+          onClick={() => onUseSeed(template)}
+          className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-gold-deep hover:opacity-80 transition"
+        >
+          <Wand2 size={11} />
+          この型でさくらママに整えてもらう
+        </button>
+      )}
     </div>
   );
 }
@@ -104,11 +124,13 @@ export function TemplateReferenceForMessage({
   intent,
   purpose,
   customerName,
+  onUseSeed,
 }: {
   castId: string;
   intent?: Intent;
   purpose?: string;
   customerName?: string | null;
+  onUseSeed?: (template: Template) => void;
 }) {
   const [templates, setTemplates] = useState<Template[]>([]);
 
@@ -122,5 +144,11 @@ export function TemplateReferenceForMessage({
   }, [castId, intent, purpose]);
 
   if (templates.length === 0) return null;
-  return <TemplateReference templates={templates} customerName={customerName} />;
+  return (
+    <TemplateReference
+      templates={templates}
+      customerName={customerName}
+      onUseSeed={onUseSeed}
+    />
+  );
 }

@@ -1,4 +1,4 @@
-import type { ChatMessage, ReplyOption } from "@/types/nightos";
+import type { ChatMessage, Intent, ReplyOption } from "@/types/nightos";
 
 /**
  * localStorage に保存されたチャット履歴を「描画しても落ちない」形に正規化する。
@@ -18,6 +18,12 @@ import type { ChatMessage, ReplyOption } from "@/types/nightos";
  */
 
 const VALID_ROLES = new Set<ChatMessage["role"]>(["user", "assistant"]);
+const VALID_INTENTS = new Set<Intent>([
+  "follow",
+  "serving",
+  "strategy",
+  "freeform",
+]);
 const VALID_OPTION_IDS = new Set<ReplyOption["id"]>(["A", "B", "C"]);
 const VALID_OPTION_STYLES = new Set<ReplyOption["style"]>([
   "safe",
@@ -93,6 +99,19 @@ function sanitizeMessage(raw: unknown): ChatMessage | null {
     VALID_OPTION_IDS.has(m.pickedOptionId as ReplyOption["id"])
   ) {
     clean.pickedOptionId = m.pickedOptionId;
+  }
+  // 再生成（別の3案）・テンプレ保存導線が復元後も効くよう、文脈情報を保持する。
+  if (typeof m.genIntent === "string" && VALID_INTENTS.has(m.genIntent as Intent)) {
+    clean.genIntent = m.genIntent as Intent;
+  }
+  if (m.genHearing && typeof m.genHearing === "object" && !Array.isArray(m.genHearing)) {
+    const entries = Object.entries(m.genHearing as Record<string, unknown>).filter(
+      (e): e is [string, string] => typeof e[1] === "string",
+    );
+    if (entries.length > 0) clean.genHearing = Object.fromEntries(entries);
+  }
+  if (typeof m.templateSeedId === "string") {
+    clean.templateSeedId = m.templateSeedId;
   }
   return clean;
 }

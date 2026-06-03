@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   extractMessageText,
+  findTemplateById,
   purposeToCategory,
   templatize,
 } from "@/features/ruri-mama/lib/template-bridge";
@@ -57,5 +58,17 @@ describe("templatize", () => {
     expect(templatize("お客様、ありがとう。", { fullName: null })).toBe(
       "お客様、ありがとう。",
     );
+  });
+});
+
+describe("findTemplateById", () => {
+  it("定型テンプレ id を default として解決する", () => {
+    const found = findTemplateById("cast1", "thanks-casual");
+    expect(found?.kind).toBe("default");
+    expect(found?.template.category).toBe("thanks");
+  });
+
+  it("未知の id は null", () => {
+    expect(findTemplateById("cast1", "does-not-exist")).toBeNull();
   });
 });

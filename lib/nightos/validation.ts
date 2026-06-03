@@ -71,6 +71,12 @@ export const ruriMamaSchema = z.object({
     )
     .max(10)
     .optional(),
+  templateSeed: z
+    .object({
+      label: z.string().max(120),
+      body: z.string().max(800),
+    })
+    .optional(),
 });
 
 export const extractMemoSchema = z.object({

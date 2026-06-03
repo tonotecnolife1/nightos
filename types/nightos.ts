@@ -396,6 +396,12 @@ export interface ChatMessage {
    */
   genIntent?: Intent;
   genHearing?: Record<string, string>;
+  /**
+   * この案が「マイテンプレを土台に」整えられた場合の元テンプレ id。
+   * 採用後の保存時に「そのテンプレを今の文面で更新する」導線を出すために使う
+   * （ブラッシュアップしても引き継がれる）。
+   */
+  templateSeedId?: string;
 }
 
 export type ReplyOptionStyle = "safe" | "practical" | "warm";
@@ -441,6 +447,11 @@ export interface RuriMamaRequest {
    * 3案のうち1つをテンプレ調整版に寄せるために使う。label + body のみ。
    */
   castTemplates?: { category: string; label: string; body: string }[];
+  /**
+   * 「この型をベースに整えて」とキャストが指定した1件のテンプレ。
+   * 指定時は A 案をテンプレ忠実版、B/C 案を発展版として生成する。
+   */
+  templateSeed?: { label: string; body: string };
   /**
    * ブラッシュアップフロー制御
    * - undefined: 通常（最初のアドバイス）

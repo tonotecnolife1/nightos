@@ -70,6 +70,26 @@ export function templatesForRequest(
 }
 
 /**
+ * id からテンプレを解決する。マイテンプレ（custom）か定型（default）かも返す。
+ * 保存時に「上書き先」を正しく選ぶために使う。
+ * - custom  → saveCustomTemplate(id 上書き)
+ * - default → saveTemplateOverride(templateId)
+ */
+export function findTemplateById(
+  castId: string,
+  id: string,
+): { template: Template; kind: "custom" | "default" } | null {
+  const custom = loadCustomTemplates(castId).find((t) => t.id === id);
+  if (custom) return { template: custom, kind: "custom" };
+  const def = TEMPLATES.find((t) => t.id === id);
+  if (def) {
+    const overrides = loadTemplateOverrides(castId);
+    return { template: applyOverride(def, overrides), kind: "default" };
+  }
+  return null;
+}
+
+/**
  * さくらママの content（【文面例】【なぜ効くか】…の複数セクション）から
  * 「送る本文」部分だけを抽出する。reply-option-picker の parseSections と同じ規約。
  */

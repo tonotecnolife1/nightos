@@ -386,6 +386,7 @@ export function ChatWindow({
     intent: Intent,
     hearingContext: Record<string, string>,
     messagesToSend: ChatMessage[],
+    seed?: { template: { label: string; body: string }; templateId: string },
   ) => {
     // Abort any in-progress call before starting a new one
     abortRef.current?.abort();
@@ -411,6 +412,7 @@ export function ChatWindow({
           intent,
           recentFeedback: feedbackContext,
           castTemplates: castTemplates.length > 0 ? castTemplates : undefined,
+          templateSeed: seed?.template,
         }),
         signal: controller.signal,
         ...AI_FETCH_OPTIONS,
@@ -425,6 +427,7 @@ export function ChatWindow({
           options: data.options && data.options.length >= 2 ? data.options : undefined,
           genIntent: intent,
           genHearing: hearingContext,
+          templateSeedId: seed?.templateId,
         },
       ]);
       setPhase({ name: "responded" });
@@ -512,8 +515,11 @@ export function ChatWindow({
           content: data.reply,
           isStub: data.isStub,
           options: data.options && data.options.length >= 2 ? data.options : undefined,
-          genIntent: "freeform",
-          genHearing: {},
+          // ブラッシュアップ後も「別の3案」「テンプレ保存/更新」が効くよう、
+          // 元メッセージの文脈（intent / ヒアリング / テンプレ由来）を引き継ぐ。
+          genIntent: srcMessage.genIntent ?? "freeform",
+          genHearing: srcMessage.genHearing ?? {},
+          templateSeedId: srcMessage.templateSeedId,
         },
       ]);
       setPhase({ name: "responded" });
@@ -545,6 +551,34 @@ export function ChatWindow({
       intent,
       hearing,
     );
+  };
+
+  /**
+   * 「この型でさくらママに整えてもらう」導線。
+   * 指定テンプレを明示シードとして、その案を生成した時と同じ intent /
+   * ヒアリング文脈のまま3案を作り直す。結果メッセージに seedId を刻んで、
+   * 採用後に「そのテンプレを更新」できるようにする。
+   */
+  const handleUseTemplateSeed = (
+    messageIndex: number,
+    template: { id: string; label: string; body: string },
+  ) => {
+    if (phase.name === "loading") return;
+    const src = messages[messageIndex];
+    const intent: Intent = src?.genIntent ?? "follow";
+    const hearing = src?.genHearing ?? {};
+    const name = lookupCustomerName(selectedCustomerId);
+    const subject = name ? `${name}さま` : "お客様";
+    const userMsg: ChatMessage = {
+      role: "user",
+      content: `わたしの「${template.label}」をベースに、${subject}向けに整えてくれる？`,
+    };
+    const updated = [...messages, userMsg];
+    setMessages(updated);
+    void callApi(intent, hearing, updated, {
+      template: { label: template.label, body: template.body },
+      templateId: template.id,
+    });
   };
 
   /** Adds a NEW user message, then fires the API call with the updated history. */
@@ -790,6 +824,7 @@ export function ChatWindow({
                     intent={m.genIntent}
                     purpose={m.genHearing?.purpose}
                     customerName={lookupCustomerName(selectedCustomerId)}
+                    onUseSeed={(t) => handleUseTemplateSeed(i, t)}
                   />
                   <ReplyOptionPicker
                     options={m.options!}
@@ -850,6 +885,7 @@ export function ChatWindow({
                         defaultCategory={
                           purposeToCategory(m.genHearing?.purpose) ?? "thanks"
                         }
+                        seedTemplateId={m.templateSeedId}
                       />
                     )}
                   </div>
