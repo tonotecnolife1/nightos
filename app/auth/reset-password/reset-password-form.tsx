@@ -27,7 +27,7 @@ export default function ResetPasswordForm() {
             <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
               再設定メールを送りました
             </h1>
-            <p className="mt-1.5 text-body-sm text-ink-secondary">
+            <p className="mt-1.5 text-body-sm text-ink-soft">
               リンクをタップして新しいパスワードを設定してください
             </p>
           </div>
@@ -38,10 +38,10 @@ export default function ResetPasswordForm() {
               <p className="text-body-md text-ink">
                 <span className="font-medium">{submittedEmail}</span>
               </p>
-              <p className="text-body-sm text-ink-secondary leading-relaxed">
+              <p className="text-body-sm text-ink-soft leading-relaxed">
                 登録されているアドレスであれば、パスワード再設定用のリンクをお送りします。
               </p>
-              <p className="text-[11px] text-ink-muted">
+              <p className="text-[11px] text-ink-mute">
                 届かない場合は迷惑メール / プロモーションタブも確認してください。
               </p>
             </div>
@@ -64,7 +64,7 @@ export default function ResetPasswordForm() {
           <h1 className="font-display text-[28px] leading-[1.3] font-medium tracking-wide text-ink">
             パスワード再設定
           </h1>
-          <p className="mt-1.5 text-body-sm text-ink-secondary">
+          <p className="mt-1.5 text-body-sm text-ink-soft">
             登録メールアドレスに再設定リンクをお送りします
           </p>
         </div>
@@ -74,7 +74,7 @@ export default function ResetPasswordForm() {
         <div className="max-w-sm mx-auto flex flex-col gap-4">
           <form action={handleSubmit} className="space-y-3">
             <label className="block">
-              <span className="text-body-sm text-ink-secondary mb-1.5 block px-1">
+              <span className="text-body-sm text-ink-soft mb-1.5 block px-1">
                 メールアドレス
               </span>
               <input
@@ -83,7 +83,7 @@ export default function ResetPasswordForm() {
                 placeholder="email@example.com"
                 required
                 disabled={pending}
-                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-warm text-body-md text-ink placeholder:text-ink-muted shadow-soft focus:outline-none focus:border-blush-deep"
+                className="w-full px-4 py-3 rounded-2xl border border-ink/[0.08] bg-pearl-light text-body-md text-ink placeholder:text-ink-mute shadow-soft focus:outline-none focus:border-wine-deep"
                 style={{ fontSize: "16px" }}
               />
             </label>
@@ -91,7 +91,7 @@ export default function ResetPasswordForm() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-gradient-blush text-ink text-body-md font-medium tracking-wide hover:brightness-[1.02] hover:-translate-y-px active:translate-y-px transition shadow-float will-change-transform disabled:opacity-50"
+              className="w-full mt-2 px-6 py-3.5 rounded-pill bg-wine-deep text-pearl-light text-body-md font-semibold tracking-[0.04em] hover:-translate-y-px active:translate-y-px transition shadow-luxe will-change-transform disabled:opacity-50"
             >
               {pending ? "送信中..." : "再設定リンクを送る"}
             </button>
@@ -100,10 +100,10 @@ export default function ResetPasswordForm() {
             )}
           </form>
 
-          <p className="text-body-sm text-ink-secondary text-center">
+          <p className="text-body-sm text-ink-soft text-center">
             <Link
               href="/auth/login"
-              className="text-blush-deep underline-offset-2 hover:underline"
+              className="text-wine-deep underline-offset-2 hover:underline"
             >
               ログイン画面に戻る
             </Link>

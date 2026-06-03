@@ -31,32 +31,48 @@ export function FeedbackButtons({ assistantContent }: Props) {
     saveFeedback(castId, assistantContent, value);
   };
 
+  // フィードバックを送ったら選択肢は消し、控えめなお礼だけ残す
+  if (feedback) {
+    return (
+      <div className="flex justify-start pl-2">
+        <span className="inline-flex items-center gap-1 text-label-xs text-ink-mute">
+          {feedback === "helpful" ? (
+            <ThumbsUp size={11} className="text-wine-deep" />
+          ) : (
+            <ThumbsDown size={11} className="text-ink-secondary" />
+          )}
+          フィードバックありがとう
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-start gap-2 pl-2">
       <button
         type="button"
         onClick={() => handleClick("helpful")}
         className={cn(
-          "flex items-center gap-1 px-3 h-8 rounded-badge text-label-sm transition-colors",
+          "flex items-center gap-1 px-2.5 h-7 rounded-badge text-label-xs transition-colors",
           feedback === "helpful"
-            ? "bg-roseGold text-pearl"
-            : "bg-pearl-warm text-ink-secondary border border-pearl-soft hover:border-roseGold-border",
+            ? "bg-wine-deep text-pearl-light"
+            : "bg-pearl-warm text-ink-soft border border-pearl-soft hover:border-gold/30",
         )}
       >
-        <ThumbsUp size={12} />
+        <ThumbsUp size={11} />
         参考になった
       </button>
       <button
         type="button"
         onClick={() => handleClick("not_helpful")}
         className={cn(
-          "flex items-center gap-1 px-3 h-8 rounded-badge text-label-sm transition-colors",
+          "flex items-center gap-1 px-2.5 h-7 rounded-badge text-label-xs transition-colors",
           feedback === "not_helpful"
-            ? "bg-ink-secondary text-pearl"
-            : "bg-pearl-warm text-ink-secondary border border-pearl-soft hover:border-ink-muted",
+            ? "bg-ink-secondary text-pearl-light"
+            : "bg-pearl-warm text-ink-soft border border-pearl-soft hover:border-ink-muted",
         )}
       >
-        <ThumbsDown size={12} />
+        <ThumbsDown size={11} />
         ならなかった
       </button>
     </div>

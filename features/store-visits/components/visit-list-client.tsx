@@ -42,7 +42,7 @@ export function VisitListClient({ visits: initial }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <span className="text-label-sm text-ink-muted">
+        <span className="text-label-sm text-ink-mute">
           {visits.length}件の来店記録
         </span>
         <div className="flex items-center gap-2">
@@ -53,7 +53,7 @@ export function VisitListClient({ visits: initial }: Props) {
           />
           <Link
             href="/store/visits/new"
-            className="h-10 px-4 rounded-btn bg-gradient-rose-gold text-pearl flex items-center gap-1 shadow-soft-card text-label-md font-medium active:scale-95 transition-transform"
+            className="h-10 px-4 rounded-btn bg-wine-deep text-pearl-light flex items-center gap-1 shadow-soft text-label-md font-medium active:scale-95 transition-transform"
           >
             <CalendarPlus size={14} />
             新規来店
@@ -62,7 +62,7 @@ export function VisitListClient({ visits: initial }: Props) {
       </div>
 
       {visits.length === 0 ? (
-        <Card className="p-6 text-center text-body-sm text-ink-secondary">
+        <Card className="p-6 text-center text-body-sm text-ink-soft">
           来店記録がまだありません
         </Card>
       ) : (
@@ -76,18 +76,18 @@ export function VisitListClient({ visits: initial }: Props) {
                       {v.customer_name}
                     </span>
                     {v.is_nominated ? (
-                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-roseGold-muted text-roseGold-dark text-[10px] font-medium border border-roseGold-border">
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-champagne-soft/60 text-wine-deep text-[10px] font-medium border border-gold/30">
                         <Sparkles size={9} />
                         指名
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-pearl-soft text-ink-secondary text-[10px]">
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-badge bg-pearl-soft text-ink-soft text-[10px]">
                         <User size={9} />
                         フリー
                       </span>
                     )}
                   </div>
-                  <div className="text-label-sm text-ink-muted">
+                  <div className="text-label-sm text-ink-mute">
                     {formatDateTime(v.visited_at)}
                     {v.table_name && ` · ${v.table_name}`} ·{" "}
                     {v.cast_name}
@@ -97,7 +97,7 @@ export function VisitListClient({ visits: initial }: Props) {
                   type="button"
                   onClick={() => handleDelete(v.id, v.customer_name)}
                   disabled={pending}
-                  className="w-9 h-9 rounded-full bg-pearl-soft text-rose flex items-center justify-center hover:bg-rose/10 active:scale-95 disabled:opacity-50"
+                  className="w-9 h-9 rounded-full bg-pearl-soft text-wine-deep flex items-center justify-center hover:bg-wine/10 active:scale-95 disabled:opacity-50"
                   aria-label="削除"
                 >
                   <Trash2 size={14} />

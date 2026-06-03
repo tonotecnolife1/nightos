@@ -1,0 +1,76 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css">
+<style>
+  .card { width: 700px; padding: 26px 28px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .panel { border-radius: 22px; padding: 20px; border: 1px solid var(--line); box-shadow: var(--shadow-soft); }
+  .panel.ng { background: #faf6f1; }
+  .panel.ok { background: var(--pearl-light); }
+  .tag { display: inline-block; font:500 10px/1 var(--font-sans); letter-spacing:0.18em; padding:4px 10px; border-radius:999px; margin-bottom:12px; }
+  .ng .tag { background: rgba(154,93,93,0.12); color: var(--wine); }
+  .ok .tag { background: rgba(168,117,96,0.14); color: var(--rose-gold-deep); }
+  .panel h3 { font: 500 16px/1.3 var(--font-serif); letter-spacing:0.02em; color: var(--ink); margin: 0 0 8px; }
+  .panel p  { font: 400 12px/1.6 var(--font-sans); color: var(--ink-soft); margin: 0 0 16px; }
+  .panel .foot { font: 400 11px/1.5 var(--font-sans); color: var(--ink-mute); margin-top: 14px; }
+
+  /* NG (v2) — blush gradient */
+  .btn-ng {
+    display: inline-flex; align-items: center; padding: 16px 36px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f4d4cf, #e8b9a5);
+    color: var(--ink);
+    font: 500 15px/1 var(--font-sans); letter-spacing: 0.02em;
+    box-shadow: 0 4px 12px rgba(232,185,165,0.4);
+    border: none;
+  }
+
+  /* OK (v3) — Matte rose-gold-deep, Hermès-tight */
+  .btn-ok {
+    display: inline-flex; align-items: center;
+    padding: 12px 28px; border-radius: 999px;
+    background: #8a5e4d; color: #fdfcf9;
+    font: 500 14px/1 var(--font-sans); letter-spacing: 0.04em;
+    box-shadow:
+      0 8px 24px rgba(201,141,128,0.10),
+      0 24px 48px rgba(184,148,85,0.08);
+    border: none;
+  }
+
+  .ng-list { margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: var(--pearl-soft); border: 1px solid var(--line); }
+  .ng-list h4 { font: 500 11px/1 var(--font-sans); letter-spacing: 0.18em; color: var(--wine); margin: 0 0 10px; }
+  .ng-list ul { margin: 0; padding-left: 18px; font: 400 12px/1.7 var(--font-sans); color: var(--ink-soft); }
+  .ng-list ul li b { color: var(--wine-deep); }
+</style>
+</head><body>
+<div class="card">
+
+  <div class="row">
+    <div class="panel ng">
+      <span class="tag">NG · v2</span>
+      <h3>blush ピンク主役</h3>
+      <p>サーモン寄りで「キュート」だが、夜の落ち着きには明るすぎる。</p>
+      <button class="btn-ng">同伴を確定する</button>
+      <div class="foot">bg #faf6f1 · blush gradient · padding 16/36 · font 15px</div>
+    </div>
+
+    <div class="panel ok">
+      <span class="tag">OK · v3</span>
+      <h3>rose-gold-deep Matte 主役</h3>
+      <p>Matte solid のテラコッタが夜の高級ラウンジの陶器のような落ち着きを生む。装飾を引いた wabi-sabi 的高級感。</p>
+      <button class="btn-ok">同伴を確定する</button>
+      <div class="foot">bg #8a5e4d solid · color #fdfcf9 · 12/28 · 14px · ls 0.04em · shadow-warm</div>
+    </div>
+  </div>
+
+  <div class="ng-list">
+    <h4>NG パターン集</h4>
+    <ul>
+      <li><b>✕ blush gradient</b> — v2 ピンクは「夜」になじまない</li>
+      <li><b>✕ メタリック過剰</b> — グラデ stop 0% + inset border で端に黒線が出る / cream 文字のコントラストも殺す</li>
+      <li><b>✕ shadow-glow-*</b> ハロー — 浮きすぎ / AI テンプレ感</li>
+      <li><b>✕ 暗背景に rose-gold-deep solid</b> — 背景と同系色で沈み込む (inverted cream 系へ反転すべし)</li>
+      <li><b>✕ bg-ink ベタ黒ボタン</b> — 冷たすぎる (v1 で導入したが廃止)</li>
+      <li><b>✕ 釉薬・inset highlight・上端ハイライト</b> — Matte 哲学に反する</li>
+    </ul>
+  </div>
+
+</div></body></html>

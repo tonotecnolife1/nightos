@@ -1,5 +1,8 @@
+"use client";
+
 import { MessageCircle, Store, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 
 type FunnelStage = "store_only" | "assigned" | "line_exchanged";
 
@@ -11,22 +14,23 @@ const CONFIG: Record<
     label: "店舗登録のみ",
     emoji: "🏪",
     icon: Store,
-    bg: "bg-pearl-soft border-pearl-soft",
-    text: "text-ink-muted",
+    bg: "bg-pearl-soft border-line-strong",
+    text: "text-ink-mute",
   },
   assigned: {
+    // label は業態別（club: 担当あり / cabaret: 指名あり）に上書きする。
     label: "担当あり",
     emoji: "👤",
     icon: UserCheck,
-    bg: "bg-champagne border-champagne-dark",
-    text: "text-ink-secondary",
+    bg: "bg-champagne-soft/60 border-gold/30",
+    text: "text-gold-deep",
   },
   line_exchanged: {
     label: "LINE交換済み",
     emoji: "💬",
     icon: MessageCircle,
-    bg: "bg-emerald/10 border-emerald/25",
-    text: "text-emerald",
+    bg: "bg-success/15 border-success/25",
+    text: "text-success",
   },
 };
 
@@ -37,8 +41,13 @@ interface Props {
 }
 
 export function FunnelBadge({ stage = "store_only", compact, className }: Props) {
-  const cfg = CONFIG[stage ?? "store_only"];
+  const { labels } = useVenueConfig();
+  const resolvedStage = stage ?? "store_only";
+  const cfg = CONFIG[resolvedStage];
   const Icon = cfg.icon;
+  // 「担当あり」は業態の関係性ラベルに追従させる（cabaret: 指名あり）。
+  const label =
+    resolvedStage === "assigned" ? `${labels.customerRelation}あり` : cfg.label;
   return (
     <span
       className={cn(
@@ -50,7 +59,7 @@ export function FunnelBadge({ stage = "store_only", compact, className }: Props)
       )}
     >
       <Icon size={compact ? 9 : 10} />
-      {!compact && cfg.label}
+      {!compact && label}
     </span>
   );
 }

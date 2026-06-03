@@ -1,188 +1,165 @@
-import {
-  Award,
-  Calendar,
-  Flame,
-  Heart,
-  MessageCircle,
-  Sparkles,
-  TrendingUp,
-  UserPlus,
-  Users,
-} from "lucide-react";
-import { Card } from "@/components/nightos/card";
-import { PageHeader } from "@/components/nightos/page-header";
-import { StatCard } from "@/components/nightos/stat-card";
-import {
-  GoalProgress,
-  currencyFormatter,
-} from "@/features/cast-stats/components/goal-progress";
-import { CastRepeatTrend } from "@/features/cast-stats/components/repeat-trend";
+import { JapaneseYen, Users, UsersRound } from "lucide-react";
+import { StatsSubHeader } from "@/features/cast-stats/components/stats-sub-header";
+import { StatsGoalCard } from "@/features/cast-stats/components/stats-goal-card";
+import { StatsMiniKpi } from "@/features/cast-stats/components/stats-mini-kpi";
 import { AiUsageSummary } from "@/features/cast-stats/components/ai-usage-summary";
+import { StatsTrendChart } from "@/features/cast-stats/components/stats-trend-chart";
+import { StatsSectionHead } from "@/features/cast-stats/components/stats-section-head";
+import { StatsWorkDaysKpi } from "@/features/cast-stats/components/stats-workdays-kpi";
+import { StatsAnalysis } from "@/features/cast-stats/components/stats-analysis";
 import { getCurrentCastId } from "@/lib/nightos/auth";
 import { getCastStatsData } from "@/lib/nightos/supabase-queries";
 
-export default async function CastStatsPage() {
+interface PageProps {
+  searchParams?: { month?: string };
+}
+
+export default async function CastStatsPage({ searchParams }: PageProps) {
   const castId = await getCurrentCastId();
-  const data = await getCastStatsData(castId);
+
+  // 表示対象の年月。?month=YYYY-MM で過去月を選択できる。未指定 / 不正値は今月。
+  const now = new Date();
+  const selected = parseMonthParam(searchParams?.month);
+  const year = selected?.year ?? now.getFullYear();
+  const month = selected?.month ?? now.getMonth() + 1;
+
+  // 当月は「今」を基準に部分集計、過去月は月末を基準に丸ごと集計する。
+  const isCurrentMonth =
+    year === now.getFullYear() && month === now.getMonth() + 1;
+  const refDate = isCurrentMonth
+    ? undefined
+    : new Date(year, month, 0, 23, 59, 59);
+
+  const data = await getCastStatsData(castId, refDate);
+
+  // 年間売上をコンパクト表示 (¥6.2M)。小さなタイルでも桁あふれしない。
+  const annualSalesM = (data.yearly.sales / 1_000_000).toFixed(1);
 
   return (
-    <div className="animate-fade-in">
-      <PageHeader title="あなたの成績" subtitle="今月のがんばり" showBack />
+    <div
+      className="animate-fade-in min-h-full"
+      style={{ background: "linear-gradient(180deg, #f3eadb 0%, #efe5d4 100%)" }}
+    >
+      <StatsSubHeader year={year} month={month} />
 
-      <div className="px-5 pt-4 pb-6 space-y-5">
-        {/* ── 目標進捗 ── */}
-        <div className="grid grid-cols-1 gap-3">
-          <GoalProgress
-            label="今月の売上"
-            current={data.monthly.sales}
-            goal={data.targets.salesGoal}
-            unit=""
-            formatter={currencyFormatter}
-          />
-          <GoalProgress
-            label="今月の同伴"
-            current={data.monthly.douhanCount}
-            goal={data.targets.douhanGoal}
-            unit="回"
-          />
-        </div>
+      <main className="px-5 pt-[18px] flex flex-col gap-[22px]">
+        {/* ── 月次成績 ── */}
+        {/* id="nominations": キャバ用ホームの「指名」カードの着地点 (stats に指名指標が無いため月次成績の先頭へ) */}
+        <section id="nominations" className="flex flex-col gap-[22px] scroll-mt-24">
+          {/* 年月は固定ヘッダーの chip に表示済みのため sub は出さない */}
+          <StatsSectionHead title="月次成績" />
 
-        {/* ── 月次スコア ── */}
-        <div className="grid grid-cols-3 gap-2.5">
-          <div id="repeat">
-            <StatCard
+          {/* 目標進捗 */}
+          <div className="flex flex-col gap-3">
+            <StatsGoalCard
+              label="今月の売上"
+              current={data.monthly.sales}
+              goal={data.targets.salesGoal}
+              prefix="¥"
+              barColor="var(--gold-metallic)"
+            />
+            {data.targets.douhanGoal > 0 && (
+              <StatsGoalCard
+                label="今月の同伴"
+                current={data.monthly.douhanCount}
+                goal={data.targets.douhanGoal}
+                unit="回"
+                barColor="linear-gradient(90deg, var(--champagne) 0%, var(--champagne-deep) 100%)"
+              />
+            )}
+          </div>
+
+          {/* 結果指標 */}
+          {/* id="new": ホームの「新規」カードの着地点 */}
+          <div id="new" className="flex gap-2 scroll-mt-24">
+            <StatsMiniKpi
+              label="担当顧客"
+              value={data.monthly.totalCustomerCount}
+              unit="人"
+              accent="ink"
+              icon={<Users size={11} strokeWidth={1.7} />}
+              period="累計"
+            />
+            <StatsMiniKpi
+              label="新規"
+              value={data.monthly.newCustomerCount}
+              unit="人"
+              accent="wine"
+              period="今月"
+            />
+          </div>
+          {/* id="repeat": ホームの「再来店率」カードの着地点 */}
+          <div id="repeat" className="flex gap-2 scroll-mt-24">
+            <StatsMiniKpi
               label="再来店率"
               value={Math.round(data.monthly.repeatRate * 100)}
               unit="%"
-              tone="rose"
-              icon={<Heart size={12} className="text-blush-dark" />}
+              accent="rose"
+              period="今月"
             />
+            <StatsWorkDaysKpi />
           </div>
-          <StatCard
-            label="連絡達成率"
-            value={Math.round(data.monthly.followRate * 100)}
-            unit="%"
-            tone="amethyst"
-            icon={<TrendingUp size={12} className="text-amethyst-dark" />}
-          />
-          <StatCard
-            label="今月の新規"
-            value={data.monthly.newCustomerCount}
-            unit="人"
-            tone="default"
-            icon={<UserPlus size={12} className="text-amethyst-dark" />}
-          />
-        </div>
-
-        {/* ── 担当・継続 ── */}
-        <div className="grid grid-cols-2 gap-2.5">
-          <StatCard
-            label="担当顧客"
-            value={data.monthly.totalCustomerCount}
-            unit="人"
-            tone="rose"
-            icon={<Users size={12} className="text-blush-dark" />}
-          />
-          <StatCard
-            label="連続連絡"
-            value={data.followStreakDays}
-            unit="日"
-            tone="default"
-            icon={<Flame size={12} className="text-amber" />}
-          />
-        </div>
-
-        {/* ── AI usage ── */}
-        <AiUsageSummary />
-
-        {/* ── 再来店率の動き ── */}
-        <section>
-          <div className="flex items-baseline justify-between mb-2">
-            <h2 className="text-display-sm text-ink">再来店率の動き</h2>
-            <span className="text-label-sm text-ink-muted">この1ヶ月</span>
-          </div>
-          <Card className="p-4">
-            <CastRepeatTrend points={data.repeatTrend} />
-          </Card>
         </section>
 
+        {/* ── さくらママ活用度 ── */}
+        <AiUsageSummary />
+
+        {/* ── 再来店率 (月次) ── */}
+        <StatsTrendChart points={data.repeatTrendMonthly} />
+
         {/* ── 年間成績 ── */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <Calendar size={16} className="text-ink-secondary" />
-            <h2 className="text-display-sm text-ink">年間成績</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-2.5">
-            <StatCard
+        <section className="flex flex-col gap-3">
+          <StatsSectionHead title="年間成績" sub={`${year}年`} />
+          <div className="grid grid-cols-2 gap-2">
+            <StatsMiniKpi
               label="年間売上"
-              value={currencyFormatter(data.yearly.sales)}
-              tone="rose"
+              prefix="¥"
+              value={annualSalesM}
+              unit="M"
+              accent="rose"
+              icon={<JapaneseYen size={11} strokeWidth={1.7} />}
             />
-            <StatCard
+            <StatsMiniKpi
               label="年間再来店率"
               value={Math.round(data.yearly.repeatRate * 100)}
               unit="%"
-              tone="default"
+              accent="ink"
             />
-            <StatCard
+            <StatsMiniKpi
               label="年間新規"
               value={data.yearly.newCustomerCount}
               unit="人"
-              tone="amethyst"
+              accent="wine"
+              icon={<Users size={11} strokeWidth={1.7} />}
             />
             {data.yearly.douhanCount > 0 && (
-              <StatCard
+              <StatsMiniKpi
                 label="年間同伴"
                 value={data.yearly.douhanCount}
                 unit="回"
-                tone="default"
+                accent="gold"
+                icon={<UsersRound size={11} strokeWidth={1.7} />}
               />
             )}
           </div>
         </section>
 
-        {/* ── さくらママからの励まし ── */}
-        <Card className="!bg-gradient-champagne !border-champagne-dark p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-roseGold/20 flex items-center justify-center shrink-0">
-              <Award size={18} className="text-roseGold-dark" />
-            </div>
-            <div className="flex-1">
-              <div className="text-label-md font-semibold text-ink mb-1">
-                <Sparkles size={11} className="inline mr-1" />
-                {data.cast.name}さんへ
-              </div>
-              <p className="text-body-sm text-ink leading-relaxed">
-                {buildEncouragement(data)}
-              </p>
-            </div>
-          </div>
-        </Card>
-      </div>
+        {/* ── さくらママに成績を見てもらう ── */}
+        <StatsAnalysis castId={castId} name={data.cast.name} />
+      </main>
     </div>
   );
 }
 
-function buildEncouragement(data: Awaited<ReturnType<typeof getCastStatsData>>): string {
-  const salesPct = Math.round(
-    (data.monthly.sales / data.targets.salesGoal) * 100,
-  );
-  const douhanPct = data.targets.douhanGoal > 0
-    ? Math.round((data.monthly.douhanCount / data.targets.douhanGoal) * 100)
-    : 0;
-  const followPct = Math.round(data.monthly.followRate * 100);
-
-  if (salesPct >= 100 && douhanPct >= 100) {
-    return `売上も同伴も目標達成🌸 今月は本当によく頑張ったわね。来月もこの調子で✨`;
-  }
-  if (salesPct >= 100) {
-    return `今月の売上目標を達成🌸 同伴もあと少し。お客様との約束を大切にね✨`;
-  }
-  if (douhanPct >= 100) {
-    return `今月の同伴目標を達成！素晴らしいわ💕 売上も${salesPct}%まで来てるから、もう一息よ。`;
-  }
-  if (followPct < 50) {
-    return `連絡達成率${followPct}%はちょっと寂しいわね💌 1日3人だけ、お礼メッセージを送る習慣からスタートして。`;
-  }
-  return `売上${salesPct}%、同伴${data.monthly.douhanCount}回の進捗ね。連続${data.followStreakDays}日お客様に連絡できてるから、このペースで続けましょ☕`;
+/** "YYYY-MM" を {year, month} に変換。不正値は null。 */
+function parseMonthParam(
+  raw: string | undefined,
+): { year: number; month: number } | null {
+  if (!raw) return null;
+  const m = /^(\d{4})-(\d{1,2})$/.exec(raw);
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  if (month < 1 || month > 12) return null;
+  return { year, month };
 }

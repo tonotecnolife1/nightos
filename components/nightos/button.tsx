@@ -10,25 +10,28 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
 }
 
-// design.md §4.2 — pill 形状 + フローティング影 + hover で 1px 持ち上げ
+// v6: pill 形状 + shadow tier (matte philosophy: drop shadow only)
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-pill font-medium tracking-wide transition will-change-transform select-none hover:-translate-y-px active:translate-y-px disabled:opacity-50 disabled:pointer-events-none disabled:hover:translate-y-0";
+  "inline-flex items-center justify-center gap-2 rounded-pill font-semibold tracking-[0.04em] transition will-change-transform select-none hover:-translate-y-px active:translate-y-px disabled:opacity-50 disabled:pointer-events-none disabled:hover:translate-y-0";
 
 const variants: Record<Variant, string> = {
-  // 主要操作 — blush ソフトグラデ + フロート影
+  // V5 主要操作 — wine-deep solid + shadow (pearl 地で使う)
+  // `!text-pearl-light`: globals.css の非レイヤー .t-*/.v5-* 文字色クラスが
+  // Tailwind の @layer utilities より後勝ちするため、CTA の文字色が地色に
+  // 埋もれない（黒く見える）よう important で確定させる。
   primary:
-    "bg-gradient-blush text-ink shadow-float hover:brightness-[1.02]",
-  // 副次 — 半透明白 + 細枠
+    "bg-wine-deep !text-pearl-light hover:bg-wine-deep/95 active:bg-wine-deep shadow-warm",
+  // 副次 — pearl-light + line-strong border
   secondary:
-    "bg-pearl-warm text-ink border border-ink/[0.08] shadow-soft hover:border-gold/30",
+    "bg-pearl-light text-wine-deep border border-line-strong hover:border-wine-deep/50 shadow-soft",
   // テキストリンク調
   ghost:
-    "text-ink-secondary hover:text-ink hover:bg-pearl-soft hover:translate-y-0",
-  // primary と同義（ruri は v1 名残のエイリアス。新しい画面では primary を使う）
-  ruri: "bg-gradient-blush text-ink shadow-float hover:brightness-[1.02]",
-  // outline — gold 細線
+    "text-ink-soft hover:text-ink hover:bg-pearl-soft hover:translate-y-0",
+  // primary と同義 (v1 名残のエイリアス)
+  ruri: "bg-wine-deep !text-pearl-light hover:bg-wine-deep/95 shadow-warm",
+  // outline — wine-deep 細線
   outline:
-    "bg-pearl-warm/80 text-ink border border-gold/30 shadow-soft hover:border-gold/50",
+    "bg-transparent text-wine-deep border border-wine-deep hover:bg-wine/10",
 };
 
 const sizes: Record<Size, string> = {

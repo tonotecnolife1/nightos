@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
+import { CastAppShell } from "@/components/nightos/cast-app-shell";
 import { CastTabBar } from "@/components/nightos/cast-tab-bar";
+import { PlanBanner } from "@/components/nightos/plan-banner";
 import { CastProvider } from "@/lib/nightos/cast-context";
 import {
   getCurrentCast,
@@ -34,7 +36,10 @@ export default async function CastLayout({ children }: { children: ReactNode }) 
   return (
     <div className="bg-pearl min-h-dvh">
       <CastProvider castId={castId} cast={cast} managerId={managerId}>
-        <div className="mx-auto max-w-[520px] min-h-dvh pb-28">{children}</div>
+        <CastAppShell>
+          <PlanBanner />
+          {children}
+        </CastAppShell>
         <CastTabBar />
       </CastProvider>
     </div>

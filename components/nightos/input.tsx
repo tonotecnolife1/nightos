@@ -37,7 +37,7 @@ export const TextInput = forwardRef<HTMLInputElement, Props>(function TextInput(
         {...rest}
       />
       {error ? (
-        <p className="text-label-sm text-rose">{error}</p>
+        <p className="text-label-sm text-wine-deep">{error}</p>
       ) : hint ? (
         <p className="text-label-sm text-ink-muted">{hint}</p>
       ) : null}

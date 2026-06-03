@@ -49,15 +49,46 @@ export default async function CustomerHomePage() {
 
   return (
     <div>
-      <header className="bg-gradient-hero px-5 pt-12 pb-6">
-        <p className="text-body-sm text-ink-secondary mb-1">
+      <header className="v5-hero px-5 pt-12 pb-10">
+        <div
+          className="font-sans font-medium mb-3"
+          style={{
+            fontSize: 11,
+            lineHeight: 1,
+            letterSpacing: "0.32em",
+            color: "var(--v5-gold-mid)",
+          }}
+        >
+          NIGHTOS
+        </div>
+        <p
+          className="font-sans mb-2"
+          style={{
+            fontSize: 13,
+            lineHeight: 1.6,
+            color: "var(--v5-ink-on-dark-soft)",
+            letterSpacing: "0.02em",
+          }}
+        >
           おかえりなさい
         </p>
-        <h1 className="font-display text-[28px] leading-[1.2] font-medium tracking-wide text-ink">
+        <h1
+          className="font-serif font-normal v5-metallic"
+          style={{
+            fontSize: "2.25rem",
+            lineHeight: 1.1,
+            letterSpacing: "0.05em",
+          }}
+        >
           {customer?.name ?? "ゲスト"}さん
         </h1>
+        <span
+          aria-hidden
+          className="v5-brass-line"
+          style={{ width: "26ch", maxWidth: "55%", margin: "10px 0 12px" }}
+        />
         {customer && (
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-2">
             <Badge
               tone={
                 customer.category === "vip"
@@ -73,7 +104,14 @@ export default async function CustomerHomePage() {
                   ? "新規"
                   : "常連"}
             </Badge>
-            <span className="text-[11px] text-ink-muted">
+            <span
+              className="font-sans"
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.06em",
+                color: "var(--v5-ink-on-dark-mute)",
+              }}
+            >
               {overviews.length}店舗を利用中
             </span>
           </div>
@@ -97,13 +135,13 @@ export default async function CustomerHomePage() {
                 )}
               </div>
               <div className="flex-1">
-                <div className="text-[11px] text-ink-secondary">
+                <div className="text-[11px] text-ink-soft">
                   {isDiamond ? "ダイヤモンド会員" : "プラチナ会員"}
                 </div>
                 <div className="font-display text-[20px] leading-tight text-ink">
                   {highestRank.rank.emoji} {highestRank.rank.label}
                 </div>
-                <div className="text-body-sm text-ink-secondary mt-0.5">
+                <div className="text-body-sm text-ink-soft mt-0.5">
                   全{overviews.length}店舗で特別なおもてなしを受けられます
                 </div>
               </div>
@@ -117,14 +155,14 @@ export default async function CustomerHomePage() {
             label="キープボトル"
             value={totalBottles}
             unit="本"
-            icon={<Wine size={12} className="text-roseGold-dark" />}
+            icon={<Wine size={12} className="text-wine-deep" />}
             tone="rose"
           />
           <StatCard
             label="総来店"
             value={totalVisits}
             unit="回"
-            icon={<Calendar size={12} className="text-ink-secondary" />}
+            icon={<Calendar size={12} className="text-ink-soft" />}
           />
           <StatCard
             label="クーポン"
@@ -189,7 +227,7 @@ export default async function CustomerHomePage() {
               </h2>
               <Link
                 href="/customer/coupons"
-                className="text-[12px] text-blush-deep flex items-center gap-0.5"
+                className="text-[12px] text-wine-deep flex items-center gap-0.5"
               >
                 すべて見る
                 <ChevronRight size={12} />
@@ -208,11 +246,11 @@ export default async function CustomerHomePage() {
                         <div className="text-body-sm font-semibold text-ink truncate">
                           {c.title}
                         </div>
-                        <div className="text-label-sm text-ink-muted">
+                        <div className="text-label-sm text-ink-mute">
                           {c.store_name} · 〜{c.valid_until}
                         </div>
                       </div>
-                      <ChevronRight size={14} className="text-ink-muted shrink-0" />
+                      <ChevronRight size={14} className="text-ink-mute shrink-0" />
                     </div>
                   </Card>
                 </Link>
@@ -230,11 +268,11 @@ export default async function CustomerHomePage() {
 // ═══════════════ Sub-components ═══════════════
 
 const rankBadgeStyles: Record<RankTier, string> = {
-  diamond: "bg-amethyst text-pearl",
-  platinum: "bg-roseGold text-pearl",
-  gold: "bg-champagne-dark text-ink",
-  silver: "bg-pearl-soft text-ink-secondary",
-  bronze: "bg-pearl-soft text-ink-muted",
+  diamond: "bg-gold-deep text-pearl-light",
+  platinum: "bg-wine-deep text-pearl-light",
+  gold: "bg-champagne-deep text-ink",
+  silver: "bg-pearl-soft text-ink-soft",
+  bronze: "bg-pearl-soft text-ink-mute",
 };
 
 function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
@@ -252,7 +290,7 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
               {o.store_name}
             </h3>
             {o.nomination_cast && (
-              <div className="flex items-center gap-1 mt-0.5 text-label-sm text-ink-secondary">
+              <div className="flex items-center gap-1 mt-0.5 text-label-sm text-ink-soft">
                 <User size={11} />
                 担当: {o.nomination_cast}
               </div>
@@ -264,7 +302,7 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
             >
               {o.rank.emoji} {o.rank.label}
             </span>
-            <ChevronRight size={14} className="text-ink-muted" />
+            <ChevronRight size={14} className="text-ink-mute" />
           </div>
         </div>
 
@@ -273,23 +311,23 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
             <div className="font-display text-body-md text-ink">
               {o.visit_count}
             </div>
-            <div className="text-[9px] text-ink-muted">来店</div>
+            <div className="text-[9px] text-ink-mute">来店</div>
           </div>
           <div className="rounded-btn bg-pearl-soft py-1.5">
-            <div className="font-display text-body-md text-roseGold-dark">
+            <div className="font-display text-body-md text-wine-deep">
               {o.bottles.length}
             </div>
-            <div className="text-[9px] text-ink-muted">ボトル</div>
+            <div className="text-[9px] text-ink-mute">ボトル</div>
           </div>
           <div className="rounded-btn bg-pearl-soft py-1.5">
-            <div className="font-display text-body-md text-amethyst-dark">
+            <div className="font-display text-body-md text-gold-deep">
               {activeCouponCount}
             </div>
-            <div className="text-[9px] text-ink-muted">クーポン</div>
+            <div className="text-[9px] text-ink-mute">クーポン</div>
           </div>
           <div className="rounded-btn bg-pearl-soft py-1.5">
             <div className="text-[10px]">{o.rank.emoji}</div>
-            <div className="text-[9px] text-ink-muted">{o.rank.label}</div>
+            <div className="text-[9px] text-ink-mute">{o.rank.label}</div>
           </div>
         </div>
 
@@ -302,7 +340,7 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
                 style={{ width: `${Math.round(o.rank.progress * 100)}%` }}
               />
             </div>
-            <div className="flex justify-between text-[9px] text-ink-muted">
+            <div className="flex justify-between text-[9px] text-ink-mute">
               <span>{o.rank.label}</span>
               <span>{Math.round(o.rank.progress * 100)}% → {o.rank.nextTierLabel}</span>
             </div>
@@ -310,8 +348,8 @@ function StoreCard({ overview: o }: { overview: CustomerStoreOverview }) {
         )}
 
         {o.bottles.length > 0 && (
-          <div className="flex items-center gap-2 text-label-sm text-ink-secondary overflow-hidden">
-            <Wine size={12} className="text-roseGold-dark shrink-0" />
+          <div className="flex items-center gap-2 text-label-sm text-ink-soft overflow-hidden">
+            <Wine size={12} className="text-wine-deep shrink-0" />
             <span className="truncate">
               {o.bottles.map((b) => b.brand).join(" · ")}
             </span>

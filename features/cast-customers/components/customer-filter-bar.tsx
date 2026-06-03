@@ -3,6 +3,7 @@
 import { ChevronDown, ChevronUp, Filter, RotateCcw, Search, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 import {
   activeFilterCount,
   DEFAULT_CUSTOMER_FILTERS,
@@ -16,9 +17,9 @@ import type { Cast } from "@/types/nightos";
 interface Props {
   filters: CustomerFilters;
   onChange: (next: CustomerFilters) => void;
-  /** マネージャー候補（ママ/姉さん） */
+  /** 担当候補（ママ/姉さん） */
   managerOptions: Cast[];
-  /** 担当者候補（全キャスト） */
+  /** ヘルプ候補（全キャスト） */
   castOptions: Cast[];
   /** 全件数 */
   totalCount: number;
@@ -56,6 +57,11 @@ export function CustomerFilterBar({
 }: Props) {
   const [expanded, setExpanded] = useState(false);
   const activeCount = activeFilterCount(filters);
+  // 業態の関係性ラベル（club: 担当 / cabaret: 指名）。
+  const relation = useVenueConfig().labels.customerRelation;
+  const funnelOptions = FUNNEL_OPTIONS.map((opt) =>
+    opt.value === "assigned" ? { ...opt, label: `${relation}付き` } : opt,
+  );
 
   const update = <K extends keyof CustomerFilters>(
     key: K,
@@ -73,20 +79,20 @@ export function CustomerFilterBar({
         <div className="relative flex-1">
           <Search
             size={12}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute"
           />
           <input
             value={filters.query}
             onChange={(e) => update("query", e.target.value)}
             placeholder="名前・職業・好きなお酒で検索"
             style={{ fontSize: "13px" }}
-            className="w-full h-9 pl-8 pr-8 rounded-full bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-muted"
+            className="w-full h-9 pl-8 pr-8 rounded-full bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-mute"
           />
           {filters.query && (
             <button
               type="button"
               onClick={() => update("query", "")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-mute hover:text-ink"
               aria-label="検索クリア"
             >
               <X size={12} />
@@ -99,14 +105,14 @@ export function CustomerFilterBar({
           className={cn(
             "flex items-center gap-1 h-9 px-3 rounded-full text-[11px] font-medium border transition-all active:scale-95",
             activeCount > 0
-              ? "bg-amethyst text-pearl border-amethyst"
-              : "bg-pearl-warm text-ink-secondary border-pearl-soft",
+              ? "bg-wine-deep text-pearl-light border-gold/40"
+              : "bg-pearl-warm text-ink-soft border-pearl-soft",
           )}
         >
           <Filter size={11} />
           フィルター
           {activeCount > 0 && (
-            <span className="bg-pearl/30 text-pearl text-[9px] min-w-[16px] h-[16px] flex items-center justify-center rounded-full">
+            <span className="bg-pearl/30 text-pearl-light text-[9px] min-w-[16px] h-[16px] flex items-center justify-center rounded-full">
               {activeCount}
             </span>
           )}
@@ -136,7 +142,7 @@ export function CustomerFilterBar({
           {/* Funnel stage */}
           <FilterRow label="ステージ">
             <div className="flex flex-wrap gap-1">
-              {FUNNEL_OPTIONS.map((opt) => (
+              {funnelOptions.map((opt) => (
                 <ChipButton
                   key={opt.value}
                   active={filters.funnelStage === opt.value}
@@ -151,7 +157,7 @@ export function CustomerFilterBar({
 
           {/* Manager + Cast (selects) */}
           <div className="grid grid-cols-2 gap-2">
-            <FilterRow label="管理者">
+            <FilterRow label={relation}>
               <select
                 value={filters.managerId}
                 onChange={(e) => update("managerId", e.target.value)}
@@ -166,7 +172,7 @@ export function CustomerFilterBar({
                 ))}
               </select>
             </FilterRow>
-            <FilterRow label="担当者">
+            <FilterRow label="ヘルプ">
               <select
                 value={filters.castId}
                 onChange={(e) => update("castId", e.target.value)}
@@ -201,7 +207,7 @@ export function CustomerFilterBar({
 
           {/* Footer: reset + count */}
           <div className="flex items-center justify-between pt-1.5 border-t border-pearl-soft">
-            <span className="text-[11px] text-ink-muted">
+            <span className="text-[11px] text-ink-mute">
               {filteredCount}人 / 全{totalCount}人
             </span>
             <button
@@ -211,8 +217,8 @@ export function CustomerFilterBar({
               className={cn(
                 "flex items-center gap-1 h-7 px-2.5 rounded-full text-[10px] font-medium transition-all active:scale-95 border",
                 activeCount > 0
-                  ? "bg-pearl text-ink-secondary border-pearl-soft hover:border-ink-muted"
-                  : "bg-pearl text-ink-muted border-pearl-soft opacity-50 cursor-not-allowed",
+                  ? "bg-pearl text-ink-soft border-pearl-soft hover:border-ink-muted"
+                  : "bg-pearl text-ink-mute border-pearl-soft opacity-50 cursor-not-allowed",
               )}
             >
               <RotateCcw size={10} />
@@ -224,9 +230,9 @@ export function CustomerFilterBar({
 
       {/* When collapsed but filters active: compact summary */}
       {!expanded && activeCount > 0 && (
-        <div className="flex items-center justify-between text-[11px] text-ink-muted px-1">
+        <div className="flex items-center justify-between text-[11px] text-ink-mute px-1">
           <span>
-            <span className="text-amethyst-dark font-medium">
+            <span className="text-gold-deep font-medium">
               {filteredCount}人
             </span>
             <span> 表示 / 全{totalCount}人</span>
@@ -234,7 +240,7 @@ export function CustomerFilterBar({
           <button
             type="button"
             onClick={reset}
-            className="flex items-center gap-1 text-ink-muted hover:text-ink"
+            className="flex items-center gap-1 text-ink-mute hover:text-ink"
           >
             <RotateCcw size={10} />
             リセット
@@ -254,7 +260,7 @@ function FilterRow({
 }) {
   return (
     <div className="space-y-1">
-      <div className="text-[10px] text-ink-muted font-medium uppercase tracking-wider">
+      <div className="text-[10px] text-ink-mute font-medium uppercase tracking-wider">
         {label}
       </div>
       {children}
@@ -275,8 +281,8 @@ function ChipButton({
 }) {
   const activeClass =
     tone === "roseGold"
-      ? "bg-roseGold text-pearl border-roseGold"
-      : "bg-amethyst text-pearl border-amethyst";
+      ? "bg-wine-deep text-pearl-light border border-wine-deep"
+      : "bg-wine-deep text-pearl-light border-gold/40";
   return (
     <button
       type="button"
@@ -285,7 +291,7 @@ function ChipButton({
         "px-2.5 h-7 rounded-full text-[11px] font-medium transition-all active:scale-95 border",
         active
           ? activeClass
-          : "bg-pearl text-ink-secondary border-pearl-soft hover:border-ink-muted",
+          : "bg-pearl text-ink-soft border-pearl-soft hover:border-ink-muted",
       )}
     >
       {children}

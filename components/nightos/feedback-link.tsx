@@ -56,10 +56,10 @@ export function FeedbackLink() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`fixed bottom-20 ${side} z-50 w-10 h-10 rounded-full bg-amethyst-dark text-pearl flex items-center justify-center shadow-lg active:scale-95 transition-transform`}
+        className={`fixed bottom-20 ${side} z-40 w-9 h-9 rounded-full bg-pearl-light/60 backdrop-blur-sm border border-gold/25 text-gold-deep/70 flex items-center justify-center shadow-soft hover:bg-pearl-light hover:text-gold-deep hover:border-gold/40 active:scale-95 transition-all`}
         aria-label="フィードバック"
       >
-        <MessageSquare size={18} />
+        <MessageSquare size={15} strokeWidth={1.8} />
       </button>
     );
   }
@@ -80,7 +80,7 @@ export function FeedbackLink() {
       </div>
 
       {sent ? (
-        <p className="text-body-sm text-emerald py-2">
+        <p className="text-body-sm text-success py-2">
           送信しました。ありがとうございます！
         </p>
       ) : (
@@ -91,13 +91,13 @@ export function FeedbackLink() {
             placeholder="使いづらい点、改善アイデア、バグなど..."
             rows={3}
             maxLength={1000}
-            className="w-full px-2 py-1.5 rounded-btn border border-pearl-soft bg-pearl-soft text-body-sm text-ink placeholder:text-ink-muted resize-none focus:outline-none focus:border-amethyst"
+            className="w-full px-2 py-1.5 rounded-btn border border-pearl-soft bg-pearl-soft text-body-sm text-ink placeholder:text-ink-muted resize-none focus:outline-none focus:border-gold/40"
           />
           <button
             type="button"
             onClick={handleSubmit}
             disabled={sending || !text.trim()}
-            className="w-full py-1.5 rounded-btn bg-amethyst-dark text-pearl text-body-sm font-medium disabled:opacity-50"
+            className="w-full py-1.5 rounded-btn bg-gold-deep text-pearl-light text-body-sm font-medium disabled:opacity-50"
           >
             {sending ? "送信中..." : "送信"}
           </button>

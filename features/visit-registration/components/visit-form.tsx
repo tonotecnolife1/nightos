@@ -4,6 +4,7 @@ import { BellRing, CalendarPlus, Check, Sparkles } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/nightos/button";
 import { SelectInput } from "@/components/nightos/select";
+import { TextInput } from "@/components/nightos/input";
 import { cn } from "@/lib/utils";
 import type { Cast, Customer } from "@/types/nightos";
 import { createVisitAction } from "../actions";
@@ -28,6 +29,7 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
     return casts[0]?.id ?? "";
   });
   const [isNominated, setIsNominated] = useState(false);
+  const [salesAmount, setSalesAmount] = useState("");
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,13 +46,21 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
     setTableId(null);
     setCustomerId(null);
     setIsNominated(false);
+    setSalesAmount("");
   };
 
   const submit = () => {
     setError(null);
     setSuccess(null);
     if (!customerId || !castId) {
-      setError("顧客と担当キャストを選んでください");
+      setError("お客様と担当キャストを選んでください");
+      return;
+    }
+    const parsedAmount = salesAmount.trim()
+      ? Number(salesAmount.replace(/[,\s]/g, ""))
+      : 0;
+    if (Number.isNaN(parsedAmount) || parsedAmount < 0) {
+      setError("お会計金額は0以上の数字で入力してください");
       return;
     }
     startTransition(async () => {
@@ -59,6 +69,7 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
         cast_id: castId,
         table_name: tableId,
         is_nominated: isNominated,
+        sales_amount: parsedAmount,
       });
       if (!res.ok) {
         setError(res.error);
@@ -67,7 +78,7 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
       const cust = customers.find((c) => c.id === customerId);
       const cast = casts.find((c) => c.id === castId);
       setSuccess(
-        `${cust?.name ?? "顧客"}さんの来店を${cast?.name ?? "担当"}に通知しました`,
+        `${cust?.name ?? "お客様"}さんの来店を${cast?.name ?? "担当"}に通知しました`,
       );
       reset();
       setTimeout(() => setSuccess(null), 3500);
@@ -117,14 +128,39 @@ export function VisitForm({ casts, customers, initialCustomerId }: Props) {
         </div>
       </div>
 
+      {/* Sales amount (store staff input) */}
+      <div>
+        <div className="text-label-md text-ink font-medium mb-2">
+          お会計金額
+          <span className="text-label-sm text-ink-mute font-normal ml-1.5">
+            任意・後から入力も可
+          </span>
+        </div>
+        <div className="relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-soft font-display text-[18px] leading-none pointer-events-none">
+            ¥
+          </span>
+          <TextInput
+            name="sales_amount"
+            inputMode="numeric"
+            placeholder="例: 50000"
+            value={salesAmount}
+            onChange={(e) =>
+              setSalesAmount(e.target.value.replace(/[^\d,]/g, ""))
+            }
+            className="pl-8 tabular-nums"
+          />
+        </div>
+      </div>
+
       {error && (
-        <div className="rounded-btn bg-rose/10 border border-rose/30 text-rose text-body-sm px-3 py-2">
+        <div className="rounded-card bg-wine/10 border border-wine/30 text-wine-deep text-body-sm px-3 py-2">
           {error}
         </div>
       )}
       {success && (
-        <div className="flex items-center gap-2 rounded-btn bg-champagne border border-champagne-dark text-ink text-body-sm px-3 py-2">
-          <BellRing size={16} className="text-roseGold-dark" />
+        <div className="flex items-center gap-2 rounded-card bg-champagne-soft border border-gold/30 text-ink text-body-sm px-3 py-2">
+          <BellRing size={16} className="text-gold-deep" />
           {success}
         </div>
       )}
@@ -159,10 +195,10 @@ function NominationOption({
       type="button"
       onClick={onClick}
       className={cn(
-        "h-12 rounded-btn border flex items-center justify-center gap-1.5 text-label-md transition-all active:scale-95",
+        "h-12 rounded-pill border flex items-center justify-center gap-1.5 text-label-md font-medium tracking-[0.04em] transition-all active:scale-95",
         active
-          ? "bg-gradient-rose-gold text-pearl border-roseGold shadow-glow-rose"
-          : "bg-pearl-warm border-pearl-soft text-ink-secondary hover:border-champagne-dark",
+          ? "bg-wine-deep text-pearl-light border-wine-deep shadow-luxe"
+          : "bg-pearl-light border-ink/[0.08] text-ink-soft hover:border-gold/30 shadow-soft",
       )}
     >
       {active && <Check size={14} />}

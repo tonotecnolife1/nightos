@@ -12,7 +12,7 @@ export default async function CustomerTransferPage() {
     <div className="animate-fade-in">
       <PageHeader
         title="担当移管"
-        subtitle="キャスト間の顧客引き継ぎ"
+        subtitle="キャスト間のお客様引き継ぎ"
         showBack
       />
       <div className="px-5 pt-4 pb-6">

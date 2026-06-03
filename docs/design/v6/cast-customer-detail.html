@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NIGHTOS — /cast/customers/[id]</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<style>
+  html, body {
+    background: #1a1311;
+    min-height: 100vh;
+  }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px 0; gap: 56px;
+    background:
+      radial-gradient(ellipse 50% 40% at 50% 30%, rgba(94,56,56,0.30) 0%, transparent 60%),
+      #15100e;
+  }
+  .meta {
+    color: #e8d7c4; max-width: 250px;
+    font: 400 13px/1.7 var(--font-sans);
+  }
+  .meta .eyebrow {
+    font: 500 10px/1 var(--font-sans); letter-spacing: 0.28em;
+    color: var(--rose-gold); display: block; margin-bottom: 12px;
+  }
+  .meta h2 {
+    font: 500 26px/1.2 var(--font-serif); margin: 0 0 12px;
+    color: #fdfcf9; letter-spacing: 0.02em;
+  }
+  .meta hr { border: none; height: 1px; background: linear-gradient(90deg, var(--gold), transparent); margin: 20px 0; }
+  .meta ul { margin: 6px 0; padding-left: 18px; }
+  .meta strong { color: #fdfcf9; font-weight: 500; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <aside class="meta">
+    <span class="eyebrow">NIGHTOS · MOCK</span>
+    <h2>/cast/customers/[id]</h2>
+    <p>顧客カルテ詳細。Hero → 紹介/LINE → 写真UP → 担当 → KPI ×4 → Quick → LINE済 → Collapsible ×3 → Sticky footer。Luxury Lady Night (v3) パレット準拠。</p>
+    <hr/>
+    <strong>主要 12 セクション</strong>
+    <ul>
+      <li>SubHeader (戻る + 顧客カルテ)</li>
+      <li>CustomerHero (avatar / name / 23日ぶり / badges)</li>
+      <li>LINE済 + ご本人 + お連れ様登録</li>
+      <li>写真アップロード (dashed)</li>
+      <li>管理 / 担当 + 変更</li>
+      <li>KPI ×4 (来店 / 売上 / ボトル / 次回予想)</li>
+      <li>Quick Actions (来店 / ボトル)</li>
+      <li>LINE Exchange Card</li>
+      <li>Collapsible: 来店・店舗情報 (open)</li>
+      <li>Collapsible: メモ・AI提案 (closed)</li>
+      <li>Collapsible: LINE・連絡履歴 (closed)</li>
+      <li>Sticky Footer (LINE + 電話)</li>
+    </ul>
+    <hr/>
+    <strong>ヒント</strong>
+    <ul style="font-size:12px;">
+      <li>Collapsible はクリックで開閉</li>
+      <li>「メモ・AI提案」と「LINE履歴」を開いて全体感を確認</li>
+    </ul>
+  </aside>
+
+  <div id="root"></div>
+
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="cast-customer-detail.jsx"></script>
+  <script type="text/babel" data-presets="react">
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      <IOSDevice width={392} height={844}>
+        <CustomerDetailScreen />
+      </IOSDevice>
+    );
+  </script>
+</body>
+</html>

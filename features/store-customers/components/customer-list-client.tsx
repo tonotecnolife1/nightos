@@ -15,6 +15,7 @@ import { Card } from "@/components/nightos/card";
 import { CsvDownloadButton } from "@/components/nightos/csv-download-button";
 import type { Cast, Customer } from "@/types/nightos";
 import type { CsvColumn } from "@/lib/nightos/csv";
+import { customerMatchesQuery } from "@/lib/nightos/customer-filters";
 import { deleteCustomerAction } from "../actions";
 
 interface Props {
@@ -30,13 +31,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
   const filtered = useMemo(() => {
     const q = query.trim();
     if (!q) return customers;
-    return customers.filter(
-      (c) =>
-        c.name.includes(q) ||
-        c.job?.includes(q) ||
-        c.favorite_drink?.includes(q) ||
-        c.store_memo?.includes(q),
-    );
+    return customers.filter((c) => customerMatchesQuery(c, q, [c.store_memo]));
   }, [customers, query]);
 
   const handleDelete = (id: string, name: string) => {
@@ -63,7 +58,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
       value: (c) =>
         c.category === "vip" ? "VIP" : c.category === "new" ? "新規" : "常連",
     },
-    { header: "担当キャスト", value: (c) => castName(c.cast_id) },
+    { header: "担当", value: (c) => castName(c.manager_cast_id ?? c.cast_id) },
     { header: "誕生日", value: (c) => c.birthday ?? "" },
     { header: "職業", value: (c) => c.job ?? "" },
     { header: "好み", value: (c) => c.favorite_drink ?? "" },
@@ -86,19 +81,19 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
         <div className="relative flex-1">
           <Search
             size={13}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute"
           />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="名前・職業・好み・メモで検索"
+            placeholder="名前（ひらがな可）・職業・好み・メモで検索"
             style={{ fontSize: "13px" }}
-            className="w-full h-10 pl-8 pr-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-muted"
+            className="w-full h-10 pl-8 pr-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink outline-none focus:border-champagne-dark placeholder:text-ink-mute"
           />
         </div>
         <Link
           href="/store/customers/new"
-          className="h-10 px-3 rounded-btn bg-gradient-rose-gold text-pearl flex items-center gap-1 shadow-soft-card text-[11px] font-medium active:scale-95 transition-transform"
+          className="h-10 px-3 rounded-btn bg-wine-deep text-pearl-light flex items-center gap-1 shadow-soft text-[11px] font-medium active:scale-95 transition-transform"
         >
           <UserPlus size={13} />
           新規
@@ -106,7 +101,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-[11px] text-ink-muted">
+        <span className="text-[11px] text-ink-mute">
           {filtered.length}人 / 全{customers.length}人
         </span>
         <CsvDownloadButton
@@ -117,8 +112,8 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
       </div>
 
       {filtered.length === 0 ? (
-        <Card className="p-6 text-center text-body-sm text-ink-secondary">
-          該当する顧客が見つかりません
+        <Card className="p-6 text-center text-body-sm text-ink-soft">
+          該当するお客様が見つかりません
         </Card>
       ) : (
         <div className="space-y-2">
@@ -146,8 +141,8 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
                         : "常連"}
                   </Badge>
                 </div>
-                <div className="text-[11px] text-ink-muted truncate">
-                  {[c.job, c.favorite_drink, `担当: ${castName(c.cast_id)}`]
+                <div className="text-[11px] text-ink-mute truncate">
+                  {[c.job, c.favorite_drink, `担当: ${castName(c.manager_cast_id ?? c.cast_id)}`]
                     .filter(Boolean)
                     .join(" · ")}
                 </div>
@@ -158,7 +153,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
                 {/* Edit */}
                 <Link
                   href={`/store/customers/${c.id}/edit`}
-                  className="flex items-center gap-1 px-2.5 h-7 rounded-full text-[10px] font-medium border border-pearl-soft bg-pearl-warm text-ink-secondary active:scale-95"
+                  className="flex items-center gap-1 px-2.5 h-7 rounded-full text-[10px] font-medium border border-pearl-soft bg-pearl-warm text-ink-soft active:scale-95"
                 >
                   <Pencil size={10} />
                   編集
@@ -167,7 +162,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
                 {/* Quick: visit registration */}
                 <Link
                   href={`/store/visits/new?customerId=${c.id}`}
-                  className="flex items-center gap-1 px-2.5 h-7 rounded-full text-[10px] font-medium border border-roseGold-border bg-roseGold-muted text-roseGold-dark active:scale-95"
+                  className="flex items-center gap-1 px-2.5 h-7 rounded-full text-[10px] font-medium border border-gold/30 bg-champagne-soft/60 text-wine-deep active:scale-95"
                 >
                   <CalendarPlus size={10} />
                   来店登録
@@ -176,7 +171,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
                 {/* Quick: bottle registration */}
                 <Link
                   href={`/store/bottles/new?customerId=${c.id}`}
-                  className="flex items-center gap-1 px-2.5 h-7 rounded-full text-[10px] font-medium border border-amethyst-border bg-amethyst-muted text-amethyst-dark active:scale-95"
+                  className="flex items-center gap-1 px-2.5 h-7 rounded-full text-[10px] font-medium border border-gold/30 bg-champagne-soft/60 text-gold-deep active:scale-95"
                 >
                   <Wine size={10} />
                   ボトル
@@ -187,7 +182,7 @@ export function CustomerListClient({ customers: initial, casts }: Props) {
                   type="button"
                   onClick={() => handleDelete(c.id, c.name)}
                   disabled={pending}
-                  className="ml-auto w-7 h-7 rounded-full bg-pearl-soft text-rose flex items-center justify-center hover:bg-rose/10 active:scale-95 disabled:opacity-50"
+                  className="ml-auto w-7 h-7 rounded-full bg-pearl-soft text-wine-deep flex items-center justify-center hover:bg-wine/10 active:scale-95 disabled:opacity-50"
                   aria-label="削除"
                 >
                   <Trash2 size={11} />

@@ -19,12 +19,12 @@ export function CollapsibleSection({ title, defaultOpen = false, children }: Pro
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between py-2 text-left"
       >
-        <span className="text-label-md font-medium text-ink-secondary tracking-wide uppercase text-[11px]">
+        <span className="text-label-md font-medium text-ink-soft tracking-wide uppercase text-[11px]">
           {title}
         </span>
         {open
-          ? <ChevronUp size={14} className="text-ink-muted" />
-          : <ChevronDown size={14} className="text-ink-muted" />}
+          ? <ChevronUp size={14} className="text-ink-mute" />
+          : <ChevronDown size={14} className="text-ink-mute" />}
       </button>
       {open && <div className="space-y-4 pt-1">{children}</div>}
     </div>

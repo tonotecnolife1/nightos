@@ -18,6 +18,7 @@ const SYSTEM_PROMPT = `あなたは銀座のクラブの顧客登録を手伝う
 
 {
   "name": "お名前（姓と名の間は全角スペース、例: 田中 太郎）",
+  "name_kana": "お名前の読み仮名（ひらがな、姓と名の間は半角スペース、例: たなか たろう）。名刺にふりがな/ローマ字があればそれを基に、無ければ一般的な読みを推定。読みが全く不明なら null",
   "job": "会社名 + 肩書を1行にまとめる（例: 株式会社ABC 代表取締役）、または読み取れない場合は null",
   "store_memo": "名刺に書かれているその他の情報（部署・住所・電話番号・メールアドレス・事業内容など）を店舗メモ用に短くまとめる。読み取れる情報がなければ null",
   "confidence": "high または medium または low"
@@ -25,6 +26,7 @@ const SYSTEM_PROMPT = `あなたは銀座のクラブの顧客登録を手伝う
 
 # 各フィールドのルール
 - name: 必須。最も確信度の高いお名前を1つだけ。肩書きや敬称（様・殿）は含めない
+- name_kana: ひらがなのみ。読みが推定できなければ null
 - job: 会社名と役職/肩書の組み合わせ。英語名の場合は日本語に訳さずそのまま
 - store_memo: 担当キャストの参考になりそうな情報を簡潔に。電話番号は含めても良いが短く
 - confidence: 抽出の確信度
@@ -40,6 +42,7 @@ const SYSTEM_PROMPT = `あなたは銀座のクラブの顧客登録を手伝う
 
 interface ExtractedBusinessCard {
   name: string | null;
+  name_kana: string | null;
   job: string | null;
   store_memo: string | null;
   confidence: "high" | "medium" | "low";
@@ -47,6 +50,7 @@ interface ExtractedBusinessCard {
 
 const STUB_RESULT: ExtractedBusinessCard = {
   name: "田中 太郎",
+  name_kana: "たなか たろう",
   job: "株式会社サンプル 代表取締役",
   store_memo: "（デモ）ANTHROPIC_API_KEYを設定すると、実際の名刺から情報を自動抽出します",
   confidence: "low",
@@ -132,6 +136,7 @@ export async function POST(req: Request) {
       isStub: true,
       result: {
         name: null,
+        name_kana: null,
         job: null,
         store_memo: null,
         confidence: "low",
@@ -162,6 +167,7 @@ function parseExtractionJson(text: string): ExtractedBusinessCard {
       : "medium";
     return {
       name: nullable(parsed.name),
+      name_kana: nullable(parsed.name_kana),
       job: nullable(parsed.job),
       store_memo: nullable(parsed.store_memo),
       confidence,
@@ -169,6 +175,7 @@ function parseExtractionJson(text: string): ExtractedBusinessCard {
   } catch {
     return {
       name: null,
+      name_kana: null,
       job: null,
       store_memo: null,
       confidence: "low",

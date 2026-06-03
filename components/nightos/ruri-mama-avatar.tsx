@@ -117,11 +117,20 @@ export function RuriMamaAvatar({
   return (
     <div
       className={cn(
-        "relative rounded-full overflow-hidden shrink-0 bg-pearl-soft",
-        withGlow && "shadow-glow-amethyst ring-2 ring-pearl/40",
+        "relative rounded-full overflow-hidden shrink-0 bg-pearl-soft border border-gold/35",
+        withGlow && "shadow-warm ring-2 ring-pearl-light/60",
         className,
       )}
-      style={{ width: size, height: size }}
+      style={
+        withGlow
+          ? {
+              width: size,
+              height: size,
+              boxShadow:
+                "0 6px 18px rgba(168,117,96,0.18), inset 0 0 0 1px rgba(255,255,255,0.6)",
+            }
+          : { width: size, height: size }
+      }
     >
       <Image
         src={config.src}

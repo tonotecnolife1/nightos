@@ -42,6 +42,13 @@ import type { StoreToCastMessage, CastToStoreRequest } from "./mock-data";
 import type { TrendPoint, RepeatPoint } from "./store-mock-data";
 import type { StoreDashboardData, CastStatsData } from "./supabase-queries";
 import { selectFollowTargets } from "@/features/cast-home/data/follow-selector";
+import {
+  buildMonthlyRepeatTrend,
+  monthlyRepeatRate,
+  monthlySales,
+  yearlyRepeatRate,
+  yearlySales,
+} from "./stats-trend";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -187,6 +194,20 @@ export async function getCustomerContextReal(
     bottles: (bottles ?? []).map(rowToBottle),
     visits: (visits ?? []).map(rowToVisit),
   };
+}
+
+/** 指定顧客群の全来店（接客者を問わず）。歴代ヘルプの多対多集約に使う。 */
+export async function getVisitsForCustomersReal(
+  customerIds: string[],
+): Promise<Visit[]> {
+  if (customerIds.length === 0) return [];
+  const supabase = createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("visits")
+    .select("*")
+    .in("customer_id", customerIds);
+  if (error) throw error;
+  return (data ?? []).map(rowToVisit);
 }
 
 export async function getCastHomeDataReal(
@@ -345,6 +366,8 @@ export async function recordFollowLogReal(args: {
 export async function createCustomerReal(input: {
   storeId: string;
   name: string;
+  name_kana?: string | null;
+  nickname?: string | null;
   birthday: string | null;
   job: string | null;
   favorite_drink: string | null;
@@ -367,6 +390,8 @@ export async function createCustomerReal(input: {
       store_id: input.storeId,
       cast_id: input.cast_id,
       name: input.name,
+      name_kana: input.name_kana ?? null,
+      nickname: input.nickname ?? null,
       birthday: input.birthday,
       job: input.job,
       favorite_drink: input.favorite_drink,
@@ -395,6 +420,7 @@ export async function createVisitReal(input: {
   cast_id: string;
   table_name: string | null;
   is_nominated: boolean;
+  sales_amount?: number;
 }): Promise<Visit> {
   const supabase = createServerSupabaseClient();
   const id = `visit_${Date.now()}`;
@@ -407,6 +433,7 @@ export async function createVisitReal(input: {
       cast_id: input.cast_id,
       table_name: input.table_name,
       is_nominated: input.is_nominated,
+      sales_amount: input.sales_amount ?? 0,
       visited_at: new Date().toISOString(),
     })
     .select()
@@ -547,11 +574,14 @@ export async function updateCustomerReal(
   id: string,
   input: {
     name: string;
+    name_kana?: string | null;
+    nickname?: string | null;
     birthday: string | null;
     job: string | null;
     favorite_drink: string | null;
     category: CustomerCategory;
     store_memo: string | null;
+    region: string | null;
     cast_id: string;
   },
 ): Promise<Customer | null> {
@@ -560,11 +590,14 @@ export async function updateCustomerReal(
     .from("customers")
     .update({
       name: input.name,
+      name_kana: input.name_kana ?? null,
+      nickname: input.nickname ?? null,
       birthday: input.birthday,
       job: input.job,
       favorite_drink: input.favorite_drink,
       category: input.category,
       store_memo: input.store_memo,
+      region: input.region,
       cast_id: input.cast_id,
     })
     .eq("id", id)
@@ -853,11 +886,16 @@ export async function getStoreDashboardDataReal(
 export async function getCastStatsDataReal(
   castId: string,
   storeId: string,
+  refDate?: Date,
 ): Promise<CastStatsData> {
   const supabase = createServerSupabaseClient();
-  const now = new Date();
+  const now = refDate ?? new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const yearStart = new Date(now.getFullYear(), 0, 1);
+  // 月次トレンドは過去 6 ヶ月遡るため、年初より早い場合に備えて
+  // visits の取得下限を「年初」と「6 ヶ月前」の早い方にする。
+  const trendStart = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const visitsFrom = trendStart < yearStart ? trendStart : yearStart;
 
   const [castRes, custsRes, visitsRes, goalRes, douhansRes, followRes] =
     await Promise.all([
@@ -874,7 +912,7 @@ export async function getCastStatsDataReal(
         .from("visits")
         .select("*")
         .eq("store_id", storeId)
-        .gte("visited_at", yearStart.toISOString()),
+        .gte("visited_at", visitsFrom.toISOString()),
       supabase
         .from("cast_goals")
         .select("*")
@@ -935,7 +973,10 @@ export async function getCastStatsDataReal(
     (d: any) => d.status === "completed",
   ).length;
 
-  // Repeat trend (4 weeks) — approximate from cast repeat_rate
+  const myCustomerIds = myCustomers.map((c) => c.id);
+
+  // Repeat trend (4 weeks) — approximate from cast repeat_rate.
+  // mama/stats など週次表示で参照するため残置。
   const repeatTrend = [1, 2, 3, 4].map((w) => ({
     week: `w${w}`,
     label: `${w}週目`,
@@ -945,16 +986,17 @@ export async function getCastStatsDataReal(
   return {
     cast,
     monthly: {
-      sales: cast.monthly_sales,
-      repeatRate: cast.repeat_rate,
+      // visits.sales_amount からの実集計（静的 monthly_sales は使わない）
+      sales: monthlySales(visits, castId, now),
+      repeatRate: monthlyRepeatRate(visits, castId, myCustomerIds, now),
       followRate,
       newCustomerCount: monthNewCount,
       totalCustomerCount: myCustomers.length,
       douhanCount: monthDouhans,
     },
     yearly: {
-      sales: cast.monthly_sales * 3,
-      repeatRate: Math.max(0, cast.repeat_rate - 0.03),
+      sales: yearlySales(visits, castId, now),
+      repeatRate: yearlyRepeatRate(visits, castId, myCustomerIds, now),
       newCustomerCount: yearNewCount,
       douhanCount: yearDouhans,
     },
@@ -963,6 +1005,13 @@ export async function getCastStatsDataReal(
       douhanGoal: goal.douhanGoal,
     },
     repeatTrend,
+    repeatTrendMonthly: buildMonthlyRepeatTrend(
+      visits,
+      castId,
+      myCustomerIds,
+      now,
+      6,
+    ),
     followStreakDays,
   };
 }
@@ -998,6 +1047,7 @@ function rowToCast(row: any): Cast {
     is_active: row.is_active === undefined ? true : Boolean(row.is_active),
     club_role: row.club_role ?? undefined,
     assigned_oneesan_id: row.assigned_oneesan_id ?? undefined,
+    avatar_path: row.avatar_path ?? null,
   };
 }
 
@@ -1007,6 +1057,8 @@ function rowToCustomer(row: any): Customer {
     store_id: row.store_id,
     cast_id: row.cast_id,
     name: row.name,
+    name_kana: row.name_kana ?? null,
+    nickname: row.nickname ?? null,
     birthday: row.birthday,
     job: row.job,
     favorite_drink: row.favorite_drink,
@@ -1055,6 +1107,7 @@ function rowToVisit(row: any): Visit {
     cast_id: row.cast_id,
     table_name: row.table_name,
     is_nominated: Boolean(row.is_nominated),
+    sales_amount: Number(row.sales_amount ?? 0),
     visited_at: row.visited_at,
   };
 }

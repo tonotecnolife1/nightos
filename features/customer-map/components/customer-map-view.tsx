@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown, ChevronRight, Crown, User, Users } from "lucide-react";
-import type { Cast, Customer } from "@/types/nightos";
+import { createContext, useContext, useMemo, useState } from "react";
+import Link from "next/link";
+import { ChevronDown, ChevronRight, Crown, HandHelping, Star, User, Users } from "lucide-react";
+import type { Cast, Customer, Visit } from "@/types/nightos";
 import {
   buildCastBasedTree,
   buildReferralTree,
   countReferrals,
 } from "@/lib/nightos/referral-tree";
 import { cn, formatCustomerName } from "@/lib/utils";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 import { FunnelBadge } from "@/features/customer-card/components/funnel-badge";
 import { EmptyState } from "@/components/nightos/empty-state";
 
@@ -16,24 +18,109 @@ interface Props {
   customers: Customer[];
   casts: Cast[];
   mode: "customer" | "cast";
+  /** ヘルプ（cast モード）の多対多バケット導出に使う来店履歴 */
+  visits?: Visit[];
+  /** 星をつけた顧客の id 集合（指定時のみ星 UI を表示） */
+  starredIds?: Set<string>;
+  /** 星のオン/オフ切替。未指定なら星ボタン・ピン留め帯を出さない */
+  onToggleStar?: (customerId: string) => void;
+  /** 顧客カードの遷移先ベースパス。ロールごとに切り替える (cast: /cast/customers, mama: /mama/customers) */
+  customerBasePath?: string;
 }
 
-export function CustomerMapView({ customers, casts, mode }: Props) {
+// 星の状態とハンドラをツリーの各階層へ配るためのコンテキスト。
+// （prop drilling を避けるための内部利用）
+const StarContext = createContext<{
+  starred: Set<string>;
+  toggle: (id: string) => void;
+} | null>(null);
+
+// 顧客カードの遷移先ベースパスをツリー各階層へ配るコンテキスト。
+// 同じ相関図コンポーネントを cast / mama で共有するため、ロール別のパスを渡せるようにする。
+const CustomerHrefContext = createContext<string>("/cast/customers");
+
+function StarButton({ id }: { id: string }) {
+  const ctx = useContext(StarContext);
+  if (!ctx) return null;
+  const active = ctx.starred.has(id);
+  return (
+    <button
+      type="button"
+      aria-label={active ? "星を外す" : "星をつける"}
+      aria-pressed={active}
+      onClick={(e) => {
+        // 親が Link のためデフォルト遷移と伝播を止める
+        e.preventDefault();
+        e.stopPropagation();
+        ctx.toggle(id);
+      }}
+      className="shrink-0 w-7 h-7 -ml-1 flex items-center justify-center rounded-full hover:bg-pearl-soft active:scale-90 transition"
+    >
+      <Star
+        size={14}
+        className={cn(
+          active ? "fill-current text-gold-deep" : "text-ink-mute",
+        )}
+      />
+    </button>
+  );
+}
+
+/** 星をつけた顧客を先頭へ。元の並び順は安定的に保つ。 */
+function sortStarredFirst<T>(
+  items: T[],
+  getId: (item: T) => string,
+  starred: Set<string> | undefined,
+): T[] {
+  if (!starred || starred.size === 0) return items;
+  return items
+    .map((item, idx) => ({ item, idx }))
+    .sort((a, b) => {
+      const sa = starred.has(getId(a.item)) ? 0 : 1;
+      const sb = starred.has(getId(b.item)) ? 0 : 1;
+      return sa - sb || a.idx - b.idx;
+    })
+    .map((x) => x.item);
+}
+
+export function CustomerMapView({
+  customers,
+  casts,
+  mode,
+  visits,
+  starredIds,
+  onToggleStar,
+  customerBasePath = "/cast/customers",
+}: Props) {
+  const ctxValue = useMemo(
+    () =>
+      onToggleStar
+        ? { starred: starredIds ?? new Set<string>(), toggle: onToggleStar }
+        : null,
+    [starredIds, onToggleStar],
+  );
+
   if (customers.length === 0) {
     return (
       <EmptyState
         icon={<User size={22} />}
-        title="表示できる顧客がいません"
+        title="表示できるお客様がいません"
         description="お客様を登録すると相関図が描かれます"
         tone="amethyst"
       />
     );
   }
 
-  return mode === "customer" ? (
-    <CustomerBasedMap customers={customers} casts={casts} />
-  ) : (
-    <CastBasedMap customers={customers} casts={casts} />
+  return (
+    <CustomerHrefContext.Provider value={customerBasePath}>
+      <StarContext.Provider value={ctxValue}>
+        {mode === "customer" ? (
+          <CustomerBasedMap customers={customers} casts={casts} />
+        ) : (
+          <CastBasedMap customers={customers} casts={casts} visits={visits} />
+        )}
+      </StarContext.Provider>
+    </CustomerHrefContext.Provider>
   );
 }
 
@@ -50,15 +137,17 @@ function CustomerBasedMap({
 }) {
   const tree = buildReferralTree({ customers, casts });
   const castById = new Map(casts.map((c) => [c.id, c]));
+  const starCtx = useContext(StarContext);
+  const sortedTree = sortStarredFirst(
+    tree,
+    (node) => node.customer.id,
+    starCtx?.starred,
+  );
 
   return (
     <div className="space-y-3">
-      <div className="text-[10px] text-ink-muted px-1">
-        担当顧客グループ {tree.length}件
-      </div>
-
       <div className="space-y-4">
-        {tree.map((node) => (
+        {sortedTree.map((node) => (
           <ReferralTree
             key={node.customer.id}
             node={node}
@@ -169,8 +258,8 @@ function ReferralToggle({
 }) {
   const toneClass =
     tone === "strong"
-      ? "bg-amethyst-muted/40 border-amethyst-border text-amethyst-dark"
-      : "bg-pearl-soft border-pearl-soft text-ink-secondary";
+      ? "bg-champagne-soft/60/40 border-gold/30 text-gold-deep"
+      : "bg-pearl-soft border-pearl-soft text-ink-soft";
   return (
     <button
       type="button"
@@ -210,8 +299,8 @@ function TreeChildWrapper({
 }) {
   const lineColor =
     lineTone === "strong"
-      ? "bg-amethyst-border"
-      : "bg-amethyst-border/60";
+      ? "bg-gold/30"
+      : "bg-gold/30/60";
   return (
     <div className="relative pl-6 mt-2 first:mt-0">
       {/* Horizontal elbow (card center y) */}
@@ -247,17 +336,20 @@ function ReferralNodeCard({
     ? castById.get(node.customer.manager_cast_id)
     : null;
   const cast = castById.get(node.customer.cast_id);
+  const basePath = useContext(CustomerHrefContext);
+  const relation = useVenueConfig().labels.customerRelation;
 
   return (
-    <a
-      href={`/cast/customers/${node.customer.id}`}
+    <Link
+      href={`${basePath}/${node.customer.id}`}
       className={cn(
-        "block rounded-card bg-pearl-warm border shadow-soft-card px-3 py-2 active:scale-[0.99] transition-transform",
-        isRoot ? "border-amethyst-border" : "border-pearl-soft",
+        "block rounded-card bg-pearl-warm border shadow-soft px-3 py-2 active:scale-[0.99] transition-transform",
+        isRoot ? "border-gold/30" : "border-pearl-soft",
       )}
     >
-      {/* 1行目: 名前 + ファネル状態バッジ（担当ありは表示しない） [余白] 紹介元ラベル */}
+      {/* 1行目: 星 + 名前 + ファネル状態バッジ（担当ありは表示しない） [余白] 紹介元ラベル */}
       <div className="flex items-center gap-2 min-w-0">
+        <StarButton id={node.customer.id} />
         <span className="text-body-sm font-semibold text-ink truncate">
           {formatCustomerName(node.customer.name)}
         </span>
@@ -267,42 +359,50 @@ function ReferralNodeCard({
           />
         )}
         {isRoot && (
-          <span className="ml-auto flex items-center gap-1 text-[10px] text-amethyst-dark font-medium shrink-0 bg-amethyst-muted/40 border border-amethyst-border rounded-badge px-1.5 py-0.5">
+          <span className="ml-auto flex items-center gap-1 text-[10px] text-gold-deep font-medium shrink-0 bg-champagne-soft/60/40 border border-gold/30 rounded-badge px-1.5 py-0.5">
             <Crown size={10} />
             お連れ様合計{rootRefCount ?? 0}人
           </span>
         )}
       </div>
-      {/* 2行目: 管理：X、担当：Y、職業 */}
-      <div className="text-[11px] text-ink-secondary mt-1 truncate">
-        <span>管理：</span>
-        <span className="text-ink font-medium">{manager?.name ?? "—"}</span>
-        <span className="text-ink-muted">、</span>
-        <span>担当：</span>
-        <span className="text-ink font-medium">{cast?.name ?? "—"}</span>
+      {/* 2行目: 担当：X（、ヘルプ：Y）、職業 */}
+      <div className="text-[11px] text-ink-soft mt-1 truncate">
+        <span>{relation}：</span>
+        <span className="text-ink font-medium">
+          {manager?.name ?? cast?.name ?? "—"}
+        </span>
+        {cast && manager && cast.id !== manager.id && (
+          <>
+            <span className="text-ink-mute">、</span>
+            <span>ヘルプ：</span>
+            <span className="text-ink font-medium">{cast.name}</span>
+          </>
+        )}
         {node.customer.job && (
           <>
-            <span className="text-ink-muted">、</span>
-            <span className="text-ink-muted">{node.customer.job}</span>
+            <span className="text-ink-mute">、</span>
+            <span className="text-ink-mute">{node.customer.job}</span>
           </>
         )}
       </div>
-    </a>
+    </Link>
   );
 }
 
-// ═══════════════ Cast-based (manager → cast → customers) ═══════════════
-// Layout: 管理者ごとに上から縦に階層で並べる。
-//         管理者ブロック内で 担当キャスト → 顧客 と更に字下げ。
+// ═══════════════ Cast-based (担当 → ヘルプ → customers) ═══════════════
+// Layout: 担当ごとに上から縦に階層で並べる。
+//         担当ブロック内で ヘルプ → 顧客 と更に字下げ。
 
 function CastBasedMap({
   customers,
   casts,
+  visits,
 }: {
   customers: Customer[];
   casts: Cast[];
+  visits?: Visit[];
 }) {
-  const tree = buildCastBasedTree({ customers, casts });
+  const tree = buildCastBasedTree({ customers, casts, visits });
 
   return (
     <div className="space-y-3">
@@ -321,18 +421,19 @@ function ManagerBlock({
 }: {
   group: import("@/lib/nightos/referral-tree").CastBasedNode;
 }) {
+  const relation = useVenueConfig().labels.customerRelation;
   const managerLabel = group.manager
     ? `${group.manager.name}さん`
-    : "管理者未割り当て";
+    : `${relation}未割り当て`;
 
   return (
-    <div className="flex flex-col gap-2 rounded-card bg-amethyst-muted/20 border border-amethyst-border p-2.5">
+    <div className="flex flex-col gap-2 rounded-card bg-champagne-soft/60/20 border border-gold/30 p-2.5">
       <div className="flex items-center gap-1.5">
-        <Crown size={14} className="text-amethyst-dark shrink-0" />
+        <Crown size={14} className="text-gold-deep shrink-0" />
         <span className="text-body-sm font-semibold text-ink flex-1 truncate">
           {managerLabel}
         </span>
-        <span className="text-[10px] text-ink-muted shrink-0">
+        <span className="text-[10px] text-ink-mute shrink-0">
           {group.totalCustomers}人
         </span>
       </div>
@@ -356,41 +457,63 @@ function ManagerBlock({
 function CastBucket({
   bucket,
 }: {
-  bucket: import("@/lib/nightos/referral-tree").CastBasedNode["byCast"][number];
+  bucket: import("@/lib/nightos/referral-tree").CastBucketNode;
 }) {
   const [expanded, setExpanded] = useState(true);
+  const starCtx = useContext(StarContext);
+  const isHelp = bucket.kind === "help";
+  const relation = useVenueConfig().labels.customerRelation;
   const castLabel = bucket.cast
-    ? `${bucket.cast.name}さん担当`
-    : "担当未割り当て";
+    ? `${bucket.cast.name}さん${isHelp ? "ヘルプ" : relation}`
+    : `${relation}未割り当て`;
+  const sortedCustomers = sortStarredFirst(
+    bucket.customers,
+    (c) => c.id,
+    starCtx?.starred,
+  );
 
   return (
-    <div className="rounded-btn bg-pearl-warm border border-pearl-soft overflow-hidden">
+    <div
+      className={cn(
+        "rounded-btn border overflow-hidden",
+        isHelp
+          ? "bg-champagne/20 border-champagne-dark/30"
+          : "bg-pearl-warm border-pearl-soft",
+      )}
+    >
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-left hover:bg-pearl-soft"
+        className={cn(
+          "w-full flex items-center gap-1.5 px-2.5 py-1.5 text-left",
+          isHelp ? "hover:bg-champagne/30" : "hover:bg-pearl-soft",
+        )}
       >
-        <Users size={11} className="text-roseGold-dark shrink-0" />
+        {isHelp ? (
+          <HandHelping size={11} className="text-champagne-dark shrink-0" />
+        ) : (
+          <Users size={11} className="text-wine-deep shrink-0" />
+        )}
         <span className="text-[11px] font-medium text-ink flex-1 truncate">
           {castLabel}
         </span>
-        <span className="text-[9px] text-ink-muted shrink-0">
+        <span className="text-[9px] text-ink-mute shrink-0">
           {bucket.customers.length}
         </span>
         {expanded ? (
-          <ChevronDown size={10} className="text-ink-muted shrink-0" />
+          <ChevronDown size={10} className="text-ink-mute shrink-0" />
         ) : (
-          <ChevronRight size={10} className="text-ink-muted shrink-0" />
+          <ChevronRight size={10} className="text-ink-mute shrink-0" />
         )}
       </button>
 
       {/* Cast → Customer connectors */}
       {expanded && (
         <div className="pl-2 pr-1.5 pb-1.5 pt-1">
-          {bucket.customers.map((c, idx) => (
+          {sortedCustomers.map((c, idx) => (
             <TreeChildWrapper
               key={c.id}
-              isLast={idx === bucket.customers.length - 1}
+              isLast={idx === sortedCustomers.length - 1}
               lineTone="soft"
             >
               <CustomerLeaf customer={c} />
@@ -411,20 +534,22 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
         : "常連";
   const categoryStyle =
     customer.category === "vip"
-      ? "bg-roseGold-muted text-roseGold-dark border-roseGold-border"
+      ? "bg-champagne-soft/60 text-wine-deep border-gold/30"
       : customer.category === "new"
-        ? "bg-amethyst-muted/50 text-amethyst-dark border-amethyst-border"
-        : "bg-pearl-soft text-ink-secondary border-pearl-soft";
+        ? "bg-champagne-soft/60/50 text-gold-deep border-gold/30"
+        : "bg-pearl-soft text-ink-soft border-pearl-soft";
+  const basePath = useContext(CustomerHrefContext);
   return (
-    <a
-      href={`/cast/customers/${customer.id}`}
+    <Link
+      href={`${basePath}/${customer.id}`}
       className="flex items-center gap-2 px-2 py-1.5 rounded-btn hover:bg-pearl-soft"
     >
+      <StarButton id={customer.id} />
       <span className="text-[12px] text-ink flex-1 truncate">
         {formatCustomerName(customer.name)}
       </span>
       {customer.job && (
-        <span className="text-[10px] text-ink-muted truncate max-w-[40%]">
+        <span className="text-[10px] text-ink-mute truncate max-w-[40%]">
           {customer.job}
         </span>
       )}
@@ -436,6 +561,6 @@ function CustomerLeaf({ customer }: { customer: Customer }) {
       >
         {categoryLabel}
       </span>
-    </a>
+    </Link>
   );
 }

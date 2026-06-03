@@ -1,28 +1,38 @@
-import type { Cast, Customer, CustomerReferralNode, CustomerFunnelStats } from "@/types/nightos";
+import type { Cast, Customer, CustomerReferralNode, CustomerFunnelStats, Visit } from "@/types/nightos";
 
 // ═══════════════ Cast-based tree ═══════════════
 
 /**
  * キャストベースのツリーノード。
- * 管理者（ママ/姉さん）→ 担当キャスト → 顧客 の3階層。
+ * 管理者（ママ/姉さん）→ キャスト → 顧客 の3階層。
+ * バケットは「担当 (assigned)」と「ヘルプ (help)」の2種。
+ * ヘルプは来店履歴 (visits) 由来で、1顧客が複数ヘルプ配下に現れうる（多対多）。
  */
+export interface CastBucketNode {
+  cast: Cast | null; // null = 担当者未割り当て
+  kind: "assigned" | "help";
+  customers: Customer[];
+}
+
 export interface CastBasedNode {
   manager: Cast | null; // null = 管理者未割り当て
-  byCast: Array<{
-    cast: Cast | null; // null = 担当者未割り当て
-    customers: Customer[];
-  }>;
+  byCast: CastBucketNode[];
   totalCustomers: number;
 }
 
 /**
- * 顧客データを「管理者→担当者→顧客」の3階層にまとめる。
+ * 顧客データを「管理者→キャスト→顧客」の3階層にまとめる。
+ *
+ * visits を渡すと、各管理者ブロック内に「ヘルプ」バケットを追加する：
+ * その管理者の顧客に、マスターでも担当でもないキャストが来店で入った実績を
+ * 接客者ごとに束ねる（同じ顧客が複数ヘルプ配下に出現しうる）。
  */
 export function buildCastBasedTree(args: {
   customers: Customer[];
   casts: Cast[];
+  visits?: Visit[];
 }): CastBasedNode[] {
-  const { customers, casts } = args;
+  const { customers, casts, visits } = args;
   const castById = new Map(casts.map((c) => [c.id, c]));
 
   const byManager = new Map<string | null, Customer[]>();
@@ -33,10 +43,21 @@ export function buildCastBasedTree(args: {
     byManager.set(key, list);
   }
 
+  // customer_id → そのお客様の全来店（ヘルプ導出用）
+  const visitsByCustomer = new Map<string, Visit[]>();
+  if (visits) {
+    for (const v of visits) {
+      const list = visitsByCustomer.get(v.customer_id) ?? [];
+      list.push(v);
+      visitsByCustomer.set(v.customer_id, list);
+    }
+  }
+
   const nodes: CastBasedNode[] = [];
   for (const [managerId, managerCustomers] of Array.from(byManager.entries())) {
     const manager = managerId ? (castById.get(managerId) ?? null) : null;
 
+    // ── 担当バケット ──
     const byCast = new Map<string | null, Customer[]>();
     for (const c of managerCustomers) {
       const castKey = c.cast_id ?? null;
@@ -45,16 +66,43 @@ export function buildCastBasedTree(args: {
       byCast.set(castKey, list);
     }
 
-    const byCastArray: CastBasedNode["byCast"] = [];
+    const byCastArray: CastBucketNode[] = [];
     for (const [castId, custs] of Array.from(byCast.entries())) {
       byCastArray.push({
         cast: castId ? (castById.get(castId) ?? null) : null,
+        kind: "assigned",
         customers: custs,
       });
     }
-    byCastArray.sort((a, b) =>
-      (a.cast?.name ?? "zzz").localeCompare(b.cast?.name ?? "zzz"),
-    );
+
+    // ── ヘルプバケット（visits 由来・多対多） ──
+    if (visits) {
+      const helpByCast = new Map<string, Map<string, Customer>>();
+      for (const c of managerCustomers) {
+        for (const v of visitsByCustomer.get(c.id) ?? []) {
+          // マスター・担当の接客はヘルプではない
+          if (v.cast_id === managerId) continue;
+          if (v.cast_id === c.cast_id) continue;
+          if (!castById.has(v.cast_id)) continue;
+          const bucket = helpByCast.get(v.cast_id) ?? new Map<string, Customer>();
+          bucket.set(c.id, c);
+          helpByCast.set(v.cast_id, bucket);
+        }
+      }
+      for (const [castId, custMap] of Array.from(helpByCast.entries())) {
+        byCastArray.push({
+          cast: castById.get(castId) ?? null,
+          kind: "help",
+          customers: Array.from(custMap.values()),
+        });
+      }
+    }
+
+    // 担当 → ヘルプ の順、各種内は名前順
+    byCastArray.sort((a, b) => {
+      if (a.kind !== b.kind) return a.kind === "assigned" ? -1 : 1;
+      return (a.cast?.name ?? "zzz").localeCompare(b.cast?.name ?? "zzz");
+    });
 
     nodes.push({
       manager,

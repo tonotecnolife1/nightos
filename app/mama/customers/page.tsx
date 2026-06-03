@@ -1,5 +1,3 @@
-import { GitBranch, Users } from "lucide-react";
-import { Card } from "@/components/nightos/card";
 import { PageHeader } from "@/components/nightos/page-header";
 import { StatCard } from "@/components/nightos/stat-card";
 import { MamaCustomerPageShell } from "@/features/mama-home/components/mama-customer-page-shell";
@@ -7,12 +5,9 @@ import { getCurrentManagerId } from "@/lib/nightos/auth";
 import {
   getAllCasts,
   getTeamCustomers,
+  getVisitsForCustomers,
 } from "@/lib/nightos/supabase-queries";
-import { mockCasts } from "@/lib/nightos/mock-data";
-import {
-  buildReferralTree,
-  calculateFunnelStats,
-} from "@/lib/nightos/referral-tree";
+import { calculateFunnelStats } from "@/lib/nightos/referral-tree";
 
 export default async function MamaCustomersPage() {
   const managerId = await getCurrentManagerId();
@@ -20,15 +15,15 @@ export default async function MamaCustomersPage() {
     getTeamCustomers(managerId),
     getAllCasts(),
   ]);
+  // 「ヘルプ」ビューの多対多導出に来店履歴を渡す
+  const visits = await getVisitsForCustomers(customers.map((c) => c.id));
 
   const funnel = calculateFunnelStats(customers);
-  const tree = buildReferralTree({ customers, casts: mockCasts });
-  const totalReferralChains = tree.filter((n) => n.children.length > 0).length;
 
   return (
     <div className="animate-fade-in">
       <PageHeader
-        title="全顧客"
+        title="全てのお客様"
         subtitle={`${customers.length}人のお客様`}
       />
 
@@ -55,17 +50,11 @@ export default async function MamaCustomersPage() {
           />
         </div>
 
-        <Card className="p-3 flex items-center justify-between">
-          <span className="text-body-sm text-ink-secondary flex items-center gap-1.5">
-            <GitBranch size={13} className="text-amethyst-dark" />
-            お連れ様の繋がり数
-          </span>
-          <span className="text-body-md text-ink font-medium">
-            {totalReferralChains}本
-          </span>
-        </Card>
-
-        <MamaCustomerPageShell customers={customers} allCasts={allCasts} />
+        <MamaCustomerPageShell
+          customers={customers}
+          allCasts={allCasts}
+          visits={visits}
+        />
       </div>
     </div>
   );

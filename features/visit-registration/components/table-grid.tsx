@@ -23,7 +23,7 @@ export function TableGrid({ value, onChange }: Props) {
               className={cn(
                 "h-16 rounded-btn border text-center transition-all active:scale-95",
                 active
-                  ? "bg-gradient-rose-gold text-pearl border-roseGold shadow-glow-rose"
+                  ? "bg-rose-gold-metallic text-wine-deep border border-gold/30 shadow-luxe"
                   : "bg-pearl-warm border-pearl-soft text-ink hover:border-champagne-dark",
               )}
             >
@@ -31,7 +31,7 @@ export function TableGrid({ value, onChange }: Props) {
               <div
                 className={cn(
                   "text-[10px]",
-                  active ? "text-pearl/80" : "text-ink-muted",
+                  active ? "text-pearl-light/80" : "text-ink-mute",
                 )}
               >
                 {t.seats}席

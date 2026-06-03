@@ -3,13 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { getCurrentCastId } from "@/lib/nightos/auth";
 import {
+  canEditCustomerDirectly,
+  getCustomerRelationship,
+} from "@/lib/nightos/customer-relationship";
+import {
   deleteScreenshot,
   getCustomerContext,
   saveScreenshot,
   updateCastMemo,
+  updateCustomer,
   type CastMemoInput,
 } from "@/lib/nightos/supabase-queries";
 import type {
+  Customer,
   LineScreenshot,
   MemoExtractionResult,
 } from "@/types/nightos";
@@ -79,6 +85,71 @@ export async function applyMemoUpdateAction(args: {
   revalidatePath(`/cast/customers/${args.customerId}`);
   revalidatePath("/cast/home");
   return { ok: true as const, memo, screenshot };
+}
+
+/**
+ * キャスト編集可能な顧客プロフィール項目を一括更新する。
+ *
+ * 編集可能: name / name_kana / nickname / birthday / job / favorite_drink / region
+ * 編集不可（保持）: category / store_memo / cast_id / その他システム項目
+ *
+ * store_memo は店舗からの共有情報なのでキャスト側からは触らない。
+ */
+export interface CustomerProfileEdit {
+  name: string;
+  name_kana: string | null;
+  nickname: string | null;
+  birthday: string | null;
+  job: string | null;
+  favorite_drink: string | null;
+  region: string | null;
+}
+
+export async function updateCustomerProfileAction(args: {
+  customerId: string;
+  input: CustomerProfileEdit;
+}): Promise<
+  | { ok: true; customer: Customer | null }
+  | { ok: false; error: string }
+> {
+  if (!args.input.name.trim()) {
+    return { ok: false, error: "お名前は必須です" };
+  }
+  const castId = await getCurrentCastId();
+  const context = await getCustomerContext(castId, args.customerId);
+  if (!context) {
+    return { ok: false, error: "顧客が見つかりません" };
+  }
+  const current = context.customer;
+
+  // 関係性ガード: 共有プロフィールの直接編集はマスター/担当のみ。
+  // ヘルプは「変更を提案」フロー（クライアント側）を使う想定。
+  const relationship = getCustomerRelationship(current, castId);
+  if (!canEditCustomerDirectly(relationship)) {
+    return {
+      ok: false,
+      error: "このお客様の情報はマスター/担当のみ編集できます。「変更を提案」をご利用ください",
+    };
+  }
+
+  const customer = await updateCustomer(args.customerId, {
+    name: args.input.name.trim(),
+    name_kana: args.input.name_kana?.trim() || null,
+    nickname: args.input.nickname?.trim() || null,
+    birthday: args.input.birthday,
+    job: args.input.job?.trim() || null,
+    favorite_drink: args.input.favorite_drink?.trim() || null,
+    region: args.input.region?.trim() || null,
+    // キャスト権限では触らない項目は現状値を維持
+    category: current.category,
+    store_memo: current.store_memo,
+    cast_id: current.cast_id,
+  });
+
+  revalidatePath(`/cast/customers/${args.customerId}`);
+  revalidatePath("/cast/home");
+  revalidatePath("/cast/customers");
+  return { ok: true, customer };
 }
 
 export async function deleteScreenshotAction(args: {

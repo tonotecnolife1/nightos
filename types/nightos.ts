@@ -42,6 +42,10 @@ export interface Cast {
   club_role?: ClubRole;
   /** Club only: the oneesan this help is assigned to */
   assigned_oneesan_id?: string;
+  /** Storage path of the cast's own avatar image in the private
+   *  `cast-avatars` bucket (migration 019). The display layer re-signs
+   *  this into a URL on read. Null/undefined when no avatar is set. */
+  avatar_path?: string | null;
 }
 
 // ═══════════════ Club-specific types ═══════════════
@@ -54,6 +58,11 @@ export interface Douhan {
   date: string; // YYYY-MM-DD
   status: "scheduled" | "completed" | "cancelled";
   note: string | null;
+  /**
+   * 任意の時刻 HH:mm。スケジュールのタイムライン表示・並び替え用
+   * (localStorage MVP)。未指定時は表示側で既定値を使う。
+   */
+  time?: string | null;
   /**
    * キャンセル理由。status === "cancelled" の時は必須。
    * ママ・姉さんがキャンセル傾向を把握するための情報。
@@ -74,7 +83,15 @@ export interface Customer {
   id: string;
   store_id: string;
   cast_id: string;
+  /** フルネーム（戸籍名・名刺名）。リスト・通知の主表示はこちら。 */
   name: string;
+  /** 氏名の読み仮名（ひらがな）。検索の予測用。任意。 */
+  name_kana?: string | null;
+  /**
+   * 呼び名（ニックネーム）。カルテのサブ表示・接客時の呼びかけに使用。
+   * フルネームの横に表示し、検索でもヒットする。入力推奨だが nullable。
+   */
+  nickname?: string | null;
   birthday: string | null; // YYYY-MM-DD
   job: string | null;
   favorite_drink: string | null;
@@ -100,9 +117,10 @@ export interface Customer {
   line_exchanged_at?: string | null;
 
   /**
-   * この顧客を「管理する」ママまたは姉さんの id。
-   * 現場の担当者 (cast_id) とは別概念で、上位ポジション。
-   * 担当者がキャスト(help)なら、管理者はその上の姉さんかママ。
+   * この顧客の「担当」（メインのホステス。地域により係/新地とも呼ぶ）の id。
+   * お客様を店に呼んだ本人で、売上や指名（同伴など）の成績はこの担当につく。
+   * 席についてサポートする現場のホステス (cast_id) が担当と異なる場合、
+   * その cast_id はヘルプとして扱う。
    */
   manager_cast_id?: string | null;
 
@@ -187,6 +205,8 @@ export interface Visit {
   cast_id: string;
   table_name: string | null;
   is_nominated: boolean;
+  /** お会計金額（円）。会計未確定 / 未入力は 0。 */
+  sales_amount: number;
   visited_at: string;
 }
 
@@ -370,6 +390,12 @@ export interface ChatMessage {
    */
   options?: ReplyOption[];
   pickedOptionId?: string;
+  /**
+   * この assistant メッセージ（3案）を生成したときの intent / ヒアリング内容。
+   * 「どれもしっくりこない → 別の3案を作る」導線で同じ文脈から再生成するために保持する。
+   */
+  genIntent?: Intent;
+  genHearing?: Record<string, string>;
 }
 
 export type ReplyOptionStyle = "safe" | "practical" | "warm";

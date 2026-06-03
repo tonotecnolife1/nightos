@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NIGHTOS — Hero 候補比較</title>
+<style>
+  :root {
+    --champ-gold: linear-gradient(135deg, #EBD9A8 0%, #C8A672 50%, #8C6F44 100%);
+    --hero-bg:
+      radial-gradient(ellipse 70% 60% at 25% 15%, rgba(193,136,136,0.40) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 50% at 85% 85%, rgba(140,111,68,0.30) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 100% 0%, rgba(154,93,93,0.40) 0%, transparent 55%),
+      linear-gradient(180deg, #2D1818 0%, #1A0F0F 100%);
+    --gold: #EBD9A8;
+    --gold-mid: #C8A672;
+    --ink-light: #fdfcf9;
+    --ink-light-soft: rgba(253,252,249,0.72);
+    --ink-light-mute: rgba(253,252,249,0.55);
+    --wine-deep: #5e3838;
+    --bordeaux: #2D1818;
+  }
+  @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap");
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 48px 32px; background: #0f0807;
+    font-family: "Noto Sans JP", system-ui, sans-serif;
+    color: var(--ink-light);
+  }
+  .page-title {
+    text-align: center; margin: 0 0 12px;
+    font: 400 28px/1.2 "Noto Serif JP", serif;
+    background: var(--champ-gold);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    letter-spacing: 0.05em;
+  }
+  .page-sub {
+    text-align: center; color: var(--ink-light-mute); font-size: 13px;
+    max-width: 600px; margin: 0 auto 40px;
+  }
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 32px; max-width: 1600px; margin: 0 auto;
+  }
+  .candidate { display: flex; flex-direction: column; gap: 14px; }
+  .label {
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .label .tag {
+    font: 500 11px/1 sans-serif; letter-spacing: 0.32em;
+    color: var(--gold-mid);
+  }
+  .label .name {
+    font: 500 18px/1 "Noto Serif JP", serif; letter-spacing: 0.04em;
+  }
+  .label .pros {
+    margin-left: auto; font-size: 11px; color: var(--ink-light-mute);
+  }
+  .desc {
+    font-size: 12px; line-height: 1.65; color: var(--ink-light-soft);
+    padding: 0 4px;
+  }
+  .phone {
+    width: 100%; max-width: 400px; margin: 0 auto;
+    border-radius: 32px; overflow: hidden;
+    background: var(--hero-bg);
+    box-shadow: 0 28px 56px rgba(0,0,0,0.6), 0 0 0 1px rgba(235,217,168,0.15);
+    position: relative;
+  }
+  .phone::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(235,217,168,0.55) 20%, rgba(235,217,168,0.55) 80%, transparent 100%);
+    z-index: 2;
+  }
+  .hero { padding: 60px 20px 30px; position: relative; }
+  .top-row {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;
+  }
+  .eyebrow {
+    font: 500 11px/1 sans-serif; letter-spacing: 0.32em;
+    color: var(--gold-mid);
+  }
+  .eyebrow + .date {
+    margin-left: 10px;
+    font: 400 13px/1 "Cormorant Garamond", "Noto Serif JP", serif;
+    color: var(--ink-light-mute); letter-spacing: 0.06em;
+  }
+  .bell {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-light-soft); position: relative;
+  }
+  .bell::before {
+    content: ""; position: absolute; inset: 0; border-radius: 50%; padding: 1px;
+    background: var(--champ-gold);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+  }
+  .brass-line {
+    height: 1px; background: var(--champ-gold); opacity: 0.85;
+  }
+  .display-xl {
+    margin: 0 0 6px; font: 400 38px/1.1 "Noto Serif JP", serif;
+    background: var(--champ-gold);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    letter-spacing: 0.05em;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,0.45));
+  }
+  .display-lg {
+    margin: 0 0 6px; font: 400 28px/1.2 "Noto Serif JP", serif;
+    background: var(--champ-gold);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    letter-spacing: 0.05em;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,0.45));
+  }
+  .display-md {
+    font: 500 22px/1.25 "Noto Serif JP", serif;
+    color: var(--ink-light); letter-spacing: 0.04em;
+  }
+  .kpi-num {
+    font: 400 56px/1 "Cormorant Garamond", "Noto Serif JP", serif;
+    color: var(--gold); letter-spacing: 0.02em; font-variant-numeric: tabular-nums;
+  }
+  .kpi-num-md {
+    font: 400 32px/1 "Cormorant Garamond", serif; color: var(--gold);
+    letter-spacing: 0.02em; font-variant-numeric: tabular-nums;
+  }
+  .kpi-unit { font: 400 12px/1 sans-serif; color: var(--ink-light-soft); }
+  .subtitle {
+    font: 400 13px/1.7 sans-serif; color: var(--ink-light-soft);
+    letter-spacing: 0.02em;
+  }
+  .cta-row { margin-top: 20px; display: flex; gap: 10px; }
+  .cta-primary {
+    flex: 1; height: 48px; border-radius: 999px;
+    background: var(--champ-gold); color: var(--bordeaux);
+    border: 1px solid rgba(0,0,0,0.12);
+    font: 600 14px/1 sans-serif; letter-spacing: 0.08em;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 8px 20px rgba(45,24,24,0.55), 0 28px 56px rgba(20,10,10,0.45);
+    cursor: pointer;
+  }
+  .cta-ghost {
+    height: 48px; padding: 0 20px; border-radius: 999px;
+    background: rgba(255,255,255,0.06); color: var(--gold);
+    border: 1px solid rgba(235,217,168,0.45);
+    font: 500 13px/1 sans-serif; letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .row {
+    display: flex; align-items: baseline; gap: 16px; padding: 12px 0;
+    border-bottom: 1px solid rgba(235,217,168,0.16);
+  }
+  .row:last-child { border-bottom: none; }
+  .row .time {
+    font: 400 24px/1 "Cormorant Garamond", serif;
+    color: var(--gold); letter-spacing: 0.04em;
+    min-width: 70px; font-variant-numeric: tabular-nums;
+  }
+  .row .table {
+    font: 500 20px/1.25 "Noto Serif JP", serif;
+    color: var(--ink-light); letter-spacing: 0.02em;
+  }
+  .row .meta {
+    font: 400 11px/1.3 sans-serif; color: var(--ink-light-mute);
+    letter-spacing: 0.06em; margin-top: 2px;
+  }
+  /* progress bar */
+  .progress {
+    height: 6px; border-radius: 999px; background: rgba(255,255,255,0.08);
+    overflow: hidden; margin: 10px 0 8px;
+  }
+  .progress > span {
+    display: block; height: 100%; border-radius: inherit;
+    background: var(--champ-gold);
+  }
+  .stat-line {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font: 400 11px/1 sans-serif; color: var(--ink-light-mute);
+    letter-spacing: 0.06em;
+  }
+  .focus-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(193,136,136,0.18); color: var(--gold);
+    font: 500 10px/1 sans-serif; letter-spacing: 0.16em;
+    margin-bottom: 10px;
+  }
+  .focus-name {
+    font: 500 28px/1.2 "Noto Serif JP", serif;
+    color: var(--ink-light); letter-spacing: 0.04em; margin: 0 0 8px;
+  }
+  .focus-meta {
+    font: 400 12.5px/1.7 sans-serif; color: var(--ink-light-soft);
+    letter-spacing: 0.02em; margin-bottom: 14px;
+  }
+  .countdown {
+    font: 400 48px/1 "Cormorant Garamond", serif;
+    color: var(--gold); letter-spacing: 0.02em; font-variant-numeric: tabular-nums;
+  }
+  .countdown-label {
+    font: 500 11px/1 sans-serif; letter-spacing: 0.20em;
+    color: var(--ink-light-mute); margin-bottom: 4px;
+  }
+  .mini-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    margin: 14px 0 6px;
+  }
+  .mini-grid .item {
+    padding: 12px 8px; border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(235,217,168,0.18);
+    text-align: center;
+  }
+  .mini-grid .item .num {
+    font: 400 28px/1 "Cormorant Garamond", serif;
+    color: var(--gold); letter-spacing: 0.02em;
+  }
+  .mini-grid .item .lbl {
+    font: 500 10px/1 sans-serif; letter-spacing: 0.20em;
+    color: var(--ink-light-mute); margin-top: 6px;
+  }
+  .icon { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+  <h1 class="page-title">Hero 候補 比較</h1>
+  <p class="page-sub">"Tonight" + 「今夜もいってらっしゃい」をより意味のある情報に置き換える 4 案。V5 Bordeaux Salon (dark wine + champagne-gold metallic) 基調で統一。</p>
+
+  <div class="grid">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         A: 今夜の予定 (現在の Hero に近い、より具体的)
+         ═════════════════════════════════════════════════════════════ -->
+    <div class="candidate">
+      <div class="label">
+        <span class="tag">案 A</span>
+        <span class="name">今夜のスケジュール</span>
+        <span class="pros">行動に直結 / 実装軽い</span>
+      </div>
+      <p class="desc">"Tonight" の代わりに <strong>今夜の最初の予定</strong>を大きく見出し化。同伴・出勤・予約来店を時系列で並べる。予定 0 件の日は次の出勤日まで残り日数を表示。</p>
+      <div class="phone">
+        <div class="hero">
+          <div class="top-row">
+            <div><span class="eyebrow">NIGHTOS</span><span class="date">5月30日 (土)</span></div>
+            <div class="bell">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 7 2 7H4s2-2 2-7z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+            </div>
+          </div>
+          <div class="countdown-label">今夜の予定 · 2 軒</div>
+          <h1 class="display-lg">18:00 同伴</h1>
+          <div class="brass-line" style="width: 30%; margin-bottom: 14px;"></div>
+          <p class="subtitle" style="margin-bottom:14px;">六本木 / 田中さま · 山崎 12 年キープ中</p>
+          <div class="row" style="border-top: 1px solid rgba(235,217,168,0.16);">
+            <div class="time">20:00</div>
+            <div>
+              <div class="table">出勤</div>
+              <div class="meta">銀座本店</div>
+            </div>
+          </div>
+          <div class="cta-row">
+            <button class="cta-primary">スケジュールを見る →</button>
+            <button class="cta-ghost">予約追加</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         B: 今月の進捗 (売上 / 同伴 / 目標)
+         ═════════════════════════════════════════════════════════════ -->
+    <div class="candidate">
+      <div class="label">
+        <span class="tag">案 B</span>
+        <span class="name">今月の進捗</span>
+        <span class="pros">モチベ駆動 / 数字フォーカス</span>
+      </div>
+      <p class="desc">月次売上を Hero の主役に。Cormorant 数字 + 進捗バー + 達成までの残量。"今月もう少し" の感覚で開く度モチベが上がる。</p>
+      <div class="phone">
+        <div class="hero">
+          <div class="top-row">
+            <div><span class="eyebrow">NIGHTOS</span><span class="date">5月30日 (土)</span></div>
+            <div class="bell">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 7 2 7H4s2-2 2-7z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+            </div>
+          </div>
+          <div class="countdown-label">今月の売上</div>
+          <div style="display:flex; align-items:baseline; gap:4px; margin-bottom: 8px;">
+            <span class="kpi-num">24.8</span>
+            <span class="kpi-unit">万円 / 30万</span>
+          </div>
+          <div class="progress"><span style="width: 82%;"></span></div>
+          <div class="stat-line">
+            <span>目標まで残り 5.2 万</span>
+            <span style="color: var(--gold);">82%</span>
+          </div>
+          <div class="brass-line" style="margin: 18px 0 14px;"></div>
+          <div style="display:flex; gap: 24px; margin-bottom: 4px;">
+            <div>
+              <div class="kpi-num-md">14</div>
+              <div class="countdown-label" style="margin-top: 4px;">同伴 / 月</div>
+            </div>
+            <div>
+              <div class="kpi-num-md">3</div>
+              <div class="countdown-label" style="margin-top: 4px;">新規 / 今週</div>
+            </div>
+          </div>
+          <div class="cta-row">
+            <button class="cta-primary">成績を詳しく見る →</button>
+            <button class="cta-ghost">目標</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         C: 今日のミッション (連絡 / 予定 / タスク)
+         ═════════════════════════════════════════════════════════════ -->
+    <div class="candidate">
+      <div class="label">
+        <span class="tag">案 C</span>
+        <span class="name">今日のミッション</span>
+        <span class="pros">タスク駆動 / 達成感</span>
+      </div>
+      <p class="desc">"今日やること" を 3 つに集約 (連絡 N 人 / 同伴 N 件 / 予約 N 件)。達成率インジケータで進捗が見える。完了したら静かに祝う。</p>
+      <div class="phone">
+        <div class="hero">
+          <div class="top-row">
+            <div><span class="eyebrow">NIGHTOS</span><span class="date">5月30日 (土)</span></div>
+            <div class="bell">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 7 2 7H4s2-2 2-7z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+            </div>
+          </div>
+          <div class="countdown-label">今日のミッション</div>
+          <h1 class="display-lg">7 件</h1>
+          <div class="brass-line" style="width: 20%; margin-bottom: 14px;"></div>
+          <p class="subtitle" style="margin-bottom: 14px;">朝のうちに 5 件こなせば、夜が楽になる。</p>
+          <div class="mini-grid">
+            <div class="item">
+              <div class="num">5</div>
+              <div class="lbl">連絡</div>
+            </div>
+            <div class="item">
+              <div class="num">1</div>
+              <div class="lbl">同伴</div>
+            </div>
+            <div class="item">
+              <div class="num">1</div>
+              <div class="lbl">予約</div>
+            </div>
+          </div>
+          <div class="progress" style="margin-top: 14px;"><span style="width: 14%;"></span></div>
+          <div class="stat-line">
+            <span>達成 1 / 7</span>
+            <span style="color: var(--gold);">14%</span>
+          </div>
+          <div class="cta-row">
+            <button class="cta-primary">最優先タスクへ →</button>
+            <button class="cta-ghost">あとで</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         D: 最重要顧客 1 人にフォーカス
+         ═════════════════════════════════════════════════════════════ -->
+    <div class="candidate">
+      <div class="label">
+        <span class="tag">案 D</span>
+        <span class="name">今日の主役</span>
+        <span class="pros">AI 駆動 / 接客特化</span>
+      </div>
+      <p class="desc">AI が「今日最も大事な顧客」1 人を選んで主役に。誕生日・最終来店・推奨アクションを併記。"何から手をつけるか" を AI が決めてくれる。</p>
+      <div class="phone">
+        <div class="hero">
+          <div class="top-row">
+            <div><span class="eyebrow">NIGHTOS</span><span class="date">5月30日 (土)</span></div>
+            <div class="bell">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 7 2 7H4s2-2 2-7z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+            </div>
+          </div>
+          <span class="focus-tag">★ 今日の主役</span>
+          <h1 class="focus-name">田中 太郎さま</h1>
+          <div style="display: flex; gap: 24px; align-items: baseline; margin-bottom: 4px;">
+            <div>
+              <div class="countdown-label">誕生日まで</div>
+              <div class="countdown">3<span style="font-size: 16px; color: var(--ink-light-mute); letter-spacing: 0.06em; margin-left: 6px;">日</span></div>
+            </div>
+            <div style="border-left: 1px solid rgba(235,217,168,0.20); padding-left: 24px;">
+              <div class="countdown-label">最終来店</div>
+              <div class="countdown">12<span style="font-size: 16px; color: var(--ink-light-mute); letter-spacing: 0.06em; margin-left: 6px;">日前</span></div>
+            </div>
+          </div>
+          <div class="brass-line" style="margin: 18px 0 14px;"></div>
+          <p class="focus-meta">山崎 12 年キープ中、誕生日シャンパン無料券あり。今日連絡して同伴に持ち込めるか。</p>
+          <div class="cta-row">
+            <button class="cta-primary">LINE 文面を作る →</button>
+            <button class="cta-ghost">他の候補</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p style="text-align: center; margin-top: 60px; color: rgba(253,252,249,0.4); font-size: 11px; letter-spacing: 0.12em;">
+    どれにしますか? 番号で指定してください (例: 案 A、案 C など)。複数組み合わせや調整も可。
+  </p>
+</body>
+</html>

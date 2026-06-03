@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Wine } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/nightos/button";
 import { SelectInput } from "@/components/nightos/select";
@@ -12,9 +13,16 @@ import { Stepper } from "./stepper";
 interface Props {
   customers: Customer[];
   initialCustomerId?: string;
+  /**
+   * 登録成功後に遷移する先。指定がなければ店舗のボトル一覧へ。
+   * キャストは /store/* にアクセスできない（role ガードでホームへ弾かれる）
+   * ため、キャスト導線では顧客詳細など cast 配下のパスを渡す。
+   */
+  returnTo?: string;
 }
 
-export function BottleForm({ customers, initialCustomerId }: Props) {
+export function BottleForm({ customers, initialCustomerId, returnTo }: Props) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [brand, setBrand] = useState("");
   const [customerId, setCustomerId] = useState(initialCustomerId ?? customers[0]?.id ?? "");
@@ -42,10 +50,12 @@ export function BottleForm({ customers, initialCustomerId }: Props) {
       }
       const cust = customers.find((c) => c.id === customerId);
       setSuccess(
-        `${cust?.name ?? "顧客"}さんの${res.bottle.brand}（残 約${remainingPct}%）を登録しました`,
+        `${cust?.name ?? "お客様"}さんの${res.bottle.brand}（残 約${remainingPct}%）を登録しました`,
       );
       reset();
-      setTimeout(() => setSuccess(null), 3500);
+      // 登録後はホームではなく、呼び出し元（顧客詳細など）か店舗のボトル
+      // 一覧へ遷移し、登録結果を確認できるようにする
+      router.push(returnTo ?? "/store/bottles");
     });
   };
 
@@ -60,7 +70,7 @@ export function BottleForm({ customers, initialCustomerId }: Props) {
       <BrandPicker value={brand} onChange={setBrand} />
 
       <SelectInput
-        label="オーナー（顧客）"
+        label="オーナー（お客様）"
         name="customer_id"
         value={customerId}
         onChange={(e) => setCustomerId(e.target.value)}
@@ -79,22 +89,22 @@ export function BottleForm({ customers, initialCustomerId }: Props) {
         unit="%"
         onChange={setRemainingPct}
       />
-      <p className="text-[10px] text-ink-muted -mt-3">
+      <p className="text-[10px] text-ink-mute -mt-3">
         新ボトル = 100% / 半分 = 50% / 残りわずか = 10〜20%
       </p>
 
-      <div className="text-label-sm text-ink-muted">
+      <div className="text-label-sm text-ink-mute">
         キープ日: 今日（{new Date().toLocaleDateString("ja-JP")}）
       </div>
 
       {error && (
-        <div className="rounded-btn bg-rose/10 border border-rose/30 text-rose text-body-sm px-3 py-2">
+        <div className="rounded-card bg-wine/10 border border-wine/30 text-wine-deep text-body-sm px-3 py-2">
           {error}
         </div>
       )}
       {success && (
-        <div className="flex items-center gap-2 rounded-btn bg-champagne border border-champagne-dark text-ink text-body-sm px-3 py-2">
-          <Check size={16} className="text-roseGold-dark" />
+        <div className="flex items-center gap-2 rounded-card bg-champagne-soft border border-gold/30 text-ink text-body-sm px-3 py-2">
+          <Check size={16} className="text-gold-deep" />
           {success}
         </div>
       )}

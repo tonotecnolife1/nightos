@@ -16,7 +16,7 @@ export function SingleCastTrend({ points }: Props) {
   return (
     <div className="flex gap-2">
       {/* Y-axis */}
-      <div className="flex flex-col justify-between h-32 pb-[1px] text-[9px] text-ink-muted text-right pr-1 w-6 shrink-0">
+      <div className="flex flex-col justify-between h-32 pb-[1px] text-[9px] text-ink-mute text-right pr-1 w-6 shrink-0">
         {tickValues.map((v, i) => (
           <span key={i}>{v}</span>
         ))}
@@ -52,13 +52,13 @@ export function SingleCastTrend({ points }: Props) {
                 >
                   {/* Value label on top of bar */}
                   {p.count > 0 && (
-                    <span className="text-[9px] font-semibold text-ink-secondary mb-0.5">
+                    <span className="text-[9px] font-semibold text-ink-soft mb-0.5">
                       {p.count}
                     </span>
                   )}
                   <div
                     className={cn(
-                      "w-full rounded-t-sm bg-gradient-rose-gold transition-all",
+                      "w-full rounded-t-sm bg-rose-gold-metallic transition-all",
                       p.count === 0 && "bg-pearl-soft",
                     )}
                     style={{ height: `${Math.max(2, heightPct)}%` }}
@@ -73,7 +73,7 @@ export function SingleCastTrend({ points }: Props) {
           {points.map((p, i) => (
             <div
               key={p.date}
-              className="flex-1 text-center text-[9px] text-ink-muted"
+              className="flex-1 text-center text-[9px] text-ink-mute"
             >
               {i % 3 === 0 ? p.date.slice(-5) : ""}
             </div>

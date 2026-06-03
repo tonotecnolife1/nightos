@@ -16,14 +16,14 @@ export default function TermsPage() {
         <div className="max-w-2xl mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-[12px] text-ink-muted hover:text-ink-secondary mb-3"
+            className="inline-flex items-center gap-1 text-[12px] text-ink-mute hover:text-ink-soft mb-3"
           >
             <ArrowLeft size={14} /> 戻る
           </Link>
           <h1 className="font-display text-[28px] leading-[1.2] font-medium tracking-wide text-ink">
             利用規約
           </h1>
-          <p className="text-[11px] text-ink-muted mt-1">
+          <p className="text-[11px] text-ink-mute mt-1">
             最終更新日: 2026年5月1日
           </p>
         </div>
@@ -136,7 +136,7 @@ export default function TermsPage() {
           </p>
         </Section>
 
-        <p className="text-[11px] text-ink-muted pt-6 border-t border-ink/[0.06]">
+        <p className="text-[11px] text-ink-mute pt-6 border-t border-ink/[0.06]">
           ⚠️ 本ページは雛形です。本番公開前に〔運営事業者名〕〔料金〕
           〔管轄裁判所〕等を貴社情報に置き換え、必ず法務担当者の
           チェックを受けてください。
@@ -158,7 +158,7 @@ function Section({
       <h2 className="font-display text-[20px] leading-tight font-medium text-ink">
         {title}
       </h2>
-      <div className="text-body-sm text-ink-secondary leading-relaxed space-y-2">
+      <div className="text-body-sm text-ink-soft leading-relaxed space-y-2">
         {children}
       </div>
     </section>

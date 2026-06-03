@@ -12,7 +12,7 @@ import {
   saveFilters,
   type CustomerFilters,
 } from "@/lib/nightos/customer-filters";
-import type { Cast, Customer } from "@/types/nightos";
+import type { Cast, Customer, Visit } from "@/types/nightos";
 
 const LS_GROUPING = "nightos.mama-customers.grouping";
 const LS_FILTERS = "nightos.mama-customers.filters";
@@ -20,6 +20,8 @@ const LS_FILTERS = "nightos.mama-customers.filters";
 interface Props {
   customers: Array<Customer & { cast_name: string }>;
   allCasts: Cast[];
+  /** 「ヘルプ」ビューの多対多バケット導出に使う来店履歴 */
+  visits?: Visit[];
 }
 
 /**
@@ -27,7 +29,7 @@ interface Props {
  * 顧客ベース（紹介チェーン）とキャストベース（管理者→担当→顧客）の相関図を
  * 縦階層で表示する。フィルターで絞り込み可能。
  */
-export function MamaCustomerPageShell({ customers, allCasts }: Props) {
+export function MamaCustomerPageShell({ customers, allCasts, visits }: Props) {
   const [grouping, setGrouping] = useState<ViewGrouping>("customer");
   const [filters, setFilters] = useState<CustomerFilters>(
     DEFAULT_CUSTOMER_FILTERS,
@@ -85,7 +87,7 @@ export function MamaCustomerPageShell({ customers, allCasts }: Props) {
       />
 
       {filteredCustomers.length === 0 ? (
-        <Card className="p-8 text-center text-body-sm text-ink-secondary">
+        <Card className="p-8 text-center text-body-sm text-ink-soft">
           該当する顧客が見つかりません
         </Card>
       ) : (
@@ -93,6 +95,8 @@ export function MamaCustomerPageShell({ customers, allCasts }: Props) {
           customers={filteredCustomers}
           casts={allCasts}
           mode={grouping}
+          visits={visits}
+          customerBasePath="/mama/customers"
         />
       )}
     </div>

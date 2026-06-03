@@ -79,18 +79,140 @@ export const chatAiSchema = z.object({
   castId,
 });
 
+/** 学び整理: pinned messages the AI should organise into remember-this cards. */
+export const chatLearningsSchema = z.object({
+  pins: z
+    .array(
+      z.object({
+        content: z.string().max(4000).default(""),
+        senderName: z.string().max(80).optional(),
+        memo: z.string().max(2000).optional(),
+        customerName: z.string().max(80).nullish(),
+      }),
+    )
+    .min(1)
+    .max(60),
+});
+
 // Team chat room messages ─ CRUD payloads ───────────────────────────
 
 const roomId = z.string().min(1).max(64);
 
-export const teamChatCreateSchema = z.object({
-  roomId,
-  content: shortText,
-  threadParentId: z.string().min(1).max(64).optional(),
+const chatAttachment = z.object({
+  url: z.string().max(2_000_000), // inline data URLs (mock mode) can be large
+  path: z.string().max(2048).nullish(),
+  mime: z.string().min(1).max(64),
+  width: z.number().int().positive().max(20000).nullish(),
+  height: z.number().int().positive().max(20000).nullish(),
 });
+
+export const teamChatCreateSchema = z
+  .object({
+    roomId,
+    // 画像のみの投稿も許可するため content は空可（ただし画像が無ければ拒否）。
+    content: z.string().max(4000).default(""),
+    threadParentId: z.string().min(1).max(64).optional(),
+    attachments: z.array(chatAttachment).max(4).optional(),
+    customerId: z.string().min(1).max(64).nullish(),
+  })
+  .refine(
+    (v) => v.content.trim().length > 0 || (v.attachments?.length ?? 0) > 0,
+    { message: "content or attachments required" },
+  );
 
 export const teamChatUpdateSchema = z.object({
   content: shortText,
+});
+
+// Cast schedule sync (migration 013) ──────────────────────────────
+
+const ymd = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "invalid date (YYYY-MM-DD)");
+const hhmm = z
+  .string()
+  .regex(/^\d{2}:\d{2}$/, "invalid time (HH:mm)");
+const planTitle = z.string().min(1).max(200);
+const scheduleNote = z.string().max(500);
+
+const shiftSyncEntry = z.object({
+  date: ymd,
+  status: z.enum(["working", "off"]),
+  startTime: hhmm.optional(),
+  endTime: hhmm.optional(),
+  note: scheduleNote.optional(),
+});
+
+const planSyncEntry = z.object({
+  id: z.string().min(1).max(64),
+  date: ymd,
+  time: hhmm.optional(),
+  title: planTitle,
+  note: scheduleNote.optional(),
+});
+
+const douhanSyncEntry = z.object({
+  id: z.string().min(1).max(64),
+  cast_id: castId,
+  customer_id: customerId,
+  store_id: z.string().min(1).max(64),
+  date: ymd,
+  status: z.enum(["scheduled", "completed", "cancelled"]),
+  note: scheduleNote.nullish(),
+  time: hhmm.nullish(),
+  cancellation_reason: scheduleNote.nullish(),
+  cancelled_at: z.string().max(40).nullish(),
+  created_at: z.string().max(40).optional(),
+});
+
+/**
+ * Body for PUT /api/cast-schedule. Each array, when present, fully
+ * replaces the signed-in cast's rows in that table. A 31-day month with
+ * a few plans is tiny, so whole-array replace keeps the client logic
+ * simple (mirrors the localStorage "save the whole list" semantics).
+ */
+export const castScheduleSyncSchema = z.object({
+  shifts: z.array(shiftSyncEntry).max(400).optional(),
+  plans: z.array(planSyncEntry).max(400).optional(),
+  douhans: z.array(douhanSyncEntry).max(400).optional(),
+});
+
+// さくらママ 相談履歴の同期 (migration 020 / /api/cast-chat-sessions) ──
+
+/**
+ * 1 メッセージ。役割と本文は必須で検証しつつ、options / pickedOptionId /
+ * images / feedback などの付随フィールドはバージョン差を吸収するため
+ * passthrough で素通しする（サーバーは jsonb として丸ごと保存するだけ）。
+ */
+const chatSessionMessage = z
+  .object({
+    role: chatRole,
+    content: z.string().max(20_000),
+  })
+  .passthrough();
+
+const chatSessionEntry = z.object({
+  // localStorage の session id は `session_<ts>_<rand>` 形式。
+  id: z.string().min(1).max(80),
+  customerId: customerId.nullish(),
+  customerName: z.string().max(80).nullish(),
+  title: z.string().max(200),
+  messages: z.array(chatSessionMessage).max(60),
+  createdAt: z.string().max(40),
+  updatedAt: z.string().max(40),
+});
+
+/**
+ * Body for PUT /api/cast-chat-sessions. 渡されたセッションを id 単位で
+ * upsert する（他セッションは消さない＝端末をまたいだ履歴を失わない）。
+ */
+export const castChatSessionsSyncSchema = z.object({
+  sessions: z.array(chatSessionEntry).max(50),
+});
+
+/** Body for DELETE /api/cast-chat-sessions — 1 セッションを削除。 */
+export const castChatSessionDeleteSchema = z.object({
+  id: z.string().min(1).max(80),
 });
 
 // Signup / onboarding ─────────────────────────────────────────────

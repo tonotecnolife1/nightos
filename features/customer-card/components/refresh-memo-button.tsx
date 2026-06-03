@@ -1,8 +1,9 @@
 "use client";
 
-import { Check, Loader2, Sparkles, X } from "lucide-react";
+import { Check, Loader2, RefreshCw, X } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/nightos/card";
+import { AI_FETCH_OPTIONS, apiFetchJson, toUserMessage } from "@/lib/nightos/api-fetch";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -23,48 +24,90 @@ interface RefreshedMemo {
   summary: string;
 }
 
+/** メモのフィールドキー */
+type FieldKey = "last_topic" | "service_tips" | "next_topics";
+
+const FIELD_DEFS: { key: FieldKey; label: string }[] = [
+  { key: "last_topic", label: "前回の話題" },
+  { key: "service_tips", label: "接客のコツ" },
+  { key: "next_topics", label: "次回話題候補" },
+];
+
 /**
  * 「最新情報でメモを更新する」ボタン。
  * タップするとアプリ内のあらゆる情報（来店履歴・ボトル・同伴・LINEスクショ）から
- * さくらママがメモを合成する。差分を確認してから適用できる。
+ * メモを再合成する。差分を確認し、更新する項目を選び、文章を編集してから適用できる。
  */
 export function RefreshMemoButton({ customerId, castId, current }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<RefreshedMemo | null>(null);
   const [applied, setApplied] = useState(false);
+  // 各項目を更新対象に含めるか
+  const [selected, setSelected] = useState<Record<FieldKey, boolean>>({
+    last_topic: true,
+    service_tips: true,
+    next_topics: true,
+  });
+  // 編集後の提案文（適用時はこの値を使う）
+  const [draft, setDraft] = useState<Record<FieldKey, string>>({
+    last_topic: "",
+    service_tips: "",
+    next_topics: "",
+  });
 
   const fetchRefresh = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/refresh-customer-memo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerId, castId }),
-      });
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data = (await res.json()) as RefreshedMemo;
+      const data = await apiFetchJson<RefreshedMemo>(
+        "/api/refresh-customer-memo",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customerId, castId }),
+          ...AI_FETCH_OPTIONS,
+        },
+      );
       setPreview(data);
+      // 提案文を編集用ドラフトに展開し、変更がある項目だけ初期選択する
+      setDraft({
+        last_topic: data.last_topic ?? "",
+        service_tips: data.service_tips ?? "",
+        next_topics: data.next_topics ?? "",
+      });
+      setSelected({
+        last_topic: (current.last_topic ?? "") !== (data.last_topic ?? ""),
+        service_tips: (current.service_tips ?? "") !== (data.service_tips ?? ""),
+        next_topics: (current.next_topics ?? "") !== (data.next_topics ?? ""),
+      });
     } catch (err) {
       console.error(err);
-      setError("メモの更新に失敗しました");
+      setError(toUserMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
+  // 選択した項目だけ編集後の値を採用し、未選択は現在の値を維持する
+  const buildNextMemo = () => ({
+    last_topic: selected.last_topic ? draft.last_topic.trim() || null : current.last_topic,
+    service_tips: selected.service_tips ? draft.service_tips.trim() || null : current.service_tips,
+    next_topics: selected.next_topics ? draft.next_topics.trim() || null : current.next_topics,
+  });
+
+  const selectedCount = FIELD_DEFS.filter((f) => selected[f.key]).length;
+
   const apply = () => {
-    if (!preview) return;
+    if (!preview || selectedCount === 0) return;
+    const next = buildNextMemo();
     // Save to localStorage so the cast sees the new version on next load
     // In production this would be a Supabase upsert
     const key = `nightos.memo-override.${customerId}`;
     localStorage.setItem(
       key,
       JSON.stringify({
-        last_topic: preview.last_topic,
-        service_tips: preview.service_tips,
-        next_topics: preview.next_topics,
+        ...next,
         updated_at: new Date().toISOString(),
       }),
     );
@@ -79,16 +122,16 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
 
   if (applied) {
     return (
-      <Card className="p-3 !border-emerald/30 !bg-emerald/5">
+      <Card className="p-3 !border-success/30 !bg-success/5">
         <div className="flex items-center gap-2">
-          <Check size={14} className="text-emerald" />
-          <span className="text-body-sm text-emerald font-medium">
+          <Check size={14} className="text-success" />
+          <span className="text-body-sm text-success font-medium">
             メモを更新しました
           </span>
           <button
             type="button"
             onClick={cancel}
-            className="ml-auto text-[10px] text-ink-muted underline"
+            className="ml-auto text-[10px] text-ink-mute underline"
           >
             閉じる
           </button>
@@ -99,35 +142,51 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
 
   if (preview) {
     return (
-      <Card className="p-3 !border-amethyst-border !bg-amethyst-muted/20 space-y-3">
+      <Card className="p-3 !border-gold/30 !bg-champagne-soft/40 space-y-3">
         <div className="flex items-center gap-1.5">
-          <Sparkles size={14} className="text-amethyst-dark" />
-          <span className="text-body-sm font-medium text-amethyst-dark">
+          <RefreshCw size={14} className="text-gold-deep" />
+          <span className="text-body-sm font-medium text-gold-deep">
             メモ更新プレビュー
           </span>
         </div>
         {preview.summary && (
-          <p className="text-[11px] text-ink-secondary bg-pearl-warm px-2 py-1.5 rounded-btn">
+          <p className="text-[11px] text-ink-soft bg-pearl-warm px-2 py-1.5 rounded-btn">
             {preview.summary}
           </p>
         )}
-        <DiffRow label="前回の話題" before={current.last_topic} after={preview.last_topic} />
-        <DiffRow label="接客のコツ" before={current.service_tips} after={preview.service_tips} />
-        <DiffRow label="次回話題候補" before={current.next_topics} after={preview.next_topics} />
+        <p className="text-[10px] text-ink-mute">
+          更新する項目を選び、必要なら文章を編集してください
+        </p>
+        {FIELD_DEFS.map((f) => (
+          <FieldRow
+            key={f.key}
+            label={f.label}
+            before={current[f.key]}
+            value={draft[f.key]}
+            checked={selected[f.key]}
+            onToggle={() =>
+              setSelected((s) => ({ ...s, [f.key]: !s[f.key] }))
+            }
+            onChange={(v) => setDraft((d) => ({ ...d, [f.key]: v }))}
+          />
+        ))}
 
         <div className="flex items-center gap-2 pt-1">
           <button
             type="button"
             onClick={apply}
-            className="flex-1 h-9 rounded-btn bg-emerald/10 text-emerald border border-emerald/25 text-label-sm font-medium active:scale-[0.98]"
+            disabled={selectedCount === 0}
+            className="flex-1 h-9 rounded-btn bg-success/10 text-success border border-success/25 text-label-sm font-medium active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
           >
             <Check size={12} className="inline mr-1" />
-            この内容で更新
+            {selectedCount === 0
+              ? "更新する項目を選択"
+              : `${selectedCount}件を更新`}
           </button>
           <button
             type="button"
             onClick={cancel}
-            className="h-9 px-3 rounded-btn bg-pearl-soft text-ink-secondary text-label-sm active:scale-[0.98]"
+            className="h-9 px-3 rounded-btn bg-pearl-soft text-ink-soft text-label-sm active:scale-[0.98]"
           >
             <X size={12} className="inline mr-1" />
             破棄
@@ -145,59 +204,79 @@ export function RefreshMemoButton({ customerId, castId, current }: Props) {
       className={cn(
         "w-full flex items-center justify-center gap-1.5 h-10 rounded-btn border transition-all active:scale-[0.98]",
         loading
-          ? "bg-pearl-soft text-ink-muted border-pearl-soft"
-          : "bg-amethyst-muted text-amethyst-dark border-amethyst-border hover:bg-amethyst-muted/70",
+          ? "bg-pearl-soft text-ink-mute border-pearl-soft"
+          : "bg-champagne-soft/60 text-gold-deep border-gold/30 hover:bg-champagne-soft/80",
       )}
     >
       {loading ? (
         <>
           <Loader2 size={13} className="animate-spin" />
-          さくらママがメモを合成中…
+          メモを生成中…
         </>
       ) : (
         <>
-          <Sparkles size={13} />
-          アプリ内の全情報でメモを自動更新
+          <RefreshCw size={13} />
+          アプリ内の最新情報でメモを更新
         </>
       )}
-      {error && <span className="text-rose text-[10px]">{error}</span>}
+      {error && <span className="text-wine-deep text-[10px]">{error}</span>}
     </button>
   );
 }
 
-function DiffRow({
+function FieldRow({
   label,
   before,
-  after,
+  value,
+  checked,
+  onToggle,
+  onChange,
 }: {
   label: string;
   before: string | null;
-  after: string | null;
+  value: string;
+  checked: boolean;
+  onToggle: () => void;
+  onChange: (v: string) => void;
 }) {
-  const changed = (before ?? "") !== (after ?? "");
+  const changed = (before ?? "") !== (value ?? "");
   return (
     <div className="space-y-1">
-      <div className="flex items-center gap-1.5">
-        <span className="text-[10px] text-ink-muted font-medium">{label}</span>
+      <label className="flex items-center gap-1.5 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={onToggle}
+          className="w-3.5 h-3.5 accent-gold-deep rounded-sm"
+        />
+        <span className="text-[10px] text-ink-mute font-medium">{label}</span>
         {changed && (
-          <span className="text-[9px] px-1.5 py-0.5 rounded-badge bg-amethyst-muted text-amethyst-dark">
+          <span className="text-[9px] px-1.5 py-0.5 rounded-badge bg-champagne-soft/60 text-gold-deep">
             変更あり
           </span>
         )}
-      </div>
-      {changed && before && (
-        <div className="text-[11px] text-ink-muted line-through break-words pl-2 border-l-2 border-pearl-soft">
+      </label>
+      {checked && before && changed && (
+        <div className="text-[11px] text-ink-mute line-through break-words pl-2 border-l-2 border-pearl-soft">
           {before}
         </div>
       )}
-      <div
-        className={cn(
-          "text-[11px] break-words pl-2 border-l-2",
-          changed ? "text-ink border-amethyst" : "text-ink-secondary border-pearl-soft",
-        )}
-      >
-        {after ?? "(なし)"}
-      </div>
+      {checked ? (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          rows={3}
+          style={{ fontSize: "16px" }}
+          className={cn(
+            "w-full max-h-40 rounded-btn border bg-pearl-warm px-2.5 py-1.5 text-ink outline-none resize-none leading-relaxed",
+            changed ? "border-gold/40 focus:border-gold-deep" : "border-pearl-soft focus:border-gold/40",
+          )}
+        />
+      ) : (
+        <div className="text-[11px] text-ink-mute break-words pl-2 border-l-2 border-pearl-soft">
+          更新しない（現在の内容を維持）
+        </div>
+      )}
     </div>
   );
 }

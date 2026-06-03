@@ -16,13 +16,14 @@ import {
   Zap,
 } from "lucide-react";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { FREE_PLAN_LABEL, FREE_PERIOD_END, formatJpDate } from "@/lib/nightos/billing";
 
 export default function PitchPage() {
   return (
     <div className="bg-pearl min-h-dvh">
       {/* Hero */}
       <section className="px-6 pt-12 pb-8 text-center bg-pearl-soft">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-badge bg-amethyst-muted text-amethyst-dark text-label-sm border border-amethyst-border mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-badge bg-champagne-soft/60 text-gold-deep text-label-sm border border-gold/30 mb-4">
           <Sparkles size={12} />
           夜のお店専用
         </div>
@@ -34,7 +35,7 @@ export default function PitchPage() {
           <br />
           キャストの売上が上がる
         </p>
-        <p className="text-body-md text-ink-secondary max-w-xs mx-auto">
+        <p className="text-body-md text-ink-soft max-w-xs mx-auto">
           夜のお店のためのAIワークスペース。
           顧客管理・お客様への連絡・接客アドバイスを1つに。
         </p>
@@ -62,7 +63,7 @@ export default function PitchPage() {
       {/* Solution */}
       <section className="px-6 py-8 bg-pearl-soft">
         <SectionTitle emoji="✨" title="NIGHTOSの解決策" />
-        <p className="text-body-md text-ink-secondary mt-2 mb-5">
+        <p className="text-body-md text-ink-soft mt-2 mb-5">
           店舗スタッフは<strong className="text-ink">1日5分の入力だけ</strong>。
           分析も連絡の提案もAIが自動でやります。
         </p>
@@ -92,7 +93,7 @@ export default function PitchPage() {
       {/* Cast benefits */}
       <section className="px-6 py-8">
         <SectionTitle emoji="💫" title="キャストが得ること" />
-        <p className="text-body-md text-ink-secondary mt-2 mb-5">
+        <p className="text-body-md text-ink-soft mt-2 mb-5">
           <strong className="text-ink">キャストの入力作業はゼロ</strong>
           。店舗が入力した情報が自動で活用されます。
         </p>
@@ -115,7 +116,7 @@ export default function PitchPage() {
           <RuriMamaAvatar size={52} withGlow />
           <div>
             <h2 className="text-display-sm text-ink">さくらママAI</h2>
-            <p className="text-body-sm text-ink-secondary">銀座30年の経験者</p>
+            <p className="text-body-sm text-ink-soft">銀座30年の経験者</p>
           </div>
         </div>
 
@@ -138,7 +139,7 @@ export default function PitchPage() {
           />
         </div>
 
-        <p className="text-label-sm text-amethyst-dark mt-4 text-center">
+        <p className="text-label-sm text-gold-deep mt-4 text-center">
           一般論は言わない。必ず「顧客の情報を見て」具体的に答えます
         </p>
       </section>
@@ -170,12 +171,12 @@ export default function PitchPage() {
       <section className="px-6 py-8">
         <SectionTitle emoji="💰" title="料金" />
         <div className="mt-4 rounded-card bg-gradient-champagne border border-champagne-dark p-5 text-center">
-          <div className="text-display-lg font-display text-ink">無料</div>
-          <p className="text-body-md text-ink-secondary mt-1">
-            MVP検証版 — まずはお試しください
-          </p>
-          <p className="text-label-sm text-ink-muted mt-2">
-            AI機能は従量課金（月額約22円〜）
+          <div className="text-label-sm tracking-luxe text-wine-deep uppercase">
+            {FREE_PLAN_LABEL}
+          </div>
+          <div className="text-display-lg font-display text-ink mt-1">無料</div>
+          <p className="text-body-md text-ink-soft mt-1">
+            {formatJpDate(FREE_PERIOD_END)}まで全機能を無制限で
           </p>
         </div>
       </section>
@@ -184,12 +185,12 @@ export default function PitchPage() {
       <section className="px-6 pt-4 pb-12 text-center">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-8 h-14 rounded-btn ruri-gradient text-pearl shadow-glow-amethyst text-label-md font-medium active:scale-95 transition-transform"
+          className="inline-flex items-center gap-2 px-8 h-14 rounded-btn bg-wine-deep text-pearl-light shadow-luxe text-label-md font-medium active:scale-95 transition-transform"
         >
           デモを見る
           <ArrowRight size={16} />
         </Link>
-        <p className="text-label-sm text-ink-muted mt-3">
+        <p className="text-label-sm text-ink-mute mt-3">
           ↑ 実際に動くデモをご覧いただけます
         </p>
       </section>
@@ -210,9 +211,9 @@ function SectionTitle({ emoji, title }: { emoji: string; title: string }) {
 
 function ProblemCard({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft-card">
+    <div className="rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft">
       <div className="text-body-md font-semibold text-ink mb-1">{title}</div>
-      <div className="text-body-sm text-ink-secondary leading-relaxed">
+      <div className="text-body-sm text-ink-soft leading-relaxed">
         {body}
       </div>
     </div>
@@ -232,11 +233,11 @@ function FeatureCard({
 }) {
   const iconBg = {
     champagne: "bg-champagne-dark text-ink",
-    rose: "bg-gradient-rose-gold text-pearl",
-    amethyst: "bg-gradient-amethyst text-pearl",
+    rose: "bg-rose-gold-metallic text-pearl-light",
+    amethyst: "bg-gold-metallic text-pearl-light",
   }[tone];
   return (
-    <div className="flex gap-3 rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft-card">
+    <div className="flex gap-3 rounded-card bg-pearl-warm border border-pearl-soft p-4 shadow-soft">
       <div
         className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${iconBg}`}
       >
@@ -244,7 +245,7 @@ function FeatureCard({
       </div>
       <div>
         <div className="text-body-md font-semibold text-ink">{title}</div>
-        <div className="text-body-sm text-ink-secondary leading-relaxed">
+        <div className="text-body-sm text-ink-soft leading-relaxed">
           {body}
         </div>
       </div>
@@ -255,7 +256,7 @@ function FeatureCard({
 function BenefitRow({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="flex items-start gap-2.5">
-      <div className="w-7 h-7 rounded-full bg-amethyst-muted flex items-center justify-center shrink-0 text-amethyst-dark">
+      <div className="w-7 h-7 rounded-full bg-champagne-soft/60 flex items-center justify-center shrink-0 text-gold-deep">
         {icon}
       </div>
       <span className="text-body-md text-ink leading-relaxed pt-0.5">
@@ -273,8 +274,8 @@ function RuriMamaFeature({
   action: string;
 }) {
   return (
-    <div className="rounded-btn bg-pearl-warm border border-amethyst-border px-3 py-2.5">
-      <div className="text-label-sm text-amethyst-dark font-medium">
+    <div className="rounded-btn bg-pearl-warm border border-gold/30 px-3 py-2.5">
+      <div className="text-label-sm text-gold-deep font-medium">
         {situation}
       </div>
       <div className="text-body-sm text-ink">{action}</div>
@@ -293,12 +294,12 @@ function StepCard({
 }) {
   return (
     <div className="flex gap-3">
-      <div className="w-8 h-8 rounded-full bg-gradient-rose-gold text-pearl flex items-center justify-center shrink-0 font-display text-body-lg font-semibold">
+      <div className="w-8 h-8 rounded-full bg-rose-gold-metallic text-pearl-light flex items-center justify-center shrink-0 font-display text-body-lg font-semibold">
         {step}
       </div>
       <div className="flex-1 pt-0.5">
         <div className="text-body-md font-semibold text-ink">{title}</div>
-        <div className="text-body-sm text-ink-secondary">{body}</div>
+        <div className="text-body-sm text-ink-soft">{body}</div>
       </div>
     </div>
   );

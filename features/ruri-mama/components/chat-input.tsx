@@ -68,16 +68,16 @@ export function ChatInput({
   return (
     <div className="sticky bottom-0 px-4 pt-3 pb-safe bg-gradient-to-t from-pearl via-pearl/95 to-transparent">
       {voice.recording && (
-        <div className="mb-2 flex items-center justify-center gap-2 text-blush-dark">
+        <div className="mb-2 flex items-center justify-center gap-2 text-wine-deep">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blush-dark opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blush-dark" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-wine-deep opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-wine-deep" />
           </span>
           <span className="text-label-sm font-medium">話してください…</span>
         </div>
       )}
       {voice.error && !voice.recording && (
-        <div className="mb-2 text-center text-label-sm text-rose">
+        <div className="mb-2 text-center text-label-sm text-wine-deep">
           {voice.error}
         </div>
       )}
@@ -88,7 +88,7 @@ export function ChatInput({
           {images.map((img, i) => (
             <div
               key={i}
-              className="relative w-16 h-16 rounded-btn overflow-hidden border border-amethyst-border shrink-0"
+              className="relative w-16 h-16 rounded-btn overflow-hidden border border-gold/30 shrink-0"
             >
               <Image
                 src={img}
@@ -101,7 +101,7 @@ export function ChatInput({
               <button
                 type="button"
                 onClick={() => removeImage(i)}
-                className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 text-pearl flex items-center justify-center"
+                className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 text-pearl-light flex items-center justify-center"
                 aria-label="画像を削除"
               >
                 <X size={11} />
@@ -111,7 +111,7 @@ export function ChatInput({
         </div>
       )}
 
-      <div className="flex items-end gap-2 rounded-2xl border border-amethyst-border bg-pearl-warm shadow-soft-card px-3 py-2">
+      <div className="flex items-end gap-2 rounded-2xl border border-gold/30 bg-pearl-warm shadow-soft px-3 py-2">
         <AutoResizeTextarea
           ref={textareaRef}
           value={text}
@@ -132,7 +132,7 @@ export function ChatInput({
             disabled={disabled}
             className={cn(
               "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-95",
-              "bg-amethyst-muted text-amethyst-dark border border-amethyst-border hover:bg-amethyst hover:text-pearl",
+              "bg-champagne-soft/60 text-gold-deep border border-gold/30 hover:bg-wine-deep hover:text-pearl-light",
               disabled && "opacity-40 cursor-not-allowed",
             )}
             aria-label="画像を添付"
@@ -158,8 +158,8 @@ export function ChatInput({
             className={cn(
               "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-95",
               voice.recording
-                ? "bg-blush-dark text-pearl shadow-glow-rose"
-                : "bg-amethyst-muted text-amethyst-dark border border-amethyst-border hover:bg-amethyst hover:text-pearl",
+                ? "bg-wine-deep text-pearl-light shadow-luxe"
+                : "bg-champagne-soft/60 text-gold-deep border border-gold/30 hover:bg-wine-deep hover:text-pearl-light",
               disabled && "opacity-40 cursor-not-allowed",
             )}
             aria-label={voice.recording ? "音声入力を停止" : "音声入力を開始"}
@@ -173,7 +173,7 @@ export function ChatInput({
           <button
             type="button"
             onClick={onSkipHearing}
-            className="h-10 px-3 rounded-btn text-label-sm text-amethyst-dark bg-amethyst-muted border border-amethyst-border shrink-0 active:scale-95"
+            className="h-10 px-3 rounded-btn text-label-sm text-gold-deep bg-champagne-soft/60 border border-gold/30 shrink-0 active:scale-95"
             title="ヒアリングをスキップ"
           >
             <Zap size={14} className="inline mr-1" />
@@ -188,8 +188,8 @@ export function ChatInput({
           className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-95",
             (text.trim() || images.length > 0) && !disabled
-              ? "rose-gradient text-pearl shadow-glow-rose"
-              : "bg-pearl-soft text-ink-muted",
+              ? "bg-wine-deep text-pearl-light shadow-luxe"
+              : "bg-pearl-soft text-ink-mute",
           )}
           aria-label="送信"
         >

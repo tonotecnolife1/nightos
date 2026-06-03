@@ -1,5 +1,9 @@
-// Shift schedule store — localStorage-based MVP.
-// Stores which days a cast is working (出勤) or off (公休).
+// Shift schedule store — localStorage cache + server sync (migration 013).
+// Stores which days a cast is working (出勤) or off (公休). Reads stay
+// synchronous off localStorage; writes also mirror to Supabase so the
+// same account stays consistent across devices.
+
+import { pushSchedule } from "./schedule-sync";
 
 export type ShiftStatus = "working" | "off" | "unknown";
 
@@ -11,7 +15,8 @@ export interface ShiftEntry {
   note?: string;
 }
 
-const STORAGE_KEY = "nightos.schedule.v1";
+export const SCHEDULE_STORAGE_KEY = "nightos.schedule.v1";
+const STORAGE_KEY = SCHEDULE_STORAGE_KEY;
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
@@ -32,6 +37,9 @@ export function saveSchedule(entries: ShiftEntry[]): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   } catch {}
+  // Mirror to the server so the schedule syncs across devices (migration
+  // 013). No-op for mock / unauthenticated sessions.
+  void pushSchedule({ shifts: entries });
 }
 
 export function upsertShift(entry: ShiftEntry): void {

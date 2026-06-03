@@ -9,15 +9,21 @@
 
 import type { Douhan } from "@/types/nightos";
 import { mockDouhans } from "./mock-data";
+import { isRealSession, pushSchedule } from "./schedule-sync";
 
-const STORAGE_KEY = "nightos.douhans.v2";
+export const DOUHANS_STORAGE_KEY = "nightos.douhans.v2";
+const STORAGE_KEY = DOUHANS_STORAGE_KEY;
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
 }
 
 /**
- * 全キャストの同伴データを返す。初回は mockDouhans をシードして返す。
+ * 全キャストの同伴データを返す。
+ *
+ * mock / デモセッションでは初回に mockDouhans をシードして返す。
+ * Supabase 認証済みセッション (isRealSession) では mock を一切シードせず、
+ * サーバー (migration 014 / /api/cast-schedule) の pull で実データを流し込む。
  * SSR 時は mockDouhans をそのまま返す（localStorage 不可）。
  */
 export function loadAllDouhans(): Douhan[] {
@@ -25,7 +31,9 @@ export function loadAllDouhans(): Douhan[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      // 初回シード
+      // 実アカウントと分かっている端末では mock をシードしない
+      // (他人のダミー同伴が一瞬でも見えるのを防ぐ)。
+      if (isRealSession()) return [];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(mockDouhans));
       return mockDouhans;
     }
@@ -42,6 +50,10 @@ export function saveAllDouhans(list: Douhan[]): void {
   } catch {
     // ignore quota errors
   }
+  // Mirror to the server so the cast's own douhans sync across devices
+  // (migration 014). The server keeps only rows for the signed-in cast;
+  // no-op for mock / unauthenticated sessions.
+  void pushSchedule({ douhans: list });
 }
 
 export function loadDouhansForCast(castId: string): Douhan[] {

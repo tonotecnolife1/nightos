@@ -1,14 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarCheck, Check, PartyPopper } from "lucide-react";
+import { CalendarCheck, Check, ChevronDown, PartyPopper } from "lucide-react";
 import { EmptyState } from "@/components/nightos/empty-state";
+import { cn } from "@/lib/utils";
 import type { FollowTarget } from "@/types/nightos";
 import { loadContactedToday, toggleContacted } from "../lib/contacted-store";
 import { FollowTargetCard } from "./follow-target-card";
 
+const VISIBLE_LIMIT = 3;
+
 export function FollowTargetList({ targets }: { targets: FollowTarget[] }) {
   const [contacted, setContacted] = useState<Set<string>>(new Set());
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     setContacted(loadContactedToday());
@@ -42,6 +46,9 @@ export function FollowTargetList({ targets }: { targets: FollowTarget[] }) {
     return aD - bD;
   });
 
+  const visible = expanded ? sorted : sorted.slice(0, VISIBLE_LIMIT);
+  const overflowCount = sorted.length - VISIBLE_LIMIT;
+
   return (
     <div className="space-y-2.5">
       {/* Compact progress */}
@@ -52,32 +59,47 @@ export function FollowTargetList({ targets }: { targets: FollowTarget[] }) {
             style={{ width: `${pct}%` }}
           />
         </div>
-        <span className="text-[10px] text-ink-muted shrink-0 flex items-center gap-1">
+        <span className="text-[10px] text-ink-mute shrink-0 flex items-center gap-1">
           {allDone ? (
-            <PartyPopper size={10} className="text-emerald" />
+            <PartyPopper size={10} className="text-success" />
           ) : (
-            <Check size={10} className={doneCount > 0 ? "text-emerald" : "text-ink-muted"} />
+            <Check size={10} className={doneCount > 0 ? "text-success" : "text-ink-mute"} />
           )}
           {doneCount}/{total}
         </span>
       </div>
 
       {allDone && (
-        <div className="text-center py-2 rounded-card bg-emerald/5 border border-emerald/15">
-          <p className="text-[11px] text-emerald font-medium">
+        <div className="text-center py-2 rounded-card bg-success/5 border border-success/15">
+          <p className="text-[11px] text-success font-medium">
             全員に連絡できた！おつかれさま🌸
           </p>
         </div>
       )}
 
-      {sorted.map((t) => (
+      {visible.map((t, i) => (
         <FollowTargetCard
           key={t.customer.id}
           target={t}
           contacted={contacted.has(t.customer.id)}
           onToggleContacted={handleToggle}
+          rank={i + 1}
         />
       ))}
+
+      {overflowCount > 0 && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="w-full inline-flex items-center justify-center gap-1.5 h-10 rounded-pill border border-wine-deep/30 bg-transparent text-wine-deep text-[12px] font-medium tracking-[0.04em] active:scale-[0.99] transition"
+        >
+          <ChevronDown
+            size={14}
+            className={cn("transition-transform", expanded && "rotate-180")}
+          />
+          {expanded ? "閉じる" : `残り${overflowCount}名を表示`}
+        </button>
+      )}
     </div>
   );
 }

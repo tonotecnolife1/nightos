@@ -62,8 +62,8 @@ export default function StoreFunnelPage() {
   // カテゴリ別内訳
   const CATEGORIES: { value: CustomerCategory; label: string; color: string }[] =
     [
-      { value: "vip", label: "VIP", color: "bg-roseGold-dark" },
-      { value: "regular", label: "常連", color: "bg-amethyst" },
+      { value: "vip", label: "VIP", color: "bg-wine-deep" },
+      { value: "regular", label: "常連", color: "bg-gold-deep" },
       { value: "new", label: "新規", color: "bg-pearl-soft" },
     ];
   const categoryBreakdown = CATEGORIES.map(({ value, label, color }) => {
@@ -98,26 +98,26 @@ export default function StoreFunnelPage() {
             label="担当付き"
             count={overall.assigned + overall.lineExchanged}
             max={overall.total}
-            colorClass="bg-gradient-rose-gold"
+            colorClass="bg-rose-gold-metallic"
           />
           <FunnelRow
             icon={<MessageCircle size={14} />}
             label="LINE交換済み"
             count={overall.lineExchanged}
             max={overall.total}
-            colorClass="bg-gradient-amethyst"
+            colorClass="bg-gold-metallic"
           />
 
           <Card className="p-3 grid grid-cols-2 gap-3 text-center">
             <div>
-              <div className="text-[10px] text-ink-muted">担当転換率</div>
-              <div className="text-display-sm font-display text-roseGold-dark">
+              <div className="text-[10px] text-ink-mute">担当転換率</div>
+              <div className="text-display-sm font-display text-wine-deep">
                 {Math.round(overall.assignedRate * 100)}%
               </div>
             </div>
             <div>
-              <div className="text-[10px] text-ink-muted">LINE交換率</div>
-              <div className="text-display-sm font-display text-amethyst-dark">
+              <div className="text-[10px] text-ink-mute">LINE交換率</div>
+              <div className="text-display-sm font-display text-gold-deep">
                 {Math.round(overall.lineExchangedRate * 100)}%
               </div>
             </div>
@@ -127,14 +127,14 @@ export default function StoreFunnelPage() {
         {/* Category breakdown */}
         <section className="space-y-2">
           <div className="flex items-center gap-1.5">
-            <Star size={14} className="text-roseGold-dark" />
+            <Star size={14} className="text-wine-deep" />
             <h2 className="text-display-sm text-ink">カテゴリ別ファネル</h2>
           </div>
           {categoryBreakdown.map(({ value, label, color, total, lineEx, assigned }) => (
             <Card key={value} className="p-3 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-body-sm font-medium text-ink">{label}</span>
-                <span className="text-[10px] text-ink-muted">
+                <span className="text-[10px] text-ink-mute">
                   計 {total}人 / LINE {lineEx}人
                   {total > 0 && (
                     <> ({Math.round((lineEx / total) * 100)}%)</>
@@ -145,14 +145,14 @@ export default function StoreFunnelPage() {
                 <div className="flex gap-0.5 h-2">
                   {lineEx > 0 && (
                     <div
-                      className="bg-gradient-amethyst rounded-full"
+                      className="bg-gold-metallic rounded-full"
                       style={{ flex: lineEx }}
                       title={`LINE交換済み ${lineEx}`}
                     />
                   )}
                   {assigned > 0 && (
                     <div
-                      className="bg-gradient-rose-gold rounded-full"
+                      className="bg-rose-gold-metallic rounded-full"
                       style={{ flex: assigned }}
                       title={`担当あり ${assigned}`}
                     />
@@ -174,33 +174,33 @@ export default function StoreFunnelPage() {
         {topReferrers.length > 0 && (
           <section className="space-y-2">
             <div className="flex items-center gap-1.5">
-              <Users size={14} className="text-amethyst-dark" />
+              <Users size={14} className="text-gold-deep" />
               <h2 className="text-display-sm text-ink">お連れ様貢献ランキング</h2>
             </div>
             <div className="space-y-1.5">
               {topReferrers.map(({ customer, count }, i) => (
                 <Card key={customer.id} className="p-2.5 flex items-center gap-3">
-                  <span className="text-[11px] font-display text-ink-muted w-4 shrink-0 text-center">
+                  <span className="text-[11px] font-display text-ink-mute w-4 shrink-0 text-center">
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
                     <span className="text-body-sm text-ink">{customer.name}さま</span>
                     {customer.job && (
-                      <span className="ml-1.5 text-[10px] text-ink-muted">
+                      <span className="ml-1.5 text-[10px] text-ink-mute">
                         {customer.job}
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
-                    <Users size={11} className="text-amethyst" />
-                    <span className="text-body-sm font-display text-amethyst-dark">
+                    <Users size={11} className="text-gold-deep" />
+                    <span className="text-body-sm font-display text-gold-deep">
                       {count}人
                     </span>
                   </div>
                 </Card>
               ))}
             </div>
-            <p className="text-[10px] text-ink-muted px-0.5">
+            <p className="text-[10px] text-ink-mute px-0.5">
               お連れ様を多くご紹介いただいているお客様。特別なフォローで関係を深めましょう。
             </p>
           </section>
@@ -209,7 +209,7 @@ export default function StoreFunnelPage() {
         {/* By cast */}
         <section className="space-y-2">
           <div className="flex items-center gap-1.5">
-            <TrendingUp size={14} className="text-roseGold-dark" />
+            <TrendingUp size={14} className="text-wine-deep" />
             <h2 className="text-display-sm text-ink">キャスト別</h2>
           </div>
           {byCast.map(({ cast, stats }) => (
@@ -218,7 +218,7 @@ export default function StoreFunnelPage() {
                 <span className="text-body-sm font-medium text-ink">
                   {cast.name}さん
                 </span>
-                <span className="text-[10px] text-ink-muted">
+                <span className="text-[10px] text-ink-mute">
                   担当 {stats.assigned + stats.lineExchanged} → LINE{" "}
                   {stats.lineExchanged}
                   {stats.assigned + stats.lineExchanged > 0 && (
@@ -242,14 +242,14 @@ export default function StoreFunnelPage() {
                     )}
                     {stats.assigned > 0 && (
                       <div
-                        className="bg-gradient-rose-gold rounded-full"
+                        className="bg-rose-gold-metallic rounded-full"
                         style={{ flex: stats.assigned }}
                         title={`担当あり ${stats.assigned}`}
                       />
                     )}
                     {stats.lineExchanged > 0 && (
                       <div
-                        className="bg-gradient-amethyst rounded-full"
+                        className="bg-gold-metallic rounded-full"
                         style={{ flex: stats.lineExchanged }}
                         title={`LINE交換済み ${stats.lineExchanged}`}
                       />
@@ -259,7 +259,7 @@ export default function StoreFunnelPage() {
               </div>
               {stats.assigned + stats.lineExchanged > 0 &&
                 stats.lineExchangedRate < 0.5 && (
-                  <div className="text-[10px] text-amber">
+                  <div className="text-[10px] text-warning">
                     ⚠️ LINE交換率が低い。育成支援候補
                   </div>
                 )}
@@ -271,7 +271,7 @@ export default function StoreFunnelPage() {
         {recentLineExchanges.length > 0 && (
           <section className="space-y-2">
             <h2 className="text-display-sm text-ink flex items-center gap-1.5">
-              <MessageCircle size={14} className="text-amethyst-dark" />
+              <MessageCircle size={14} className="text-gold-deep" />
               最近のLINE交換
             </h2>
             {recentLineExchanges.map((c) => {
@@ -280,18 +280,18 @@ export default function StoreFunnelPage() {
               );
               return (
                 <Card key={c.id} className="p-2.5 flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-amethyst-muted flex items-center justify-center shrink-0">
-                    <MessageCircle size={11} className="text-amethyst-dark" />
+                  <div className="w-7 h-7 rounded-full bg-champagne-soft/60 flex items-center justify-center shrink-0">
+                    <MessageCircle size={11} className="text-gold-deep" />
                   </div>
                   <div className="flex-1 min-w-0 flex items-baseline gap-2">
                     <span className="text-body-sm text-ink truncate">
                       {c.name}さま
                     </span>
-                    <span className="text-[10px] text-ink-muted truncate">
+                    <span className="text-[10px] text-ink-mute truncate">
                       → {assignedCast?.name ?? "—"}さん
                     </span>
                   </div>
-                  <span className="text-[10px] text-ink-muted shrink-0">
+                  <span className="text-[10px] text-ink-mute shrink-0">
                     {formatDate(c.line_exchanged_at!)}
                   </span>
                 </Card>

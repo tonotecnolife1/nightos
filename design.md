@@ -1,320 +1,412 @@
-# NIGHTOS UI Design Guidelines (v2)
+# NIGHTOS UI Design Guidelines
 
-夜職向けワークスペース「NIGHTOS」のUI指針。**落ち着き × かわいさ × 明るさ × 上品さ** を同時に満たすことを目標にする。
-
-参考: Pinterest 3枚（pearl / blush / champagne 系のラグジュアリーモバイル UI）。
+夜職向けワークスペース NIGHTOS の UI 指針。**ボルドーサロン × シャンパンゴールド × 高級感** を同時に満たすことを目標にする。
 
 > **更新履歴**
 > - v1 (2026-04-30): AIテンプレ排除を主目的に禁欲的すぎた
-> - v2 (2026-05-01): 上品さのために装飾を**積極的に**使う方向に転換。明朝＋blushグラデ＋gold差色
+> - v2 (2026-05-01): 上品さのために装飾を積極的に使う方向に転換。明朝＋blushグラデ＋gold差色
+> - v3 (2026-05-19): "Luxury Lady Night" pearl 基調 (採用見送り)
+> - **v5 (2026-05-30): Bordeaux Salon ← 現行**
+>   - 明るい pearl ベースから **dark wine Hero + champagne-tinted pearl ページ地** に転換
+>   - rose-gold metallic から **champagne-gold metallic** へ
+>   - 主要 CTA は wine-deep solid (本文中) と champagne-gold solid (Hero 内反転)
+>   - 銀座のクラブのドアを開けた瞬間の空気感
 
 ---
 
 ## 0. ゴール
 
-- スクリーンショット1枚で「夜職向けの大人かわいいワークスペース」と伝わる
-- 装飾を消しても用件が成立する。装飾は **意味のある演出にだけ**使う
-- それでも「AIテンプレ感」は徹底排除（§5 参照）
+- スクリーンショット 1 枚で「銀座の高級クラブの中の業務ツール」と伝わる
+- 装飾を消しても用件が成立する。装飾は**意味のある演出にだけ**使う
+- 「AI テンプレ感」を徹底排除（§7 参照）
+- **金色は塗らない、メタリックグラデで使う**
 
 ---
 
-## 1. カラートークン
+## 1. カラートークン (V5 Bordeaux Salon)
 
-すべて **light theme** 前提。dark mode は将来別途定義。
+### 1.1 サーフェス
 
-### 1.1 ベース
+| 用途 | CSS var | hex / gradient |
+|---|---|---|
+| ページ地 | `--v5-page-bg` | `linear-gradient(180deg, #f3eadb 0%, #efe5d4 100%)` (champagne-tinted pearl) |
+| Hero 背景 | `--v5-hero-bg` | dark wine #2D1818 → #1A0F0F + 暖色 radial lamp ×3 |
+| さくらママカード地 | `--v5-sakura-bg` | bordeaux #3A1F1F → #5E3838 + wine radial |
+| 通常カード | `pearl-light` | `rgba(253,248,240,0.82)` (glass) |
+
+### 1.2 メタリックグラデーション
+
+塗りには使わない。**テキストクリップ / ribbon / hairline / 上端 KPI ハイライト**にのみ使う。
+
+| トークン | gradient |
+|---|---|
+| `--v5-champ-gold` | `linear-gradient(135deg, #EBD9A8 0%, #C8A672 50%, #8C6F44 100%)` |
+| `--v5-champ-gold-soft` | `linear-gradient(135deg, #F4E2B0 0%, #D8BC82 100%)` |
+| `--v5-bordeaux` | `linear-gradient(135deg, #8E4C4C 0%, #5E3838 50%, #3A1F1F 100%)` |
+| `--v5-wine-met` | `linear-gradient(135deg, #C18888 0%, #9A5D5D 50%, #5E3838 100%)` |
+
+### 1.3 アクセント (塗り OK)
+
+| 用途 | Tailwind class | hex |
+|---|---|---|
+| 主要 CTA / アクティブ tab | `bg-wine-deep` / `text-wine-deep` | `#5E3838` |
+| 強調アクセント | `bg-wine` / `text-wine` | `#9A5D5D` |
+| 装飾的ピル背景 | `bg-wine-soft` | `#d4a8a8` |
+| Hero 上 gold アクセント | `text-[var(--v5-gold-on-dark)]` | `#EBD9A8` |
+| eyebrow gold | `text-[var(--v5-gold-mid)]` | `#C8A672` |
+
+### 1.4 テキスト
+
+#### Light 地 (champagne-tinted pearl 上)
 
 | トークン | hex | 用途 |
-|----------|-----|------|
-| `bg` | `#faf6f1` | ページ全体（pearl warm） |
-| `bg-elevated` | `#fffefb` | 上に重ねるカード（ほぼ白）|
-| `bg-soft` | `#f5ede2` | 一段沈める領域 |
-| `text` | `#2b232a` | 主テキスト |
-| `text-secondary` | `#675d66` | 副次 |
-| `text-muted` | `#a39ba1` | 補助・プレースホルダー |
-| `line` | `rgba(43, 35, 42, 0.08)` | 罫線（極薄）|
+|---|---|---|
+| `text-ink` | `#2b232a` | 主テキスト |
+| `text-ink-soft` | `#6b5a58` | 副テキスト |
+| `text-ink-mute` | `#a89a96` | 三次テキスト / プレースホルダ |
 
-### 1.2 アクセント 3色セット
+#### Dark 地 (Hero / さくらママカード上)
 
-| 役割 | トークン | hex | 使う場面 |
-|------|----------|-----|---------|
-| メイン強調 | `blush` | `#e8b9a5` | 主要CTA塗り、選択状態 |
-| 副強調 | `champagne` | `#e6cda5` | カード境界、KPI下地 |
-| 高級感差色 | `gold` | `#b89455` | 細線・小アイコン・「VIP」マーク。**塗りには使わない** |
+| CSS var | rgba | 用途 |
+|---|---|---|
+| `--v5-ink-on-dark` | `#fdfcf9` | 主テキスト (クリーム) |
+| `--v5-ink-on-dark-soft` | `rgba(253,252,249,0.72)` | 副テキスト |
+| `--v5-ink-on-dark-mute` | `rgba(253,252,249,0.55)` | 三次テキスト |
+| `--v5-gold-on-dark` | `#EBD9A8` | 時刻 / アクセント数字 |
+| `--v5-gold-mid` | `#C8A672` | eyebrow (NIGHTOS タグ) |
 
-それぞれ 3 段階：
+### 1.5 State 色
 
-```ts
-blush:     { soft: "#f4d4cf", default: "#e8b9a5", deep: "#c98d80" }
-champagne: { soft: "#f3e6c8", default: "#e6cda5", deep: "#b89455" }
-gold:      { soft: "#d8be86", default: "#b89455", deep: "#8a6e3d" }
-```
+| 用途 | Tailwind class | hex |
+|---|---|---|
+| 達成 / 完了 | `text-success`, `bg-success/15` | `#7a9477` (dusty sage) |
+| 注意 | `text-warning`, `bg-warning/15` | `#c8a063` |
+| エラー / 削除 / VIP | `text-wine-deep`, `bg-wine/10` | `#5e3838` |
 
-### 1.3 状態色
+派手な蛍光緑 (#10b981 など) / 赤 (#ef4444 など) は禁止。
 
-```ts
-success #6b8e6f   // dusty sage — 派手にしない
-warning #c8a063   // gold deep を流用
-danger  #c2575b   // 上品な赤
-info    #8aa3b3   // dusty blue（情報カード等、限定使用）
-```
+### 1.6 禁止トークン / レガシー
 
-### 1.4 使用ルール
-
-- 1画面の **塗り**は最大 **2色**（blush + bg、または blush + champagne）
-- **gold は線・小アイコン・「VIP」マーク**だけ。塗りには使わない
-- danger は **エラー文字とエラー枠**だけ
-- info（dusty blue）は売上下落・低調指標などデータ表現に限定
+以下は本番コードから排除済 (tailwind config に alias として残置しているのは互換のため):
+- `roseGold-*` / `blush-*` (v3 で使ったが V5 で wine-deep に振り直し)
+- `amethyst-*` (v1 紫の名残、現在は gold エイリアス)
+- `bg-bg` / `text-text-*` (旧 dark プロダクト残骸)
+- `bg-gradient-rose-gold` / `bg-gradient-amethyst` (V5 では `bg-rose-gold-metallic` / `bg-gold-metallic` を使う)
+- `shadow-glow-*`, `shadow-soft-card`, `shadow-elevated-light` (V5 は `shadow-warm` / `shadow-luxe` / `var(--v5-shadow-*)`)
 
 ---
 
 ## 2. タイポグラフィ
 
-### 2.1 フォント
+### 2.1 フォントファミリー
 
-| 用途 | フォント | 備考 |
-|------|---------|------|
-| 見出し | **Noto Serif JP** 500 | 日本語の主軸 |
-| 見出し（英数字混在時） | **Cormorant Garamond** 500 | 英数字部分のみ。日本語には使わない |
-| 本文・UI | **Noto Sans JP** 400 | 操作要素はすべてこれ |
-| 数値（KPI） | **Cormorant Garamond** 300 | 大きく細く |
-| mono | Geist Mono | コード表示等 |
+| Tailwind class | 用途 | font-family |
+|---|---|---|
+| `font-sans` | UI / ボディ / ラベル | Noto Sans JP |
+| `font-serif` | 見出し / 章立て / カード名 | Noto Serif JP |
+| `font-display` | KPI 数字 / 時刻 / Cormorant 装飾 | Cormorant Garamond → Noto Serif JP fallback |
+| `font-mono` | コード / 招待コード | Geist Mono |
 
-`app/layout.tsx` で Google Fonts から読み込む。Latin プリロード優先。
+### 2.2 サイズ / 用途
 
-### 2.2 ヒエラルキー（モバイル基準）
+| Tailwind | サイズ | 用途 |
+|---|---|---|
+| `display-xl` | 28px / 1.3 / 500 | hero 見出し (V5 は `2.5rem` で個別指定することも多い) |
+| `display-lg` | 32px / 1.2 / 700 | 旧 v2 — 互換のため残置 |
+| `display-md` | 22px / 1.3 / 500 | カード見出し |
+| `display-sm` | 18px / 1.4 / 500 | 副見出し |
+| `body-lg` | 16px / 1.6 / 400 | 本文 |
+| `body-md` | 14px / 1.6 / 400 | 本文小 |
+| `body-sm` | 12px / 1.5 / 400 | 注釈 |
+| `label-md` | 14px / 1 / 500 | ボタン / ラベル |
+| `label-sm` | 12px / 1 / 500 | ピル / バッジ |
+| `label-xs` | 11px / 1 / 500 | eyebrow / tracking-luxe ラベル |
+| `kpi-xl` | 56px / 1 / 400 | Hero KPI 数字 (Cormorant) |
+| `kpi-md` | 32px / 1 / 400 | KPI 数字 (Cormorant) |
+| `kpi-sm` | 16px / 1 / 500 | 小 KPI / 単位 |
 
-| 名前 | フォント | サイズ / 行高 / weight | 用途 |
-|------|---------|----------------------|------|
-| `display-xl` | Noto Serif JP | 28 / 1.3 / 500 | 画面主タイトル |
-| `display-md` | Noto Serif JP | 22 / 1.3 / 500 | セクション見出し |
-| `display-sm` | Noto Serif JP | 18 / 1.4 / 500 | カード見出し |
-| `body-lg` | Noto Sans JP | 16 / 1.6 / 400 | 本文（フォーム） |
-| `body-md` | Noto Sans JP | 14 / 1.6 / 400 | リスト本文 |
-| `body-sm` | Noto Sans JP | 12 / 1.5 / 400 | 補助 |
-| `label` | Noto Sans JP | 11 / 1 / 500 | バッジ |
-| `kpi` | Cormorant Garamond | 32 / 1 / 300 | 数値 |
+### 2.3 letter-spacing
 
-### 2.3 タイポルール
+| Tailwind | 値 | 用途 |
+|---|---|---|
+| `tracking-normal` | 0 | デフォルト |
+| `tracking-wide` | 0.02em | 見出し全般 |
+| `tracking-[0.04em]` | 0.04em | 見出し V5 + CTA + section title |
+| `tracking-[0.06em]` | 0.06em | 時刻 / 数値 (Cormorant) |
+| `tracking-[0.08em]` | 0.08em | 主要 CTA (V5) |
+| `tracking-luxe` | 0.18em | eyebrow 標準 |
+| `tracking-[0.20em]` | 0.20em | KPI ラベル |
+| `tracking-[0.32em]` | 0.32em | "NIGHTOS" eyebrow (V5 ヒーロー) |
 
-- 見出し（`display-*`）は明朝、字間は `tracking-wide`
-- 本文・操作要素はゴシック
-- 大文字英語ラベル（`tracking-wider uppercase`）は **禁止**
-- 数字（金額・件数・KPI）は Cormorant Garamond 細字
-- 画面の主タイトルは**左寄せ**。中央寄せはヒーロー時のみ
-
----
-
-## 3. 余白・角丸・影
-
-### 3.1 余白スケール
-
-```
-xs  4px     アイコンと文字の隙間
-sm  8px     入力欄内、ピル内
-md  12px    リスト行間、カード内段
-lg  16px    カード内外余白（標準）
-xl  24px    セクション間
-2xl 32px    画面トップ余白
-```
-
-### 3.2 角丸
-
-「角丸を大胆に」がブランドの基調。迷ったら**1段大きい方**を選ぶ。
-
-| トークン | 値 | 用途 |
-|----------|---|------|
-| `sm` | 12px | 入力欄、極小バッジ |
-| `md` | 16px | （非常用）矩形カード |
-| `lg` | 22px | カード（標準）・リスト行 |
-| `xl` | 28px | シート上端、大ヒーロー |
-| `pill` | 999px | **ボタン全般・アバター・タブ** |
-
-ボタンは **すべて pill** が原則。矩形ボタンは使わない（参考画像準拠）。
-
-### 3.3 影（フローティング）
-
-カードもボタンも「机の上から少し浮いている」質感を出す。**2 段重ねの影**で実現する。
-
-```css
-/* shadow-soft — リスト行・カード */
-box-shadow:
-  0 2px 4px rgba(184, 148, 85, 0.04),
-  0 8px 24px rgba(184, 148, 85, 0.08);
-
-/* shadow-float — 主要ボタン・アクティブカード */
-box-shadow:
-  0 4px 12px rgba(201, 141, 128, 0.14),
-  0 16px 32px rgba(201, 141, 128, 0.10);
-
-/* shadow-warm — ヒーロー、BottomSheet */
-box-shadow:
-  0 8px 24px rgba(201, 141, 128, 0.10),
-  0 24px 48px rgba(184, 148, 85, 0.08);
-```
-
-ホバー / 押下時はわずかに `translate-y-[-1px]` してフロート感を強調。
-
-`shadow-glow-*` `shadow-elevated` は **使用禁止**。
+ALL CAPS の `tracking-wider` (0.05em〜0.10em) は禁止。eyebrow は必ず `tracking-luxe` 以上。
 
 ---
 
-## 4. コンポーネント仕様
+## 3. レイアウト
 
-### 4.1 Card
+### 3.1 半径
 
-```jsx
-<div className="rounded-lg bg-bg-elevated/90 border border-line p-4 shadow-soft">
-```
+| Tailwind | 値 | 用途 |
+|---|---|---|
+| `rounded-pill` | 999px | 主要ボタン / アクティブ tab / アバター |
+| `rounded-hero` | 28px | hero / large sheet / 励ましカード |
+| `rounded-card` | 22px | 通常カード / list row |
+| `rounded-btn` | 16px | 入力欄 / 小ボタン (V5 では `rounded-pill` を優先) |
+| `rounded-2xl` (Tailwind default) | 16px | textarea / 中サイズ |
+| `rounded-sheet` | 28px 28px 0 0 | bottom sheet |
+| `rounded-badge` | 999px | バッジ |
 
-- 角丸 18px
-- 背景は半透明 elevated（`/90`）でガラス質
-- 装飾用色付き枠（`!border-amethyst-border` 等）は禁止
+「迷ったら 1 段大きい方」が基調。
 
-### 4.2 Button
+### 3.2 影
 
-**全て pill 形状**（角丸フル）。3 バリアント：
+V5 では「matte philosophy」: drop shadow のみ、inset highlight 禁止。
 
-```jsx
-// Primary — blush ソフトグラデ + フロート影
-<button className="rounded-pill bg-gradient-blush text-text px-6 py-3.5 font-medium tracking-wide
-                   shadow-float hover:translate-y-[-1px] active:translate-y-[1px] transition">
+| Tailwind / var | 値 |
+|---|---|
+| `shadow-soft` | 軽い浮遊感 (カード / ピル) |
+| `shadow-warm` | 標準カード / TabBar |
+| `shadow-luxe` | 主要 CTA / FAB / 強調 |
+| `var(--v5-shadow-luxe)` | V5 専用、wine-tinted で更に深い |
+| `var(--v5-shadow-warm)` | TabBar / card V5 hint |
 
-// Secondary — 半透明白 + gold 細線
-<button className="rounded-pill border border-gold/30 bg-bg-elevated/80 text-text px-6 py-3.5
-                   shadow-soft hover:border-gold/50 hover:translate-y-[-1px] transition">
+### 3.3 セーフエリア
 
-// Quiet — テキストリンク的
-<button className="text-blush-deep hover:underline underline-offset-2">
-```
-
-`bg-gradient-blush` = `linear-gradient(135deg, #f4d4cf 0%, #e8b9a5 100%)`
-
-ルール：
-- 角丸は **pill 一択**。`rounded-md` (16px) ボタンは使わない
-- 主要ボタンの **paddingは大きめ** (`px-6 py-3.5`)。タップ面積と余白で上品さを出す
-- v1 の **bg-ink ベタ黒は廃止**（冷たすぎる）
-- ホバーで `translate-y-[-1px]` を必ず付ける（フローティング感）
-
-### 4.3 Input
-
-```jsx
-<input className="rounded-md border border-line bg-bg-elevated px-3 py-2.5 text-body-lg focus:border-blush-deep" />
-```
-
-- 角丸 14px、border 極薄、focus で blush-deep の細線
-- font-size は **16px**（モバイル zoom 防止）
-
-### 4.4 ヒーロー
-
-縦パステルグラデを背景にする：
-
-```jsx
-<header className="bg-gradient-to-b from-blush-soft via-bg to-bg pt-10 pb-8 px-6">
-  <h1 className="font-display text-display-xl text-text">ようこそ</h1>
-  <p className="text-body-md text-text-secondary mt-1">サインインしてください</p>
-</header>
-```
-
-- 写真は使わない（v2 ではグラデのみ）
-- 3点グラデ `from-blush-soft via-bg to-bg`
-
-### 4.5 KPI（数値）
-
-```jsx
-<div className="flex items-baseline gap-1.5">
-  <span className="font-display text-kpi text-text">12</span>
-  <span className="text-body-sm text-text-muted">件</span>
-</div>
-```
-
-- 数字は Cormorant Garamond 32px 細字
-- 単位は body-sm muted
-
-### 4.6 リスト行（ListRow）
-
-```jsx
-<button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-line bg-bg-elevated hover:border-champagne hover:shadow-soft transition">
-  <span className="w-9 h-9 rounded-pill border border-gold/40 flex items-center justify-center text-text-secondary">
-    <Icon size={16} />
-  </span>
-  <span className="flex-1 min-w-0 text-left">
-    <span className="block text-body-md font-medium text-text">タイトル</span>
-    <span className="block text-body-sm text-text-muted truncate">説明</span>
-  </span>
-  <ChevronRight size={16} className="text-text-muted" />
-</button>
-```
-
-- アイコン円は **塗りつぶさない**。gold 細ラインで縁取り
-- `rose-gradient` / `ruri-gradient` の塗り円は廃止
-
-### 4.7 BottomSheet
-
-- 背景 `bg`、上端のみ角丸 24px、`shadow-warm`
-- ヘッダーに `display-md`
-- 中身は ListRow を最大 4–5 行
+| 用途 | utility |
+|---|---|
+| 上端 | `pt-12` (44 + 4) または `.pt-safe` |
+| 下端 (TabBar 上) | `.pb-safe` |
+| Hero 上端 | `pt-12` (status bar 込み) |
 
 ---
 
-## 5. やめるパターン（テンプレ感の元凶）
+## 4. コンポーネント・レシピ
 
-| # | NG | 理由 |
-|---|----|------|
-| 1 | `Sparkles` ✨ + 「MVP」「NEW」バッジ | テンプレ感の最大要因 |
-| 2 | センター大配置の "NIGHTOS" 巨大ロゴ | スタートアップHP感 |
-| 3 | `tracking-wider uppercase` 英語ラベル | テンプレ感 |
-| 4 | `rose-gradient` / `ruri-gradient` 塗り円 | 派手・AI感 |
-| 5 | `shadow-glow-*` ハロー | 浮きすぎ |
-| 6 | パステル4色以上を1画面に | 散漫 |
-| 7 | bg-ink ベタ黒のボタン | 冷たすぎる（v1 で導入したが v2 で廃止） |
-| 8 | 角丸 < 8px | 硬すぎる |
-| 9 | gold の塗り | 安っぽくなる。線だけ |
-| 10 | 写真ヒーロー | v2 では使わない（重い・選定コスト高） |
+### 4.1 Hero (V5 Bordeaux Salon)
+
+`.v5-hero` ユーティリティを使う (`app/globals.css`)。
+
+```tsx
+<section className="v5-hero px-5 pt-12 pb-10">
+  {/* eyebrow row */}
+  <div className="flex items-center justify-between mb-5">
+    <div className="flex items-baseline gap-3">
+      <span style={{ letterSpacing: "0.32em", color: "var(--v5-gold-mid)" }}>NIGHTOS</span>
+      <span style={{ color: "var(--v5-ink-on-dark-mute)", letterSpacing: "0.06em" }}>
+        {dateLabel}
+      </span>
+    </div>
+    {/* bell / utility icons with v5-ring-gold */}
+  </div>
+
+  {/* 見出し: champagne-gold metallic clip serif */}
+  <h1 className="font-serif font-normal v5-metallic"
+      style={{ fontSize: "2.5rem", letterSpacing: "0.04em" }}>
+    18:00 同伴
+  </h1>
+
+  {/* brass plate hairline */}
+  <span aria-hidden className="v5-brass-line"
+        style={{ width: "32ch", maxWidth: "60%", marginBottom: 14 }}/>
+
+  {/* 副情報 */}
+  <p style={{ color: "var(--v5-ink-on-dark-soft)" }}>...</p>
+
+  {/* 主要 CTA — 案③ List terminus (gold = text-clip + hairline, 箱なし) */}
+  <Link href="..." className="relative mt-5 block w-full">
+    <span aria-hidden className="block h-px w-full" style={{ background: "linear-gradient(90deg, rgba(235,217,168,0.45), rgba(235,217,168,0.20))" }} />
+    <span className="flex h-[52px] items-center justify-between px-0.5">
+      <span className="v5-metallic font-sans font-semibold">スケジュールを見る</span>
+      <ArrowRight size={17} style={{ color: "var(--v5-gold-on-dark)" }} />
+    </span>
+  </Link>
+</section>
+```
+
+`.v5-hero` には上端 (1px champagne-gold) と下端 (horizon hairline) の brass edge が自動で付く。
+
+### 4.2 さくらママカード (dark bordeaux)
+
+`.v5-sakura-surface` を使う。Hero と地続きの暗ボルドー。
+
+- 写真は **champagne-gold metallic padded フレーム + bordeaux 内縁**
+- 見出しは **v5-metallic** (champagne-gold clip + drop-shadow)
+- eyebrow は `tracking-[0.32em]` + `--v5-gold-mid`
+- 本文は serif、`var(--v5-ink-on-dark)`
+
+### 4.3 KPI タイル (pearl glass, Hero と seam overlap)
+
+- 背景 `rgba(253,248,240,0.82)` + backdrop-blur 16
+- 上端に 2px の **champagne-gold metallic hairline** (`--v5-champ-gold` 70% opacity)
+- 数字は Cormorant Garamond, tracking 0.02em, tabular-nums
+- ラベルは tracking 0.20em
+- Hero 直下に `-mt-9` でオーバーラップ配置 — **StoreMessageBanner や他の要素を間に挟まないこと**
+
+### 4.4 Priority Stack (フォロー対象カード)
+
+- pearl-light/glass + 左 4px **champagne-gold metallic ribbon**
+- 上位 2 件は `var(--v5-shadow-warm)`, 残りは `shadow-soft`
+- アバター: **champagne-gold metallic 枠 + pearl-light 中身**, serif イニシャル
+- CTA: `bg-wine-deep` solid / `border border-wine-deep` outline
+- VIP バッジ: `.v5-ring-gold` (masked champagne-gold metallic 細枠) — 塗りなし
+
+### 4.5 ボタン (`components/nightos/button.tsx`)
+
+| variant | 見た目 |
+|---|---|
+| `primary` | `bg-wine-deep text-pearl-light` + `shadow-warm` |
+| `secondary` | `bg-pearl-light text-wine-deep` + `border border-line-strong` |
+| `outline` | `bg-transparent text-wine-deep` + `border border-wine-deep` |
+| `ghost` | `text-ink-soft hover:bg-pearl-soft` |
+| `ruri` | primary と同義 (legacy alias) |
+
+V5 Hero 内の主要 CTA だけ例外で **champagne-gold solid + dark text (反転)**:
+```tsx
+<Link className="v5-cta-primary ..." />
+```
+
+### 4.6 TabBar (3 ロール共通)
+
+- 背景 `rgba(247,238,221,0.82)` (champagne-warm pearl) + backdrop-blur
+- ボーダー `rgba(140,111,68,0.18)`
+- アクティブ: 文字 `text-wine-deep`, 上端 **champagne-gold metallic underline** (28px × 2px)
+- 非アクティブ: `text-ink-mute`
+
+### 4.7 PageHeader
+
+- sticky top + `rgba(247,238,221,0.92)` 半透明
+- 下端 1px champagne ボーダー
+- 見出しは `font-serif text-[20px] tracking-[0.04em]`
+- 戻るボタン + 右側 slot
+
+### 4.8 チームチャット入力・添付・カルテ連携 (`features/team-chat/`)
+
+実装: `components/chat-composer.tsx` / `chat-room-view.tsx`
+
+- **コンポーザー** (`ChatComposer`): 画像添付ボタン (`ImagePlus`, `text-gold-deep`) + テキストエリア + 送信ボタン (`bg-wine-deep text-pearl-light`)。⌘/Ctrl+Enter 送信。`onPaste` / ドラッグ&ドロップで画像添付（ドラッグ中は `ring-2 ring-gold/60`）
+- **`@` メンションメニュー**: コンポーザー上にポップ。さくらママ (AI相談) と顧客候補を一覧。選択チップは `bg-champagne-soft/60` アバター + VIP は `bg-wine/10 text-wine-deep`
+- **添付プレビュー / 表示**: 角丸 `rounded-xl` サムネ、枠 `border-ink/[0.08]`。バブル内画像はタップで全画面ライトボックス (`bg-ink/80 backdrop-blur-sm`)
+- **逆カルテ取り込みチップ** (`KarteChip`): メッセージ下に `bg-champagne-soft/40 border-gold/25` の card。`UserPlus` + 「〈名前〉さんのカルテに追加/反映しますか？」、主アクション `bg-wine-deep`、副 = 「あとで」。完了時は `bg-success/10 text-success` の pill。画像付きメッセージでは `Sparkles` の「スクショから反映」(主) + 「メモ追加」(副 = gold hairline) を出し分け
+- **スクショ抽出モーダル** (`ChatKarteExtractModal`): 既存 `/api/extract-memo` (vision) + `applyMemoUpdateAction` を再利用。`rounded-card bg-pearl shadow-warm`、項目チェックボックスは選択時 `bg-champagne-soft/40 border-gold/40`、反映は `bg-wine-deep`
+- **顧客ピンバー** (`PinBar`, 機構C): ヘッダー直下の `bg-champagne-soft/40 border-gold/20` バー。ピン中は顧客チップ + 「カルテ」pill (`border-gold/40 text-wine-deep`) + 解除`X`。未ピン時は `UserPlus` の控えめな「この相談を顧客に紐づける」リンク → 検索ピッカー。ピン状態は localStorage (`chat-room-pin-store`) に保持し、以後の投稿を自動でその顧客へひも付け
+- 画像は Supabase Storage (private `team-chat` バケット) に保存し署名 URL で表示。未設定環境では inline data URL にフォールバック
 
 ---
 
-## 6. 採用ヒエラルキー（迷ったら）
+## 5. ヒーローの内容ルール (案 A 基準)
 
-優先順位：
+Hero は **見出し1つを最も重要な情報に当てる**。「Tonight」のような曖昧な装飾語は禁止。
 
-1. **読みやすさ** > 装飾
-2. **静けさ（落ち着き）** > にぎやかさ
-3. **明朝 ＋ blushグラデ** で「上品さ」を出す
-4. **gold 細線** で「夜職らしさ」のサイン
-5. **blush 塗り** は1画面 1–2箇所に絞る
+### 採用パターン (cast/home)
 
----
+1. **今夜のスケジュール (現行)** — 「18:00 同伴」+ 顧客名/会場 + 残りの予定
+2. 今月の進捗 — 「24.8万円 / 30万」(候補 B)
+3. 今日のミッション — 「7件」(候補 C)
+4. 今日の主役 — 「田中 太郎さま」(候補 D)
 
-## 7. 適用順
+### 禁止パターン
 
-1. 認証 / オンボーディング（`app/auth/login`, `signup`, `app/onboarding`）— v2 最初に適用
-2. ロール選択（`app/role-selector.tsx`）
-3. Cast ホーム（`app/cast/home`）
-4. Store ダッシュボード（`app/store/dashboard`）
-5. Customer ホーム（`app/customer/home`）
+- "Tonight" / "Welcome" のような汎用挨拶
+- 「いってらっしゃい」など内容ゼロの励まし
+- 副 CTA の「あとで」(機能なし)
 
-各ステップでログイン画面の preview を見て微調整、その上で次へ進む。
+### 副 CTA の扱い
 
----
+主要 CTA は単独で配置するのを基本 (副 CTA を並べない)。副 CTA を置くのは:
+- ホームへの戻り / dismiss など明確な意味がある
+- かつ高頻度操作 (週 1-2 回より多い)
 
-## 8. レビューチェックリスト
+その両方を満たさない場合は副 CTA を置かず、主要 CTA を単独配置にしてその下の情報密度で視覚バランスを取る。
 
-PR を出す前に毎回：
-
-- [ ] 見出しは Noto Serif JP（明朝）
-- [ ] 本文・操作は Noto Sans JP
-- [ ] 塗りは 1画面で blush + champagne の 2色まで
-- [ ] gold は線・小アイコンだけ。塗りで使っていない
-- [ ] グラデは `blush-soft → bg` の縦のみ
-- [ ] Sparkles / MVP バッジが入っていない
-- [ ] `tracking-wider uppercase` 英語ラベルなし
-- [ ] `shadow-glow-*` 使用なし
-- [ ] 角丸 < 8px のところがない
-- [ ] エラー以外で danger 色を使っていない
+**Hero 内の主要 CTA (採用済: 案③ List terminus)**: ゴールドソリッドの pill / バーは面積が重くなるため使わない。代わりに **全幅 brass hairline (`h-px`, champagne-gold 左濃→右淡グラデ) の上に、金クリップ文字 (`.v5-metallic`) + 矢印 (`--v5-gold-on-dark`) を `justify-between` で置く「箱なし・面積ゼロ」の行**にする。これはスケジュールリストの最終 divider を兼ねるので、直後に余分な区切りを置かない。タップ域は行の高さ `h-[52px]` で確保する。本文中 (pearl 地) の主要 CTA は従来どおり `bg-wine-deep` 全幅も可。
 
 ---
 
-## 9. 例外
+## 6. 装飾ルール
 
-ルールから外す場合は **PR本文に1行で理由**を書く。例:「ピッチ画面は LP 寄せのため display-xl を 36px に拡大」。
+### 6.1 必ず使う
+
+- **brass hairline**: 見出しの下、Section の境目。`v5-brass-line` (champagne-gold gradient, 1px)
+- **eyebrow**: 見出しの上、`tracking-luxe` 以上 + `--v5-gold-mid` or `text-wine-deep`
+- **左 ribbon**: Section header の左 3px **champagne-gold metallic**
+- **上端 hairline**: KPI タイルの上 2px **champagne-gold metallic 70%**
+- **Cormorant numerals**: 数字は必ず Cormorant Garamond (時刻 / KPI / カウント)
+
+### 6.2 控えめに使う
+
+- shadow: 必ず `shadow-warm` / `shadow-luxe` / `var(--v5-shadow-*)`、自作禁止
+- backdrop-blur: glass のみ `16px saturate(140%)`、glass 以外で使わない
+
+### 6.3 禁止
+
+- 大面積メタリック塗り (champagne-gold を背景全面に貼らない、必ずクリップかリボン)
+- text-shadow / box-shadow を CSS で直接書く (token を使う)
+- 蛍光色 / ネオン
+- 透過率 < 0.4 の glass (背景が透けすぎ可読性低下)
+
+---
+
+## 7. AI テンプレ感の排除
+
+- emoji を装飾に使わない (バッジに 🌸 等は OK、見出しは NG)
+- "✨" / "🎉" を CTA に置かない
+- Gemini / GPT 風の白カード + 紫グラデを避ける
+- 数字は Cormorant Garamond、商用 sans-serif の数字は KPI で使わない
+
+---
+
+## 8. ライティング指針
+
+| やる | 避ける |
+|---|---|
+| 「18:00 同伴」 | 「Tonight」 |
+| 「目標まで残り 5.2 万」 | 「もう少し！」 |
+| 「次の出勤 3 日後」 | 「お休みです」 |
+| 「LINE 文面を作る」 | 「メッセージを生成」 |
+| 「{name}さま」 | 「{name}さん」 (キャスト → 顧客は「さま」) |
+
+---
+
+## 9. アクセシビリティ
+
+- 主要 CTA `bg-wine-deep` (#5E3838) on `pearl-light` (#fdfcf9) → 約 8.5:1 (AAA)
+- `bg-champ-gold` (中央 #C8A672) on `bordeaux-deep` (#2D1818) → 約 8.6:1 (AAA)
+- `--v5-gold-on-dark` (#EBD9A8) on `bordeaux-deep` (#2D1818) → 約 10.5:1 (AAA)
+- 文字サイズ最小 11px、tracking-luxe 以上を併用
+- focus ring: `var(--ring)` (3px gold 35% transparent)
+
+---
+
+## 10. 参照実装
+
+- **Hero**: `features/cast-home/components/cast-home-hero.tsx` (案 A — 今夜のスケジュール)
+- **トークン**: `tailwind.config.ts` + `app/globals.css` (`:root` の `--v5-*` 群)
+- **ユーティリティ**: `app/globals.css` の `.v5-hero`, `.v5-sakura-surface`, `.v5-metallic`, `.v5-brass-line`, `.v5-cta-primary`, `.v5-cta-ghost`, `.v5-ring-gold`, `.v5-line-divider`
+- **共通プリミティブ**:
+  - `components/nightos/button.tsx`
+  - `components/nightos/stat-card.tsx`
+  - `components/nightos/card.tsx`
+  - `components/nightos/page-header.tsx`
+  - `components/nightos/badge.tsx`
+  - `components/nightos/{cast,customer,store}-tab-bar.tsx`
+- **トークン早見表**: `docs/design/TOKENS.md`
+- **Claude Design ソース**: `docs/design/v6/cast-home-v5.jsx` (V5 Bordeaux Salon リファレンス)
+
+---
+
+## 11. ガードレール
+
+新規 UI 実装時の自己チェック:
+
+1. **Hero に "Tonight" 級の汎用語を置いていないか**
+2. **見出しは serif (Noto Serif JP / Cormorant) か**
+3. **eyebrow に `tracking-luxe` 以上を当てているか**
+4. **数字は `font-display` + `tabular-nums` か**
+5. **brass hairline / 左 ribbon を要所に置いたか**
+6. **金色は塗らずグラデで使ったか**
+7. **legacy class (amethyst / blush / shadow-glow / gradient-rose-gold / text-rose / text-amber / text-emerald) を入れていないか**
+8. **`npm run check:design` をパスするか** (legacy class 検知)
+
+---
+
+このガイドラインは V5 Bordeaux Salon (採用 2026-05-30) に準拠。今後 UI を変更する際は本書を最新版に更新したうえでコードに反映すること。

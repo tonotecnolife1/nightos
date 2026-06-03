@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { History, ImageIcon } from "lucide-react";
+import { MoreMenu } from "@/components/nightos/more-menu";
 import { PageHeader } from "@/components/nightos/page-header";
 import { ChatWindow } from "@/features/ruri-mama/components/chat-window";
 import { ChatLimitBanner } from "@/features/ruri-mama/components/chat-limit-banner";
@@ -8,7 +7,7 @@ import { CURRENT_CAST_ID } from "@/lib/nightos/constants";
 import { getCustomersForCast } from "@/lib/nightos/supabase-queries";
 
 interface Props {
-  searchParams: { customerId?: string };
+  searchParams: { customerId?: string; compose?: string };
 }
 
 export default async function RuriMamaPage({ searchParams }: Props) {
@@ -20,38 +19,28 @@ export default async function RuriMamaPage({ searchParams }: Props) {
   const helpCastNames = {};
 
   return (
-    <div className="flex flex-col h-dvh animate-fade-in">
+    <div className="flex flex-col flex-1 min-h-0 animate-fade-in">
       <PageHeader
         title="さくらママ"
         subtitle="銀座30年の経験者"
         showBack
         tone="ruri"
-        right={
-          <div className="flex items-center gap-2">
-            <Link
-              href="/cast/ruri-mama/history"
-              className="flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-lg hover:bg-white/15 text-pearl"
-              aria-label="相談履歴"
-            >
-              <History size={16} />
-              <span className="text-[9px] leading-none opacity-80">履歴</span>
-            </Link>
-            <Link
-              href="/cast/avatars"
-              className="flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-lg hover:bg-white/15 text-pearl"
-              aria-label="イラスト変更"
-            >
-              <ImageIcon size={16} />
-              <span className="text-[9px] leading-none opacity-80">アバター</span>
-            </Link>
-          </div>
-        }
+        // 相談履歴サイドバー (z-50) より上に重ねる。
+        // PageHeader は sticky z-50 で stacking context を作るため、☰ メニューの
+        // 吹き出し (z-[70]) はその内側に閉じ込められ、後から DOM に並ぶ相談履歴
+        // (z-50) に覆われてしまう。ヘッダー自体を z-[60] へ引き上げて、☰ が常に
+        // 最前面に出るようにする。
+        className="z-[60]"
+        // 相談履歴は画面内の左上トグル（サイドバー）から開ける。
+        // スケジュールアイコンは出さず ☰ メニューのみ表示する。
+        right={<MoreMenu tone="ruri" />}
       />
       <ChatLimitBanner />
       <ChatWindow
         customers={customers}
         helpCastNames={helpCastNames}
         initialCustomerId={searchParams.customerId}
+        initialCompose={searchParams.compose === "1"}
         initialIsStubMode={isStubMode}
       />
     </div>

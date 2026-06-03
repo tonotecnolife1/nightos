@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { XCircle } from "lucide-react";
 import { Card } from "@/components/nightos/card";
 import { loadCancelledDouhansForCast } from "@/lib/nightos/douhan-store";
+import { fetchCancelledDouhansForCast } from "@/lib/nightos/douhan-manager";
 import { formatCustomerName } from "@/lib/utils";
 import type { Customer, Douhan } from "@/types/nightos";
 
@@ -15,38 +16,47 @@ interface Props {
 
 /**
  * ママ・姉さんがキャストのキャンセル履歴を見るためのクライアントコンポーネント。
- * localStorage 上の共有同伴ストアから最新データを読む。
- * （キャスト側がキャンセルすると即座に反映される）
+ * 認証済みならサーバー (店舗スコープ) の実データを、mock / 未認証なら
+ * localStorage の共有同伴ストアを読む。
  */
 export function CancelledDouhanSection({ castId, customers }: Props) {
   const [items, setItems] = useState<Douhan[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setItems(loadCancelledDouhansForCast(castId));
-    setLoaded(true);
+    let cancelled = false;
+    void fetchCancelledDouhansForCast(castId).then((server) => {
+      if (cancelled) return;
+      // null = 未認証 → localStorage にフォールバック
+      setItems(server ?? loadCancelledDouhansForCast(castId));
+      setLoaded(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [castId]);
 
   const customerById = new Map(customers.map((c) => [c.id, c]));
 
   return (
     <section className="space-y-2">
-      <div className="flex items-center justify-between">
-        <h2 className="text-display-sm text-ink flex items-center gap-1.5">
-          <XCircle size={15} className="text-rose" />
+      <header className="relative flex items-center justify-between pl-3.5">
+        <span aria-hidden className="absolute left-0 top-1 bottom-1 w-[3px] rounded bg-rose-gold-metallic" />
+        <h2 className="font-serif text-[19px] leading-[1.3] font-medium tracking-[0.02em] text-ink flex items-center gap-1.5">
+          <XCircle size={15} className="text-wine-deep" />
           同伴キャンセル履歴
         </h2>
-        <span className="text-label-sm text-ink-muted">
+        <span className="text-label-xs tracking-luxe text-ink-mute uppercase">
           {loaded ? `${items.length}件` : "..."}
         </span>
-      </div>
+      </header>
 
       {!loaded ? (
-        <Card className="p-4 text-center text-body-sm text-ink-muted">
+        <Card className="p-4 text-center text-body-sm text-ink-mute">
           読み込み中...
         </Card>
       ) : items.length === 0 ? (
-        <Card className="p-4 text-center text-body-sm text-ink-muted">
+        <Card className="p-4 text-center text-body-sm text-ink-mute">
           キャンセル履歴はありません
         </Card>
       ) : (
@@ -55,27 +65,27 @@ export function CancelledDouhanSection({ castId, customers }: Props) {
           return (
             <Card
               key={d.id}
-              className="p-3 !bg-rose/5 !border-rose/20 space-y-1"
+              className="p-3 !bg-wine/5 !border-wine/25 space-y-1"
             >
               <div className="flex items-baseline justify-between gap-2">
                 <span className="text-body-sm font-medium text-ink truncate">
                   {customer ? formatCustomerName(customer.name) : "（顧客不明）"}
                 </span>
-                <span className="text-[10px] text-ink-muted shrink-0">
+                <span className="text-[10px] text-ink-mute shrink-0">
                   {formatDouhanDate(d.date)}
                 </span>
               </div>
-              <div className="text-[11px] text-ink-secondary">
-                <span className="text-rose font-medium">理由:</span>{" "}
+              <div className="text-[11px] text-ink-soft">
+                <span className="text-wine-deep font-medium">理由:</span>{" "}
                 {d.cancellation_reason ?? "（理由未入力）"}
               </div>
               {d.note && (
-                <div className="text-[10px] text-ink-muted truncate">
+                <div className="text-[10px] text-ink-mute truncate">
                   予定: {d.note}
                 </div>
               )}
               {d.cancelled_at && (
-                <div className="text-[9px] text-ink-muted">
+                <div className="text-[9px] text-ink-mute">
                   キャンセル日時: {formatDateTime(d.cancelled_at)}
                 </div>
               )}

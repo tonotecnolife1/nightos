@@ -59,18 +59,18 @@ export function UpcomingDouhanList({
     <Card className="p-3">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
-          <Calendar size={14} className="text-roseGold-dark" />
+          <Calendar size={14} className="text-wine-deep" />
           <span className="text-body-sm font-semibold text-ink">
             今週の同伴予定
           </span>
         </div>
-        <span className="text-[10px] text-ink-muted">
+        <span className="text-[10px] text-ink-mute">
           {upcoming.length}件 / 次{daysAhead}日
         </span>
       </div>
 
       {upcoming.length === 0 ? (
-        <p className="text-[11px] text-ink-muted py-2 text-center">
+        <p className="text-[11px] text-ink-mute py-2 text-center">
           予定なし
         </p>
       ) : (
@@ -84,9 +84,9 @@ export function UpcomingDouhanList({
                 <span
                   className={cn(
                     "w-10 text-center text-[10px] font-semibold py-0.5 rounded-badge shrink-0",
-                    label.tone === "today" && "bg-rose/15 text-rose",
-                    label.tone === "tomorrow" && "bg-amber/15 text-amber",
-                    label.tone === "later" && "bg-pearl-soft text-ink-muted",
+                    label.tone === "today" && "bg-wine/15 text-wine-deep",
+                    label.tone === "tomorrow" && "bg-warning/15 text-warning",
+                    label.tone === "later" && "bg-pearl-soft text-ink-mute",
                   )}
                 >
                   {label.text}
@@ -98,7 +98,7 @@ export function UpcomingDouhanList({
             );
           })}
           {upcoming.length > 6 && (
-            <li className="text-[10px] text-ink-muted text-center pt-1">
+            <li className="text-[10px] text-ink-mute text-center pt-1">
               他 {upcoming.length - 6}件
             </li>
           )}

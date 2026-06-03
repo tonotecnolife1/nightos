@@ -5,6 +5,7 @@ import { Calendar, ChevronRight, HandHelping, User } from "lucide-react";
 import { Card } from "@/components/nightos/card";
 import { EmptyState } from "@/components/nightos/empty-state";
 import { formatCustomerName } from "@/lib/utils";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
 import type { HelpSummaryEntry } from "@/lib/nightos/master-help-split";
 
 interface Props {
@@ -15,13 +16,14 @@ interface Props {
 
 /**
  * 「ヘルプで入ったお客様」セクション。
- * 別マスター管理下の顧客への接客実績を集約表示。
+ * 他の担当（メイン）の顧客への接客実績を集約表示。
  */
 export function HelpVisitsSection({
   entries,
   title = "ヘルプで入ったお客様",
   description,
 }: Props) {
+  const relation = useVenueConfig().labels.customerRelation;
   if (entries.length === 0) {
     return (
       <section className="space-y-2">
@@ -29,7 +31,7 @@ export function HelpVisitsSection({
         <EmptyState
           icon={<HandHelping size={20} />}
           title="ヘルプ実績はまだありません"
-          description="他の担当者管理のお客様に接客した記録があればここに表示されます。"
+          description={`他の${relation}のお客様に接客した記録があればここに表示されます。`}
         />
       </section>
     );
@@ -50,7 +52,7 @@ export function HelpVisitsSection({
         >
           <Card className="p-2.5 flex items-center gap-2.5 !bg-champagne/30">
             <div className="w-8 h-8 rounded-full bg-champagne-dark/30 flex items-center justify-center shrink-0">
-              <User size={12} className="text-ink-secondary" />
+              <User size={12} className="text-ink-soft" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-1.5 flex-wrap">
@@ -58,12 +60,12 @@ export function HelpVisitsSection({
                   {formatCustomerName(e.customer.name)}
                 </span>
                 {e.masterName && (
-                  <span className="text-[10px] text-ink-muted shrink-0">
+                  <span className="text-[10px] text-ink-mute shrink-0">
                     （{e.masterName}管理）
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-[10px] text-ink-muted mt-0.5">
+              <div className="flex items-center gap-2 text-[10px] text-ink-mute mt-0.5">
                 <Calendar size={9} />
                 <span>
                   最終{formatShortDate(e.lastVisitedAt)}
@@ -71,7 +73,7 @@ export function HelpVisitsSection({
                 </span>
               </div>
             </div>
-            <ChevronRight size={13} className="text-ink-muted shrink-0" />
+            <ChevronRight size={13} className="text-ink-mute shrink-0" />
           </Card>
         </Link>
       ))}
@@ -95,10 +97,10 @@ function SectionHeader({
           <HandHelping size={15} className="text-champagne-dark" />
           {title}
         </h2>
-        <span className="text-label-sm text-ink-muted">{count}人</span>
+        <span className="text-label-sm text-ink-mute">{count}人</span>
       </div>
       {description && (
-        <p className="text-[10px] text-ink-muted mt-0.5">{description}</p>
+        <p className="text-[10px] text-ink-mute mt-0.5">{description}</p>
       )}
     </header>
   );

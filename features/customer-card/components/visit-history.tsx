@@ -19,9 +19,9 @@ export function VisitHistory({ visits, limit = 5 }: Props) {
   return (
     <section className="space-y-2">
       <h3 className="text-display-sm text-ink flex items-center gap-1.5">
-        <Calendar size={16} className="text-ink-secondary" />
+        <Calendar size={16} className="text-ink-soft" />
         来店履歴
-        <span className="text-label-sm text-ink-muted">直近{recent.length}回</span>
+        <span className="text-label-sm text-ink-mute">直近{recent.length}回</span>
       </h3>
 
       <Card className="p-0 overflow-hidden">
@@ -35,7 +35,7 @@ export function VisitHistory({ visits, limit = 5 }: Props) {
               <div className="relative flex flex-col items-center">
                 <span
                   className={`w-2 h-2 rounded-full ${
-                    idx === 0 ? "bg-roseGold" : "bg-pearl-soft"
+                    idx === 0 ? "bg-wine-deep" : "bg-pearl-soft"
                   }`}
                 />
               </div>
@@ -50,25 +50,25 @@ export function VisitHistory({ visits, limit = 5 }: Props) {
                     {formatDate(visit.visited_at)}
                   </span>
                   {idx === 0 && (
-                    <span className="text-label-sm text-roseGold-dark">
+                    <span className="text-label-sm text-wine-deep">
                       最新
                     </span>
                   )}
                 </div>
                 {visit.table_name && (
-                  <div className="text-label-sm text-ink-muted">
+                  <div className="text-label-sm text-ink-mute">
                     テーブル: {visit.table_name}
                   </div>
                 )}
               </div>
 
               {visit.is_nominated ? (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-roseGold-muted text-roseGold-dark text-label-sm font-medium border border-roseGold-border">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-champagne-soft/60 text-wine-deep text-label-sm font-medium border border-gold/30">
                   <Sparkles size={10} />
                   指名
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-pearl-soft text-ink-secondary text-label-sm">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-badge bg-pearl-soft text-ink-soft text-label-sm">
                   <User size={10} />
                   フリー
                 </span>

@@ -29,7 +29,7 @@ export function SendCastMessage({ casts }: Props) {
   return (
     <Card className="!bg-pearl-warm !border-pearl-soft p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <MessageCircle size={14} className="text-roseGold-dark" />
+        <MessageCircle size={14} className="text-wine-deep" />
         <h3 className="text-label-md text-ink font-semibold">
           キャストへ連絡
         </h3>
@@ -61,7 +61,7 @@ export function SendCastMessage({ casts }: Props) {
             type="button"
             onClick={handleSend}
             disabled={pending || !message.trim()}
-            className="w-10 h-10 rounded-full bg-gradient-rose-gold text-pearl flex items-center justify-center disabled:opacity-40 active:scale-95"
+            className="w-10 h-10 rounded-full bg-rose-gold-metallic text-pearl-light flex items-center justify-center disabled:opacity-40 active:scale-95"
           >
             <Send size={14} />
           </button>
@@ -69,7 +69,7 @@ export function SendCastMessage({ casts }: Props) {
       </div>
 
       {success && (
-        <div className="flex items-center gap-1.5 text-body-sm text-roseGold-dark">
+        <div className="flex items-center gap-1.5 text-body-sm text-wine-deep">
           <Check size={14} />
           {success}
         </div>

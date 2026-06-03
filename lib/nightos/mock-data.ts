@@ -447,6 +447,8 @@ export const mockCustomers: Customer[] = [
     store_id: CURRENT_STORE_ID,
     cast_id: "cast1",
     name: "田中 太郎",
+    name_kana: "たなか たろう",
+    nickname: "社長",
     birthday: "1975-09-12",
     job: "IT企業経営",
     favorite_drink: "山崎12年ロック",
@@ -1404,6 +1406,7 @@ export const mockVisits: Visit[] = [
     cast_id: "cast1", // あかりがヘルプ
     table_name: "T1",
     is_nominated: false,
+    sales_amount: 38000,
     visited_at: "2026-03-18T20:30:00+09:00",
   },
   {
@@ -1413,6 +1416,7 @@ export const mockVisits: Visit[] = [
     cast_id: "cast1",
     table_name: "T2",
     is_nominated: false,
+    sales_amount: 30000,
     visited_at: "2026-03-15T21:00:00+09:00",
   },
   {
@@ -1422,6 +1426,7 @@ export const mockVisits: Visit[] = [
     cast_id: "cast1",
     table_name: "T3",
     is_nominated: false,
+    sales_amount: 26000,
     visited_at: "2026-03-10T20:00:00+09:00",
   },
 
@@ -1460,13 +1465,13 @@ export const mockVisits: Visit[] = [
 
   // ═══ ヘルプで他姉さん管理顧客に入った来店（デモ充実用）═══
   // もえがれな管理のcust24にヘルプ
-  { id: "help_visit_4", store_id: CURRENT_STORE_ID, customer_id: "cust24", cast_id: "cast_oneesan3", table_name: "T5", is_nominated: false, visited_at: "2026-03-11T21:00:00+09:00" },
+  { id: "help_visit_4", store_id: CURRENT_STORE_ID, customer_id: "cust24", cast_id: "cast_oneesan3", table_name: "T5", is_nominated: false, sales_amount: 28000, visited_at: "2026-03-11T21:00:00+09:00" },
   // ちひろがあかり管理のcust1にヘルプ
-  { id: "help_visit_5", store_id: CURRENT_STORE_ID, customer_id: "cust1", cast_id: "cast_oneesan5", table_name: "T6", is_nominated: false, visited_at: "2026-03-09T20:30:00+09:00" },
+  { id: "help_visit_5", store_id: CURRENT_STORE_ID, customer_id: "cust1", cast_id: "cast_oneesan5", table_name: "T6", is_nominated: false, sales_amount: 35000, visited_at: "2026-03-09T20:30:00+09:00" },
   // かなでがもえ管理のcust14にヘルプ
-  { id: "help_visit_6", store_id: CURRENT_STORE_ID, customer_id: "cust14", cast_id: "cast_oneesan6", table_name: "T2", is_nominated: false, visited_at: "2026-03-13T20:00:00+09:00" },
+  { id: "help_visit_6", store_id: CURRENT_STORE_ID, customer_id: "cust14", cast_id: "cast_oneesan6", table_name: "T2", is_nominated: false, sales_amount: 24000, visited_at: "2026-03-13T20:00:00+09:00" },
   // れながゆき管理のcust35にヘルプ
-  { id: "help_visit_7", store_id: CURRENT_STORE_ID, customer_id: "cust35", cast_id: "cast_oneesan4", table_name: "T1", is_nominated: false, visited_at: "2026-03-14T21:30:00+09:00" },
+  { id: "help_visit_7", store_id: CURRENT_STORE_ID, customer_id: "cust35", cast_id: "cast_oneesan4", table_name: "T1", is_nominated: false, sales_amount: 41000, visited_at: "2026-03-14T21:30:00+09:00" },
 ];
 
 function generateVisitSeries(opts: {
@@ -1481,9 +1486,13 @@ function generateVisitSeries(opts: {
   const storeId = opts.store_id ?? CURRENT_STORE_ID;
   const visits: Visit[] = [];
   const last = new Date(opts.lastVisit + "T20:00:00+09:00");
+  // それっぽい客単価: 指名ありは高め。来店ごとに ±20% ゆらぎ（決定的）。
+  const base = opts.is_nominated ? 55_000 : 32_000;
   for (let i = 0; i < opts.count; i++) {
     const d = new Date(last);
     d.setDate(d.getDate() - i * opts.intervalDays);
+    const wobble = 1 + ((i % 5) - 2) * 0.1; // 0.8〜1.2
+    const salesAmount = Math.round((base * wobble) / 1000) * 1000;
     visits.push({
       id: `visit_${opts.customer_id}_${storeId}_${i}`,
       store_id: storeId,
@@ -1491,6 +1500,7 @@ function generateVisitSeries(opts: {
       cast_id: opts.cast_id,
       table_name: i === 0 ? "T3" : null,
       is_nominated: opts.is_nominated,
+      sales_amount: salesAmount,
       visited_at: d.toISOString(),
     });
   }

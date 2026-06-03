@@ -118,7 +118,7 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
             className={cn(
               "absolute bottom-1 right-2 text-[10px] pointer-events-none",
               charCount > maxLength * 0.9
-                ? "text-rose"
+                ? "text-wine-deep"
                 : "text-ink-muted",
             )}
           >

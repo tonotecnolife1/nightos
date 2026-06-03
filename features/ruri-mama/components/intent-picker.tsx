@@ -54,24 +54,24 @@ const toneClasses: Record<
   { bg: string; iconBg: string; border: string }
 > = {
   rose: {
-    bg: "bg-pearl-warm hover:bg-roseGold-muted",
-    iconBg: "bg-gradient-rose-gold text-pearl",
-    border: "border-roseGold-border",
+    bg: "bg-pearl-light hover:bg-champagne-soft/50",
+    iconBg: "bg-wine-deep text-pearl-light",
+    border: "border-gold/30",
   },
   amethyst: {
-    bg: "bg-pearl-warm hover:bg-amethyst-muted",
-    iconBg: "bg-gradient-amethyst text-pearl",
-    border: "border-amethyst-border",
+    bg: "bg-pearl-light hover:bg-champagne-soft/50",
+    iconBg: "bg-gold-deep text-pearl-light",
+    border: "border-gold/30",
   },
   champagne: {
-    bg: "bg-pearl-warm hover:bg-champagne-light",
-    iconBg: "bg-champagne-dark text-ink",
-    border: "border-champagne-dark",
+    bg: "bg-pearl-light hover:bg-champagne-soft/50",
+    iconBg: "bg-wine text-pearl-light",
+    border: "border-gold/30",
   },
   blush: {
-    bg: "bg-pearl-warm hover:bg-blush-light",
-    iconBg: "bg-blush text-pearl",
-    border: "border-blush-light",
+    bg: "bg-pearl-light hover:bg-champagne-soft/50",
+    iconBg: "bg-gold-deep text-pearl-light",
+    border: "border-gold/30",
   },
 };
 
@@ -82,7 +82,7 @@ interface Props {
 export function IntentPicker({ onPick }: Props) {
   return (
     <div className="space-y-2.5 animate-fade-in pt-1">
-      <p className="text-label-md text-amethyst-dark text-center font-medium">
+      <p className="text-label-xs tracking-luxe text-wine-deep text-center uppercase">
         どんな相談から始める？
       </p>
       <div className="space-y-2">
@@ -95,7 +95,7 @@ export function IntentPicker({ onPick }: Props) {
               type="button"
               onClick={() => onPick(opt.value)}
               className={cn(
-                "w-full text-left rounded-card border shadow-soft-card transition-all active:scale-[0.98]",
+                "w-full text-left rounded-card border shadow-soft transition-all active:scale-[0.98]",
                 cls.bg,
                 cls.border,
               )}
@@ -113,13 +113,13 @@ export function IntentPicker({ onPick }: Props) {
                   <div className="text-body-md font-semibold text-ink">
                     {opt.label}
                   </div>
-                  <div className="text-label-sm text-ink-secondary">
+                  <div className="text-label-sm text-ink-soft">
                     {opt.description}
                   </div>
                 </div>
                 <ChevronRight
                   size={16}
-                  className="text-ink-muted shrink-0"
+                  className="text-ink-mute shrink-0"
                 />
               </div>
             </button>

@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/nightos/badge";
 import { cn } from "@/lib/utils";
+import { customerMatchesQuery } from "@/lib/nightos/customer-filters";
 import type { Customer } from "@/types/nightos";
 
 interface Props {
@@ -18,32 +19,27 @@ export function CustomerSearchList({ customers, value, onChange }: Props) {
   const filtered = useMemo(() => {
     const q = query.trim();
     if (!q) return customers;
-    return customers.filter(
-      (c) =>
-        c.name.includes(q) ||
-        c.job?.includes(q) ||
-        c.favorite_drink?.includes(q),
-    );
+    return customers.filter((c) => customerMatchesQuery(c, q));
   }, [customers, query]);
 
   return (
     <div className="space-y-2">
-      <div className="text-label-md text-ink font-medium">顧客</div>
+      <div className="text-label-md text-ink font-medium">お客様</div>
       <div className="relative">
         <Search
           size={14}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute"
         />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="名前・職業で検索"
+          placeholder="名前（ひらがな可）・職業で検索"
           className="w-full h-11 pl-9 pr-3 rounded-btn bg-pearl-warm border border-pearl-soft text-ink text-body-md outline-none focus:border-champagne-dark"
         />
       </div>
       <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
         {filtered.length === 0 ? (
-          <p className="text-body-sm text-ink-muted py-4 text-center">
+          <p className="text-body-sm text-ink-mute py-4 text-center">
             該当する顧客が見つかりません
           </p>
         ) : (
@@ -63,7 +59,7 @@ export function CustomerSearchList({ customers, value, onChange }: Props) {
               >
                 <div className="min-w-0 flex-1">
                   <div className="text-body-md text-ink">{c.name}</div>
-                  <div className="text-label-sm text-ink-muted truncate">
+                  <div className="text-label-sm text-ink-mute truncate">
                     {c.job ?? "—"}
                   </div>
                 </div>

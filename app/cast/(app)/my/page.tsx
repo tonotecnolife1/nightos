@@ -9,6 +9,7 @@ export default async function CastMyPage() {
   if (!cast) redirect("/auth/login");
 
   let storeName: string | null = null;
+  let avatarUrl: string | null = null;
   if (cast.store_id) {
     try {
       const { createServerSupabaseClient } = await import("@/lib/supabase/server");
@@ -19,6 +20,13 @@ export default async function CastMyPage() {
         .eq("id", cast.store_id)
         .maybeSingle();
       storeName = (data?.name as string) ?? null;
+
+      if (cast.avatar_path) {
+        const { data: signed } = await supabase.storage
+          .from("cast-avatars")
+          .createSignedUrl(cast.avatar_path, 60 * 60);
+        avatarUrl = signed?.signedUrl ?? null;
+      }
     } catch {
       // mock 環境など Supabase 未設定の場合は無視
     }
@@ -29,6 +37,7 @@ export default async function CastMyPage() {
       castName={cast.name}
       storeName={storeName}
       userRole={cast.user_role ?? "cast"}
+      avatarUrl={avatarUrl}
     />
   );
 }

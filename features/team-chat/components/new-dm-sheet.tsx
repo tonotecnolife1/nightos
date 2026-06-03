@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, MessageCircle, Plus, Users, X } from "lucide-react";
+import { Check, Loader2, MessageCircle, Plus, Users, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,8 @@ export function NewDmSheet({ storeCasts }: Props) {
   const [mode, setMode] = useState<Mode>("dm");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [groupName, setGroupName] = useState("");
+  // どちらの種類を「立ち上げ中」か。オーバーレイの文言切り替えに使う。
+  const [launching, setLaunching] = useState<Mode | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -42,20 +44,31 @@ export function NewDmSheet({ storeCasts }: Props) {
   };
 
   const handleDmSelect = (cast: CastMember) => {
+    // 立ち上げオーバーレイを即座に出す。pending は遷移完了まで true のまま
+    // なので、チャット一覧で固まって見えていた数秒間もカバーされる。
+    setLaunching("dm");
     startTransition(async () => {
       const roomId = await createDmRoomAction(cast.id);
-      if (roomId) router.push(`/cast/chat/${roomId}`);
-      setOpen(false);
+      if (roomId) {
+        router.push(`/cast/chat/${roomId}`);
+      } else {
+        // 失敗時のみシートに戻す（成功時は遷移でこの画面ごと破棄される）
+        setLaunching(null);
+      }
     });
   };
 
   const handleCreateGroup = () => {
     if (selected.size === 0) return;
     const name = groupName.trim() || selectedNames();
+    setLaunching("group");
     startTransition(async () => {
       const roomId = await createGroupRoomAction(Array.from(selected), name);
-      if (roomId) router.push(`/cast/chat/${roomId}`);
-      setOpen(false);
+      if (roomId) {
+        router.push(`/cast/chat/${roomId}`);
+      } else {
+        setLaunching(null);
+      }
     });
   };
 
@@ -72,11 +85,31 @@ export function NewDmSheet({ storeCasts }: Props) {
       <button
         type="button"
         onClick={openSheet}
-        className="w-10 h-10 rounded-full bg-amethyst-muted text-amethyst-dark flex items-center justify-center"
+        className="w-10 h-10 rounded-full bg-champagne-soft/60 text-gold-deep flex items-center justify-center"
         aria-label="新しいチャットを作成"
       >
         <Plus size={20} />
       </button>
+
+      {/* 立ち上げ中オーバーレイ — 作成アクション〜チャット画面への遷移完了まで
+          表示し続け、「一覧に戻って固まった」ように見える間を埋める */}
+      {pending && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/40 backdrop-blur-sm animate-fade-in"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="flex flex-col items-center gap-3 rounded-[24px] bg-pearl-warm px-9 py-7 shadow-warm">
+            <Loader2 size={28} className="text-gold-deep animate-spin" />
+            <p className="text-body-sm font-medium text-ink">
+              {launching === "group"
+                ? "グループを準備しています…"
+                : "トークルームを準備しています…"}
+            </p>
+            <p className="text-label-sm text-ink-mute">まもなく開きます</p>
+          </div>
+        </div>
+      )}
 
       {open && (
         <>
@@ -96,7 +129,7 @@ export function NewDmSheet({ storeCasts }: Props) {
               <button
                 type="button"
                 onClick={closeSheet}
-                className="w-8 h-8 rounded-full text-ink-muted hover:bg-pearl-soft flex items-center justify-center"
+                className="w-8 h-8 rounded-full text-ink-mute hover:bg-pearl-soft flex items-center justify-center"
                 aria-label="閉じる"
               >
                 <X size={16} />
@@ -111,8 +144,8 @@ export function NewDmSheet({ storeCasts }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "dm"
-                    ? "bg-amethyst text-pearl border-amethyst"
-                    : "bg-transparent text-ink-secondary border-ink/[0.12] hover:border-ink/20",
+                    ? "bg-wine-deep text-pearl-light border-gold/40"
+                    : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
                 <MessageCircle size={13} />
@@ -124,8 +157,8 @@ export function NewDmSheet({ storeCasts }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 px-4 py-2 rounded-pill text-[13px] font-medium border transition",
                   mode === "group"
-                    ? "bg-amethyst text-pearl border-amethyst"
-                    : "bg-transparent text-ink-secondary border-ink/[0.12] hover:border-ink/20",
+                    ? "bg-wine-deep text-pearl-light border-gold/40"
+                    : "bg-transparent text-ink-soft border-ink/[0.12] hover:border-ink/20",
                 )}
               >
                 <Users size={13} />
@@ -142,7 +175,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
                   maxLength={40}
-                  className="w-full h-10 px-3 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-amethyst/40 transition"
+                  className="w-full h-10 px-3 rounded-2xl border border-ink/[0.06] bg-pearl-soft text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep transition"
                 />
               </div>
             )}
@@ -152,7 +185,7 @@ export function NewDmSheet({ storeCasts }: Props) {
             {/* Cast list */}
             <div className="overflow-y-auto max-h-[50vh]">
               {storeCasts.length === 0 ? (
-                <p className="px-5 py-8 text-center text-body-sm text-ink-muted">
+                <p className="px-5 py-8 text-center text-body-sm text-ink-mute">
                   同じ店舗のキャストが見つかりません
                 </p>
               ) : (
@@ -172,8 +205,8 @@ export function NewDmSheet({ storeCasts }: Props) {
                           className="w-full flex items-center gap-3 px-3 py-3.5 rounded-card hover:bg-pearl-soft active:bg-pearl-soft transition text-left disabled:opacity-50"
                         >
                           {/* Avatar */}
-                          <div className="w-10 h-10 rounded-full bg-blush-soft border border-blush/30 flex items-center justify-center shrink-0">
-                            <span className="text-body-sm font-medium text-blush-deep">
+                          <div className="w-10 h-10 rounded-full bg-champagne-soft/60 border border-gold/30 flex items-center justify-center shrink-0">
+                            <span className="text-body-sm font-medium text-wine-deep">
                               {cast.name.charAt(0)}
                             </span>
                           </div>
@@ -188,11 +221,11 @@ export function NewDmSheet({ storeCasts }: Props) {
                               className={cn(
                                 "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition",
                                 isChecked
-                                  ? "bg-amethyst border-amethyst"
+                                  ? "bg-wine-deep border-wine-deep"
                                   : "border-ink/20",
                               )}
                             >
-                              {isChecked && <Check size={11} className="text-pearl" strokeWidth={3} />}
+                              {isChecked && <Check size={11} className="text-pearl-light" strokeWidth={3} />}
                             </div>
                           )}
                         </button>
@@ -210,7 +243,7 @@ export function NewDmSheet({ storeCasts }: Props) {
                   type="button"
                   disabled={!canCreate || pending}
                   onClick={handleCreateGroup}
-                  className="w-full h-11 rounded-pill bg-amethyst text-pearl text-body-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 transition active:scale-[0.98]"
+                  className="w-full h-11 rounded-pill bg-wine-deep text-pearl-light text-body-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 transition active:scale-[0.98]"
                 >
                   <Users size={15} />
                   {selected.size > 0

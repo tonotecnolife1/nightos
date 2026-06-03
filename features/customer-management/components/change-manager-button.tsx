@@ -24,7 +24,7 @@ interface Props {
 }
 
 /**
- * 顧客カルテ上の「管理者を変更」ボタン。
+ * 顧客カルテ上の「担当を変更」ボタン。
  * - オーナー（権限あり）: 即適用 + 履歴記録
  * - 非オーナー: 承認申請キューに積む（履歴にはまだ残らない）
  */
@@ -111,21 +111,21 @@ export function ChangeManagerButton({
         onClick={() => setOpen(true)}
         className={cn(
           "inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-[10px] font-medium",
-          "bg-champagne border border-champagne-dark text-ink-secondary hover:bg-champagne-dark active:scale-[0.97]",
+          "bg-champagne border border-champagne-dark text-ink-soft hover:bg-champagne-dark active:scale-[0.97]",
         )}
       >
         <UserCog size={10} />
-        管理者変更
+        担当を変更
       </button>
     );
   }
 
   if (submitted === "applied") {
     return (
-      <Card className="p-3 !border-emerald/30 !bg-emerald/5">
-        <div className="flex items-center gap-1.5 text-emerald text-body-sm">
+      <Card className="p-3 !border-success/30 !bg-success/5">
+        <div className="flex items-center gap-1.5 text-success text-body-sm">
           <Check size={14} />
-          管理者を変更しました
+          担当を変更しました
         </div>
       </Card>
     );
@@ -133,11 +133,11 @@ export function ChangeManagerButton({
 
   if (submitted === "pending") {
     return (
-      <Card className="p-3 !border-amber/30 !bg-amber/5">
-        <div className="text-amber text-body-sm font-medium">
+      <Card className="p-3 !border-warning/30 !bg-warning/5">
+        <div className="text-warning text-body-sm font-medium">
           承認申請を送信しました
         </div>
-        <p className="text-[10px] text-ink-secondary mt-1">
+        <p className="text-[10px] text-ink-soft mt-1">
           店舗オーナーの承認後に反映されます
         </p>
       </Card>
@@ -145,16 +145,16 @@ export function ChangeManagerButton({
   }
 
   return (
-    <Card className="p-3 !border-amethyst-border !bg-amethyst-muted/20 space-y-2.5">
+    <Card className="p-3 !border-gold/30 !bg-champagne-soft/60/20 space-y-2.5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-amethyst-dark">
+        <div className="flex items-center gap-1.5 text-gold-deep">
           <Crown size={13} />
-          <span className="text-body-sm font-medium">管理者を変更</span>
+          <span className="text-body-sm font-medium">担当を変更</span>
         </div>
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="text-ink-muted p-0.5"
+          className="text-ink-mute p-0.5"
           aria-label="キャンセル"
         >
           <X size={14} />
@@ -162,7 +162,7 @@ export function ChangeManagerButton({
       </div>
 
       <div>
-        <div className="text-[10px] text-ink-muted mb-0.5">
+        <div className="text-[10px] text-ink-mute mb-0.5">
           現在: {currentManager?.name ?? "未割り当て"}
         </div>
         <select
@@ -171,7 +171,7 @@ export function ChangeManagerButton({
           className="w-full h-10 rounded-btn border border-pearl-soft bg-pearl-warm px-3 text-body-sm text-ink"
           style={{ fontSize: "16px" }}
         >
-          <option value="">管理者なし</option>
+          <option value="">担当なし</option>
           {managers.map((m) => (
             <option key={m.id} value={m.id}>
               {m.name}さん
@@ -186,7 +186,7 @@ export function ChangeManagerButton({
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="変更理由（任意）"
-          className="w-full h-9 rounded-btn border border-pearl-soft bg-pearl-warm px-3 text-body-sm text-ink placeholder:text-ink-muted"
+          className="w-full h-9 rounded-btn border border-pearl-soft bg-pearl-warm px-3 text-body-sm text-ink placeholder:text-ink-mute"
           style={{ fontSize: "16px" }}
         />
       </div>
@@ -198,17 +198,17 @@ export function ChangeManagerButton({
         className={cn(
           "w-full h-10 rounded-btn text-label-md font-medium transition-all active:scale-[0.98]",
           selected === (effectiveManagerId ?? "")
-            ? "bg-pearl-soft text-ink-muted cursor-not-allowed"
+            ? "bg-pearl-soft text-ink-mute cursor-not-allowed"
             : isOwner
-              ? "bg-amethyst text-pearl shadow-soft-card"
-              : "bg-champagne-dark text-ink shadow-soft-card",
+              ? "bg-wine-deep text-pearl-light shadow-luxe-card"
+              : "bg-champagne-dark text-ink shadow-soft",
         )}
       >
         {isOwner ? "即適用（オーナー権限）" : "承認を申請する"}
       </button>
 
       {!isOwner && (
-        <p className="text-[10px] text-ink-muted">
+        <p className="text-[10px] text-ink-mute">
           オーナーの承認が必要です。申請後、店舗スタッフ（オーナー）画面の承認キューに表示されます。
         </p>
       )}

@@ -15,7 +15,7 @@ interface Props {
 export function AtRiskCustomers({ targets }: Props) {
   if (targets.length === 0) {
     return (
-      <Card className="p-4 text-center text-body-sm text-ink-secondary">
+      <Card className="p-4 text-center text-body-sm text-ink-soft">
         現在連絡が必要な顧客はいません ✅
       </Card>
     );
@@ -24,7 +24,7 @@ export function AtRiskCustomers({ targets }: Props) {
   return (
     <Card className="p-4 space-y-3">
       <div className="flex items-center gap-2 text-ink">
-        <AlertTriangle size={14} className="text-amber" />
+        <AlertTriangle size={14} className="text-warning" />
         <span className="text-label-md font-semibold">
           連絡が必要な顧客 — {targets.length}人
         </span>
@@ -52,11 +52,11 @@ export function AtRiskCustomers({ targets }: Props) {
                   {t.reasonLabel}
                 </Badge>
               </div>
-              <div className="text-label-sm text-ink-muted">
+              <div className="text-label-sm text-ink-mute">
                 {t.reasonDetail}
               </div>
             </div>
-            <div className="flex items-center gap-1 text-label-sm text-ink-muted shrink-0">
+            <div className="flex items-center gap-1 text-label-sm text-ink-mute shrink-0">
               <Clock size={11} />
               {t.daysSinceLastVisit}日前
             </div>
@@ -64,7 +64,7 @@ export function AtRiskCustomers({ targets }: Props) {
         ))}
       </div>
       {targets.length > 5 && (
-        <div className="text-label-sm text-ink-muted text-center">
+        <div className="text-label-sm text-ink-mute text-center">
           他 {targets.length - 5}人
         </div>
       )}

@@ -37,6 +37,13 @@ import {
 } from "./store-mock-data";
 import { CURRENT_STORE_ID, DEMO_CAST_IDS } from "./constants";
 import {
+  buildMonthlyRepeatTrend,
+  monthlyRepeatRate,
+  monthlySales,
+  yearlyRepeatRate,
+  yearlySales,
+} from "./stats-trend";
+import {
   consumeBottleReal,
   createBottleReal,
   createCustomerReal,
@@ -56,6 +63,7 @@ import {
   getCustomersForCastReal,
   getCustomersForOnesanReal,
   getHelpCastNamesForOnesanReal,
+  getVisitsForCustomersReal,
   getRecentVisitsForCastReal,
   getRecentVisitsReal,
   getScreenshotsForCustomerReal,
@@ -299,6 +307,20 @@ async function getTeamCustomersMock(
  * All customers in the store, sorted so recently-visited ones are on top
  * (matches spec: "最近の来店客が上位表示").
  */
+/** 指定顧客群の全来店（接客者を問わず）。歴代ヘルプの多対多集約に使う。 */
+export async function getVisitsForCustomers(
+  customerIds: string[],
+): Promise<Visit[]> {
+  return withFallback(
+    "getVisitsForCustomers",
+    () => getVisitsForCustomersReal(customerIds),
+    () => {
+      const set = new Set(customerIds);
+      return mockVisits.filter((v) => set.has(v.customer_id));
+    },
+  );
+}
+
 export async function getAllCustomers(): Promise<Customer[]> {
   return withFallback(
     "getAllCustomers",
@@ -311,11 +333,14 @@ export async function getAllCustomers(): Promise<Customer[]> {
 
 export interface UpdateCustomerInput {
   name: string;
+  name_kana?: string | null;
+  nickname?: string | null;
   birthday: string | null;
   job: string | null;
   favorite_drink: string | null;
   category: CustomerCategory;
   store_memo: string | null;
+  region: string | null;
   cast_id: string;
 }
 
@@ -339,11 +364,20 @@ function updateCustomerMock(
   const updated: Customer = {
     ...mockCustomers[idx],
     name: input.name,
+    name_kana:
+      input.name_kana !== undefined
+        ? input.name_kana
+        : mockCustomers[idx].name_kana,
+    nickname:
+      input.nickname !== undefined
+        ? input.nickname
+        : mockCustomers[idx].nickname,
     birthday: input.birthday,
     job: input.job,
     favorite_drink: input.favorite_drink,
     category: input.category,
     store_memo: input.store_memo,
+    region: input.region,
     cast_id: input.cast_id,
   };
   mockCustomers[idx] = updated;
@@ -747,6 +781,10 @@ function recordFollowLogMock(args: {
 
 export interface CreateCustomerInput {
   name: string;
+  /** 氏名の読み仮名（ひらがな）。検索の予測用。任意。 */
+  name_kana?: string | null;
+  /** 呼び名（任意・入力推奨）。カルテのサブ表示等に使用。 */
+  nickname?: string | null;
   birthday: string | null;
   job: string | null;
   favorite_drink: string | null;
@@ -771,11 +809,14 @@ export async function createCustomer(
   input: CreateCustomerInput,
 ): Promise<Customer> {
   const storeId = input.store_id ?? (await resolveStoreIdForCast(input.cast_id));
-  return withFallback(
-    "createCustomer",
-    () => createCustomerReal({ ...input, storeId }),
-    () => createCustomerMock({ ...input, store_id: storeId }),
-  );
+  // 書き込みは読み取りと違い、サイレントに mock へフォールバックしてはいけない。
+  // フォールバックするとメモリ上のモックにだけ保存され、本番DBには残らないため
+  // 「登録しました」と表示されるのに一覧・重複チェックから見えなくなる
+  // （= 今回のバグ）。Supabase 設定時は失敗を必ず呼び出し側へ伝える。
+  if (!isSupabaseConfigured()) {
+    return createCustomerMock({ ...input, store_id: storeId });
+  }
+  return createCustomerReal({ ...input, storeId });
 }
 
 /**
@@ -814,6 +855,8 @@ function createCustomerMock(input: CreateCustomerInput): Customer {
     store_id: input.store_id ?? CURRENT_STORE_ID,
     cast_id: input.cast_id,
     name: input.name,
+    name_kana: input.name_kana ?? null,
+    nickname: input.nickname ?? null,
     birthday: input.birthday,
     job: input.job,
     favorite_drink: input.favorite_drink,
@@ -841,6 +884,8 @@ export interface CreateVisitInput {
   cast_id: string;
   table_name: string | null;
   is_nominated: boolean;
+  /** お会計金額（円）。未入力は 0。 */
+  sales_amount?: number;
 }
 
 export async function createVisit(input: CreateVisitInput): Promise<Visit> {
@@ -859,6 +904,7 @@ function createVisitMock(input: CreateVisitInput): Visit {
     cast_id: input.cast_id,
     table_name: input.table_name,
     is_nominated: input.is_nominated,
+    sales_amount: input.sales_amount ?? 0,
     visited_at: new Date().toISOString(),
   };
   mockVisits.push(visit);
@@ -995,19 +1041,31 @@ export interface CastStatsData {
   };
   /** Last 4 weeks of repeat rate for THIS cast only. */
   repeatTrend: { week: string; label: string; rate: number }[];
+  /** Last 6 months of repeat rate for THIS cast only (month-granularity chart). */
+  repeatTrendMonthly: { id: string; label: string; rate: number }[];
   /** A 0..1 follow streak score for the last 7 days. */
   followStreakDays: number;
 }
 
-export async function getCastStatsData(castId: string): Promise<CastStatsData> {
+/**
+ * @param refDate 集計の基準日。省略時は「今」(mock は MOCK_TODAY / real は new Date)。
+ *   過去月を表示する場合はその月の月末を渡すことで、当月分を丸ごと集計できる。
+ */
+export async function getCastStatsData(
+  castId: string,
+  refDate?: Date,
+): Promise<CastStatsData> {
   return withFallback(
     "getCastStatsData",
-    () => getCastStatsDataReal(castId, CURRENT_STORE_ID),
-    () => getCastStatsDataMock(castId),
+    () => getCastStatsDataReal(castId, CURRENT_STORE_ID, refDate),
+    () => getCastStatsDataMock(castId, refDate),
   );
 }
 
-async function getCastStatsDataMock(castId: string): Promise<CastStatsData> {
+async function getCastStatsDataMock(
+  castId: string,
+  refDate?: Date,
+): Promise<CastStatsData> {
   const cast = mockCasts.find((c) => c.id === castId);
   if (!cast) throw new Error(`Cast not found: ${castId}`);
 
@@ -1031,7 +1089,8 @@ async function getCastStatsDataMock(castId: string): Promise<CastStatsData> {
 
   // Customers
   const myCustomers = mockCustomers.filter((c) => c.cast_id === castId);
-  const now = MOCK_TODAY;
+  const myCustomerIds = myCustomers.map((c) => c.id);
+  const now = refDate ?? MOCK_TODAY;
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthNewCount = myCustomers.filter(
     (c) => new Date(c.created_at) >= monthStart,
@@ -1057,21 +1116,29 @@ async function getCastStatsDataMock(castId: string): Promise<CastStatsData> {
   return {
     cast,
     monthly: {
-      sales: cast.monthly_sales,
-      repeatRate: cast.repeat_rate,
+      // visits.sales_amount からの実集計（静的 monthly_sales は使わない）
+      sales: monthlySales(mockVisits, castId, now),
+      repeatRate: monthlyRepeatRate(mockVisits, castId, myCustomerIds, now),
       followRate,
       newCustomerCount: monthNewCount,
       totalCustomerCount: myCustomers.length,
       douhanCount: monthDouhansCompleted,
     },
     yearly: {
-      sales: cast.monthly_sales * 3,
-      repeatRate: cast.repeat_rate - 0.03,
+      sales: yearlySales(mockVisits, castId, now),
+      repeatRate: yearlyRepeatRate(mockVisits, castId, myCustomerIds, now),
       newCustomerCount: yearNewCount,
       douhanCount: yearDouhans,
     },
     targets,
     repeatTrend,
+    repeatTrendMonthly: buildMonthlyRepeatTrend(
+      mockVisits,
+      castId,
+      myCustomerIds,
+      now,
+      6,
+    ),
     followStreakDays,
   };
 }

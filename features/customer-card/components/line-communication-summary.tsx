@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
+import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 import { cn } from "@/lib/utils";
 import type { LineScreenshot } from "@/types/nightos";
 import type { LineSummaryResponse } from "@/app/api/line-history-summary/route";
@@ -79,13 +80,15 @@ export function LineCommunicationSummary({
         service_tips: ss.extracted.service_tips,
         next_topics: ss.extracted.next_topics,
       }));
-      const res = await fetch("/api/line-history-summary", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerName, castName, summaries }),
-      });
-      if (!res.ok) throw new Error(`status ${res.status}`);
-      const data = (await res.json()) as LineSummaryResponse;
+      const data = await apiFetchJson<LineSummaryResponse>(
+        "/api/line-history-summary",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customerName, castName, summaries }),
+          ...AI_FETCH_OPTIONS,
+        },
+      );
       setNarrative(data.narrative);
       setIsStub(data.isStub);
       saveCache(customerId, {
@@ -109,21 +112,21 @@ export function LineCommunicationSummary({
   if (screenshots.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-amethyst-border bg-amethyst-muted/40 p-4 space-y-3">
+    <div className="rounded-2xl border border-gold/30 bg-champagne-soft/60/40 p-4 space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <RuriMamaAvatar size={28} />
           <div>
-            <p className="text-label-sm font-medium text-amethyst-dark">連絡の経緯</p>
-            <p className="text-[10px] text-ink-muted">さくらママによる要約</p>
+            <p className="text-label-sm font-medium text-gold-deep">連絡の経緯</p>
+            <p className="text-[10px] text-ink-mute">さくらママによる要約</p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => void fetchSummary(true)}
           disabled={loading}
-          className="p-1.5 rounded-full text-ink-muted hover:text-amethyst-dark hover:bg-amethyst-muted transition disabled:opacity-40"
+          className="p-1.5 rounded-full text-ink-mute hover:text-gold-deep hover:bg-champagne-soft/60 transition disabled:opacity-40"
           aria-label="再生成"
         >
           <RefreshCw size={13} className={cn(loading && "animate-spin")} />
@@ -132,17 +135,17 @@ export function LineCommunicationSummary({
 
       {/* Body */}
       {loading ? (
-        <div className="flex items-center gap-2 text-body-sm text-ink-muted py-1">
+        <div className="flex items-center gap-2 text-body-sm text-ink-mute py-1">
           <Loader2 size={13} className="animate-spin shrink-0" />
           <span>さくらママが読み解いています…</span>
         </div>
       ) : error ? (
-        <div className="text-body-sm text-ink-muted py-1">
+        <div className="text-body-sm text-ink-mute py-1">
           読み込みに失敗しました。
           <button
             type="button"
             onClick={() => void fetchSummary(true)}
-            className="ml-1 text-amethyst-dark underline underline-offset-2"
+            className="ml-1 text-gold-deep underline underline-offset-2"
           >
             再試行
           </button>
@@ -153,7 +156,7 @@ export function LineCommunicationSummary({
             {narrative}
           </p>
           {isStub && (
-            <p className="text-[10px] text-ink-muted flex items-center gap-1">
+            <p className="text-[10px] text-ink-mute flex items-center gap-1">
               <Sparkles size={9} />
               デモ応答（本番では Claude AI が生成）
             </p>

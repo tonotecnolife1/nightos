@@ -3,31 +3,74 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
+  Bookmark,
   BookOpen,
   Check,
   Clock,
-  Copy,
   Loader2,
   MessageCircle,
-  MoreHorizontal,
   Pencil,
   Search,
-  Send,
   Sparkles,
-  Trash2,
+  User,
+  UserPlus,
   X,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { MoreMenu } from "@/components/nightos/more-menu";
 import { RuriMamaAvatar } from "@/components/nightos/ruri-mama-avatar";
 import { SAKURA_MAMA_CHAT_NAME } from "@/lib/nightos/constants";
-import type { ChatMessage, ChatRoom } from "../types";
+import {
+  clearRoomPin,
+  getRoomPin,
+  setRoomPin,
+  type RoomCustomerPin,
+} from "@/lib/nightos/chat-room-pin-store";
+import {
+  getRoomName,
+  setRoomName,
+} from "@/lib/nightos/chat-room-name-store";
+import {
+  getPinnedIds,
+  subscribePins,
+} from "@/lib/nightos/chat-pin-store";
+import type { ChatAttachment, ChatMessage, ChatRoom } from "../types";
+import { ChatComposer, type ComposerPayload, type MentionMember } from "./chat-composer";
+import { GroupNameModal } from "./group-name-modal";
+import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
+import { MessagePinSheet } from "./message-pin-sheet";
+import {
+  type AnchorRect,
+  MessageActionSheet,
+  PartialCopyModal,
+} from "./message-action-sheet";
+import {
+  type MentionCustomer,
+  detectCustomer,
+  searchCustomers,
+} from "../lib/customer-mention";
+import { addChatNoteToKarteAction } from "../actions";
 
 interface Props {
   room: ChatRoom;
   messages: ChatMessage[];
   currentCastId: string;
   currentCastName: string;
+  customers: MentionCustomer[];
+}
+
+/** A pending "add this to 〈customer〉's karte?" suggestion under a message. */
+interface KarteSuggestion {
+  customerId: string;
+  customerName: string;
+  note: string;
+  candidates: MentionCustomer[];
+  status: "idle" | "saving" | "done";
+  /** First image attachment, if the message shared a screenshot. */
+  image: { url: string; mime: string } | null;
+  /** How it was captured, for the success label. */
+  doneVia?: "note" | "extract";
 }
 
 export function ChatRoomView({
@@ -35,6 +78,7 @@ export function ChatRoomView({
   messages: initialMessages,
   currentCastId,
   currentCastName,
+  customers,
 }: Props) {
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState("");
@@ -44,7 +88,156 @@ export function ChatRoomView({
   const [searchQuery, setSearchQuery] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState("");
+  const [karteSuggestions, setKarteSuggestions] = useState<
+    Record<string, KarteSuggestion>
+  >({});
+  const [pin, setPin] = useState<RoomCustomerPin | null>(null);
+  const [pinPickerOpen, setPinPickerOpen] = useState(false);
+  const [nameOverride, setNameOverride] = useState<string | null>(null);
+  const [nameEditOpen, setNameEditOpen] = useState(false);
+  const [pinSheetFor, setPinSheetFor] = useState<ChatMessage | null>(null);
+  const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
+  // LINE風の長押しメニュー対象（canReply はスレッド内かどうかで切替）。
+  // anchor は長押しした吹き出しの画面上の矩形（メニューの配置に使う）。
+  const [actionFor, setActionFor] = useState<{
+    msg: ChatMessage;
+    canReply: boolean;
+    anchor: AnchorRect;
+  } | null>(null);
+  const [partialCopyFor, setPartialCopyFor] = useState<string | null>(null);
+  const [copiedToast, setCopiedToast] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Load the room's pinned customer (mechanism C) and any custom name on
+  // mount / room change.
+  useEffect(() => {
+    setPin(getRoomPin(room.id));
+    setNameOverride(getRoomName(room.id));
+  }, [room.id]);
+
+  // Track which messages are kept (these collect in the キープ tab).
+  useEffect(() => {
+    const refresh = () => setPinnedIds(getPinnedIds());
+    refresh();
+    return subscribePins(refresh);
+  }, []);
+
+  // 同室の関係者（自分以外のメンバー）— @メンション候補に使う。
+  const members: MentionMember[] = room.member_ids
+    .map((id, i) => ({ id, name: room.member_names[i] ?? id }))
+    .filter((m) => m.id !== currentCastId);
+
+  // 本文中の @メンション（さくらママ / 関係者）をチップ表示するための名前一覧。
+  const mentionNames = members.map((m) => m.name);
+
+  const customerName = (id: string) =>
+    customers.find((c) => c.id === id)?.name ?? "お客様";
+
+  const addKarteSuggestion = (messageId: string, payload: ComposerPayload) => {
+    if (payload.text.includes(`@${SAKURA_MAMA_CHAT_NAME}`)) return;
+
+    const image =
+      payload.attachments.find(
+        (a) => a.mime?.startsWith("image/") && a.url,
+      ) ?? null;
+    const note =
+      payload.text.replace(/@\S+\s?/g, "").trim() || payload.text.trim();
+
+    // 対象顧客を特定: 受動検出（本文の名前）→ ルームのピン。
+    let customerId: string | null = null;
+    let candidates: MentionCustomer[] = [];
+    if (payload.text.trim()) {
+      const detected = detectCustomer(customers, payload.text);
+      if (detected) {
+        customerId = detected.customer.id;
+        candidates = detected.ambiguous;
+      }
+    }
+    // ルームに顧客がピンされていれば、特定できなくてもその顧客を既定対象に。
+    if (!customerId && pin) customerId = pin.customerId;
+    if (!customerId) return; // 顧客が特定できない
+    if (!note && !image) return; // 追加できる中身がない
+
+    setKarteSuggestions((prev) => ({
+      ...prev,
+      [messageId]: {
+        customerId: customerId!,
+        customerName: customerName(customerId!),
+        note,
+        candidates,
+        status: "idle",
+        image: image ? { url: image.url, mime: image.mime } : null,
+      },
+    }));
+  };
+
+  const confirmKarte = async (messageId: string) => {
+    const s = karteSuggestions[messageId];
+    if (!s || s.status !== "idle") return;
+    setKarteSuggestions((prev) => ({
+      ...prev,
+      [messageId]: { ...s, status: "saving" },
+    }));
+    const res = await addChatNoteToKarteAction({
+      customerId: s.customerId,
+      note: s.note,
+    });
+    setKarteSuggestions((prev) => ({
+      ...prev,
+      [messageId]: {
+        ...prev[messageId],
+        status: res.ok ? "done" : "idle",
+        doneVia: "note",
+      },
+    }));
+  };
+
+  const changeKarteTarget = (messageId: string, c: MentionCustomer) =>
+    setKarteSuggestions((prev) => ({
+      ...prev,
+      [messageId]: {
+        ...prev[messageId],
+        customerId: c.id,
+        customerName: c.name,
+      },
+    }));
+
+  const dismissKarte = (messageId: string) =>
+    setKarteSuggestions((prev) => {
+      const next = { ...prev };
+      delete next[messageId];
+      return next;
+    });
+
+  // LINEスクショ抽出モーダル（対象メッセージ）
+  const [extractFor, setExtractFor] = useState<string | null>(null);
+  const extractSuggestion = extractFor ? karteSuggestions[extractFor] : null;
+
+  const finishExtract = (messageId: string) => {
+    setExtractFor(null);
+    setKarteSuggestions((prev) =>
+      prev[messageId]
+        ? {
+            ...prev,
+            [messageId]: {
+              ...prev[messageId],
+              status: "done",
+              doneVia: "extract",
+            },
+          }
+        : prev,
+    );
+  };
+
+  // ── 機構C: ルームへの顧客ピン留め ───────────────────────────
+  const pinCustomer = (c: MentionCustomer) => {
+    setPin(setRoomPin(room.id, { id: c.id, name: c.name }));
+    setPinPickerOpen(false);
+  };
+  const unpinCustomer = () => {
+    clearRoomPin(room.id);
+    setPin(null);
+  };
 
   const patchMessage = (id: string, patch: Partial<ChatMessage>) => {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
@@ -110,7 +303,13 @@ export function ChatRoomView({
 
   const handleCopy = (msg: ChatMessage) => {
     if (typeof navigator === "undefined" || !navigator.clipboard) return;
-    navigator.clipboard.writeText(msg.content).catch(() => {});
+    navigator.clipboard
+      .writeText(msg.content)
+      .then(() => {
+        setCopiedToast(true);
+        setTimeout(() => setCopiedToast(false), 1500);
+      })
+      .catch(() => {});
   };
 
   // Auto scroll to bottom
@@ -136,15 +335,24 @@ export function ChatRoomView({
     return () => clearTimeout(t);
   }, [editingId]);
 
-  const displayName =
+  const baseName =
     room.type === "channel"
       ? room.name!
       : room.member_names
           .filter((_, i) => room.member_ids[i] !== currentCastId)
           .join(", ");
+  // ユーザーがつけたグループ名があれば優先。
+  const displayName = nameOverride || baseName;
 
   const memberCount = room.member_ids.length;
   const isCoaching = room.type === "coaching";
+  // 指導ノートは固定の意味を持つ名前なのでリネーム対象外。
+  const canRename = !isCoaching;
+
+  const commitName = (name: string) => {
+    setNameOverride(setRoomName(room.id, name) || null);
+    setNameEditOpen(false);
+  };
 
   const COACHING_CHIPS = [
     "✨ よかった点：",
@@ -170,14 +378,17 @@ export function ChatRoomView({
       )
     : topMessages;
 
-  const handleSend = async () => {
-    const text = input.trim();
-    if (!text || sending) return;
+  const handleSend = async (payload: ComposerPayload) => {
+    const text = payload.text.trim();
+    const attachments = payload.attachments;
+    if ((!text && attachments.length === 0) || sending) return;
 
     setSending(true);
     setInput("");
 
     const mentionsAi = text.includes("@さくらママ");
+    // ルームに顧客がピンされていれば、その顧客にメッセージを関連付ける。
+    const linkedCustomerId = pin?.customerId ?? null;
     const targetId = threadOpen ?? null;
     const tempId = `tmp_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
@@ -187,6 +398,8 @@ export function ChatRoomView({
       sender_id: currentCastId,
       sender_name: currentCastName,
       content: text,
+      attachments,
+      customer_id: linkedCustomerId,
       thread_parent_id: targetId,
       reply_count: 0,
       mentions_ai: mentionsAi,
@@ -207,6 +420,7 @@ export function ChatRoomView({
 
     // Try to persist to Supabase. On failure, keep the optimistic row so
     // the conversation still reads naturally in mock/offline mode.
+    let persistedId = tempId;
     try {
       const res = await fetch("/api/team-chat/messages", {
         method: "POST",
@@ -215,11 +429,14 @@ export function ChatRoomView({
           roomId: room.id,
           content: text,
           threadParentId: targetId ?? undefined,
+          attachments: attachments.length > 0 ? attachments : undefined,
+          customerId: linkedCustomerId ?? undefined,
         }),
       });
       if (res.ok) {
         const { message } = await res.json();
         if (message?.id) {
+          persistedId = message.id;
           setMessages((prev) =>
             prev.map((m) =>
               m.id === tempId
@@ -232,6 +449,9 @@ export function ChatRoomView({
     } catch {
       // keep optimistic row
     }
+
+    // Offer to capture this into the customer's 逆カルテ (mechanism A + B).
+    if (!mentionsAi) addKarteSuggestion(persistedId, payload);
 
     // If @さくらママ is mentioned, get AI response
     if (mentionsAi) {
@@ -287,53 +507,85 @@ export function ChatRoomView({
       <header className="flex items-center gap-3 px-4 py-3 border-b border-ink/[0.06] bg-pearl z-50 shrink-0">
         <Link
           href="/cast/chat"
-          className="flex items-center gap-1 text-ink-secondary shrink-0"
+          className="flex items-center gap-1 text-ink-soft shrink-0"
         >
           <ArrowLeft size={18} />
           <span className="text-label-sm">戻る</span>
         </Link>
-        <div className="flex-1 text-center">
-          <div className="text-body-md font-medium text-ink">
-            {displayName}
-          </div>
-          <div className="text-label-sm text-ink-muted">{memberCount}人</div>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            setSearchOpen((v) => {
-              const next = !v;
-              if (!next) setSearchQuery("");
-              return next;
-            });
-          }}
-          aria-label={searchOpen ? "検索を閉じる" : "検索"}
-          className={cn(
-            "w-14 shrink-0 flex items-center justify-end text-ink-secondary",
-            searchOpen && "text-amethyst-dark",
+        <div className="flex-1 min-w-0 text-center">
+          {canRename ? (
+            <button
+              type="button"
+              onClick={() => setNameEditOpen(true)}
+              className="inline-flex items-center gap-1 max-w-full group"
+              title="グループ名を編集"
+            >
+              <span className="text-body-md font-medium text-ink truncate">
+                {displayName}
+              </span>
+              <Pencil
+                size={12}
+                className="shrink-0 text-ink-mute group-hover:text-gold-deep"
+              />
+            </button>
+          ) : (
+            <div className="text-body-md font-medium text-ink truncate">
+              {displayName}
+            </div>
           )}
-        >
-          {searchOpen ? <X size={18} /> : <Search size={18} />}
-        </button>
+          <div className="text-label-sm text-ink-mute">{memberCount}人</div>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              setSearchOpen((v) => {
+                const next = !v;
+                if (!next) setSearchQuery("");
+                return next;
+              });
+            }}
+            aria-label={searchOpen ? "検索を閉じる" : "検索"}
+            className={cn(
+              "w-9 h-9 rounded-full flex items-center justify-center text-ink-soft hover:bg-pearl-soft",
+              searchOpen && "text-gold-deep bg-champagne-soft/60",
+            )}
+          >
+            {searchOpen ? <X size={18} /> : <Search size={18} />}
+          </button>
+          <MoreMenu />
+        </div>
+
       </header>
+
+      {/* 機構C: ルームにピンした顧客のバー（カルテ導線 + 自動ひも付け） */}
+      <PinBar
+        pin={pin}
+        pickerOpen={pinPickerOpen}
+        customers={customers}
+        onOpenPicker={() => setPinPickerOpen(true)}
+        onClosePicker={() => setPinPickerOpen(false)}
+        onPick={pinCustomer}
+        onUnpin={unpinCustomer}
+      />
 
       {searchOpen && (
         <div className="shrink-0 px-4 py-2 border-b border-ink/[0.06] bg-pearl-soft/40">
-          <label className="flex items-center gap-2 rounded-2xl border border-ink/[0.06] bg-pearl px-3 py-2">
-            <Search size={14} className="text-ink-muted shrink-0" />
+          <label className="flex items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2">
+            <Search size={14} className="text-ink-mute shrink-0" />
             <input
               autoFocus
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="メッセージを検索..."
-              className="flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-muted focus:outline-none"
+              className="flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
               style={{ fontSize: "16px" }}
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="text-ink-muted shrink-0"
+                className="text-ink-mute shrink-0"
                 aria-label="検索をクリア"
               >
                 <X size={14} />
@@ -341,7 +593,7 @@ export function ChatRoomView({
             )}
           </label>
           {isSearching && (
-            <div className="mt-1.5 text-[11px] text-ink-muted">
+            <div className="mt-1.5 text-[11px] text-ink-mute">
               {visibleTopMessages.length}件のスレッドが一致
             </div>
           )}
@@ -350,9 +602,9 @@ export function ChatRoomView({
 
       {/* Coaching banner */}
       {isCoaching && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-emerald/5 border-b border-emerald/20">
-          <BookOpen size={13} className="text-emerald shrink-0" />
-          <p className="text-[11px] text-emerald">
+        <div className="flex items-center gap-2 px-4 py-2 bg-success/5 border-b border-success/20">
+          <BookOpen size={13} className="text-success shrink-0" />
+          <p className="text-[11px] text-success">
             指導ノート — ここでのやり取りは育成記録として残ります
           </p>
         </div>
@@ -366,7 +618,7 @@ export function ChatRoomView({
             <button
               type="button"
               onClick={() => setThreadOpen(null)}
-              className="flex items-center gap-1 text-ink-secondary"
+              className="flex items-center gap-1 text-ink-soft"
             >
               <ArrowLeft size={18} />
               <span className="text-label-sm">戻る</span>
@@ -385,17 +637,19 @@ export function ChatRoomView({
               isCoaching={isCoaching}
               showAvatar={true}
               showName={true}
+              mentionNames={mentionNames}
+              isPinned={pinnedIds.has(activeThread.id)}
+              onLongPress={(anchor) =>
+                setActionFor({ msg: activeThread, canReply: false, anchor })
+              }
               editingId={editingId}
               editDraft={editDraft}
               setEditDraft={setEditDraft}
-              onStartEdit={startEdit}
               onCancelEdit={cancelEdit}
               onCommitEdit={commitEdit}
-              onDelete={handleDelete}
-              onCopy={handleCopy}
             />
             {activeThreadReplies.length > 0 && (
-              <div className="text-label-sm text-ink-muted pl-2">
+              <div className="text-label-sm text-ink-mute pl-2">
                 {activeThreadReplies.length} 件の返信
               </div>
             )}
@@ -410,14 +664,16 @@ export function ChatRoomView({
                   isCoaching={isCoaching}
                   showAvatar={!isGrouped}
                   showName={!isGrouped}
+                  mentionNames={mentionNames}
+                  isPinned={pinnedIds.has(m.id)}
+                  onLongPress={(anchor) =>
+                    setActionFor({ msg: m, canReply: false, anchor })
+                  }
                   editingId={editingId}
                   editDraft={editDraft}
                   setEditDraft={setEditDraft}
-                  onStartEdit={startEdit}
                   onCancelEdit={cancelEdit}
                   onCommitEdit={commitEdit}
-                  onDelete={handleDelete}
-                  onCopy={handleCopy}
                 />
               );
             })}
@@ -427,57 +683,29 @@ export function ChatRoomView({
           {/* Thread input — hidden while editing to avoid double composer. */}
           {editingId ? (
             <div className="shrink-0 border-t border-ink/[0.06] bg-pearl-soft/60 px-4 py-3 pb-safe text-center">
-              <p className="text-label-sm text-ink-secondary">
+              <p className="text-label-sm text-ink-soft">
                 メッセージを編集中...
               </p>
               <button
                 type="button"
                 onClick={cancelEdit}
-                className="text-[11px] text-amethyst-dark underline mt-0.5"
+                className="text-[11px] text-gold-deep underline mt-0.5"
               >
                 編集をやめる
               </button>
             </div>
           ) : (
             <div className="shrink-0 border-t border-ink/[0.06] bg-pearl px-4 py-3 pb-safe">
-              <div className="flex items-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setInput((prev) =>
-                      prev.includes("@さくらママ") ? prev : "@さくらママ " + prev,
-                    );
-                  }}
-                  className="shrink-0 mb-1 p-1.5 rounded-full text-amethyst-dark hover:bg-amethyst-muted"
-                  title="@さくらママ"
-                >
-                  <Sparkles size={18} />
-                </button>
-                <div className="flex-1">
-                  <ChatTextarea
-                    value={input}
-                    onChange={setInput}
-                    onSend={handleSend}
-                    placeholder="メッセージを入力..."
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleSend}
-                  disabled={!input.trim() || sending}
-                  className={cn(
-                    "shrink-0 mb-1 p-2 rounded-full transition-colors",
-                    input.trim() && !sending
-                      ? "bg-amethyst text-pearl"
-                      : "bg-pearl-soft text-ink-muted",
-                  )}
-                  aria-label="送信"
-                  title="送信（⌘/Ctrl+Enter）"
-                >
-                  {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                </button>
-              </div>
-                </div>
+              <ChatComposer
+                value={input}
+                onChange={setInput}
+                onSend={handleSend}
+                sending={sending}
+                members={members}
+                storeId={room.store_id}
+                roomId={room.id}
+              />
+            </div>
           )}
         </div>
       )}
@@ -486,8 +714,8 @@ export function ChatRoomView({
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-1">
         {!isSearching && topMessages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 px-6 text-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-amethyst-muted flex items-center justify-center">
-              <MessageCircle size={24} className="text-amethyst-dark" />
+            <div className="w-14 h-14 rounded-full bg-champagne-soft/60 flex items-center justify-center">
+              <MessageCircle size={24} className="text-gold-deep" />
             </div>
             <div>
               <p className="text-body-md font-medium text-ink">
@@ -497,7 +725,7 @@ export function ChatRoomView({
                   ? "指導ノートを始めましょう"
                   : `#${displayName} の最初のメッセージを送りましょう`}
               </p>
-              <p className="text-body-sm text-ink-muted mt-1">
+              <p className="text-body-sm text-ink-mute mt-1">
                 {room.type === "coaching"
                   ? "目標・フィードバック・アドバイスをここに残せます"
                   : "メンバー全員に届きます"}
@@ -506,12 +734,12 @@ export function ChatRoomView({
           </div>
         )}
         {!isSearching && topMessages.length > 0 && (
-          <div className="text-center text-label-sm text-ink-muted py-4">
+          <div className="text-center text-label-sm text-ink-mute py-4">
             これ以上メッセージはありません
           </div>
         )}
         {isSearching && visibleTopMessages.length === 0 && (
-          <div className="text-center text-label-sm text-ink-muted py-8">
+          <div className="text-center text-label-sm text-ink-mute py-8">
             一致するメッセージはありません
           </div>
         )}
@@ -529,16 +757,17 @@ export function ChatRoomView({
                 isCoaching={isCoaching}
                 showAvatar={!isGrouped}
                 showName={!isGrouped}
-                onOpenThread={() => setThreadOpen(msg.id)}
+                mentionNames={mentionNames}
+                isPinned={pinnedIds.has(msg.id)}
+                onLongPress={(anchor) =>
+                  setActionFor({ msg, canReply: true, anchor })
+                }
                 highlight={isSearching ? normalizedQuery : undefined}
                 editingId={editingId}
                 editDraft={editDraft}
                 setEditDraft={setEditDraft}
-                onStartEdit={startEdit}
                 onCancelEdit={cancelEdit}
                 onCommitEdit={commitEdit}
-                onDelete={handleDelete}
-                onCopy={handleCopy}
               />
               {/* Thread preview */}
               {(msg.reply_count > 0 || replies.length > 0) && (
@@ -546,7 +775,7 @@ export function ChatRoomView({
                   type="button"
                   onClick={() => setThreadOpen(msg.id)}
                   className={cn(
-                    "mt-1 mb-2 flex items-center gap-2 text-label-sm text-amethyst-dark hover:underline px-2",
+                    "mt-1 mb-2 flex items-center gap-2 text-label-sm text-gold-deep hover:underline px-2",
                     isMe ? "flex-row-reverse mr-2" : "ml-12",
                   )}
                 >
@@ -559,7 +788,7 @@ export function ChatRoomView({
                         ) : (
                           <div
                             key={r.id}
-                            className="w-5 h-5 rounded-full bg-pearl-soft border border-ink/[0.06] text-[8px] flex items-center justify-center text-ink-secondary font-medium"
+                            className="w-5 h-5 rounded-full bg-pearl-soft border border-ink/[0.06] text-[8px] flex items-center justify-center text-ink-soft font-medium"
                           >
                             {r.sender_name.charAt(0)}
                           </div>
@@ -570,6 +799,16 @@ export function ChatRoomView({
                     {replies.length || msg.reply_count}件の返信
                   </span>
                 </button>
+              )}
+              {karteSuggestions[msg.id] && (
+                <KarteChip
+                  suggestion={karteSuggestions[msg.id]}
+                  isMe={isMe}
+                  onConfirm={() => confirmKarte(msg.id)}
+                  onDismiss={() => dismissKarte(msg.id)}
+                  onPick={(c) => changeKarteTarget(msg.id, c)}
+                  onExtract={() => setExtractFor(msg.id)}
+                />
               )}
             </div>
           );
@@ -584,7 +823,7 @@ export function ChatRoomView({
               key={chip}
               type="button"
               onClick={() => setInput((prev) => (prev ? prev + "\n" + chip : chip))}
-              className="shrink-0 px-2.5 py-1 rounded-full bg-emerald/10 text-emerald text-[11px] font-medium border border-emerald/20 hover:bg-emerald/20 transition-colors"
+              className="shrink-0 px-2.5 py-1 rounded-full bg-success/10 text-success text-[11px] font-medium border border-success/20 hover:bg-success/20 transition-colors"
             >
               {chip}
             </button>
@@ -596,59 +835,121 @@ export function ChatRoomView({
           competing with a live composer. */}
       {editingId ? (
         <div className="shrink-0 border-t border-ink/[0.06] bg-pearl-soft/60 px-4 py-3 pb-safe text-center">
-          <p className="text-label-sm text-ink-secondary">
+          <p className="text-label-sm text-ink-soft">
             メッセージを編集中...
           </p>
           <button
             type="button"
             onClick={cancelEdit}
-            className="text-[11px] text-amethyst-dark underline mt-0.5"
+            className="text-[11px] text-gold-deep underline mt-0.5"
           >
             編集をやめる
           </button>
         </div>
       ) : (
         <div className="shrink-0 border-t border-ink/[0.06] bg-pearl px-4 py-3 pb-safe">
-          <div className="flex items-end gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setInput((prev) =>
-                  prev.includes("@さくらママ") ? prev : "@さくらママ " + prev,
-                );
-              }}
-              className="shrink-0 mb-1 p-1.5 rounded-full text-amethyst-dark hover:bg-amethyst-muted"
-              title="@さくらママ"
-            >
-              <Sparkles size={18} />
-            </button>
-            <div className="flex-1">
-              <ChatTextarea
-                value={input}
-                onChange={setInput}
-                onSend={handleSend}
-                placeholder="メッセージを入力..."
-              />
-            </div>
-            <button
-              type="button"
-              onClick={handleSend}
-              disabled={!input.trim() || sending}
-              className={cn(
-                "shrink-0 mb-1 p-2 rounded-full transition-colors",
-                input.trim() && !sending
-                  ? "bg-amethyst text-pearl"
-                  : "bg-pearl-soft text-ink-muted",
-              )}
-              aria-label="送信"
-              title="送信（⌘/Ctrl+Enter）"
-            >
-              {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-            </button>
-          </div>
-          <p className="text-[10px] text-ink-muted mt-1.5 pl-1">
-            Enter で改行 / 送信ボタン または ⌘/Ctrl+Enter で送信
+          <ChatComposer
+            value={input}
+            onChange={setInput}
+            onSend={handleSend}
+            sending={sending}
+            members={members}
+            storeId={room.store_id}
+            roomId={room.id}
+          />
+          <p className="text-[10px] text-ink-mute mt-1.5 pl-1">
+            画像は貼り付け・ドラッグでも添付可 / @さくらママ で相談・@関係者 で呼びかけ・吹き出しを長押しでメニュー。お客様との紐づけは上部から
           </p>
+        </div>
+      )}
+
+      {extractFor && extractSuggestion?.image && (
+        <ChatKarteExtractModal
+          customerId={extractSuggestion.customerId}
+          customerName={extractSuggestion.customerName}
+          castId={currentCastId}
+          image={extractSuggestion.image}
+          onClose={() => setExtractFor(null)}
+          onApplied={() => finishExtract(extractFor)}
+        />
+      )}
+
+      {/* グループ名の編集 */}
+      {nameEditOpen && (
+        <GroupNameModal
+          baseName={baseName}
+          initialName={nameOverride ?? ""}
+          onClose={() => setNameEditOpen(false)}
+          onSubmit={commitName}
+        />
+      )}
+
+      {/* 吹き出し長押し → LINE風アクションメニュー */}
+      {actionFor && (
+        <MessageActionSheet
+          anchorRect={actionFor.anchor}
+          hasText={actionFor.msg.content.trim().length > 0}
+          isPinned={pinnedIds.has(actionFor.msg.id)}
+          canReply={actionFor.canReply}
+          canEdit={
+            actionFor.msg.sender_id === currentCastId &&
+            !actionFor.msg.is_bot &&
+            !actionFor.msg.deleted_at
+          }
+          onReply={() => {
+            setThreadOpen(actionFor.msg.id);
+            setActionFor(null);
+          }}
+          onCopyAll={() => {
+            handleCopy(actionFor.msg);
+            setActionFor(null);
+          }}
+          onPartialCopy={() => {
+            setPartialCopyFor(actionFor.msg.content);
+            setActionFor(null);
+          }}
+          onPin={() => {
+            setPinSheetFor(actionFor.msg);
+            setActionFor(null);
+          }}
+          onEdit={() => {
+            startEdit(actionFor.msg);
+            setActionFor(null);
+          }}
+          onDelete={() => {
+            const id = actionFor.msg.id;
+            setActionFor(null);
+            handleDelete(id);
+          }}
+          onClose={() => setActionFor(null)}
+        />
+      )}
+
+      {partialCopyFor !== null && (
+        <PartialCopyModal
+          content={partialCopyFor}
+          onClose={() => setPartialCopyFor(null)}
+        />
+      )}
+
+      {/* キープ / 顧客紐づけ / メモ */}
+      {pinSheetFor && (
+        <MessagePinSheet
+          message={pinSheetFor}
+          roomId={room.id}
+          roomName={displayName}
+          customers={customers}
+          onClose={() => setPinSheetFor(null)}
+          onChanged={() => setPinnedIds(getPinnedIds())}
+        />
+      )}
+
+      {copiedToast && (
+        <div className="fixed inset-x-0 bottom-24 z-[90] flex justify-center pointer-events-none">
+          <div className="inline-flex items-center gap-1.5 rounded-pill bg-ink/85 text-pearl-light px-4 py-2 text-body-sm shadow-luxe">
+            <Check size={13} />
+            コピーしました
+          </div>
         </div>
       )}
     </div>
@@ -663,17 +964,20 @@ interface MessageRowProps {
   isCoaching?: boolean;
   showAvatar: boolean;
   showName: boolean;
-  onOpenThread?: () => void;
+  /** Known @mention names (members) for chip rendering. */
+  mentionNames: string[];
+  /** Whether this message is currently kept (キープ). */
+  isPinned?: boolean;
+  /** Long-press (touch) / right-click (desktop) opens the LINE風 action menu,
+   *  anchored to the bubble's on-screen rect. */
+  onLongPress?: (anchor: AnchorRect) => void;
   /** Lowercased search query to highlight; if set, matching substrings get wrapped. */
   highlight?: string;
   editingId: string | null;
   editDraft: string;
   setEditDraft: (v: string) => void;
-  onStartEdit: (msg: ChatMessage) => void;
   onCancelEdit: () => void;
   onCommitEdit: (id: string) => void;
-  onDelete: (id: string) => void;
-  onCopy: (msg: ChatMessage) => void;
 }
 
 function MessageRow({
@@ -682,41 +986,32 @@ function MessageRow({
   isCoaching,
   showAvatar,
   showName,
-  onOpenThread,
+  mentionNames,
+  isPinned,
+  onLongPress,
   highlight,
   editingId,
   editDraft,
   setEditDraft,
-  onStartEdit,
   onCancelEdit,
   onCommitEdit,
-  onDelete,
-  onCopy,
 }: MessageRowProps) {
   const isMe = msg.sender_id === currentCastId;
   const time = new Date(msg.created_at);
   const timeStr = `${time.getHours()}:${String(time.getMinutes()).padStart(2, "0")}`;
   const isEditing = editingId === msg.id;
   const isDeleted = !!msg.deleted_at;
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [menuOpen]);
-
-  const canEdit = isMe && !msg.is_bot && !isDeleted;
-
+  const bubbleRef = useRef<HTMLDivElement>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fireLongPress = () => {
+    if (!onLongPress || !bubbleRef.current) return;
+    const r = bubbleRef.current.getBoundingClientRect();
+    onLongPress({ top: r.top, bottom: r.bottom, left: r.left, width: r.width });
+  };
   const handleTouchStart = () => {
-    longPressTimer.current = setTimeout(() => setMenuOpen(true), 500);
+    if (!onLongPress || isDeleted) return;
+    longPressTimer.current = setTimeout(fireLongPress, 500);
   };
   const handleTouchEnd = () => {
     if (longPressTimer.current) {
@@ -734,8 +1029,8 @@ function MessageRow({
         msg.sender_role === "mama"
           ? "bg-champagne-soft text-ink"
           : msg.sender_role === "oneesan"
-            ? "bg-blush-soft text-blush-deep"
-            : "bg-pearl-soft text-ink-secondary",
+            ? "bg-champagne-soft/60 text-wine-deep"
+            : "bg-pearl-soft text-ink-soft",
       )}
     >
       {msg.sender_name.charAt(0)}
@@ -760,22 +1055,32 @@ function MessageRow({
 
       {/* Bubble + meta */}
       <div
+        ref={bubbleRef}
         className={cn(
           "flex flex-col max-w-[72%]",
           isMe ? "items-end" : "items-start",
+          // 長押しメニューを使うため、吹き出し自体の選択/iOSコールアウトは抑止。
+          // 文章の部分コピーはアクションメニューの「部分コピー」で行う。
+          !isEditing && "select-none",
         )}
+        style={!isEditing ? { WebkitTouchCallout: "none" } : undefined}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchEnd}
+        onContextMenu={(e) => {
+          if (!onLongPress || isDeleted) return;
+          e.preventDefault();
+          fireLongPress();
+        }}
       >
         {/* Sender name (others, first in group) */}
         {!isMe && showName && (
           <div className="flex items-center gap-1.5 mb-0.5 px-1">
-            <span className="text-[11px] font-medium text-ink-secondary">
+            <span className="text-[11px] font-medium text-ink-soft">
               {msg.sender_name}
             </span>
             {msg.is_bot && (
-              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-amethyst-muted text-amethyst-dark">
+              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-champagne-soft/60 text-gold-deep">
                 AI
               </span>
             )}
@@ -785,7 +1090,7 @@ function MessageRow({
               </span>
             )}
             {isCoaching && !msg.is_bot && (
-              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-emerald/10 text-emerald border border-emerald/20">
+              <span className="px-1 py-0.5 rounded text-[9px] font-medium bg-success/10 text-success border border-success/20">
                 指導
               </span>
             )}
@@ -793,7 +1098,7 @@ function MessageRow({
         )}
 
         {isDeleted ? (
-          <div className="text-body-sm text-ink-muted italic px-3 py-2">
+          <div className="text-body-sm text-ink-mute italic px-3 py-2">
             （メッセージは取り消されました）
           </div>
         ) : isEditing ? (
@@ -813,7 +1118,7 @@ function MessageRow({
               }}
               autoFocus
               rows={2}
-              className="w-full resize-none rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 py-2 text-body-md text-ink focus:outline-none focus:border-amethyst/40"
+              className="w-full resize-none rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 text-body-md text-ink focus:outline-none focus:border-wine-deep"
               style={{ fontSize: "16px" }}
             />
             <div className="flex items-center gap-2">
@@ -824,8 +1129,8 @@ function MessageRow({
                 className={cn(
                   "inline-flex items-center gap-1 px-3 py-1 rounded-full text-label-sm font-medium",
                   editDraft.trim()
-                    ? "bg-amethyst text-pearl"
-                    : "bg-pearl-soft text-ink-muted",
+                    ? "bg-wine-deep text-pearl-light"
+                    : "bg-pearl-soft text-ink-mute",
                 )}
               >
                 <Check size={12} />
@@ -834,7 +1139,7 @@ function MessageRow({
               <button
                 type="button"
                 onClick={onCancelEdit}
-                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-label-sm text-ink-secondary hover:bg-pearl-soft"
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-label-sm text-ink-soft hover:bg-pearl-soft"
               >
                 <X size={12} />
                 キャンセル
@@ -843,91 +1148,43 @@ function MessageRow({
           </div>
         ) : (
           /* Bubble */
-          <div
-            className={cn(
-              "px-3.5 py-2 text-body-md leading-relaxed whitespace-pre-wrap break-words",
-              isMe
-                ? "bg-amethyst text-pearl rounded-2xl rounded-br-sm shadow-soft"
-                : "bg-pearl-warm border border-ink/[0.06] text-ink rounded-2xl rounded-bl-sm shadow-soft",
+          <div className={cn("flex flex-col gap-1.5", isMe ? "items-end" : "items-start")}>
+            {/* キープ済みタグ（吹き出しの上に明示） */}
+            {isPinned && (
+              <span className="inline-flex items-center gap-1 rounded-pill bg-champagne-soft/70 border border-gold/45 px-2 py-0.5 text-[10px] font-medium text-wine-deep shadow-soft">
+                <Bookmark size={10} className="text-gold-deep" />
+                保存済み
+              </span>
             )}
-          >
-            {renderContentParts(msg.content, highlight)}
+            {msg.content.trim().length > 0 && (
+              <div
+                className={cn(
+                  "px-3.5 py-2 text-body-md leading-relaxed whitespace-pre-wrap break-words",
+                  isMe
+                    ? "bg-wine-deep text-pearl-light rounded-2xl rounded-br-sm shadow-luxe"
+                    : "bg-pearl-light border border-ink/[0.08] text-ink rounded-2xl rounded-bl-sm shadow-soft",
+                  // キープ済みはシャンパンゴールドの枠線で強調（塗りには使わない）
+                  isPinned && "ring-[1.5px] ring-gold/70 ring-offset-2 ring-offset-pearl",
+                )}
+              >
+                {renderContentParts(msg.content, mentionNames, highlight)}
+              </div>
+            )}
+            {msg.attachments && msg.attachments.length > 0 && (
+              <AttachmentGrid attachments={msg.attachments} />
+            )}
           </div>
         )}
 
         {/* Timestamp + status row */}
         {!isDeleted && !isEditing && (
           <div className={cn("flex items-center gap-1.5 mt-0.5 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
-            <span className="text-[10px] text-ink-muted">{timeStr}</span>
+            <span className="text-[10px] text-ink-mute">{timeStr}</span>
             {msg.id.startsWith("tmp_") && (
-              <Clock size={9} className="text-ink-muted animate-pulse" />
+              <Clock size={9} className="text-ink-mute animate-pulse" />
             )}
             {msg.edited_at && (
-              <span className="text-[9px] text-ink-muted">編集済み</span>
-            )}
-          </div>
-        )}
-
-        {/* Action buttons (tap-revealed) */}
-        {!isEditing && !isDeleted && (
-          <div className={cn("flex items-center gap-2 mt-1 px-1", isMe ? "flex-row-reverse" : "flex-row")}>
-            {onOpenThread && (
-              <button
-                type="button"
-                onClick={onOpenThread}
-                className="flex items-center gap-0.5 text-[10px] text-ink-muted hover:text-ink-secondary"
-              >
-                <MessageCircle size={10} />
-                返信
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => onCopy(msg)}
-              className="flex items-center gap-0.5 text-[10px] text-ink-muted hover:text-ink-secondary"
-            >
-              <Copy size={10} />
-              コピー
-            </button>
-            {canEdit && (
-              <div ref={menuRef} className="relative">
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen((v) => !v)}
-                  className="flex items-center gap-0.5 text-[10px] text-ink-muted hover:text-ink-secondary"
-                >
-                  <MoreHorizontal size={12} />
-                </button>
-                {menuOpen && (
-                  <div className={cn(
-                    "absolute z-30 top-full mt-1 min-w-[140px] rounded-card border border-ink/[0.06] bg-pearl shadow-soft overflow-hidden",
-                    isMe ? "right-0" : "left-0",
-                  )}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onStartEdit(msg);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-left text-body-sm text-ink hover:bg-pearl-soft"
-                    >
-                      <Pencil size={13} />
-                      編集
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onDelete(msg.id);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-left text-body-sm text-[#c2575b] hover:bg-[#c2575b]/5"
-                    >
-                      <Trash2 size={13} />
-                      取り消し
-                    </button>
-                  </div>
-                )}
-              </div>
+              <span className="text-[9px] text-ink-mute">編集済み</span>
             )}
           </div>
         )}
@@ -938,22 +1195,44 @@ function MessageRow({
 
 // ═══════════════ Content renderer ═══════════════
 
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 /**
- * Split content into renderable pieces, giving the `@さくらママ` mention
- * its chip styling and (optionally) wrapping search matches in a
- * highlight <mark>.
+ * Split content into renderable pieces, giving any known @mention
+ * (さくらママ / 関係者 / お客様) its chip styling and (optionally) wrapping
+ * search matches in a highlight <mark>. `mentionNames` are matched
+ * longest-first so names containing spaces (e.g. "@小川 達也") chip whole.
  */
-function renderContentParts(content: string, highlight?: string) {
-  const mentionRe = /(@さくらママ)/g;
+function renderContentParts(
+  content: string,
+  mentionNames: string[],
+  highlight?: string,
+) {
+  const names = Array.from(new Set([SAKURA_MAMA_CHAT_NAME, ...mentionNames]))
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+  if (names.length === 0) {
+    return highlight ? (
+      <HighlightedText text={content} query={highlight} />
+    ) : (
+      <>{content}</>
+    );
+  }
+  const mentionRe = new RegExp(
+    `(@(?:${names.map(escapeRegExp).join("|")}))`,
+    "g",
+  );
   const chunks = content.split(mentionRe);
   return chunks.map((chunk, i) => {
-    if (chunk === "@さくらママ") {
+    if (chunk.startsWith("@") && names.includes(chunk.slice(1))) {
       return (
         <span
           key={i}
-          className="px-1 py-0.5 rounded bg-amethyst-muted text-amethyst-dark font-medium text-body-sm"
+          className="px-1 py-0.5 rounded bg-champagne-soft/60 text-gold-deep font-medium text-body-sm"
         >
-          @さくらママ
+          {chunk}
         </span>
       );
     }
@@ -991,35 +1270,302 @@ function HighlightedText({ text, query }: { text: string; query: string }) {
   return <>{out}</>;
 }
 
-// ═══════════════ Simple Chat Textarea ═══════════════
+// ═══════════════ 機構C: 顧客ピンバー ═══════════════
 
-function ChatTextarea({
-  value,
-  onChange,
-  onSend,
-  placeholder,
+function PinBar({
+  pin,
+  pickerOpen,
+  customers,
+  onOpenPicker,
+  onClosePicker,
+  onPick,
+  onUnpin,
 }: {
-  value: string;
-  onChange: (val: string) => void;
-  onSend: () => void;
-  placeholder: string;
+  pin: RoomCustomerPin | null;
+  pickerOpen: boolean;
+  customers: MentionCustomer[];
+  onOpenPicker: () => void;
+  onClosePicker: () => void;
+  onPick: (c: MentionCustomer) => void;
+  onUnpin: () => void;
 }) {
+  const [query, setQuery] = useState("");
+  const results = searchCustomers(customers, query, 8);
+
+  if (pin) {
+    return (
+      <div className="shrink-0 flex items-center gap-2 px-4 py-2 border-b border-gold/20 bg-champagne-soft/40">
+        <span className="w-6 h-6 rounded-full bg-champagne-soft border border-gold/30 flex items-center justify-center text-[11px] font-medium text-wine-deep shrink-0">
+          {pin.customerName.charAt(0)}
+        </span>
+        <span className="text-[12px] text-ink leading-snug">
+          このトークは{" "}
+          <span className="font-medium text-wine-deep">{pin.customerName}</span>{" "}
+          さんの話題
+        </span>
+        <Link
+          href={`/cast/customers/${pin.customerId}`}
+          className="ml-auto inline-flex items-center gap-1 rounded-pill border border-gold/40 px-2.5 py-1 text-[11px] text-wine-deep font-medium hover:bg-champagne-soft/60"
+        >
+          <User size={11} />
+          カルテ
+        </Link>
+        <button
+          type="button"
+          onClick={onUnpin}
+          className="w-6 h-6 rounded-full flex items-center justify-center text-ink-mute hover:bg-pearl-soft shrink-0"
+          aria-label="ピンを外す"
+          title="ピンを外す"
+        >
+          <X size={13} />
+        </button>
+      </div>
+    );
+  }
+
+  if (!pickerOpen) {
+    if (customers.length === 0) return null;
+    return (
+      <div className="shrink-0 px-4 py-2 border-b border-ink/[0.06] bg-pearl-soft/30">
+        <button
+          type="button"
+          onClick={onOpenPicker}
+          className="inline-flex items-center gap-1.5 rounded-pill border border-gold/40 bg-champagne-soft/50 px-3 py-1.5 text-[12px] font-medium text-wine-deep shadow-soft transition-colors hover:bg-champagne-soft/80"
+        >
+          <UserPlus size={13} className="text-gold-deep" />
+          この相談をお客様に紐づける
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <textarea
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onKeyDown={(e) => {
-        // Cmd/Ctrl+Enter sends; plain Enter creates a newline so users
-        // can compose multi-line messages without premature submission.
-        if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-          e.preventDefault();
-          onSend();
-        }
-      }}
-      placeholder={placeholder}
-      rows={1}
-      className="w-full resize-none rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 py-2 text-body-md text-ink placeholder:text-ink-muted focus:outline-none focus:border-amethyst/40"
-      style={{ fontSize: "16px", maxHeight: "160px" }}
-    />
+    <div className="shrink-0 px-4 py-2 border-b border-gold/20 bg-champagne-soft/40 space-y-2">
+      <div className="flex items-center gap-2">
+        <label className="flex-1 flex items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-1.5">
+          <Search size={13} className="text-ink-mute shrink-0" />
+          <input
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="顧客を検索してピン..."
+            className="flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
+            style={{ fontSize: "16px" }}
+          />
+        </label>
+        <button
+          type="button"
+          onClick={() => {
+            setQuery("");
+            onClosePicker();
+          }}
+          className="text-[11px] text-ink-soft shrink-0"
+        >
+          やめる
+        </button>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {results.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => onPick(c)}
+            className="inline-flex items-center gap-1.5 rounded-pill border border-ink/[0.12] bg-pearl-light px-2.5 py-1 text-[12px] text-ink hover:border-gold/40"
+          >
+            <span className="w-5 h-5 rounded-full bg-champagne-soft/60 flex items-center justify-center text-[10px] font-medium text-wine-deep">
+              {c.name.charAt(0)}
+            </span>
+            {c.name}
+            {c.category === "vip" && (
+              <span className="text-[9px] px-1 rounded bg-wine/10 text-wine-deep font-medium">
+                VIP
+              </span>
+            )}
+          </button>
+        ))}
+        {results.length === 0 && (
+          <span className="text-[11px] text-ink-mute py-1">
+            一致する顧客がいません
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════ 逆カルテ取り込みチップ ═══════════════
+
+function KarteChip({
+  suggestion: s,
+  isMe,
+  onConfirm,
+  onDismiss,
+  onPick,
+  onExtract,
+}: {
+  suggestion: KarteSuggestion;
+  isMe: boolean;
+  onConfirm: () => void;
+  onDismiss: () => void;
+  onPick: (c: MentionCustomer) => void;
+  onExtract: () => void;
+}) {
+  if (s.status === "done") {
+    return (
+      <div
+        className={cn(
+          "mt-1 mb-2 flex flex-wrap items-center gap-1.5 px-2",
+          isMe ? "justify-end" : "justify-start ml-12",
+        )}
+      >
+        <div className="inline-flex items-center gap-1.5 rounded-pill bg-success/10 border border-success/20 px-3 py-1.5 text-[12px] text-success font-medium">
+          <Check size={12} />
+          {s.customerName}さんのカルテに
+          {s.doneVia === "extract" ? "反映しました" : "追加しました"}
+        </div>
+        <Link
+          href={`/cast/customers/${s.customerId}`}
+          className="inline-flex items-center gap-1 rounded-pill border border-gold/40 px-2.5 py-1.5 text-[12px] font-medium text-wine-deep hover:bg-champagne-soft/60"
+        >
+          <BookOpen size={12} />
+          カルテを見る
+        </Link>
+      </div>
+    );
+  }
+
+  const hasImage = !!s.image;
+  const hasNote = s.note.trim().length > 0;
+  const alts = s.candidates.filter((c) => c.id !== s.customerId).slice(0, 3);
+
+  return (
+    <div
+      className={cn(
+        "mt-1 mb-2 flex px-2",
+        isMe ? "justify-end" : "justify-start ml-12",
+      )}
+    >
+      <div className="inline-flex flex-col gap-1.5 rounded-card bg-champagne-soft/40 border border-gold/25 px-3 py-2 max-w-[88%]">
+        <div className="flex items-center gap-2">
+          <UserPlus size={13} className="text-gold-deep shrink-0" />
+          <span className="text-[12px] text-ink leading-snug">
+            <span className="font-medium text-wine-deep">{s.customerName}</span>
+            さんのカルテに{hasImage ? "反映しますか？" : "追加しますか？"}
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {hasImage && (
+            <button
+              type="button"
+              onClick={onExtract}
+              className="inline-flex items-center gap-1 rounded-pill bg-wine-deep text-pearl-light px-3 py-1 text-[12px] font-medium"
+            >
+              <Sparkles size={11} />
+              スクショから反映
+            </button>
+          )}
+          {hasNote && (
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={s.status === "saving"}
+              className={cn(
+                "inline-flex items-center gap-1 rounded-pill px-3 py-1 text-[12px] font-medium disabled:opacity-50",
+                hasImage
+                  ? "border border-gold/40 text-wine-deep"
+                  : "bg-wine-deep text-pearl-light",
+              )}
+            >
+              {s.status === "saving" ? (
+                <Loader2 size={11} className="animate-spin" />
+              ) : (
+                <Check size={11} />
+              )}
+              メモ追加
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="rounded-pill px-2.5 py-1 text-[12px] text-ink-soft hover:bg-pearl-soft"
+          >
+            あとで
+          </button>
+        </div>
+        {alts.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1 pt-0.5">
+            <span className="text-[10px] text-ink-mute">別の人:</span>
+            {alts.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => onPick(c)}
+                className="rounded-pill border border-ink/[0.15] px-2 py-0.5 text-[11px] text-ink-soft hover:border-gold/40"
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════ Attachment grid + lightbox ═══════════════
+
+function AttachmentGrid({ attachments }: { attachments: ChatAttachment[] }) {
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const images = attachments.filter((a) => a.url);
+  if (images.length === 0) return null;
+
+  return (
+    <>
+      <div
+        className={cn(
+          "grid gap-1.5 max-w-[240px]",
+          images.length === 1 ? "grid-cols-1" : "grid-cols-2",
+        )}
+      >
+        {images.map((a, i) => (
+          <button
+            key={`${a.url}_${i}`}
+            type="button"
+            onClick={() => setLightbox(a.url)}
+            className="block overflow-hidden rounded-xl border border-ink/[0.08] bg-pearl-soft"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={a.url}
+              alt="共有画像"
+              className="w-full h-auto max-h-64 object-cover"
+              loading="lazy"
+            />
+          </button>
+        ))}
+      </div>
+
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[60] bg-ink/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-pearl/20 text-pearl-light flex items-center justify-center"
+            aria-label="閉じる"
+          >
+            <X size={18} />
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={lightbox}
+            alt="共有画像"
+            className="max-w-full max-h-full rounded-2xl object-contain"
+          />
+        </div>
+      )}
+    </>
   );
 }

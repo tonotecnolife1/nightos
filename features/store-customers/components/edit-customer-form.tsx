@@ -8,6 +8,7 @@ import { BirthdayInput } from "@/components/nightos/birthday-input";
 import { TextInput } from "@/components/nightos/input";
 import { SelectInput } from "@/components/nightos/select";
 import { TextAreaInput } from "@/components/nightos/textarea";
+import { useAutoKana } from "@/lib/nightos/use-auto-kana";
 import {
   BusinessCardUpload,
   type ExtractedBusinessCard,
@@ -33,11 +34,20 @@ export function EditCustomerForm({ customer, casts }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState(customer.name);
+  const [nameKana, setNameKana] = useState(customer.name_kana ?? "");
+  const [nickname, setNickname] = useState(customer.nickname ?? "");
+
+  // 氏名の IME 変換前かなから読み仮名を自動採取。既存の読みは上書きしない。
+  const autoKana = useAutoKana({
+    setKana: setNameKana,
+    initialEdited: !!customer.name_kana,
+  });
   const [birthday, setBirthday] = useState(customer.birthday ?? "");
   const [job, setJob] = useState(customer.job ?? "");
   const [favoriteDrink, setFavoriteDrink] = useState(
     customer.favorite_drink ?? "",
   );
+  const [region, setRegion] = useState(customer.region ?? "");
   const [category, setCategory] = useState<CustomerCategory>(customer.category);
   const [castId, setCastId] = useState(customer.cast_id);
   const [storeMemo, setStoreMemo] = useState(customer.store_memo ?? "");
@@ -48,9 +58,12 @@ export function EditCustomerForm({ customer, casts }: Props) {
     startTransition(async () => {
       const res = await updateCustomerAction(customer.id, {
         name: name.trim(),
+        name_kana: nameKana.trim() || null,
+        nickname: nickname.trim() || null,
         birthday: birthday || null,
         job: job.trim() || null,
         favorite_drink: favoriteDrink.trim() || null,
+        region: region.trim() || null,
         category,
         store_memo: storeMemo.trim() || null,
         cast_id: castId,
@@ -66,6 +79,10 @@ export function EditCustomerForm({ customer, casts }: Props) {
 
   const applyBusinessCard = (fields: ExtractedBusinessCard) => {
     if (fields.name) setName(fields.name);
+    if (fields.name_kana) {
+      setNameKana(fields.name_kana);
+      autoKana.markKanaEdited();
+    }
     if (fields.job) setJob(fields.job);
     if (fields.store_memo) {
       setStoreMemo((prev) =>
@@ -98,11 +115,34 @@ export function EditCustomerForm({ customer, casts }: Props) {
       <BusinessCardUpload onApply={applyBusinessCard} mode="edit" />
 
       <TextInput
-        label="お名前"
+        label="お名前（フルネーム）"
         name="name"
         value={name}
-        onChange={(e) => setName(e.target.value)}
+        onChange={(e) => {
+          setName(e.target.value);
+          autoKana.onNameChange(e.target.value);
+        }}
+        {...autoKana.bind}
         required
+      />
+      <TextInput
+        label="読み仮名（ひらがな）"
+        name="name_kana"
+        value={nameKana}
+        onChange={(e) => {
+          setNameKana(e.target.value);
+          autoKana.markKanaEdited();
+        }}
+        placeholder="例: たなか たろう"
+        hint="氏名の入力中に自動で補完されます。ひらがな検索に使われます"
+      />
+      <TextInput
+        label="呼び名（任意）"
+        name="nickname"
+        value={nickname}
+        onChange={(e) => setNickname(e.target.value)}
+        placeholder="例: 社長・たっちゃん"
+        hint="フルネームの横に表示され、検索でもヒットします"
       />
       <BirthdayInput
         value={birthday}
@@ -120,8 +160,15 @@ export function EditCustomerForm({ customer, casts }: Props) {
         value={favoriteDrink}
         onChange={(e) => setFavoriteDrink(e.target.value)}
       />
+      <TextInput
+        label="活動エリア"
+        name="region"
+        value={region}
+        onChange={(e) => setRegion(e.target.value)}
+        placeholder="例: 東京都"
+      />
       <SelectInput
-        label="顧客カテゴリ"
+        label="お客様の種別"
         name="category"
         value={category}
         onChange={(e) => setCategory(e.target.value as CustomerCategory)}
@@ -144,13 +191,13 @@ export function EditCustomerForm({ customer, casts }: Props) {
       />
 
       {error && (
-        <div className="rounded-btn bg-rose/10 border border-rose/30 text-rose text-body-sm px-3 py-2">
+        <div className="rounded-btn bg-wine/10 border border-wine/30 text-wine-deep text-body-sm px-3 py-2">
           {error}
         </div>
       )}
       {success && (
         <div className="flex items-center gap-2 rounded-btn bg-champagne border border-champagne-dark text-ink text-body-sm px-3 py-2">
-          <Check size={16} className="text-roseGold-dark" />
+          <Check size={16} className="text-wine-deep" />
           {success}
         </div>
       )}
@@ -164,10 +211,10 @@ export function EditCustomerForm({ customer, casts }: Props) {
         type="button"
         onClick={handleDelete}
         disabled={pending}
-        className="w-full flex items-center justify-center gap-1.5 h-10 mt-2 rounded-btn text-rose border border-rose/30 hover:bg-rose/10 disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-1.5 h-10 mt-2 rounded-btn text-wine-deep border border-wine/30 hover:bg-wine/10 disabled:opacity-50"
       >
         <Trash2 size={14} />
-        この顧客を削除
+        このお客様を削除
       </button>
     </form>
   );
