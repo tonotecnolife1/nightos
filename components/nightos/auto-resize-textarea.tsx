@@ -44,6 +44,7 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
       value,
       onChange,
       style,
+      placeholder,
       ...rest
     },
     ref,
@@ -65,21 +66,34 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
         parseFloat(computed.paddingTop) + parseFloat(computed.paddingBottom);
       const minHeight = lineHeight * minRows + paddingY;
       const maxHeight = lineHeight * maxRows + paddingY;
+      // When the field is empty, the placeholder can wrap to several lines on
+      // narrow screens. scrollHeight ignores the placeholder, so measure it by
+      // temporarily mirroring the placeholder text — this keeps the hint fully
+      // visible (responsive) instead of clipping it. Done synchronously before
+      // paint, so it does not flicker or fight React's controlled value.
+      let measuredHeight = el.scrollHeight;
+      if (el.value === "" && el.placeholder) {
+        el.value = el.placeholder;
+        measuredHeight = Math.max(measuredHeight, el.scrollHeight);
+        el.value = "";
+      }
       const contentHeight = Math.min(
-        Math.max(el.scrollHeight, minHeight),
+        Math.max(measuredHeight, minHeight),
         maxHeight,
       );
       el.style.height = `${contentHeight}px`;
     }, [minRows, maxRows]);
 
-    // Resize on value change (controlled mode)
+    // Resize on value / placeholder change (controlled mode) and on mount
     useEffect(() => {
       resize();
-    }, [value, resize]);
+    }, [value, placeholder, resize]);
 
-    // Resize on mount
+    // Re-measure when the viewport width changes (resize / orientation change)
+    // so a wrapping placeholder stays fully visible across screen sizes.
     useEffect(() => {
-      resize();
+      window.addEventListener("resize", resize);
+      return () => window.removeEventListener("resize", resize);
     }, [resize]);
 
     const charCount =
@@ -90,6 +104,7 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
         <textarea
           ref={innerRef}
           value={value}
+          placeholder={placeholder}
           onChange={(e) => {
             onChange?.(e);
             // Resize after React processes the change
