@@ -1,9 +1,11 @@
 "use client";
 
-import { QrCode, Search, Trash2, Users } from "lucide-react";
+import { Loader2, QrCode, Search, Trash2, Users } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
+import { createDmRoomAction } from "@/features/team-chat/actions";
 import {
   type ExchangedContact,
   listContacts,
@@ -32,8 +34,6 @@ type FriendRow = {
 };
 
 interface Props {
-  /** 指定すると各行が `${linkBase}/${id}` の詳細ページへのリンクになる。 */
-  linkBase?: string;
   /** 件数ヘッダーと検索ボックスを表示する。 */
   searchable?: boolean;
   /**
@@ -53,16 +53,16 @@ interface Props {
  * 友達一覧。QR で交換した連絡先（localStorage）と、チャットで会話できる相手を
  * 合流させて表示する。localStorage の変化 (追加 / 削除 / 他タブ) を購読して
  * 即時反映する。
+ *
+ * 友達をタップすると、その人との 1on1 チャットへ遷移する。DM ルームは
+ * find-or-create（createDmRoomAction）なので、個人との 1on1 は常に 1 つだけ。
  */
-export function ContactList({
-  linkBase,
-  searchable,
-  onAdd,
-  chatFriends,
-}: Props) {
+export function ContactList({ searchable, onAdd, chatFriends }: Props) {
   const [contacts, setContacts] = useState<ExchangedContact[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [query, setQuery] = useState("");
+  const router = useRouter();
+  const [opening, startOpening] = useTransition();
 
   useEffect(() => {
     const refresh = () => setContacts(listContacts());
@@ -70,6 +70,14 @@ export function ContactList({
     setLoaded(true);
     return subscribeContacts(refresh);
   }, []);
+
+  // 友達 = その人との 1on1 チャット。既存 DM があればそこへ、無ければ作って遷移。
+  const openChat = (friendId: string) => {
+    startOpening(async () => {
+      const roomId = await createDmRoomAction(friendId);
+      if (roomId) router.push(`/cast/chat/${roomId}`);
+    });
+  };
 
   // 交換済み連絡先とチャット相手を ID で統合する。交換済みを優先（削除可・
   // 詳細ページあり）し、未交換のチャット相手だけを末尾に足す。
@@ -141,6 +149,23 @@ export function ContactList({
 
   return (
     <div className="space-y-3">
+      {/* トークルーム準備中オーバーレイ — 遷移完了まで表示する */}
+      {opening && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/40 backdrop-blur-sm animate-fade-in"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="flex flex-col items-center gap-3 rounded-[24px] bg-pearl-warm px-9 py-7 shadow-warm">
+            <Loader2 size={28} className="text-gold-deep animate-spin" />
+            <p className="text-body-sm font-medium text-ink">
+              トークルームを準備しています…
+            </p>
+            <p className="text-label-sm text-ink-mute">まもなく開きます</p>
+          </div>
+        </div>
+      )}
+
       {searchable && (
         <>
           <p className="text-label-sm text-ink-soft tracking-[0.06em]">
@@ -169,7 +194,11 @@ export function ContactList({
               key={c.id}
               className="flex items-center gap-3 rounded-card border border-ink/[0.08] bg-pearl-light/85 backdrop-blur-md shadow-soft px-4 py-3"
             >
-              <ContactRowMain row={c} linkBase={linkBase} />
+              <ContactRowMain
+                row={c}
+                onOpen={() => openChat(c.id)}
+                disabled={opening}
+              />
               {/* チャット由来の相手は「友達から外す」概念がないので削除は出さない */}
               {c.source === "exchanged" && (
                 <button
@@ -191,18 +220,29 @@ export function ContactList({
 
 function ContactRowMain({
   row: c,
-  linkBase,
+  onOpen,
+  disabled,
 }: {
   row: FriendRow;
-  linkBase?: string;
+  /** タップでその人との 1on1 チャットを開く。 */
+  onOpen: () => void;
+  disabled?: boolean;
 }) {
   const meta =
     c.source === "exchanged"
       ? `${[c.role, c.store].filter(Boolean).join(" · ") || "連絡先"}・${formatDate(c.exchangedAt ?? "")}`
       : [c.role, "チャットの相手"].filter(Boolean).join(" · ");
 
-  const inner = (
-    <>
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      disabled={disabled}
+      aria-label={`${c.name} とのチャットを開く`}
+      className={cn(
+        "flex items-center gap-3 min-w-0 flex-1 rounded-card -m-1 p-1 text-left transition hover:bg-pearl-soft/60 disabled:opacity-60",
+      )}
+    >
       <div className="w-11 h-11 shrink-0 rounded-full bg-wine-deep/10 border border-wine-deep/15 flex items-center justify-center">
         <span className="font-serif text-[18px] text-wine-deep">
           {c.name.trim().charAt(0) || "?"}
@@ -212,25 +252,8 @@ function ContactRowMain({
         <p className="truncate font-medium text-body-md text-ink">{c.name}</p>
         <p className="truncate text-[11px] text-ink-soft">{meta}</p>
       </div>
-    </>
+    </button>
   );
-
-  const cls = "flex items-center gap-3 min-w-0 flex-1";
-
-  // 詳細ページ (ContactDetail) は localStorage の交換済み連絡先のみ解決できる。
-  // チャット由来の相手はリンクにしない（詳細にデータがなく "見つかりません"
-  // になるため）。
-  if (linkBase && c.source === "exchanged") {
-    return (
-      <Link
-        href={`${linkBase}/${encodeURIComponent(c.id)}`}
-        className={cn(cls, "rounded-card -m-1 p-1 hover:bg-pearl-soft/60 transition")}
-      >
-        {inner}
-      </Link>
-    );
-  }
-  return <div className={cls}>{inner}</div>;
 }
 
 function formatDate(iso: string): string {

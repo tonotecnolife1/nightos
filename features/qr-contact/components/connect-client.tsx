@@ -91,7 +91,7 @@ export function ConnectClient({
         ))}
 
       {tab === "contacts" && (
-        <ContactList linkBase="/cast/connect/contacts" searchable />
+        <ContactList searchable />
       )}
     </div>
   );

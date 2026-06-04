@@ -41,12 +41,7 @@ export function FriendsTab({ onExchange, chatFriends }: Props) {
         <UserPlus size={16} className="shrink-0 text-gold-deep" />
       </button>
 
-      <ContactList
-        linkBase="/cast/connect/contacts"
-        searchable
-        onAdd={onExchange}
-        chatFriends={chatFriends}
-      />
+      <ContactList searchable onAdd={onExchange} chatFriends={chatFriends} />
     </div>
   );
 }
