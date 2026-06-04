@@ -2,10 +2,13 @@
 
 import { QrCode, UserPlus } from "lucide-react";
 import { ContactList } from "@/features/qr-contact/components/contact-list";
+import type { ChatFriend } from "../lib/chat-friends";
 
 interface Props {
   /** 連絡先交換シートを開く。マイQR タブから開始する。 */
   onExchange: () => void;
+  /** チャットで会話できる相手。QR 交換していなくても友達一覧に並べる。 */
+  chatFriends: ChatFriend[];
 }
 
 /**
@@ -15,7 +18,7 @@ interface Props {
  * 先頭の「連絡先交換」から QR でのやりとり（マイQR / 読み取り）を、
  * チャットページ内の全画面シートとして開く。
  */
-export function FriendsTab({ onExchange }: Props) {
+export function FriendsTab({ onExchange, chatFriends }: Props) {
   return (
     <div className="px-4 pt-3 pb-8">
       {/* 連絡先交換への導線 — 友達一覧の先頭に常設する */}
@@ -42,6 +45,7 @@ export function FriendsTab({ onExchange }: Props) {
         linkBase="/cast/connect/contacts"
         searchable
         onAdd={onExchange}
+        chatFriends={chatFriends}
       />
     </div>
   );
