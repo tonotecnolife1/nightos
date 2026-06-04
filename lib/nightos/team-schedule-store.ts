@@ -10,6 +10,32 @@ import type { ShiftEntry } from "./schedule-store";
 /** 表示レイヤーの ON/OFF を記憶する localStorage キー。 */
 export const TEAM_CAL_VISIBLE_KEY = "nightos.team-cal-visible.v1";
 
+/** 最後に選んだビュー (月/週/4日/日) を記憶する localStorage キー。 */
+export const TEAM_CAL_VIEW_KEY = "nightos.team-cal-view.v1";
+
+/** カレンダーの表示単位。 */
+export type TeamCalView = "month" | "week" | "four" | "day";
+
+export function loadCalView(): TeamCalView | null {
+  if (!isBrowser()) return null;
+  try {
+    const raw = localStorage.getItem(TEAM_CAL_VIEW_KEY);
+    if (raw === "month" || raw === "week" || raw === "four" || raw === "day") {
+      return raw;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveCalView(view: TeamCalView): void {
+  if (!isBrowser()) return;
+  try {
+    localStorage.setItem(TEAM_CAL_VIEW_KEY, view);
+  } catch {}
+}
+
 /** 「自分」(マネージャー本人) レイヤーの色 = bordeaux / wine-deep。最も濃く強調する。 */
 export const OWN_LAYER_COLOR = "#5e3838";
 
@@ -74,31 +100,44 @@ function pad2(n: number): string {
   return String(n).padStart(2, "0");
 }
 
+function ymd(d: Date): string {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+
 /**
- * 配下キャストの出勤シフト (mock)。指定した年月ぶんを deterministically に生成する。
+ * 配下キャストが指定日に出勤しているか (mock)。出勤なら ShiftEntry、休みなら null。
+ * 曜日パターン + キャスト毎の開始時刻を deterministically に決める。
  * 実 DB 連携時はここを per-cast の schedule クエリに差し替える。
+ */
+export function getMockShiftForCastDate(
+  castId: string,
+  dateObj: Date,
+): ShiftEntry | null {
+  const h = hashStr(castId);
+  const pattern = SHIFT_PATTERNS[h % SHIFT_PATTERNS.length];
+  if (!pattern.includes(dateObj.getDay())) return null;
+  const startHour = 19 + (h % 3); // 19:00 / 20:00 / 21:00
+  return {
+    date: ymd(dateObj),
+    status: "working",
+    startTime: `${pad2(startHour)}:00`,
+    endTime: "01:00",
+  };
+}
+
+/**
+ * 配下キャストの出勤シフト (mock)。指定した年月ぶんをまとめて返す。
  */
 export function getMockShiftsForCast(
   castId: string,
   year: number,
   month: number, // 0-indexed
 ): ShiftEntry[] {
-  const h = hashStr(castId);
-  const pattern = SHIFT_PATTERNS[h % SHIFT_PATTERNS.length];
-  const startHour = 19 + (h % 3); // 19:00 / 20:00 / 21:00
-  const start = `${pad2(startHour)}:00`;
   const lastDay = new Date(year, month + 1, 0).getDate();
   const out: ShiftEntry[] = [];
   for (let d = 1; d <= lastDay; d++) {
-    const dow = new Date(year, month, d).getDay();
-    if (pattern.includes(dow)) {
-      out.push({
-        date: `${year}-${pad2(month + 1)}-${pad2(d)}`,
-        status: "working",
-        startTime: start,
-        endTime: "01:00",
-      });
-    }
+    const shift = getMockShiftForCastDate(castId, new Date(year, month, d));
+    if (shift) out.push(shift);
   }
   return out;
 }
