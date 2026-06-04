@@ -52,6 +52,7 @@ export const ruriMamaSchema = z.object({
   hearingContext: z.record(z.string(), z.string().max(200)).optional(),
   castId,
   intent: z.enum(["follow", "serving", "strategy", "freeform"]),
+  venueType: z.enum(["club", "cabaret"]).optional(),
   refineStep: z.enum(["apply"]).optional(),
   previousReply: z.string().max(20_000).optional(),
   refinementDirection: z.string().max(500).optional(),

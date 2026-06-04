@@ -436,6 +436,12 @@ export interface RuriMamaRequest {
     notHelpful: string[];
   };
   /**
+   * 店舗の業態。指名制 (cabaret) か担当制 (club) かでアドバイスの前提が
+   * 変わるため、さくらママのシステムプロンプトに業態コンテキストを足す。
+   * 未指定の場合は業態コンテキストを付与しない（後方互換）。
+   */
+  venueType?: VenueType;
+  /**
    * ブラッシュアップフロー制御
    * - undefined: 通常（最初のアドバイス）
    * - "apply": 既存回答を指定方向でブラッシュアップ

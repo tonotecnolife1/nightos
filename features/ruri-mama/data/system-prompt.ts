@@ -1,3 +1,4 @@
+import type { VenueType } from "@/lib/nightos/constants";
 import type { HearingFlow, Intent } from "@/types/nightos";
 
 // Re-export so API route has a single import path.
@@ -174,71 +175,98 @@ export const SAKURA_MAMA_SYSTEM_PROMPT = `あなたは「さくらママ」で�
 機嫌悪い時に「どうしました？」は地雷。でも時間が経てば落ち着く。そこで相手の好きな話題を自然に出す。犬の話は「仕事以外の自分を見てくれている」と感じさせる最強の切り口よ。
 `;
 
-export const HEARING_FLOWS: Record<Intent, HearingFlow> = {
-  follow: {
-    intent: "follow",
-    label: "お客様への連絡の相談",
-    steps: [
-      {
-        id: "purpose",
-        question: "どんな連絡をしたい？",
-        options: ["来店のお礼", "お誘い・同伴", "お祝い・記念日", "ご無沙汰の挨拶", "その他"],
-      },
-      {
-        id: "relationship",
-        question: "その方との今の関係は？",
-        options: ["来たばかりの新規", "育てたい常連候補", "通ってくれる常連", "VIP・太客", "しばらく来てない"],
-      },
-      {
-        id: "hook",
-        question: "前回つかんだ話のネタは？（1つあると刺さるLINEになるわよ）",
-        options: ["仕事の話", "趣味・遊び", "お酒・グルメ", "家族・プライベート", "特になし"],
-      },
-    ],
-  },
-  serving: {
-    intent: "serving",
-    label: "接客中の相談（急ぎ）",
-    steps: [
-      {
-        id: "situation",
-        question: "今の状況は？",
-        options: [
-          "会話が続かない",
-          "ボトル提案したい",
-          "指名につなげたい",
-          "機嫌が悪い",
-        ],
-      },
-    ],
-  },
-  strategy: {
-    intent: "strategy",
-    label: "営業戦略の相談",
-    steps: [
-      {
-        id: "period",
-        question: "いつ頃から？",
-        options: ["1〜2週間", "1ヶ月", "ずっと"],
-      },
-      {
-        id: "cause",
-        question: "心当たりは？",
-        options: ["新規来ない", "指名化できない", "常連離れ", "わからない"],
-      },
-      {
-        id: "frequency",
-        question: "連絡の頻度は？",
-        options: ["毎日", "週数回", "ほぼしてない"],
-      },
-    ],
-  },
-  freeform: {
-    intent: "freeform",
-    label: "自由相談",
-    steps: [],
-  },
-};
+/**
+ * 業態でヒアリング選択肢を出し分ける。
+ *
+ * 接客の根幹が業態で違うため、同じ質問を出すと違和感が生まれる:
+ *  - cabaret（キャバクラ）: 指名制。フリー客 → 本指名への転換が売上の根幹
+ *  - club（クラブ）:        担当制。指名制度はなく、同伴と継続来店
+ *                          （担当として通い続けてもらうこと）が根幹
+ *
+ * そのため「指名につなげたい」「指名化できない」のような指名前提の質問は
+ * club では出さず、担当制に沿った言い回しに置き換える。
+ */
+export function getHearingFlows(venueType: VenueType): Record<Intent, HearingFlow> {
+  const isClub = venueType === "club";
+  return {
+    follow: {
+      intent: "follow",
+      label: "お客様への連絡の相談",
+      steps: [
+        {
+          id: "purpose",
+          question: "どんな連絡をしたい？",
+          options: ["来店のお礼", "お誘い・同伴", "お祝い・記念日", "ご無沙汰の挨拶", "その他"],
+        },
+        {
+          id: "relationship",
+          question: "その方との今の関係は？",
+          options: ["来たばかりの新規", "育てたい常連候補", "通ってくれる常連", "VIP・太客", "しばらく来てない"],
+        },
+        {
+          id: "hook",
+          question: "前回つかんだ話のネタは？（1つあると刺さるLINEになるわよ）",
+          options: ["仕事の話", "趣味・遊び", "お酒・グルメ", "家族・プライベート", "特になし"],
+        },
+      ],
+    },
+    serving: {
+      intent: "serving",
+      label: "接客中の相談（急ぎ）",
+      steps: [
+        {
+          id: "situation",
+          question: "今の状況は？",
+          options: [
+            "会話が続かない",
+            "ボトル提案したい",
+            // 指名制 → 指名へ / 担当制 → 担当（次の来店）へ
+            isClub ? "また来てほしい" : "指名につなげたい",
+            "機嫌が悪い",
+          ],
+        },
+      ],
+    },
+    strategy: {
+      intent: "strategy",
+      label: "営業戦略の相談",
+      steps: [
+        {
+          id: "period",
+          question: "いつ頃から？",
+          options: ["1〜2週間", "1ヶ月", "ずっと"],
+        },
+        {
+          id: "cause",
+          question: "心当たりは？",
+          options: [
+            "新規来ない",
+            // 指名制 → 指名化できない / 担当制 → 担当客が増えない
+            isClub ? "担当客が増えない" : "指名化できない",
+            "常連離れ",
+            "わからない",
+          ],
+        },
+        {
+          id: "frequency",
+          question: "連絡の頻度は？",
+          options: ["毎日", "週数回", "ほぼしてない"],
+        },
+      ],
+    },
+    freeform: {
+      intent: "freeform",
+      label: "自由相談",
+      steps: [],
+    },
+  };
+}
+
+/**
+ * @deprecated 業態を考慮しない club 既定のフロー。
+ * 業態に沿った質問にするには `getHearingFlows(venueType)` を使うこと。
+ */
+export const HEARING_FLOWS: Record<Intent, HearingFlow> = getHearingFlows("club");
 
 /** @deprecated Use SAKURA_MAMA_SYSTEM_PROMPT */
 export const RURI_MAMA_SYSTEM_PROMPT = SAKURA_MAMA_SYSTEM_PROMPT;
