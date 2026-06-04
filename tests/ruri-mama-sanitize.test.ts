@@ -73,6 +73,29 @@ describe("sanitizeStoredMessages", () => {
     expect(out[0].options).toEqual(options);
   });
 
+  it("文脈情報（genIntent / genHearing / templateSeedId）を保持する", () => {
+    const out = sanitizeStoredMessages([
+      {
+        role: "assistant",
+        content: "案です",
+        genIntent: "follow",
+        genHearing: { purpose: "来店のお礼", extra: 5 },
+        templateSeedId: "custom_abc",
+      },
+    ]);
+    expect(out[0].genIntent).toBe("follow");
+    // 文字列値だけ残し、非文字列値は落とす
+    expect(out[0].genHearing).toEqual({ purpose: "来店のお礼" });
+    expect(out[0].templateSeedId).toBe("custom_abc");
+  });
+
+  it("不正な genIntent は落とす", () => {
+    const out = sanitizeStoredMessages([
+      { role: "assistant", content: "x", genIntent: "bogus" },
+    ]);
+    expect(out[0].genIntent).toBeUndefined();
+  });
+
   it("壊れた options は外す（2件未満や不正な形）", () => {
     const out = sanitizeStoredMessages([
       {

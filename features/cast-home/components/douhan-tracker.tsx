@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
+  Loader2,
   Plus,
   Trash2,
   X,
@@ -107,7 +108,25 @@ export function DouhanTracker({ customers, monthlyGoal = 8 }: Props) {
   const customerNameById = new Map(customers.map((c) => [c.id, c.name]));
   const getCustomerName = (id: string) => customerNameById.get(id) ?? "不明";
 
-  if (!loaded) return null;
+  // localStorage は初回マウント後にしか読めないため、読み込み完了までは
+  // 「予定なし」ではなく読み込み中であることが分かる表示を出す。
+  // （予定があるのに一瞬「未登録」に見えてドキッとするのを防ぐ）
+  if (!loaded) {
+    return (
+      <section className="space-y-2.5">
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-display-sm text-ink flex items-center gap-1.5">
+            <CalendarCheck size={16} className="text-gold" />
+            同伴
+          </h2>
+        </div>
+        <Card className="p-4 flex items-center justify-center gap-2 text-ink-muted text-body-sm">
+          <Loader2 size={14} className="animate-spin" />
+          予定を読み込み中…
+        </Card>
+      </section>
+    );
+  }
 
   return (
     <section className="space-y-2.5">

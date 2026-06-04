@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>さくらママ × マイテンプレ — UI プレビュー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Serif+JP:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pearl:#faf7f2; --pearl-light:#fdfcf9; --pearl-warm:#f4e9dc; --pearl-soft:#f5efe6; --pearl-deep:#e8dccb;
+    --ink:#2b232a; --ink-soft:#6b5a58; --ink-mute:#a89a96;
+    --champagne-soft:#f5e8d2; --champagne:#e6cda5; --champagne-deep:#bf9d6e;
+    --gold:#b89455; --gold-deep:#876c3e; --gold-soft:#e0c896;
+    --wine:#9a5d5d; --wine-deep:#5e3838;
+    --success:#7a9477; --warning:#c8a063;
+    --page-bg:linear-gradient(180deg,#f3eadb 0%,#efe5d4 100%);
+    --shadow-warm:0 8px 24px rgba(94,56,56,.14),0 24px 48px rgba(140,111,68,.10);
+    --shadow-soft:0 2px 10px rgba(94,56,56,.08);
+    --shadow-luxe:0 8px 20px rgba(45,24,24,.45),0 24px 48px rgba(20,10,10,.30);
+    --gold-metallic:linear-gradient(135deg,#e8d0a0 0%,#c8a672 50%,#8c6f44 100%);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:#3a3338;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+    color:var(--ink);padding:34px 16px 60px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+  .intro{color:#e9e0d4;max-width:760px;margin:0 auto 28px;text-align:center}
+  .intro h1{font-family:"Noto Serif JP",serif;font-weight:700;font-size:20px;letter-spacing:.06em;margin:0 0 8px}
+  .intro p{font-size:13px;line-height:1.8;color:#c9bdb0;margin:0}
+  .stage{display:flex;gap:30px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .col{display:flex;flex-direction:column;align-items:center;gap:12px}
+  .col-cap{color:#d8ccbe;font-size:12px;letter-spacing:.12em;font-weight:600}
+  .col-cap b{color:#EBD9A8}
+
+  /* phone frame */
+  .phone{width:375px;background:var(--page-bg);border-radius:26px;overflow:hidden;
+    box-shadow:0 18px 50px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.06)}
+  .phone-scroll{height:720px;overflow-y:auto}
+  .phone-scroll::-webkit-scrollbar{width:0}
+
+  /* plan strip + header */
+  .plan{background:var(--pearl-warm);color:var(--gold-deep);font-size:10.5px;text-align:center;padding:6px;letter-spacing:.04em;border-bottom:1px solid var(--pearl-deep)}
+  .hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--pearl-warm)}
+  .hdr .back{color:var(--ink-soft);font-size:20px}
+  .ava{width:38px;height:38px;border-radius:50%;object-fit:cover;background:
+    radial-gradient(circle at 35% 30%,#e9c9a8,#b98a63);border:1px solid rgba(255,255,255,.5)}
+  .hdr h2{font-family:"Noto Serif JP",serif;margin:0;font-size:17px;font-weight:700;color:#3a2424}
+  .hdr .sub{font-size:10.5px;color:var(--ink-soft)}
+  .hdr .menu{margin-left:auto;width:34px;height:34px;border-radius:50%;background:var(--pearl);display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+
+  /* customer pill */
+  .pill-row{position:sticky;top:0;background:rgba(243,234,219,.95);backdrop-filter:blur(6px);
+    padding:8px 14px;border-bottom:1px solid var(--pearl-soft);display:flex;gap:8px;align-items:center}
+  .pill-row .ic{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+  .pill{flex:1;display:flex;align-items:center;gap:8px;border:1px solid var(--gold-soft);background:var(--pearl-light);
+    border-radius:999px;padding:7px 12px;font-size:12.5px;color:var(--ink)}
+  .pill .who{color:var(--ink-mute)}
+  .pill .x{margin-left:auto;color:var(--ink-mute)}
+
+  .body{padding:14px}
+  .stack{display:flex;flex-direction:column;gap:12px}
+
+  /* bubbles */
+  .row{display:flex;gap:8px;align-items:flex-start}
+  .row.me{justify-content:flex-end}
+  .bub{max-width:255px;border-radius:16px;padding:10px 13px;font-size:12.5px;line-height:1.7}
+  .bub.ai{background:var(--pearl-light);border:1px solid var(--gold-soft);border-top-left-radius:5px;box-shadow:var(--shadow-soft)}
+  .bub.me{background:var(--wine-deep);color:var(--pearl-light);border-top-right-radius:5px}
+  .mini-ava{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e9c9a8,#b98a63);flex:none}
+
+  /* eyebrow */
+  .eyebrow{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--gold-deep);font-weight:600}
+
+  /* template reference strip */
+  .ref{border:1px solid rgba(184,148,85,.35);background:rgba(244,233,220,.5);border-radius:16px;padding:11px 12px}
+  .ref .rows{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+  .trow{background:var(--pearl-light);border:1px solid rgba(184,148,85,.25);border-radius:11px;padding:9px 10px}
+  .trow .top{display:flex;align-items:center;gap:8px}
+  .trow .lbl{flex:1;font-size:12.5px;font-weight:600;color:var(--wine-deep)}
+  .copy{flex:none;display:inline-flex;align-items:center;gap:4px;height:27px;padding:0 10px;border-radius:999px;
+    font-size:11px;font-weight:600;border:1px solid rgba(184,148,85,.4);background:rgba(245,232,210,.7);color:var(--wine-deep)}
+  .trow .filled{margin-top:7px;font-size:12px;line-height:1.7;color:var(--ink-soft)}
+  .seedlink{margin-top:7px;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--gold-deep)}
+
+  /* option cards */
+  .opt-head{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-mute);padding:0 2px}
+  .cards{display:flex;gap:11px;overflow-x:auto;padding-bottom:6px}
+  .card{flex:none;width:235px;border-radius:16px;background:var(--pearl-light);border:1px solid rgba(184,148,85,.25);box-shadow:var(--shadow-soft)}
+  .card.hi{border-color:rgba(184,148,85,.6);box-shadow:var(--shadow-warm)}
+  .card .ch{display:flex;align-items:center;gap:6px;padding:9px 12px 5px;font-size:12.5px;font-weight:700}
+  .card .ch .tag{font-size:10px;font-weight:500;color:var(--ink-mute)}
+  .c-safe{color:var(--wine-deep)} .c-prac{color:var(--gold-deep)} .c-warm{color:var(--gold-deep)}
+  .badge{font-size:9.5px;font-weight:700;color:#fff;background:var(--gold-deep);border-radius:999px;padding:2px 7px;margin-left:auto}
+  .send-cap{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--ink-mute);padding:0 12px}
+  .msgbox{margin:4px 12px 0;background:rgba(245,232,210,.6);border:1px solid rgba(184,148,85,.2);border-radius:9px;
+    padding:9px 11px;font-size:12px;line-height:1.7;color:var(--ink)}
+  .btn-copy{margin:8px 12px 0;width:calc(100% - 24px);height:34px;border-radius:999px;border:1px solid rgba(184,148,85,.3);
+    background:rgba(245,232,210,.7);color:var(--wine-deep);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
+  .why{margin:6px 12px 0;font-size:11px;color:var(--gold-deep);display:flex;align-items:center;gap:4px}
+  .btn-use{margin:9px 12px 12px;width:calc(100% - 24px);height:34px;border-radius:999px;background:var(--wine-deep);color:var(--pearl-light);
+    font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-warm)}
+
+  /* picked + action row */
+  .picked-card{border:1px solid rgba(184,148,85,.6);box-shadow:var(--shadow-warm);border-radius:16px;background:var(--pearl-light)}
+  .picked-card .ch{justify-content:space-between}
+  .done{font-size:10px;font-weight:600;color:var(--gold-deep)}
+  .btn-copy-strong{margin:8px 12px 12px;width:calc(100% - 24px);height:38px;border-radius:999px;background:var(--wine-deep);color:var(--pearl-light);
+    font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--shadow-warm)}
+  .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .fbtn{width:32px;height:32px;border-radius:999px;border:1px solid var(--pearl-deep);background:var(--pearl-light);display:flex;align-items:center;justify-content:center;color:var(--ink-mute);font-size:13px}
+  .chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;font-size:11px;font-weight:600}
+  .chip.ghost{border:1px solid rgba(184,148,85,.3);background:rgba(245,232,210,.6);color:var(--gold-deep)}
+  .chip.solid{border:1px solid rgba(184,148,85,.4);background:var(--wine-deep);color:var(--pearl-light)}
+  .chip.soft{border:1px solid rgba(184,148,85,.3);background:rgba(245,232,210,.6);color:var(--wine-deep)}
+  .nudge{font-size:11px;color:var(--ink-mute);font-style:italic;width:100%}
+
+  /* save sheet */
+  .sheet{border:1px solid rgba(184,148,85,.25);background:rgba(244,233,220,.5);border-radius:16px;padding:13px}
+  .sheet .sh{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--wine-deep)}
+  .sheet label{display:block;font-size:11px;color:var(--ink-soft);margin:11px 0 5px}
+  .sheet textarea{width:100%;border:1px solid var(--pearl-deep);background:var(--pearl-light);border-radius:9px;
+    padding:9px 11px;font-size:12.5px;line-height:1.7;color:var(--ink);resize:none;font-family:inherit}
+  .sheet .hint{margin-top:7px;font-size:10px;color:var(--ink-mute);line-height:1.6}
+  .sheet .save{margin-top:11px;margin-left:auto;display:flex}
+  .btn-save{height:36px;padding:0 22px;border-radius:999px;background:var(--wine-deep);color:var(--pearl-light);font-size:12px;font-weight:700;
+    display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow-luxe);border:none}
+
+  /* footer input */
+  .input{display:flex;align-items:center;gap:8px;padding:11px 14px;border-top:1px solid var(--pearl-soft);background:var(--pearl-warm)}
+  .input .box{flex:1;height:38px;border-radius:999px;background:var(--pearl-light);border:1px solid var(--pearl-deep);display:flex;align-items:center;padding:0 14px;color:var(--ink-mute);font-size:12.5px}
+  .input .snd{width:38px;height:38px;border-radius:50%;background:var(--champagne);display:flex;align-items:center;justify-content:center;color:#7a5a2a}
+
+  .legend{margin-top:18px;color:#cfc3b5;font-size:11.5px;line-height:1.9;max-width:340px}
+  .legend b{color:#EBD9A8}
+  svg{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <h1>さくらママ × マイテンプレ 連携 UI</h1>
+    <p>相談の中で「あなたのテンプレ」を参照し（溶かす＋見せる）、採用した文面をマイテンプレに保存・更新して育てる流れのプレビューです。左：参照と3案／右：採用後の保存・更新と編集シート。</p>
+  </div>
+
+  <div class="stage">
+
+    <!-- ░░░ COLUMN 1: reference + 3 options ░░░ -->
+    <div class="col">
+      <div class="col-cap">① 参照 <b>—</b> あなたのテンプレを土台に3案</div>
+      <div class="phone"><div class="phone-scroll">
+        <div class="plan">⚜ 無制限プラン（無料）・2026年8月31日まで</div>
+        <div class="hdr">
+          <span class="back">‹</span>
+          <span class="ava"></span>
+          <div><h2>さくらママ</h2><div class="sub">銀座30年の経験者</div></div>
+          <span class="menu">≡</span>
+        </div>
+        <div class="pill-row">
+          <span class="ic">▤</span>
+          <div class="pill"><span class="who">相談相手</span> 阿部 大輔さま <span class="x">✕ ⌄</span></div>
+        </div>
+
+        <div class="body"><div class="stack">
+          <div class="row">
+            <span class="mini-ava"></span>
+            <div class="bub ai">阿部さま向けの「来店のお礼」、3つ用意したわ。あなたの型もすぐ下に出してるから、ベースにしてもいいわよ。</div>
+          </div>
+
+          <!-- reference strip -->
+          <div class="ref">
+            <div class="eyebrow">📁 あなたのテンプレも参考にできます</div>
+            <div class="rows">
+              <div class="trow">
+                <div class="top">
+                  <span class="lbl">常連お礼（軽め）</span>
+                  <span class="copy">⧉ コピー</span>
+                </div>
+                <div class="filled">阿部さま、昨日はありがとうございました🌸 ゴルフのお話、本当に楽しかった。また近いうちにお顔見せてくださいね😊</div>
+                <span class="seedlink">✦ この型でさくらママに整えてもらう</span>
+              </div>
+              <div class="trow">
+                <div class="top">
+                  <span class="lbl">VIP向け 丁寧お礼</span>
+                  <span class="copy">⧉ コピー</span>
+                </div>
+                <span class="seedlink">✦ この型でさくらママに整えてもらう</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 options -->
+          <div class="opt-head">✦ 3つの文面から選んでください</div>
+          <div class="cards">
+            <div class="card">
+              <div class="ch c-safe">♥ パターンA <span class="tag">· 丁寧に寄り添う</span></div>
+              <div class="send-cap">❝ 送る文面</div>
+              <div class="msgbox">阿部さま、先日はありがとうございました🌸 ゴルフのお話、お伺いできて嬉しかったです。また続きを聞かせてくださいね。</div>
+              <div class="btn-copy">⧉ 文面をコピー</div>
+              <div class="why">⌄ なぜ効く？解説を見る</div>
+              <div class="btn-use">この文面を使う</div>
+            </div>
+
+            <div class="card hi">
+              <div class="ch c-prac">⚡ パターンB <span class="tag">· 常連お礼（あなたの型）</span><span class="badge">あなたの型</span></div>
+              <div class="send-cap">❝ 送る文面</div>
+              <div class="msgbox">阿部さま、昨日はお疲れさまでした。ゴルフの続き、次にお話しするの楽しみにしてます。山崎12年も残り6杯、お待ちしてますね😊</div>
+              <div class="btn-copy">⧉ 文面をコピー</div>
+              <div class="why">⌄ なぜ効く？解説を見る</div>
+              <div class="btn-use">この文面を使う</div>
+            </div>
+
+            <div class="card">
+              <div class="ch c-warm">✦ パターンC <span class="tag">· 温かみと遊び心</span></div>
+              <div class="send-cap">❝ 送る文面</div>
+              <div class="msgbox">阿部さま、昨日は私ずっと笑ってしまって、今朝ちょっと頬が痛いくらいです🌸 また元気をいただきに、お顔見せてくださいね。</div>
+              <div class="btn-copy">⧉ 文面をコピー</div>
+              <div class="why">⌄ なぜ効く？解説を見る</div>
+              <div class="btn-use">この文面を使う</div>
+            </div>
+          </div>
+        </div></div>
+
+        <div class="input">
+          <div class="box">続けて相談…</div>
+          <div class="snd">➤</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ░░░ COLUMN 2: picked + save/update ░░░ -->
+    <div class="col">
+      <div class="col-cap">② 採用後 <b>—</b> 保存して育てる</div>
+      <div class="phone"><div class="phone-scroll">
+        <div class="plan">⚜ 無制限プラン（無料）・2026年8月31日まで</div>
+        <div class="hdr">
+          <span class="back">‹</span>
+          <span class="ava"></span>
+          <div><h2>さくらママ</h2><div class="sub">銀座30年の経験者</div></div>
+          <span class="menu">≡</span>
+        </div>
+        <div class="pill-row">
+          <span class="ic">▤</span>
+          <div class="pill"><span class="who">相談相手</span> 阿部 大輔さま <span class="x">✕ ⌄</span></div>
+        </div>
+
+        <div class="body"><div class="stack">
+
+          <!-- picked card -->
+          <div class="picked-card">
+            <div class="ch c-prac" style="padding:9px 12px 5px">
+              <span>✓ パターンB <span class="tag">· 常連お礼（あなたの型）</span></span>
+              <span class="done">選択済み</span>
+            </div>
+            <div class="send-cap">❝ 送る文面</div>
+            <div class="msgbox">阿部さま、昨日はお疲れさまでした。ゴルフの続き、次にお話しするの楽しみにしてます。山崎12年も残り6杯、お待ちしてますね😊</div>
+            <div class="btn-copy-strong">⧉ 文面をコピー</div>
+          </div>
+
+          <!-- action row -->
+          <div class="actions">
+            <span class="fbtn">👍</span>
+            <span class="fbtn">👎</span>
+            <span class="chip ghost">✦ この文面をブラッシュアップする</span>
+            <span class="chip solid">↻ 「常連お礼（軽め）」を更新</span>
+            <span class="chip soft">🔖 新しく保存</span>
+          </div>
+
+          <!-- save sheet (update mode) -->
+          <div class="col-cap" style="color:#caa; align-self:flex-start; margin-top:4px; font-size:11px">▼ 「更新」を押すと展開</div>
+          <div class="sheet">
+            <div class="sh"><span>「常連お礼（軽め）」を更新</span><span style="color:var(--ink-mute)">✕</span></div>
+            <label>文面（{姓} {ボトル名} {前回の話題} が使えます）</label>
+            <textarea rows="4">{姓}さま、昨日はお疲れさまでした。{前回の話題}の続き、次にお話しするの楽しみにしてます。{ボトル名}も残り6杯、お待ちしてますね😊</textarea>
+            <div class="hint">このテンプレの文面を上書きします。タイトル・カテゴリは変わりません。ボトル名や前回の話題も {ボトル名} {前回の話題} に書き換えると、次から自動で差し込めます。</div>
+            <div class="save"><button class="btn-save">↻ 更新する</button></div>
+          </div>
+
+          <!-- nudge example -->
+          <div class="col-cap" style="color:#caa; align-self:flex-start; margin-top:4px; font-size:11px">▼ 自分の型がまだ無いカテゴリでは…</div>
+          <div class="actions">
+            <span class="nudge">気に入ったら保存→次から一瞬よ</span>
+            <span class="chip soft">🔖 マイテンプレに保存</span>
+          </div>
+
+          <div style="display:flex;justify-content:center;margin-top:6px">
+            <span class="chip soft" style="border-radius:999px">＋ 新しい相談を始める</span>
+          </div>
+        </div></div>
+
+        <div class="input">
+          <div class="box">続けて相談…</div>
+          <div class="snd">➤</div>
+        </div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <div class="legend" style="margin-left:auto;margin-right:auto">
+    <div><b>溶かす</b>：follow 相談時、該当カテゴリのマイテンプレを API に渡し、B案を「あなたの型」調整版に。</div>
+    <div><b>見せる</b>：3案の上に参照ストリップ。コピー／「この型で整えてもらう」で明示シード化。</div>
+    <div><b>育てる</b>：採用後に「○○を更新」or「新しく保存」。文面の顧客名は自動で {姓} に再テンプレ化。</div>
+    <div><b>ナッジ</b>：自分の型が0件のカテゴリだけ保存を促し、1件できると消える。</div>
+  </div>
+</div>
+</body>
+</html>

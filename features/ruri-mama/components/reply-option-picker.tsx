@@ -205,35 +205,29 @@ function OptionCard({
             送る文面
           </div>
         )}
-        {/* iPhone mini でもカード全体が画面に収まるよう、本文は小さめ (11px) +
-            行間も詰めて縦の高さを抑える */}
+        {/* 送る文面は実際にコピーして送る本文。通常のチャット文
+            （message-bubble の text-[12px]/leading-[1.7]）とサイズを揃え、
+            やり取りとパターン文面の文字サイズの段差をなくす */}
         <div
           className={cn(
-            "rounded-btn px-2.5 py-2 text-[11px] whitespace-pre-wrap leading-[1.5] text-ink",
+            "rounded-btn px-3 py-2 text-[12px] whitespace-pre-wrap leading-[1.7] text-ink",
             hasMessage ? "bg-champagne-soft/60 border border-gold/20" : "",
           )}
         >
           {primary.body}
         </div>
 
-        {/* 文面をコピー — LINE 等に貼り付けやすいよう本文のすぐ下に常設。
-            picked（確定後）は主役アクションとして全幅・濃色で大きく出す。 */}
-        {hasMessage && (
+        {/* 文面をコピー — 採用前は出さず、選択確定後（picked）に主役アクションとして
+            全幅・濃色で大きく出す。採用前は下部の「この文面を使う」1つに集中させる。 */}
+        {picked && hasMessage && (
           <button
             type="button"
             onClick={handleCopy}
             className={cn(
-              "mt-2 inline-flex items-center justify-center gap-1.5 rounded-full font-semibold transition-all active:scale-[0.98]",
-              picked
-                ? "w-full h-10 text-label-md"
-                : "w-full h-9 text-label-sm",
+              "mt-2 w-full h-10 inline-flex items-center justify-center gap-1.5 rounded-full text-label-md font-semibold transition-all active:scale-[0.98]",
               copied
                 ? "bg-success text-pearl-light shadow-soft"
-                : picked
-                  ? // 確定後は主役アクションとして濃色で大きく
-                    "bg-wine-deep text-pearl-light shadow-warm hover:opacity-90"
-                  : // 選択前は下部の「この文面を使う」と競合しないよう控えめに
-                    "bg-champagne-soft/70 text-wine-deep border border-gold/30 hover:bg-champagne-soft",
+                : "bg-wine-deep text-pearl-light shadow-warm hover:opacity-90",
             )}
           >
             {copied ? (
@@ -342,7 +336,7 @@ export function RefineTriggerButton({
       )}
     >
       <Wand2 size={11} />
-      この文面をブラッシュアップする
+      整える
     </button>
   );
 }

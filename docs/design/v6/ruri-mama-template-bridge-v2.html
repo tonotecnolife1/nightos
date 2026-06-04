@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>さくらママ × マイテンプレ — 簡略版 UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pearl:#faf7f2; --pearl-light:#fdfcf9; --pearl-warm:#f4e9dc; --pearl-soft:#f5efe6; --pearl-deep:#e8dccb;
+    --ink:#2b232a; --ink-soft:#6b5a58; --ink-mute:#a89a96;
+    --champagne-soft:#f5e8d2; --champagne:#e6cda5;
+    --gold:#b89455; --gold-deep:#876c3e; --gold-soft:#e0c896;
+    --wine-deep:#5e3838; --success:#7a9477;
+    --page-bg:linear-gradient(180deg,#f3eadb 0%,#efe5d4 100%);
+    --shadow-warm:0 8px 24px rgba(94,56,56,.14),0 24px 48px rgba(140,111,68,.10);
+    --shadow-soft:0 2px 10px rgba(94,56,56,.08);
+    --shadow-luxe:0 8px 20px rgba(45,24,24,.45),0 24px 48px rgba(20,10,10,.30);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#3a3338;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;color:var(--ink);padding:34px 16px 60px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto}
+  .intro{color:#e9e0d4;max-width:780px;margin:0 auto 26px;text-align:center}
+  .intro h1{font-family:"Noto Serif JP",serif;font-weight:700;font-size:20px;letter-spacing:.06em;margin:0 0 8px}
+  .intro p{font-size:13px;line-height:1.8;color:#c9bdb0;margin:0}
+  .stage{display:flex;gap:30px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .col{display:flex;flex-direction:column;align-items:center;gap:12px;max-width:375px}
+  .col-cap{color:#d8ccbe;font-size:12px;letter-spacing:.10em;font-weight:600;text-align:center}
+  .col-cap b{color:#EBD9A8}
+  .col-note{color:#b6a99b;font-size:11px;line-height:1.7;text-align:center}
+
+  .phone{width:375px;background:var(--page-bg);border-radius:26px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.06)}
+  .phone-scroll{max-height:680px;overflow-y:auto}
+  .phone-scroll::-webkit-scrollbar{width:0}
+  .plan{background:var(--pearl-warm);color:var(--gold-deep);font-size:10.5px;text-align:center;padding:6px;border-bottom:1px solid var(--pearl-deep)}
+  .hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--pearl-warm)}
+  .back{color:var(--ink-soft);font-size:20px}
+  .ava{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e9c9a8,#b98a63);border:1px solid rgba(255,255,255,.5)}
+  .hdr h2{font-family:"Noto Serif JP",serif;margin:0;font-size:17px;font-weight:700;color:#3a2424}
+  .hdr .sub{font-size:10.5px;color:var(--ink-soft)}
+  .menu{margin-left:auto;width:34px;height:34px;border-radius:50%;background:var(--pearl);display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+  .pill-row{padding:8px 14px;border-bottom:1px solid var(--pearl-soft);display:flex;gap:8px;align-items:center}
+  .pill-row .ic{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+  .pill{flex:1;display:flex;align-items:center;gap:8px;border:1px solid var(--gold-soft);background:var(--pearl-light);border-radius:999px;padding:7px 12px;font-size:12.5px}
+  .pill .who{color:var(--ink-mute)} .pill .x{margin-left:auto;color:var(--ink-mute)}
+  .body{padding:14px}.stack{display:flex;flex-direction:column;gap:12px}
+  .row{display:flex;gap:8px;align-items:flex-start}
+  .bub{max-width:255px;border-radius:16px;padding:10px 13px;font-size:12.5px;line-height:1.7;background:var(--pearl-light);border:1px solid var(--gold-soft);border-top-left-radius:5px;box-shadow:var(--shadow-soft)}
+  .mini-ava{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e9c9a8,#b98a63);flex:none}
+
+  /* collapsed drawer */
+  .drawer{display:flex;align-items:center;gap:8px;border:1px dashed rgba(184,148,85,.5);background:rgba(244,233,220,.4);border-radius:12px;padding:10px 13px;font-size:12px;font-weight:600;color:var(--gold-deep)}
+  .drawer .cnt{margin-left:auto;color:var(--ink-mute);font-weight:500}
+
+  .opt-head{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-mute);padding:0 2px}
+  .cards{display:flex;gap:11px;overflow-x:auto;padding-bottom:6px}
+  .card{flex:none;width:235px;border-radius:16px;background:var(--pearl-light);border:1px solid rgba(184,148,85,.25);box-shadow:var(--shadow-soft)}
+  .card.hi{border-color:rgba(184,148,85,.6);box-shadow:var(--shadow-warm)}
+  .card .ch{display:flex;align-items:center;gap:6px;padding:9px 12px 5px;font-size:12.5px;font-weight:700}
+  .ch .tag{font-size:10px;font-weight:500;color:var(--ink-mute)}
+  .c-safe{color:var(--wine-deep)} .c-prac{color:var(--gold-deep)} .c-warm{color:var(--gold-deep)}
+  .badge{font-size:9.5px;font-weight:700;color:#fff;background:var(--gold-deep);border-radius:999px;padding:2px 7px;margin-left:auto}
+  .send-cap{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--ink-mute);padding:0 12px}
+  .msgbox{margin:4px 12px 0;background:rgba(245,232,210,.6);border:1px solid rgba(184,148,85,.2);border-radius:9px;padding:9px 11px;font-size:12px;line-height:1.7}
+  .why{margin:7px 12px 0;font-size:11px;color:var(--gold-deep);display:flex;align-items:center;gap:4px}
+  .btn-use{margin:9px 12px 12px;width:calc(100% - 24px);height:36px;border-radius:999px;background:var(--wine-deep);color:var(--pearl-light);font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-warm)}
+
+  .picked-card{border:1px solid rgba(184,148,85,.6);box-shadow:var(--shadow-warm);border-radius:16px;background:var(--pearl-light)}
+  .done{font-size:10px;font-weight:600;color:var(--gold-deep)}
+  .btn-copy-strong{margin:8px 12px 12px;width:calc(100% - 24px);height:40px;border-radius:999px;background:var(--wine-deep);color:var(--pearl-light);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--shadow-warm)}
+
+  /* simplified action row: feedback far-left, 2 quiet actions */
+  .actions{display:flex;align-items:center;gap:8px;padding:0 2px}
+  .fb{display:flex;gap:6px}
+  .fbtn{width:30px;height:30px;border-radius:999px;border:1px solid var(--pearl-deep);background:var(--pearl-light);display:flex;align-items:center;justify-content:center;color:var(--ink-mute);font-size:12px}
+  .spacer{flex:1}
+  .chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;border-radius:999px;font-size:11.5px;font-weight:600;border:1px solid rgba(184,148,85,.3);background:rgba(245,232,210,.6);color:var(--wine-deep)}
+
+  /* save sheet w/ in-sheet update/new toggle */
+  .sheet{border:1px solid rgba(184,148,85,.25);background:rgba(244,233,220,.5);border-radius:16px;padding:13px}
+  .sheet .sh{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--wine-deep)}
+  .seg{display:flex;gap:6px;margin-top:11px;background:var(--pearl-soft);border-radius:999px;padding:3px}
+  .seg span{flex:1;text-align:center;font-size:11.5px;font-weight:600;padding:7px 0;border-radius:999px;color:var(--ink-soft)}
+  .seg .on{background:var(--wine-deep);color:var(--pearl-light)}
+  .sheet label{display:block;font-size:11px;color:var(--ink-soft);margin:11px 0 5px}
+  .sheet textarea{width:100%;border:1px solid var(--pearl-deep);background:var(--pearl-light);border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.7;color:var(--ink);resize:none;font-family:inherit}
+  .sheet .hint{margin-top:7px;font-size:10px;color:var(--ink-mute);line-height:1.6}
+  .sheet .save{margin-top:11px;display:flex;justify-content:flex-end}
+  .btn-save{height:36px;padding:0 22px;border-radius:999px;background:var(--wine-deep);color:var(--pearl-light);font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow-luxe);border:none}
+
+  .input{display:flex;align-items:center;gap:8px;padding:11px 14px;border-top:1px solid var(--pearl-soft);background:var(--pearl-warm)}
+  .input .box{flex:1;height:38px;border-radius:999px;background:var(--pearl-light);border:1px solid var(--pearl-deep);display:flex;align-items:center;padding:0 14px;color:var(--ink-mute);font-size:12.5px}
+  .input .snd{width:38px;height:38px;border-radius:50%;background:var(--champagne);display:flex;align-items:center;justify-content:center;color:#7a5a2a}
+  .tagline{color:#b6a99b;font-size:11px;margin-top:2px;text-align:center;max-width:340px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <h1>簡略版 — 1状態1主役</h1>
+    <p>「選択肢が多い」を解消。① 採用前はテンプレを<b>折りたたみ</b>にして3案だけ見せる。② 採用後は主役の「文面をコピー」を大きく、保存/更新は<b>1つの「保存」</b>にまとめて2タップ目で選ぶ。</p>
+  </div>
+
+  <div class="stage">
+
+    <!-- COL 1: before pick (simplified) -->
+    <div class="col">
+      <div class="col-cap">① 採用前 <b>—</b> 3案に集中</div>
+      <div class="phone"><div class="phone-scroll">
+        <div class="plan">⚜ 無制限プラン（無料）</div>
+        <div class="hdr"><span class="back">‹</span><span class="ava"></span><div><h2>さくらママ</h2><div class="sub">銀座30年の経験者</div></div><span class="menu">≡</span></div>
+        <div class="pill-row"><span class="ic">▤</span><div class="pill"><span class="who">相談相手</span> 阿部 大輔さま <span class="x">✕ ⌄</span></div></div>
+        <div class="body"><div class="stack">
+          <div class="row"><span class="mini-ava"></span><div class="bub">阿部さま向けの「来店のお礼」、3つ用意したわ。Bはあなたの型をベースにしてあるわよ。</div></div>
+
+          <!-- collapsed drawer instead of full strip -->
+          <div class="drawer">📁 あなたの型から選ぶ <span class="cnt">2件 ⌄</span></div>
+
+          <div class="opt-head">✦ 3つの文面から選んでください</div>
+          <div class="cards">
+            <div class="card">
+              <div class="ch c-safe">♥ A <span class="tag">· 丁寧に寄り添う</span></div>
+              <div class="send-cap">❝ 送る文面</div>
+              <div class="msgbox">阿部さま、先日はありがとうございました🌸 ゴルフのお話、お伺いできて嬉しかったです。また続きを聞かせてくださいね。</div>
+              <div class="why">⌄ なぜ効く？</div>
+              <div class="btn-use">この文面を使う</div>
+            </div>
+            <div class="card hi">
+              <div class="ch c-prac">⚡ B <span class="tag">· あなたの型ベース</span><span class="badge">あなたの型</span></div>
+              <div class="send-cap">❝ 送る文面</div>
+              <div class="msgbox">阿部さま、昨日はお疲れさまでした。ゴルフの続き、次にお話しするの楽しみにしてます。山崎12年も残り6杯、お待ちしてますね😊</div>
+              <div class="why">⌄ なぜ効く？</div>
+              <div class="btn-use">この文面を使う</div>
+            </div>
+            <div class="card">
+              <div class="ch c-warm">✦ C <span class="tag">· 温かみと遊び心</span></div>
+              <div class="send-cap">❝ 送る文面</div>
+              <div class="msgbox">阿部さま、昨日は私ずっと笑ってしまって、今朝ちょっと頬が痛いくらい🌸 また元気をいただきに、お顔見せてくださいね。</div>
+              <div class="why">⌄ なぜ効く？</div>
+              <div class="btn-use">この文面を使う</div>
+            </div>
+          </div>
+        </div></div>
+        <div class="input"><div class="box">続けて相談…</div><div class="snd">➤</div></div>
+      </div></div>
+      <div class="col-note">テンプレは「📁 あなたの型から選ぶ」を<b style="color:#EBD9A8">押した時だけ</b>開く。<br>各カードは「使う」1ボタン＋「なぜ効く？」の小リンクだけに。<br>※ コピーは選んだ後に大きく出す（採用前は出さない）</div>
+    </div>
+
+    <!-- COL 2: after pick (simplified) -->
+    <div class="col">
+      <div class="col-cap">② 採用後 <b>—</b> コピーが主役、保存は1つ</div>
+      <div class="phone"><div class="phone-scroll">
+        <div class="plan">⚜ 無制限プラン（無料）</div>
+        <div class="hdr"><span class="back">‹</span><span class="ava"></span><div><h2>さくらママ</h2><div class="sub">銀座30年の経験者</div></div><span class="menu">≡</span></div>
+        <div class="pill-row"><span class="ic">▤</span><div class="pill"><span class="who">相談相手</span> 阿部 大輔さま <span class="x">✕ ⌄</span></div></div>
+        <div class="body"><div class="stack">
+          <div class="picked-card">
+            <div class="ch c-prac" style="justify-content:space-between"><span>✓ B <span class="tag">· あなたの型ベース</span></span><span class="done">選択済み</span></div>
+            <div class="send-cap">❝ 送る文面</div>
+            <div class="msgbox">阿部さま、昨日はお疲れさまでした。ゴルフの続き、次にお話しするの楽しみにしてます。山崎12年も残り6杯、お待ちしてますね😊</div>
+            <div class="btn-copy-strong">⧉ 文面をコピー</div>
+          </div>
+
+          <!-- simplified row: feedback left, 2 quiet actions right -->
+          <div class="actions">
+            <span class="fb"><span class="fbtn">👍</span><span class="fbtn">👎</span></span>
+            <span class="spacer"></span>
+            <span class="chip">✦ 整える</span>
+            <span class="chip">🔖 保存</span>
+          </div>
+
+          <div class="col-cap" style="color:#caa;align-self:flex-start;margin-top:4px;font-size:11px">▼ 「保存」を押すと（更新/新規は中で選ぶ）</div>
+          <div class="sheet">
+            <div class="sh"><span>マイテンプレに保存</span><span style="color:var(--ink-mute)">✕</span></div>
+            <div class="seg"><span class="on">「常連お礼」を更新</span><span>新規で保存</span></div>
+            <label>文面（{姓} {ボトル名} {前回の話題} が使えます）</label>
+            <textarea rows="4">{姓}さま、昨日はお疲れさまでした。{前回の話題}の続き、次にお話しするの楽しみにしてます。{ボトル名}も残り6杯、お待ちしてますね😊</textarea>
+            <div class="hint">元の型に上書きします。お名前は自動で {姓} に置き換え済み。</div>
+            <div class="save"><button class="btn-save">↻ 更新する</button></div>
+          </div>
+
+          <div style="display:flex;justify-content:center;margin-top:6px"><span class="chip" style="background:var(--pearl-light)">＋ 新しい相談を始める</span></div>
+        </div></div>
+        <div class="input"><div class="box">続けて相談…</div><div class="snd">➤</div></div>
+      </div></div>
+      <div class="col-note">行に出るのは <b style="color:#EBD9A8">👍👎・整える・保存</b> の3要素だけ。<br>「更新 / 新規」の判断はシートの中（2タップ目）に隠す。<br>自分の型が無いカテゴリでは「保存」1つだけ（更新は出ない）。</div>
+    </div>
+
+  </div>
+
+  <div class="tagline" style="margin:22px auto 0">before（前回）= 採用後に5ボタン横並び／参照ストリップ常時展開。 after（今回）= 主役1つ＋副次は折りたたみ。</div>
+</div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { ChevronLeft, ChevronRight, Clock, Pencil, Plus, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Loader2, Pencil, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   type ShiftEntry,
@@ -86,12 +86,14 @@ export function ScheduleCalendar({ castId, customers }: Props) {
   const [douhans, setDouhans] = useState<Douhan[]>([]);
   const [plans, setPlans] = useState<PlanEntry[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     // Instant paint from the localStorage cache…
     setSchedule(loadSchedule());
     setDouhans(loadAllDouhans().filter((d) => d.cast_id === castId));
     setPlans(loadPlansForCast(castId));
+    setLoaded(true);
     // …then reconcile with the server so other devices' edits show up.
     let cancelled = false;
     void pullCastSchedule().then((applied) => {
@@ -220,7 +222,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
             {viewYear}年{viewMonth + 1}月
           </div>
           <div className="text-label-xs tracking-luxe text-ink-mute uppercase mt-0.5">
-            出勤 {workingCount}日
+            {loaded ? `出勤 ${workingCount}日` : "予定を読み込み中…"}
           </div>
         </div>
         <button type="button" onClick={nextMonth} className="p-2 rounded-full hover:bg-pearl-soft text-ink-soft">
@@ -244,7 +246,13 @@ export function ScheduleCalendar({ castId, customers }: Props) {
       </div>
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-0.5">
+      {!loaded ? (
+        <div className="flex flex-col items-center justify-center gap-2 py-16 text-ink-muted">
+          <Loader2 size={20} className="animate-spin" />
+          <span className="text-body-sm">予定を読み込み中…</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-7 gap-0.5">
         {cells.map((date, idx) => {
           if (!date) {
             return <div key={`pad-${idx}`} />;
@@ -294,7 +302,8 @@ export function ScheduleCalendar({ castId, customers }: Props) {
             </button>
           );
         })}
-      </div>
+        </div>
+      )}
 
       {/* Legend */}
       <div className="flex items-center gap-4 px-1 text-[10px] text-ink-mute">
