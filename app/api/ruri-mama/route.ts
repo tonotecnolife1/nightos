@@ -135,9 +135,13 @@ export async function POST(req: Request) {
       limit: 3,
     });
     const examplesBlock = formatExamplesForPrompt(relevantExamples);
-    const enrichedSystem = examplesBlock
-      ? `${SAKURA_MAMA_SYSTEM_PROMPT}\n\n${examplesBlock}`
+    const venueBlock = buildVenueContext(body.venueType);
+    const baseSystem = venueBlock
+      ? `${SAKURA_MAMA_SYSTEM_PROMPT}\n\n${venueBlock}`
       : SAKURA_MAMA_SYSTEM_PROMPT;
+    const enrichedSystem = examplesBlock
+      ? `${baseSystem}\n\n${examplesBlock}`
+      : baseSystem;
 
     const response = await client.messages.create({
       model: SAKURA_MAMA_MODEL,
@@ -189,6 +193,32 @@ export async function POST(req: Request) {
       isStub: true,
     });
   }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 業態コンテキスト — 指名制 (cabaret) か担当制 (club) かで
+// アドバイスの前提が変わるため、システムプロンプトに足す。
+// ベースのプロンプトは銀座クラブの語り口ながら「指名」を多用するので、
+// club のときは指名前提の語彙を使わないよう明示的に上書きする。
+// ═══════════════════════════════════════════════════════════
+
+function buildVenueContext(venueType: RuriMamaRequest["venueType"]): string {
+  if (venueType === "club") {
+    return `# この店舗の業態（最優先で守る）
+この店舗は【クラブ】です。**指名制度はありません**。お客様にはそれぞれ「担当」キャストがつく担当制で、売上の根幹は「同伴」と「継続来店（担当として通い続けてもらうこと）」です。
+- 「指名」「本指名」「場内指名」「指名替え」「フリー客」などキャバクラ特有の用語は使わないこと
+- 代わりに「担当」「同伴」「継続来店」「常連化」の観点でアドバイスする
+- 新規客にはまず担当として顔と名前を覚えてもらい、同伴・再来店につなげる流れを重視する`;
+  }
+  if (venueType === "cabaret") {
+    return `# この店舗の業態（最優先で守る）
+この店舗は【キャバクラ】です。**指名制**で、フリー客を「本指名」に変えること、来店頻度を上げることが売上の根幹です。
+- 場内指名 → 本指名 → 太客 の流れを意識してアドバイスする
+- 同伴やアフターも指名の獲得・維持につながる手段として活用する
+- 担当制ではないので「担当」という言い方ではなく「指名」を軸に話す`;
+  }
+  // 未指定: 業態コンテキストを足さない（後方互換）
+  return "";
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -314,11 +344,14 @@ ${direction}
   ]
 }`;
 
+    const venueBlock = buildVenueContext(body.venueType);
     const response = await client.messages.create({
       model: SAKURA_MAMA_MODEL,
       max_tokens: 1500,
       temperature: 0.8,
-      system: SAKURA_MAMA_SYSTEM_PROMPT,
+      system: venueBlock
+        ? `${SAKURA_MAMA_SYSTEM_PROMPT}\n\n${venueBlock}`
+        : SAKURA_MAMA_SYSTEM_PROMPT,
       messages: [{ role: "user" as const, content: userMsg }],
     });
 

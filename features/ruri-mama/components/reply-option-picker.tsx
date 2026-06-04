@@ -81,8 +81,9 @@ export function ReplyOptionPicker({ options, onPick, onRequestMore }: Props) {
         3つの文面から選んでください
       </div>
 
-      {/* Horizontal scroll — A/B/C を横に並べてスワイプで見比べ */}
-      <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory items-start">
+      {/* Horizontal scroll — A/B/C を横に並べてスワイプで見比べ。
+          items-stretch で 3 枚の縦の高さを一番大きいカードに揃える。 */}
+      <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory items-stretch">
         {options.map((opt) => (
           <OptionCard
             key={opt.id}
@@ -170,10 +171,11 @@ function OptionCard({
   return (
     <div
       className={cn(
-        "rounded-card border bg-pearl-light transition-all",
+        // flex flex-col + 高さストレッチで、横並び 3 枚の縦の高さを揃える
+        "rounded-card border bg-pearl-light transition-all flex flex-col",
         picked
           ? "w-full"
-          : "flex-shrink-0 w-[78vw] max-w-[260px] snap-start",
+          : "flex-shrink-0 w-[78vw] max-w-[260px] snap-start h-full",
         chosen ? "border-gold/60 shadow-warm" : "border-gold/25 shadow-soft",
         isSelected && "scale-[1.01]",
       )}
@@ -194,17 +196,21 @@ function OptionCard({
         )}
       </div>
 
-      {/* 文面 — 送る本文。LINE プレビュー風の淡いボックスで見比べやすく */}
-      <div className={cn("px-3", picked ? "pb-3" : "pb-2.5")}>
+      {/* 文面 — 送る本文。LINE プレビュー風の淡いボックスで見比べやすく。
+          flex-1 でこのセクションを伸ばし、CTA を常にカード下端へ揃える。 */}
+      <div className={cn("px-3 flex-1", picked ? "pb-3" : "pb-2.5")}>
         {hasMessage && (
           <div className="flex items-center gap-1 text-[10px] text-ink-mute mb-1">
             <MessageSquareQuote size={10} className="text-gold-deep" />
             送る文面
           </div>
         )}
+        {/* 送る文面は実際にコピーして送る本文。通常のチャット文
+            （message-bubble の text-[12px]/leading-[1.7]）とサイズを揃え、
+            やり取りとパターン文面の文字サイズの段差をなくす */}
         <div
           className={cn(
-            "rounded-btn px-3 py-2 text-body-sm whitespace-pre-wrap leading-relaxed text-ink",
+            "rounded-btn px-3 py-2 text-[12px] whitespace-pre-wrap leading-[1.7] text-ink",
             hasMessage ? "bg-champagne-soft/60 border border-gold/20" : "",
           )}
         >
@@ -255,7 +261,7 @@ function OptionCard({
             {showDetail && (
               <div className="mt-1.5 space-y-1.5 animate-fade-in">
                 {details.map((s, idx) => (
-                  <div key={idx} className="text-body-sm leading-relaxed text-ink-soft">
+                  <div key={idx} className="text-[11px] leading-[1.5] text-ink-soft">
                     {s.name && (
                       <span className="text-[11px] font-semibold text-wine-deep">
                         {s.name}：

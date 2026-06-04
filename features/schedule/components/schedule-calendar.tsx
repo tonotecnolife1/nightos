@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { ChevronLeft, ChevronRight, Pencil, Plus, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Loader2, Pencil, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   type ShiftEntry,
@@ -39,6 +39,36 @@ interface Props {
   customers: Customer[];
 }
 
+/**
+ * 時間入力フィールド。
+ * - clock アイコンで「時間を入れる枠」だと一目で分かるようにする (空でも目印になる)
+ * - min-w-0 + appearance-none で iOS WebKit のネイティブ time input が
+ *   親グリッドの幅を押し広げてレイアウトが崩れるのを防ぐ
+ */
+function TimeInput({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="relative">
+      <Clock
+        size={15}
+        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute"
+      />
+      <input
+        type="time"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full min-w-0 h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm pl-9 pr-3 text-body-md text-ink"
+        style={{ fontSize: "16px" }}
+      />
+    </div>
+  );
+}
+
 function toYMD(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
@@ -56,12 +86,14 @@ export function ScheduleCalendar({ castId, customers }: Props) {
   const [douhans, setDouhans] = useState<Douhan[]>([]);
   const [plans, setPlans] = useState<PlanEntry[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     // Instant paint from the localStorage cache…
     setSchedule(loadSchedule());
     setDouhans(loadAllDouhans().filter((d) => d.cast_id === castId));
     setPlans(loadPlansForCast(castId));
+    setLoaded(true);
     // …then reconcile with the server so other devices' edits show up.
     let cancelled = false;
     void pullCastSchedule().then((applied) => {
@@ -190,7 +222,7 @@ export function ScheduleCalendar({ castId, customers }: Props) {
             {viewYear}年{viewMonth + 1}月
           </div>
           <div className="text-label-xs tracking-luxe text-ink-mute uppercase mt-0.5">
-            出勤 {workingCount}日
+            {loaded ? `出勤 ${workingCount}日` : "予定を読み込み中…"}
           </div>
         </div>
         <button type="button" onClick={nextMonth} className="p-2 rounded-full hover:bg-pearl-soft text-ink-soft">
@@ -214,7 +246,13 @@ export function ScheduleCalendar({ castId, customers }: Props) {
       </div>
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-0.5">
+      {!loaded ? (
+        <div className="flex flex-col items-center justify-center gap-2 py-16 text-ink-muted">
+          <Loader2 size={20} className="animate-spin" />
+          <span className="text-body-sm">予定を読み込み中…</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-7 gap-0.5">
         {cells.map((date, idx) => {
           if (!date) {
             return <div key={`pad-${idx}`} />;
@@ -264,7 +302,8 @@ export function ScheduleCalendar({ castId, customers }: Props) {
             </button>
           );
         })}
-      </div>
+        </div>
+      )}
 
       {/* Legend */}
       <div className="flex items-center gap-4 px-1 text-[10px] text-ink-mute">
@@ -687,23 +726,11 @@ function DaySheet({
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
                   <label className="text-label-sm text-ink-soft">開始時間</label>
-                  <input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
-                    style={{ fontSize: "16px" }}
-                  />
+                  <TimeInput value={startTime} onChange={setStartTime} />
                 </div>
                 <div className="space-y-1">
                   <label className="text-label-sm text-ink-soft">終了時間</label>
-                  <input
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
-                    style={{ fontSize: "16px" }}
-                  />
+                  <TimeInput value={endTime} onChange={setEndTime} />
                 </div>
               </div>
             )}
@@ -762,16 +789,10 @@ function DaySheet({
               </select>
             </div>
 
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[132px_1fr] gap-2">
               <div className="space-y-1">
                 <label className="text-label-sm text-ink-soft">時間（任意）</label>
-                <input
-                  type="time"
-                  value={douhanTime}
-                  onChange={(e) => setDouhanTime(e.target.value)}
-                  className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
-                  style={{ fontSize: "16px" }}
-                />
+                <TimeInput value={douhanTime} onChange={setDouhanTime} />
               </div>
               <div className="space-y-1">
                 <label className="text-label-sm text-ink-soft">場所やメモ（任意）</label>
@@ -813,16 +834,10 @@ function DaySheet({
 
         {screen === "form" && formKind === "plan" && (
           <>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[132px_1fr] gap-2">
               <div className="space-y-1">
                 <label className="text-label-sm text-ink-soft">時間（任意）</label>
-                <input
-                  type="time"
-                  value={planTime}
-                  onChange={(e) => setPlanTime(e.target.value)}
-                  className="w-full h-11 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-md text-ink"
-                  style={{ fontSize: "16px" }}
-                />
+                <TimeInput value={planTime} onChange={setPlanTime} />
               </div>
               <div className="space-y-1">
                 <label className="text-label-sm text-ink-soft">予定（必須）</label>

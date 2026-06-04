@@ -6,7 +6,9 @@ import { useCastId } from "@/lib/nightos/cast-context";
 import { cn } from "@/lib/utils";
 import { AI_FETCH_OPTIONS, apiFetchJson } from "@/lib/nightos/api-fetch";
 import { detectIntent } from "@/lib/nightos/intent-detector";
-import { HEARING_FLOWS } from "../data/system-prompt";
+import { getVenueType } from "@/lib/nightos/role-store";
+import { useVenueConfig } from "@/lib/nightos/use-venue-config";
+import { getHearingFlows } from "../data/system-prompt";
 import { recentFeedbackSamples } from "../lib/feedback-store";
 import {
   loadSessions,
@@ -169,6 +171,11 @@ export function ChatWindow({
   initialIsStubMode = false,
 }: Props) {
   const castId = useCastId();
+  // 業態（club=担当制 / cabaret=指名制）でヒアリングの選択肢を出し分ける。
+  // マウント後に localStorage の実値へ更新されるので、ユーザー操作時点では
+  // 正しい業態のフローが使われる。
+  const venueConfig = useVenueConfig();
+  const hearingFlows = getHearingFlows(venueConfig.venueType);
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [phase, setPhase] = useState<Phase>({ name: "intent-pick" });
   const [selectedCustomerId, setSelectedCustomerId] = useState<
@@ -259,7 +266,7 @@ export function ChatWindow({
       setPhase({
         name: "hearing",
         intent: "follow",
-        flow: HEARING_FLOWS.follow,
+        flow: getHearingFlows(getVenueType()).follow,
         step: 0,
         answers: {},
       });
@@ -410,6 +417,7 @@ export function ChatWindow({
           hearingContext,
           castId: castId,
           intent,
+          venueType: venueConfig.venueType,
           recentFeedback: feedbackContext,
           castTemplates: castTemplates.length > 0 ? castTemplates : undefined,
           templateSeed: seed?.template,
@@ -496,6 +504,7 @@ export function ChatWindow({
             ],
             castId: castId,
             intent: "freeform",
+            venueType: venueConfig.venueType,
             refineStep: "apply",
             previousReply: srcMessage.content,
             refinementDirection: direction.prompt,
@@ -617,7 +626,7 @@ export function ChatWindow({
       setPhase({ name: "freeform" });
       return;
     }
-    const flow = HEARING_FLOWS[intent];
+    const flow = hearingFlows[intent];
     if (flow.steps.length === 0) {
       // No hearing — synthesize text and call API immediately
       const synthesized = synthesizeIntentText(
@@ -685,7 +694,7 @@ export function ChatWindow({
     }
     // intent-pick (or any other state with input enabled) — detect intent
     const intent = detectIntent(text);
-    const flow = HEARING_FLOWS[intent];
+    const flow = hearingFlows[intent];
     if (intent === "freeform" || flow.steps.length === 0) {
       sendNewMessage(text, intent, {});
       return;

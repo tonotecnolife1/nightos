@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
   Bookmark,
@@ -30,6 +30,7 @@ import type { ChatRoom } from "../types";
 import { PinnedList } from "./pinned-list";
 import { LearningsView } from "./learnings-view";
 import { FriendsTab } from "./friends-tab";
+import { deriveChatFriends } from "../lib/chat-friends";
 import {
   ContactExchangeSheet,
   type ExchangeTab,
@@ -192,6 +193,13 @@ export function ChatRoomList({
       })
     : tabFiltered;
 
+  // チャットで会話できる相手＝友達。DM/指導/グループの同席者を抽出して、
+  // QR 交換した連絡先と合流させる（チャットできるのに友達にいない齟齬を防ぐ）。
+  const chatFriends = useMemo(
+    () => deriveChatFriends(rooms, currentCastId),
+    [rooms, currentCastId],
+  );
+
   const collection = isCollectionTab(tab);
 
   return (
@@ -205,7 +213,7 @@ export function ChatRoomList({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="トーク・相手を検索..."
-              className="flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
+              className="min-w-0 flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
               style={{ fontSize: "16px" }}
             />
             {query && (
@@ -288,7 +296,10 @@ export function ChatRoomList({
 
       {/* Collection tabs */}
       {tab === "friends" && (
-        <FriendsTab onExchange={() => setExchangeTab("my-qr")} />
+        <FriendsTab
+          onExchange={() => setExchangeTab("my-qr")}
+          chatFriends={chatFriends}
+        />
       )}
       {tab === "pinned" && <PinnedList />}
       {tab === "learnings" && <LearningsView />}
