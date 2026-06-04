@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { Card } from "@/components/nightos/card";
+import { DateField } from "@/components/nightos/date-field";
 import { cn, formatCustomerName } from "@/lib/utils";
 import { CURRENT_STORE_ID } from "@/lib/nightos/constants";
 import { useCastId } from "@/lib/nightos/cast-context";
@@ -468,7 +469,8 @@ function AddForm({
   onClose: () => void;
 }) {
   const [customerId, setCustomerId] = useState("");
-  const [date, setDate] = useState("");
+  // 同伴は当日〜近日の登録が大半なので、今日を初期値にしておく
+  const [date, setDate] = useState(() => todayYMD());
   const [note, setNote] = useState("");
 
   const canSubmit = customerId && date;
@@ -487,39 +489,48 @@ function AddForm({
         </button>
       </div>
 
-      <div className="space-y-2">
-        <select
-          value={customerId}
-          onChange={(e) => setCustomerId(e.target.value)}
-          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-wine-deep"
-          style={{ fontSize: "16px" }}
-        >
-          <option value="" disabled>
-            お客様を選ぶ
-          </option>
-          {customers.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
+      <div className="space-y-2.5">
+        <div className="space-y-1.5">
+          <label className="text-label-md text-ink font-medium">
+            お客様（必須）
+          </label>
+          <select
+            value={customerId}
+            onChange={(e) => setCustomerId(e.target.value)}
+            className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-wine-deep"
+            style={{ fontSize: "16px" }}
+          >
+            <option value="" disabled>
+              お客様を選ぶ
             </option>
-          ))}
-        </select>
+            {customers.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <input
-          type="date"
+        <DateField
+          label="同伴日（必須）"
           value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-warm px-3 text-body-sm text-ink focus:outline-none focus:border-wine-deep"
-          style={{ fontSize: "16px" }}
+          onChange={setDate}
+          placeholder="同伴日を選ぶ"
         />
 
-        <input
-          type="text"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="場所やメモ（任意）"
-          className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-light px-3 text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep"
-          style={{ fontSize: "16px" }}
-        />
+        <div className="space-y-1.5">
+          <label className="text-label-md text-ink font-medium">
+            場所やメモ（任意）
+          </label>
+          <input
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="例: 〇〇で待ち合わせ"
+            className="w-full h-10 rounded-2xl border border-ink/[0.06] bg-pearl-light px-3 text-body-sm text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep"
+            style={{ fontSize: "16px" }}
+          />
+        </div>
       </div>
 
       <button
@@ -540,6 +551,13 @@ function AddForm({
 }
 
 // ═══════════════ Helpers ═══════════════
+
+function todayYMD(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+    d.getDate(),
+  ).padStart(2, "0")}`;
+}
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00+09:00");
