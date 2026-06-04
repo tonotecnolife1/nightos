@@ -205,7 +205,7 @@ export function ChatRoomList({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="トーク・相手を検索..."
-              className="flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
+              className="min-w-0 flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
               style={{ fontSize: "16px" }}
             />
             {query && (
