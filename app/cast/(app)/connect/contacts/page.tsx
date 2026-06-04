@@ -28,7 +28,7 @@ export default function FriendsPage() {
         }
       />
       <div className="px-4 pt-3 pb-8">
-        <ContactList linkBase="/cast/connect/contacts" searchable />
+        <ContactList searchable />
       </div>
     </div>
   );
