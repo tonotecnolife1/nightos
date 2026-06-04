@@ -65,16 +65,13 @@ export function SaveTemplateButton({
     setFirstInCategory(customTemplateCount(castId, defaultCategory) === 0);
   }, [castId, seedTemplateId, defaultCategory]);
 
-  const openNew = () => {
+  // 保存導線は「保存」ひとつ。開いたら、土台テンプレがあれば既定は「更新」、
+  // 無ければ「新規」。更新/新規の選択はシート内のセグメントで切り替える。
+  const open = () => {
     setLabel("");
     setCategory(defaultCategory);
     setBody(defaultBody);
-    setMode("new");
-  };
-
-  const openUpdate = () => {
-    setBody(defaultBody);
-    setMode("update");
+    setMode(seedTemplate ? "update" : "new");
   };
 
   const handleSaveNew = () => {
@@ -129,7 +126,7 @@ export function SaveTemplateButton({
     );
   }
 
-  // ── 折りたたみ：ボタンのみ ──
+  // ── 折りたたみ：保存ボタン1つ（＋初回ナッジ）──
   if (!mode) {
     return (
       <div className="inline-flex items-center gap-2 flex-wrap">
@@ -138,23 +135,13 @@ export function SaveTemplateButton({
             気に入ったら保存→次から一瞬よ
           </span>
         )}
-        {seedTemplate && (
-          <button
-            type="button"
-            onClick={openUpdate}
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[11px] font-semibold border border-gold/40 bg-wine-deep text-pearl-light transition active:scale-[0.97] hover:opacity-90"
-          >
-            <RefreshCw size={12} />
-            「{seedTemplate.label}」を更新
-          </button>
-        )}
         <button
           type="button"
-          onClick={openNew}
+          onClick={open}
           className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[11px] font-medium border border-gold/30 bg-champagne-soft/60 text-wine-deep transition active:scale-[0.97] hover:bg-champagne-soft/80"
         >
           <BookmarkPlus size={12} />
-          {seedTemplate ? "新しく保存" : "マイテンプレに保存"}
+          マイテンプレに保存
         </button>
       </div>
     );
@@ -166,9 +153,7 @@ export function SaveTemplateButton({
     <div className="w-full space-y-2.5 rounded-card border border-gold/25 bg-pearl-warm/50 p-3">
       <div className="flex items-center justify-between">
         <span className="text-label-sm font-semibold text-wine-deep">
-          {isUpdate
-            ? `「${seedTemplate?.label ?? "テンプレ"}」を更新`
-            : "マイテンプレに保存"}
+          マイテンプレに保存
         </span>
         <button
           type="button"
@@ -179,6 +164,32 @@ export function SaveTemplateButton({
           <X size={14} />
         </button>
       </div>
+
+      {/* 更新 / 新規はここで切り替える（土台テンプレがある時だけ）。 */}
+      {seedTemplate && (
+        <div className="flex gap-1 p-0.5 rounded-full bg-pearl-soft">
+          <button
+            type="button"
+            onClick={() => setMode("update")}
+            className={cn(
+              "flex-1 min-w-0 h-8 px-2 rounded-full text-[11px] font-semibold truncate transition",
+              isUpdate ? "bg-wine-deep text-pearl-light" : "text-ink-soft",
+            )}
+          >
+            「{seedTemplate.label}」を更新
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("new")}
+            className={cn(
+              "flex-1 min-w-0 h-8 px-2 rounded-full text-[11px] font-semibold transition",
+              !isUpdate ? "bg-wine-deep text-pearl-light" : "text-ink-soft",
+            )}
+          >
+            新規で保存
+          </button>
+        </div>
+      )}
 
       {!isUpdate && (
         <>

@@ -211,24 +211,17 @@ function OptionCard({
           {primary.body}
         </div>
 
-        {/* 文面をコピー — LINE 等に貼り付けやすいよう本文のすぐ下に常設。
-            picked（確定後）は主役アクションとして全幅・濃色で大きく出す。 */}
-        {hasMessage && (
+        {/* 文面をコピー — 採用前は出さず、選択確定後（picked）に主役アクションとして
+            全幅・濃色で大きく出す。採用前は下部の「この文面を使う」1つに集中させる。 */}
+        {picked && hasMessage && (
           <button
             type="button"
             onClick={handleCopy}
             className={cn(
-              "mt-2 inline-flex items-center justify-center gap-1.5 rounded-full font-semibold transition-all active:scale-[0.98]",
-              picked
-                ? "w-full h-10 text-label-md"
-                : "w-full h-9 text-label-sm",
+              "mt-2 w-full h-10 inline-flex items-center justify-center gap-1.5 rounded-full text-label-md font-semibold transition-all active:scale-[0.98]",
               copied
                 ? "bg-success text-pearl-light shadow-soft"
-                : picked
-                  ? // 確定後は主役アクションとして濃色で大きく
-                    "bg-wine-deep text-pearl-light shadow-warm hover:opacity-90"
-                  : // 選択前は下部の「この文面を使う」と競合しないよう控えめに
-                    "bg-champagne-soft/70 text-wine-deep border border-gold/30 hover:bg-champagne-soft",
+                : "bg-wine-deep text-pearl-light shadow-warm hover:opacity-90",
             )}
           >
             {copied ? (
@@ -337,7 +330,7 @@ export function RefineTriggerButton({
       )}
     >
       <Wand2 size={11} />
-      この文面をブラッシュアップする
+      整える
     </button>
   );
 }

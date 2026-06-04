@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, FolderHeart, Wand2 } from "lucide-react";
+import { Check, ChevronDown, Copy, FolderHeart, Wand2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn, copyToClipboard } from "@/lib/utils";
 import {
@@ -26,23 +26,38 @@ export function TemplateReference({
   /** 「この型でさくらママに整えてもらう」。指定時のみ各行に表示。 */
   onUseSeed?: (template: Template) => void;
 }) {
+  const [open, setOpen] = useState(false);
   if (templates.length === 0) return null;
   return (
-    <div className="rounded-card border border-gold/20 bg-pearl-warm/40 px-3 py-2.5 space-y-2">
-      <div className="flex items-center gap-1.5 text-[11px] text-gold-deep">
+    <div className="rounded-card border border-gold/20 bg-pearl-warm/40">
+      {/* 既定は折りたたみ。3案に集中させ、自分の生テンプレが要る時だけ開く。 */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-medium text-gold-deep"
+      >
         <FolderHeart size={12} />
-        あなたのテンプレも参考にできます
-      </div>
-      <div className="space-y-1.5">
-        {templates.map((t) => (
-          <TemplateRow
-            key={t.id}
-            template={t}
-            customerName={customerName}
-            onUseSeed={onUseSeed}
+        あなたの型から選ぶ
+        <span className="ml-auto flex items-center gap-1 text-ink-mute">
+          {templates.length}件
+          <ChevronDown
+            size={12}
+            className={cn("transition-transform", open && "rotate-180")}
           />
-        ))}
-      </div>
+        </span>
+      </button>
+      {open && (
+        <div className="px-3 pb-2.5 space-y-1.5 animate-fade-in">
+          {templates.map((t) => (
+            <TemplateRow
+              key={t.id}
+              template={t}
+              customerName={customerName}
+              onUseSeed={onUseSeed}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
