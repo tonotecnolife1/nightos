@@ -6,6 +6,7 @@ import {
   Bookmark,
   BookOpen,
   Check,
+  ClipboardList,
   Clock,
   Loader2,
   MessageCircle,
@@ -40,6 +41,7 @@ import type { ChatAttachment, ChatMessage, ChatRoom } from "../types";
 import { ChatComposer, type ComposerPayload, type MentionMember } from "./chat-composer";
 import { GroupNameModal } from "./group-name-modal";
 import { ChatKarteExtractModal } from "./chat-karte-extract-modal";
+import { HelpReportSheet } from "./help-report-sheet";
 import { MessagePinSheet } from "./message-pin-sheet";
 import {
   type AnchorRect,
@@ -107,6 +109,8 @@ export function ChatRoomView({
   } | null>(null);
   const [partialCopyFor, setPartialCopyFor] = useState<string | null>(null);
   const [copiedToast, setCopiedToast] = useState(false);
+  // ヘルプ報告シートの開閉。
+  const [reportOpen, setReportOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Load the room's pinned customer (mechanism C) and any custom name on
@@ -496,6 +500,52 @@ export function ChatRoomView({
     setSending(false);
   };
 
+  // ヘルプ報告をチャットに送信する。handleSend と同じ楽観的挿入 + 永続化だが、
+  // 報告対象のお客様に customer_id をひも付けて逆カルテ導線につなげる。
+  const sendReport = async (text: string, reportCustomerId: string) => {
+    const tempId = `tmp_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    const newMsg: ChatMessage = {
+      id: tempId,
+      room_id: room.id,
+      sender_id: currentCastId,
+      sender_name: currentCastName,
+      content: text,
+      customer_id: reportCustomerId,
+      thread_parent_id: null,
+      reply_count: 0,
+      mentions_ai: false,
+      is_bot: false,
+      created_at: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, newMsg]);
+
+    try {
+      const res = await fetch("/api/team-chat/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roomId: room.id,
+          content: text,
+          customerId: reportCustomerId,
+        }),
+      });
+      if (res.ok) {
+        const { message } = await res.json();
+        if (message?.id) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === tempId
+                ? { ...m, id: message.id, created_at: message.created_at }
+                : m,
+            ),
+          );
+        }
+      }
+    } catch {
+      // keep optimistic row (mock / offline)
+    }
+  };
+
   // Thread view
   const activeThread = threadOpen
     ? messages.find((m) => m.id === threadOpen)
@@ -537,6 +587,15 @@ export function ChatRoomView({
           <div className="text-label-sm text-ink-mute">{memberCount}人</div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => setReportOpen(true)}
+            aria-label="ヘルプ報告を作成"
+            title="ヘルプ報告を作成"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-ink-soft hover:bg-pearl-soft"
+          >
+            <ClipboardList size={18} />
+          </button>
           <button
             type="button"
             onClick={() => {
@@ -874,6 +933,16 @@ export function ChatRoomView({
           onApplied={() => finishExtract(extractFor)}
         />
       )}
+
+      {/* ヘルプ報告の自動作成 → さくらママと編集 → チャット送信 */}
+      <HelpReportSheet
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        castId={currentCastId}
+        helperName={currentCastName}
+        customers={customers}
+        onSubmit={sendReport}
+      />
 
       {/* グループ名の編集 */}
       {nameEditOpen && (

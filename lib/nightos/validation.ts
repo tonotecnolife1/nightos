@@ -378,6 +378,29 @@ export const suggestBottleSchema = z.object({
   castId,
 });
 
+/**
+ * ヘルプ報告（/api/help-report）。
+ * - generate: 顧客カルテ + ヘルプのメモから報告ドラフトを作る
+ * - refine  : 既存の報告 + 修正方向 から書き直す
+ */
+export const helpReportSchema = z.discriminatedUnion("mode", [
+  z.object({
+    mode: z.literal("generate"),
+    castId,
+    customerId,
+    helperName: z.string().min(1).max(40),
+    notes: z.string().max(2000).optional(),
+    venueType: z.enum(["club", "cabaret"]).optional(),
+  }),
+  z.object({
+    mode: z.literal("refine"),
+    castId,
+    previousReport: z.string().min(1).max(10_000),
+    direction: z.string().min(1).max(500),
+    venueType: z.enum(["club", "cabaret"]).optional(),
+  }),
+]);
+
 // ═══════════════ Helper ═══════════════
 
 /**
