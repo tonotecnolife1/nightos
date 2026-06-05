@@ -27,14 +27,16 @@ export interface ChatMessagePreview {
   sent_at: string;
 }
 
-/** An image attached to a chat message (LINE screenshot, photo, etc.). */
+/** A file attached to a chat message (LINE screenshot, photo, document, etc.). */
 export interface ChatAttachment {
   /** Signed/display URL. In mock mode this can be an inline data URL. */
   url: string;
   /** Storage path (private bucket); the server re-signs `url` from this on read. */
   path?: string | null;
-  /** MIME type, e.g. "image/png". */
+  /** MIME type, e.g. "image/png" or "application/pdf". */
   mime: string;
+  /** Original file name — shown for non-image files (documents etc.). */
+  name?: string | null;
   width?: number | null;
   height?: number | null;
 }
