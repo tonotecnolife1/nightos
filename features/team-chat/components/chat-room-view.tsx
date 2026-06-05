@@ -9,6 +9,7 @@ import {
   Clock,
   Loader2,
   MessageCircle,
+  Paperclip,
   Pencil,
   Search,
   Sparkles,
@@ -1516,34 +1517,60 @@ function KarteChip({
 
 function AttachmentGrid({ attachments }: { attachments: ChatAttachment[] }) {
   const [lightbox, setLightbox] = useState<string | null>(null);
-  const images = attachments.filter((a) => a.url);
-  if (images.length === 0) return null;
+  const valid = attachments.filter((a) => a.url);
+  const images = valid.filter((a) => a.mime?.startsWith("image/"));
+  const files = valid.filter((a) => !a.mime?.startsWith("image/"));
+  if (valid.length === 0) return null;
 
   return (
     <>
-      <div
-        className={cn(
-          "grid gap-1.5 max-w-[240px]",
-          images.length === 1 ? "grid-cols-1" : "grid-cols-2",
-        )}
-      >
-        {images.map((a, i) => (
-          <button
-            key={`${a.url}_${i}`}
-            type="button"
-            onClick={() => setLightbox(a.url)}
-            className="block overflow-hidden rounded-xl border border-ink/[0.08] bg-pearl-soft"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={a.url}
-              alt="共有画像"
-              className="w-full h-auto max-h-64 object-cover"
-              loading="lazy"
-            />
-          </button>
-        ))}
-      </div>
+      {images.length > 0 && (
+        <div
+          className={cn(
+            "grid gap-1.5 max-w-[240px]",
+            images.length === 1 ? "grid-cols-1" : "grid-cols-2",
+          )}
+        >
+          {images.map((a, i) => (
+            <button
+              key={`${a.url}_${i}`}
+              type="button"
+              onClick={() => setLightbox(a.url)}
+              className="block overflow-hidden rounded-xl border border-ink/[0.08] bg-pearl-soft"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={a.url}
+                alt="共有画像"
+                className="w-full h-auto max-h-64 object-cover"
+                loading="lazy"
+              />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {files.length > 0 && (
+        <div className="flex flex-col gap-1.5 max-w-[240px] mt-1.5">
+          {files.map((a, i) => (
+            <a
+              key={`${a.url}_${i}`}
+              href={a.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              download={a.name ?? undefined}
+              className="flex items-center gap-2 rounded-xl border border-ink/[0.08] bg-pearl-soft px-3 py-2 hover:bg-pearl"
+            >
+              <span className="shrink-0 w-8 h-8 rounded-lg bg-champagne-soft/60 flex items-center justify-center text-gold-deep">
+                <Paperclip size={15} />
+              </span>
+              <span className="min-w-0 text-body-sm text-ink truncate">
+                {a.name ?? "ファイル"}
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
 
       {lightbox && (
         <div

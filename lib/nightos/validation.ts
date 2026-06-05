@@ -118,7 +118,8 @@ const roomId = z.string().min(1).max(64);
 const chatAttachment = z.object({
   url: z.string().max(2_000_000), // inline data URLs (mock mode) can be large
   path: z.string().max(2048).nullish(),
-  mime: z.string().min(1).max(64),
+  mime: z.string().min(1).max(128),
+  name: z.string().max(255).nullish(),
   width: z.number().int().positive().max(20000).nullish(),
   height: z.number().int().positive().max(20000).nullish(),
 });

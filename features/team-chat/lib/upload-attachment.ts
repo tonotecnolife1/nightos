@@ -5,7 +5,8 @@ import type { ChatAttachment } from "../types";
 
 const BUCKET = "team-chat";
 export const MAX_ATTACHMENTS = 4;
-export const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5MB
+export const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5MB (画像)
+export const MAX_DOC_BYTES = 10 * 1024 * 1024; // 10MB (ファイル全般)
 const ALLOWED_MIME = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 
 function isSupabaseConfigured(): boolean {
@@ -17,6 +18,14 @@ function isSupabaseConfigured(): boolean {
 
 export function isAllowedImage(file: File): boolean {
   return ALLOWED_MIME.includes(file.type) && file.size <= MAX_FILE_BYTES;
+}
+
+/**
+ * A file (any type) small enough to attach. Used by the "ファイル" picker —
+ * documents, PDFs, etc. — where we don't restrict to image MIME types.
+ */
+export function isAllowedFile(file: File): boolean {
+  return file.size <= MAX_DOC_BYTES;
 }
 
 function fileToDataUrl(file: File): Promise<string> {
@@ -45,7 +54,12 @@ export async function uploadChatImage(opts: {
   const { file, storeId, roomId } = opts;
 
   if (!isSupabaseConfigured()) {
-    return { url: await fileToDataUrl(file), path: null, mime: file.type };
+    return {
+      url: await fileToDataUrl(file),
+      path: null,
+      mime: file.type,
+      name: file.name,
+    };
   }
 
   const supabase = createClient();
@@ -60,7 +74,12 @@ export async function uploadChatImage(opts: {
   if (error) {
     // Bucket/policy not set up yet → degrade gracefully to inline so the
     // message still sends. (Won't sync across devices.)
-    return { url: await fileToDataUrl(file), path: null, mime: file.type };
+    return {
+      url: await fileToDataUrl(file),
+      path: null,
+      mime: file.type,
+      name: file.name,
+    };
   }
 
   // Private bucket → signed URL for immediate optimistic display. The
@@ -70,5 +89,5 @@ export async function uploadChatImage(opts: {
     .from(BUCKET)
     .createSignedUrl(path, 60 * 60); // 1h is plenty for the current session
 
-  return { url: signed?.signedUrl ?? "", path, mime: file.type };
+  return { url: signed?.signedUrl ?? "", path, mime: file.type, name: file.name };
 }
