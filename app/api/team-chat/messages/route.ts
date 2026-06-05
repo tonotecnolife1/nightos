@@ -46,6 +46,7 @@ export async function POST(req: Request) {
           path: a.path ?? null,
           url: a.path ? null : a.url,
           mime: a.mime,
+          name: a.name ?? null,
           width: a.width ?? null,
           height: a.height ?? null,
         }))

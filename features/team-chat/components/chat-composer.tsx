@@ -1,15 +1,31 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { ImagePlus, Loader2, Send, Sparkles, User, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  Camera,
+  ChevronRight,
+  ImagePlus,
+  Loader2,
+  Paperclip,
+  Send,
+  Sparkles,
+  User,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SAKURA_MAMA_CHAT_NAME } from "@/lib/nightos/constants";
 import type { ChatAttachment } from "../types";
 import {
   MAX_ATTACHMENTS,
+  isAllowedFile,
   isAllowedImage,
   uploadChatImage,
 } from "../lib/upload-attachment";
+
+/** 添付が画像かどうか。画像以外（PDF 等）はファイルチップで表示する。 */
+function isImageAttachment(mime: string): boolean {
+  return mime.startsWith("image/");
+}
 
 interface PendingAttachment extends ChatAttachment {
   key: string;
@@ -60,14 +76,32 @@ export function ChatComposer({
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  // LINE風: 文字入力中はアクションアイコンを畳む。> をタップで再展開。
+  const [actionsExpanded, setActionsExpanded] = useState(false);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const photoRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const taRef = useRef<HTMLTextAreaElement>(null);
 
   const uploading = attachments.some((a) => a.uploading);
+  const hasText = value.trim().length > 0;
   const canSend =
-    !sending && !uploading && (value.trim().length > 0 || attachments.length > 0);
+    !sending && !uploading && (hasText || attachments.length > 0);
+  // 文字が無ければ常に表示。文字入力中は畳み、> で手動展開できる。
+  const showActions = !hasText || actionsExpanded;
+
+  // LINE/iMessage のように、改行・入力に合わせて入力欄を縦に伸ばす。
+  useEffect(() => {
+    const el = taRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+  }, [value]);
 
   const handleChange = (next: string) => {
     onChange(next);
+    // 入力が空に戻ったらアクションを既定（展開）状態へ戻す。
+    if (next.trim().length === 0) setActionsExpanded(false);
     const m = next.match(MENTION_RE);
     setMentionQuery(m ? m[1] : null);
   };
@@ -85,17 +119,25 @@ export function ChatComposer({
     setMentionQuery(null);
   };
 
-  const addFiles = async (files: File[]) => {
+  const addFiles = async (files: File[], opts?: { allowAnyType?: boolean }) => {
     const current = attachments.length;
+    const accept = opts?.allowAnyType ? isAllowedFile : isAllowedImage;
     const allowed = files
-      .filter(isAllowedImage)
+      .filter(accept)
       .slice(0, MAX_ATTACHMENTS - current);
     for (const file of allowed) {
       const key = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       const localUrl = URL.createObjectURL(file);
       setAttachments((prev) => [
         ...prev,
-        { key, url: localUrl, path: null, mime: file.type, uploading: true },
+        {
+          key,
+          url: localUrl,
+          path: null,
+          mime: file.type,
+          name: file.name,
+          uploading: true,
+        },
       ]);
       try {
         const uploaded = await uploadChatImage({ file, storeId, roomId });
@@ -147,12 +189,14 @@ export function ChatComposer({
           url: a.url,
           path: a.path,
           mime: a.mime,
+          name: a.name,
           width: a.width,
           height: a.height,
         })),
     });
     setAttachments([]);
     setMentionQuery(null);
+    setActionsExpanded(false);
   };
 
   const memberResults =
@@ -230,12 +274,21 @@ export function ChatComposer({
               key={a.key}
               className="relative w-16 h-16 rounded-xl overflow-hidden border border-ink/[0.08] bg-pearl-soft"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={a.url}
-                alt="添付画像"
-                className="w-full h-full object-cover"
-              />
+              {isImageAttachment(a.mime) ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={a.url}
+                  alt="添付画像"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center gap-1 px-1 text-center text-ink-soft">
+                  <Paperclip size={16} className="text-gold-deep" />
+                  <span className="text-[8px] leading-tight line-clamp-2 break-all">
+                    {a.name ?? "ファイル"}
+                  </span>
+                </div>
+              )}
               {a.uploading && (
                 <div className="absolute inset-0 bg-ink/40 flex items-center justify-center">
                   <Loader2 size={16} className="animate-spin text-pearl-light" />
@@ -260,8 +313,21 @@ export function ChatComposer({
       )}
 
       <div className="flex items-end gap-2">
+        {/* カメラ撮影（モバイルでカメラを直接起動） */}
         <input
-          ref={fileRef}
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={(e) => {
+            void addFiles(Array.from(e.target.files ?? []));
+            e.target.value = "";
+          }}
+        />
+        {/* 写真（アルバム）から画像を選択 */}
+        <input
+          ref={photoRef}
           type="file"
           accept="image/png,image/jpeg,image/webp,image/gif"
           multiple
@@ -271,18 +337,67 @@ export function ChatComposer({
             e.target.value = "";
           }}
         />
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          disabled={attachments.length >= MAX_ATTACHMENTS}
-          className="shrink-0 mb-1 p-1.5 rounded-full text-gold-deep hover:bg-champagne-soft/60 disabled:opacity-40"
-          title="画像を添付"
-          aria-label="画像を添付"
-        >
-          <ImagePlus size={18} />
-        </button>
+        {/* ファイル（PDF 等、画像以外も可） */}
+        <input
+          ref={fileRef}
+          type="file"
+          className="hidden"
+          onChange={(e) => {
+            void addFiles(Array.from(e.target.files ?? []), {
+              allowAnyType: true,
+            });
+            e.target.value = "";
+          }}
+        />
+
+        {/* LINE風: 文字入力中は 3 つのアイコンを畳み、> で再展開 */}
+        {showActions ? (
+          <div className="flex items-center shrink-0 mb-1">
+            <button
+              type="button"
+              onClick={() => cameraRef.current?.click()}
+              disabled={attachments.length >= MAX_ATTACHMENTS}
+              className="p-1.5 rounded-full text-gold-deep hover:bg-champagne-soft/60 disabled:opacity-40"
+              title="写真を撮影"
+              aria-label="写真を撮影"
+            >
+              <Camera size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => photoRef.current?.click()}
+              disabled={attachments.length >= MAX_ATTACHMENTS}
+              className="p-1.5 rounded-full text-gold-deep hover:bg-champagne-soft/60 disabled:opacity-40"
+              title="画像を添付"
+              aria-label="画像を添付"
+            >
+              <ImagePlus size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={attachments.length >= MAX_ATTACHMENTS}
+              className="p-1.5 rounded-full text-gold-deep hover:bg-champagne-soft/60 disabled:opacity-40"
+              title="ファイルを添付"
+              aria-label="ファイルを添付"
+            >
+              <Paperclip size={18} />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setActionsExpanded(true)}
+            className="shrink-0 mb-1 p-1.5 rounded-full text-gold-deep hover:bg-champagne-soft/60"
+            title="メニューを開く"
+            aria-label="メニューを開く"
+          >
+            <ChevronRight size={18} />
+          </button>
+        )}
         <div className="flex-1">
           <textarea
+            ref={taRef}
             value={value}
             onChange={(e) => handleChange(e.target.value)}
             onPaste={handlePaste}
@@ -294,7 +409,7 @@ export function ChatComposer({
             }}
             placeholder={placeholder}
             rows={1}
-            className="w-full resize-none rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 text-body-md text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep"
+            className="block w-full resize-none overflow-y-auto rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 py-2 text-body-md text-ink placeholder:text-ink-mute focus:outline-none focus:border-wine-deep"
             style={{ fontSize: "16px", maxHeight: "160px" }}
           />
         </div>

@@ -283,9 +283,12 @@ V5 Hero 内の主要 CTA だけ例外で **champagne-gold solid + dark text (反
 
 実装: `components/chat-composer.tsx` / `chat-room-view.tsx`
 
-- **コンポーザー** (`ChatComposer`): 画像添付ボタン (`ImagePlus`, `text-gold-deep`) + テキストエリア + 送信ボタン (`bg-wine-deep text-pearl-light`)。⌘/Ctrl+Enter 送信。`onPaste` / ドラッグ&ドロップで画像添付（ドラッグ中は `ring-2 ring-gold/60`）
+- **コンポーザー** (`ChatComposer`): アクションアイコン 3 種（`Camera` 撮影 / `ImagePlus` 画像 / `Paperclip` ファイル、すべて `text-gold-deep`）+ テキストエリア + 送信ボタン (`bg-wine-deep text-pearl-light`)。⌘/Ctrl+Enter 送信。`onPaste` / ドラッグ&ドロップで画像添付（ドラッグ中は `ring-2 ring-gold/60`）
+  - **入力欄の自動伸長**: LINE/iMessage に倣い、改行・入力に合わせてテキストエリアを縦に伸ばす（`scrollHeight` ベース、上限 160px で内部スクロール）。Enter は改行、送信は ⌘/Ctrl+Enter または送信ボタン
+  - **アクションの折りたたみ** (LINE風): 文字入力中は 3 アイコンを畳んで `ChevronRight` (`>`) のトグルに集約し、タップで再展開。文字が空に戻ると自動的に再表示。これで入力中はテキスト欄を広く使える
+  - **ファイル添付**: 画像以外（PDF 等）も添付可。プレビュー / バブルでは `Paperclip` + ファイル名の chip で表示し、タップでダウンロード（`isAllowedFile`, 上限 `MAX_DOC_BYTES` = 10MB）
 - **`@` メンションメニュー**: コンポーザー上にポップ。さくらママ (AI相談) と顧客候補を一覧。選択チップは `bg-champagne-soft/60` アバター + VIP は `bg-wine/10 text-wine-deep`
-- **添付プレビュー / 表示**: 角丸 `rounded-xl` サムネ、枠 `border-ink/[0.08]`。バブル内画像はタップで全画面ライトボックス (`bg-ink/80 backdrop-blur-sm`)
+- **添付プレビュー / 表示**: 角丸 `rounded-xl` サムネ、枠 `border-ink/[0.08]`。バブル内画像はタップで全画面ライトボックス (`bg-ink/80 backdrop-blur-sm`)。画像以外はファイル名付きの `Paperclip` chip（`bg-pearl-soft`）でダウンロードリンク表示
 - **逆カルテ取り込みチップ** (`KarteChip`): メッセージ下に `bg-champagne-soft/40 border-gold/25` の card。`UserPlus` + 「〈名前〉さんのカルテに追加/反映しますか？」、主アクション `bg-wine-deep`、副 = 「あとで」。完了時は `bg-success/10 text-success` の pill。画像付きメッセージでは `Sparkles` の「スクショから反映」(主) + 「メモ追加」(副 = gold hairline) を出し分け
 - **スクショ抽出モーダル** (`ChatKarteExtractModal`): 既存 `/api/extract-memo` (vision) + `applyMemoUpdateAction` を再利用。`rounded-card bg-pearl shadow-warm`、項目チェックボックスは選択時 `bg-champagne-soft/40 border-gold/40`、反映は `bg-wine-deep`
 - **顧客ピンバー** (`PinBar`, 機構C): ヘッダー直下の `bg-champagne-soft/40 border-gold/20` バー。ピン中は顧客チップ + 「カルテ」pill (`border-gold/40 text-wine-deep`) + 解除`X`。未ピン時は `UserPlus` の控えめな「この相談を顧客に紐づける」リンク → 検索ピッカー。ピン状態は localStorage (`chat-room-pin-store`) に保持し、以後の投稿を自動でその顧客へひも付け

@@ -26,6 +26,7 @@ interface StoredAttachment {
   path?: string | null;
   url?: string | null;
   mime: string;
+  name?: string | null;
   width?: number | null;
   height?: number | null;
 }
@@ -96,6 +97,7 @@ function toMessage(row: MessageRow): ChatMessage {
         url: a.url ?? "",
         path: a.path ?? null,
         mime: a.mime,
+        name: a.name ?? null,
         width: a.width ?? null,
         height: a.height ?? null,
       })),
