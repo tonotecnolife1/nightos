@@ -1,4 +1,5 @@
-import { Users } from "lucide-react";
+import Link from "next/link";
+import { CalendarDays, ChevronRight, Users } from "lucide-react";
 import { Card } from "@/components/nightos/card";
 import { PageHeader } from "@/components/nightos/page-header";
 import { StatCard } from "@/components/nightos/stat-card";
@@ -60,6 +61,27 @@ export default async function MamaTeamPage() {
             today={MOCK_TODAY}
           />
         </section>
+
+        {/* チーム予定カレンダーへの導線 */}
+        <Link
+          href="/mama/schedule"
+          className="flex items-center justify-between p-3.5 rounded-2xl bg-wine-deep text-pearl-light shadow-warm active:scale-[0.99] transition-transform"
+        >
+          <div className="flex items-center gap-3">
+            <span className="w-9 h-9 rounded-full bg-pearl-light/15 flex items-center justify-center shrink-0">
+              <CalendarDays size={17} className="text-pearl-light" />
+            </span>
+            <div>
+              <div className="text-body-sm font-semibold tracking-[0.02em]">
+                チーム予定カレンダー
+              </div>
+              <div className="text-[11px] text-pearl-light/70 mt-0.5">
+                担当キャストの出勤・同伴を重ねて確認
+              </div>
+            </div>
+          </div>
+          <ChevronRight size={16} className="text-pearl-light/70 shrink-0" />
+        </Link>
 
         {/* Team totals */}
         <div className="grid grid-cols-2 gap-2.5">
