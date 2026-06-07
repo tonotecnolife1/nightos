@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ヘルプ報告 — 画面イメージ</title>
+<style>
+  :root{
+    --pearl:#faf7f2; --pearl-light:#fdfcf9; --pearl-warm:#f4e9dc; --pearl-soft:#f5efe6; --pearl-deep:#e8dccb;
+    --ink:#2b232a; --ink-soft:#6b5a58; --ink-mute:#a89a96;
+    --champagne-soft:#f5e8d2; --gold-soft:#e0c896; --gold:#b89455; --gold-deep:#876c3e;
+    --wine:#9a5d5d; --wine-deep:#5e3838; --warning:#c8a063;
+    --shadow-warm:0 8px 24px rgba(94,56,56,.14),0 24px 48px rgba(140,111,68,.10);
+    --shadow-luxe:0 10px 24px rgba(94,56,56,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+    background:linear-gradient(160deg,#2D1818 0%,#1A0F0F 60%);
+    color:var(--ink); min-height:100vh; padding:40px 20px 60px;
+  }
+  .page-title{text-align:center;color:#EBD9A8;font-size:22px;letter-spacing:.12em;margin-bottom:6px;font-weight:600}
+  .page-sub{text-align:center;color:rgba(253,252,249,.6);font-size:13px;margin-bottom:36px;letter-spacing:.04em}
+  .row{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+  .frame{width:340px}
+  .cap{color:#EBD9A8;font-size:13px;letter-spacing:.08em;margin-bottom:10px;text-align:center;font-weight:600}
+  .cap span{display:block;color:rgba(253,252,249,.55);font-size:11px;font-weight:400;margin-top:2px}
+  .phone{
+    background:var(--pearl);border-radius:30px;overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.06);
+    height:680px;display:flex;flex-direction:column;
+  }
+  /* header */
+  .hd{display:flex;align-items:center;gap:10px;padding:14px 14px;border-bottom:1px solid rgba(43,35,42,.06);background:var(--pearl)}
+  .hd .back{color:var(--ink-soft);font-size:12px;display:flex;align-items:center;gap:3px;width:46px}
+  .hd .ttl{flex:1;text-align:center}
+  .hd .ttl b{font-size:15px;color:var(--ink);display:inline-flex;gap:6px;align-items:center}
+  .hd .ttl small{display:block;color:var(--ink-mute);font-size:11px;margin-top:2px}
+  .ico{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+  .ico.right{margin-left:auto}
+  .body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+  .stepLabel{color:var(--gold-deep);font-size:12px;font-weight:600;margin-bottom:7px}
+  .stepLabel .opt{color:var(--ink-mute);font-weight:400}
+  /* selected customer chip */
+  .selCust{display:flex;justify-content:space-between;align-items:center;background:rgba(245,232,210,.5);border:1px solid rgba(184,148,85,.4);border-radius:12px;padding:11px 13px}
+  .selCust b{font-size:15px;color:var(--ink)} .selCust .nn{color:var(--ink-mute);font-size:13px}
+  .selCust .chg{color:var(--gold-deep);font-size:12px}
+  .search{display:flex;align-items:center;gap:8px;border:1px solid rgba(43,35,42,.08);background:var(--pearl-light);border-radius:12px;padding:9px 12px;color:var(--ink-mute);font-size:14px}
+  .list{border:1px solid var(--pearl-soft);border-radius:12px;margin-top:8px;overflow:hidden}
+  .list .it{padding:11px 13px;font-size:14px;color:var(--ink);border-bottom:1px solid rgba(43,35,42,.04)}
+  .list .it:last-child{border-bottom:0}
+  .list .it.hot{background:rgba(245,232,210,.35)}
+  .list .it .nn{color:var(--ink-mute)}
+  textarea,.ta{width:100%;border:1px solid rgba(43,35,42,.08);background:var(--pearl-light);border-radius:12px;padding:11px 13px;font-size:14px;color:var(--ink);line-height:1.7;resize:none;font-family:inherit}
+  .hint{color:var(--ink-mute);font-size:11px;margin-top:6px}
+  .cta{width:100%;height:48px;border:0;border-radius:12px;background:var(--wine-deep);color:#fdfcf9;font-size:15px;font-weight:600;box-shadow:var(--shadow-luxe);display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-top:auto}
+  /* report draft */
+  .report{white-space:pre-wrap;min-height:240px}
+  .stub{display:flex;gap:8px;align-items:flex-start;background:rgba(200,160,99,.12);border:1px solid rgba(200,160,99,.4);border-radius:12px;padding:9px 12px;font-size:13px;color:var(--ink)}
+  .consult{background:rgba(244,233,220,.6);border:1px solid var(--pearl-soft);border-radius:14px;padding:13px}
+  .consult .t{color:var(--gold-deep);font-size:12px;font-weight:600;display:flex;gap:6px;align-items:center;margin-bottom:10px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+  .chip{background:var(--pearl-light);border:1px solid rgba(184,148,85,.3);color:var(--gold-deep);border-radius:99px;padding:6px 12px;font-size:12px}
+  .dirRow{display:flex;gap:8px}
+  .dirRow .in{flex:1;border:1px solid rgba(43,35,42,.08);background:var(--pearl-light);border-radius:10px;padding:8px 11px;font-size:13px;color:var(--ink-mute)}
+  .dirRow .go{border:1px solid rgba(184,148,85,.3);background:var(--pearl-warm);color:var(--gold-deep);border-radius:10px;padding:0 14px;font-size:13px;font-weight:600;display:flex;align-items:center}
+  .foot{border-top:1px solid rgba(43,35,42,.06);padding:12px;background:var(--pearl)}
+  /* chat */
+  .chatbg{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;background:var(--pearl-soft)}
+  .day{align-self:center;background:rgba(43,35,42,.06);color:var(--ink-soft);font-size:11px;padding:3px 12px;border-radius:99px}
+  .msg{max-width:84%;align-self:flex-end;display:flex;flex-direction:column;gap:3px;align-items:flex-end}
+  .msg .who{font-size:11px;color:var(--ink-mute);padding:0 4px}
+  .bub{background:var(--wine-deep);color:#fdfcf9;border-radius:16px 16px 4px 16px;padding:12px 14px;font-size:13px;line-height:1.75;white-space:pre-wrap;box-shadow:var(--shadow-warm)}
+  .msg .meta{font-size:10px;color:var(--ink-mute);padding:0 4px;display:flex;gap:6px}
+  .msg.other{align-self:flex-start;align-items:flex-start}
+  .bub.other{background:var(--pearl-light);color:var(--ink);border-radius:16px 16px 16px 4px;border:1px solid rgba(43,35,42,.05)}
+  .karte{align-self:flex-end;background:rgba(245,232,210,.5);border:1px dashed rgba(184,148,85,.5);border-radius:12px;padding:9px 12px;font-size:12px;color:var(--gold-deep);max-width:84%}
+  .composer{border-top:1px solid rgba(43,35,42,.06);background:var(--pearl);padding:10px 14px;display:flex;align-items:center;gap:10px;color:var(--ink-mute);font-size:14px}
+  .composer .field{flex:1;background:var(--pearl-soft);border-radius:99px;padding:9px 14px}
+  .badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--wine-deep);color:#EBD9A8;font-size:13px}
+</style>
+</head>
+<body>
+  <div class="page-title">ヘルプ報告 — 自動作成フロー</div>
+  <div class="page-sub">ヘルプで入ったキャストが、担当さんへの報告をチャットから自動作成 → さくらママと編集 → 送信</div>
+
+  <div class="row">
+
+    <!-- ① 作成 -->
+    <div class="frame">
+      <div class="cap">① 作成<span>対象のお客様 ＋ 気づいたメモ</span></div>
+      <div class="phone">
+        <div class="hd">
+          <div class="back">✕</div>
+          <div class="ttl"><b>✨ ヘルプ報告</b><small>担当さんへ送る報告を作成</small></div>
+          <div class="ico right">✕</div>
+        </div>
+        <div class="body">
+          <div>
+            <div class="stepLabel">1. 誰のヘルプに入りましたか？</div>
+            <div class="selCust"><span><b>田中太郎</b><span class="nn">（たなっち）</span>さま</span><span class="chg">変更</span></div>
+          </div>
+          <div>
+            <div class="stepLabel">2. 今日の様子・気づいたこと <span class="opt">（任意）</span></div>
+            <div class="ta" style="min-height:96px;line-height:1.7">仕事が一段落して機嫌よく、ゴルフの話で盛り上がりました。来週またご来店したいとのこと。芋焼酎ロックを召し上がっていました。</div>
+            <div class="hint">メモが無くても、カルテの情報からさくらママが下書きを作ります。</div>
+          </div>
+          <div class="cta">✨ 報告を自動作成</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 編集 -->
+    <div class="frame">
+      <div class="cap">② さくらママと仕上げる<span>ドラフトを編集 ＋ 方向性を相談</span></div>
+      <div class="phone">
+        <div class="hd">
+          <div class="back">‹ 戻る</div>
+          <div class="ttl"><b>✨ ヘルプ報告</b><small>さくらママと仕上げる</small></div>
+          <div class="ico right">✕</div>
+        </div>
+        <div class="body">
+          <div>
+            <div class="stepLabel">報告ドラフト（そのまま編集できます）</div>
+            <div class="ta report">【ヘルプ報告】田中太郎さま（ゆきさん 担当）
+■ 来店
+本日ご来店（来店12回・最終来店今日）。
+■ ご様子
+お仕事が一段落され終始ご機嫌。ゴルフの話で盛り上がりました。
+■ 話した内容
+来週の接待ゴルフが楽しみとのこと。来週また来たいと仰っていました。
+■ お酒・ボトル
+芋焼酎ロックをお好みで。キープのドンペリ白は残40%。
+■ 引き継ぎ / 次回
+来週ご来店の意向あり。ゴルフの結果を伺うと喜ばれそうです。
+— あかり より</div>
+          </div>
+          <div class="consult">
+            <div class="t">✨ さくらママに相談して直す</div>
+            <div class="chips">
+              <span class="chip">もっと簡潔に</span>
+              <span class="chip">引き継ぎを厚く</span>
+              <span class="chip">やわらかく</span>
+              <span class="chip">事実だけに</span>
+            </div>
+            <div class="dirRow">
+              <div class="in">例: 同伴のお誘いも添えて</div>
+              <div class="go">直す</div>
+            </div>
+          </div>
+        </div>
+        <div class="foot"><div class="cta" style="margin-top:0">➤ この内容で報告を送信</div></div>
+      </div>
+    </div>
+
+    <!-- ③ チャット -->
+    <div class="frame">
+      <div class="cap">③ チャットに送信<span>担当さんへ報告が届く</span></div>
+      <div class="phone">
+        <div class="hd">
+          <div class="back">‹ 戻る</div>
+          <div class="ttl"><b>ゆき姉さん</b><small>2人</small></div>
+          <div class="ico right">📋</div><div class="ico">⋯</div>
+        </div>
+        <div class="chatbg">
+          <div class="day">今日</div>
+          <div class="msg other">
+            <div class="who">ゆき</div>
+            <div class="bub other">今日たなっちさん入ってくれてありがとう！どうだった？</div>
+            <div class="meta">21:40</div>
+          </div>
+          <div class="msg">
+            <div class="who">あかり</div>
+            <div class="bub">【ヘルプ報告】田中太郎さま（ゆきさん 担当）
+■ 来店
+本日ご来店（来店12回・最終来店今日）。
+■ ご様子
+お仕事が一段落され終始ご機嫌。ゴルフの話で盛り上がりました。
+■ 話した内容
+来週また来たいと仰っていました。
+■ お酒・ボトル
+芋焼酎ロックをお好みで。ドンペリ白は残40%。
+■ 引き継ぎ / 次回
+来週ご来店の意向あり。ゴルフの結果を伺うと喜ばれそうです。
+— あかり より</div>
+            <div class="meta">21:42 ・ 既読</div>
+          </div>
+          <div class="karte">📇 田中太郎さんのカルテに追加しますか？</div>
+        </div>
+        <div class="composer"><span class="badge">＋</span><div class="field">メッセージを入力</div><span>➤</span></div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
