@@ -27,9 +27,39 @@ interface SelectArgs {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// ボトルキープ枠はウイスキー / 焼酎のみが対象。
+// シャンパン・スパークリング・ワイン・コニャック(ブランデー) は
+// グラス売り (顧客の favorite_drink) であってボトルキープではないため、
+// 連絡リストのボトルキープ表示からは除外する。
+// brand は自由入力テキストなので「ボトルキープにならない種別」を
+// キーワードで弾く denylist 方式にしている（未知のウイスキー/焼酎銘柄を
+// 誤って隠さないため、allowlist ではなく denylist）。
+const NON_BOTTLE_KEEP_PATTERNS: RegExp[] = [
+  // シャンパン / スパークリング
+  /シャンパン|スパークリング|champagne|sparkling/i,
+  /ドンペリ|モエ|ヴーヴ|クリコ|クリュッグ|シャンドン|ローラン[ ・]?ペリエ|テタンジェ|ペリエ[ ・]?ジュエ|アルマン|ランソン|ニコラ[ ・]?フィアット/i,
+  /dom[ ・]?p[eé]rignon|mo[eë]t|veuve|krug|taittinger|perrier|armand|lanson/i,
+  // ワイン
+  /ワイン|wine|ロマネ|ブルゴーニュ|ボルドー|シャブリ|オーパス[ ・]?ワン/i,
+  // コニャック / ブランデー
+  /コニャック|ブランデー|cognac|brandy|レミー[ ・]?マルタン|ヘネシー|カミュ|マーテル|クルボアジェ/i,
+  /r[eé]my[ ・]?martin|hennessy|camus|martell|courvoisier/i,
+];
+
+/**
+ * ボトルキープ枠に表示してよい銘柄か (ウイスキー / 焼酎のみ true)。
+ * シャンパン・ワイン・コニャック等は false。
+ */
+export function isBottleKeepBrand(brand: string): boolean {
+  return !NON_BOTTLE_KEEP_PATTERNS.some((re) => re.test(brand));
+}
+
 export function selectFollowTargets(args: SelectArgs): FollowTarget[] {
   const { customers, visits, bottles, memos, today } = args;
   const out: FollowTarget[] = [];
+
+  // ボトルキープ枠の対象 (ウイスキー / 焼酎) のみに絞る
+  const keepBottles = bottles.filter((b) => isBottleKeepBrand(b.brand));
 
   for (const customer of customers) {
     const myVisits = visits
@@ -50,8 +80,8 @@ export function selectFollowTargets(args: SelectArgs): FollowTarget[] {
 
     const memo = memos.find((m) => m.customer_id === customer.id);
     const bottle =
-      bottles.find((b) => b.customer_id === customer.id && b.remaining_glasses > 0) ??
-      bottles.find((b) => b.customer_id === customer.id);
+      keepBottles.find((b) => b.customer_id === customer.id && b.remaining_glasses > 0) ??
+      keepBottles.find((b) => b.customer_id === customer.id);
 
     // Rule (b): birthday within next 14 days
     const birthdayInfo = upcomingBirthday(customer.birthday, today);
