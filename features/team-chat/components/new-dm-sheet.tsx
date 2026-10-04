@@ -1,8 +1,8 @@
 "use client";
 
-import { Check, Loader2, MessageCircle, Plus, Users, X } from "lucide-react";
+import { Check, Loader2, MessageCircle, Plus, Search, Users, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import type { CastMember } from "../lib/supabase-queries";
 import { createDmRoomAction, createGroupRoomAction } from "../actions";
@@ -18,6 +18,7 @@ export function NewDmSheet({ storeCasts }: Props) {
   const [mode, setMode] = useState<Mode>("dm");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [groupName, setGroupName] = useState("");
+  const [query, setQuery] = useState("");
   // どちらの種類を「立ち上げ中」か。オーバーレイの文言切り替えに使う。
   const [launching, setLaunching] = useState<Mode | null>(null);
   const [pending, startTransition] = useTransition();
@@ -27,6 +28,7 @@ export function NewDmSheet({ storeCasts }: Props) {
     setMode("dm");
     setSelected(new Set());
     setGroupName("");
+    setQuery("");
     setOpen(true);
   };
 
@@ -79,6 +81,13 @@ export function NewDmSheet({ storeCasts }: Props) {
       .join("、");
 
   const canCreate = mode === "group" && selected.size > 0;
+
+  // 名前で絞り込み。前後の空白を無視し、大文字小文字を区別しない。
+  const filteredCasts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return storeCasts;
+    return storeCasts.filter((c) => c.name.toLowerCase().includes(q));
+  }, [storeCasts, query]);
 
   return (
     <>
@@ -180,6 +189,32 @@ export function NewDmSheet({ storeCasts }: Props) {
               </div>
             )}
 
+            {/* Search */}
+            {storeCasts.length > 0 && (
+              <div className="px-5 pb-3">
+                <label className="flex items-center gap-2 rounded-2xl border border-ink/[0.08] bg-pearl-light px-3 h-10 focus-within:border-wine-deep transition">
+                  <Search size={14} className="text-ink-mute shrink-0" />
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="名前で検索..."
+                    className="min-w-0 flex-1 bg-transparent text-body-sm text-ink placeholder:text-ink-mute focus:outline-none"
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={() => setQuery("")}
+                      className="text-ink-mute hover:text-ink shrink-0"
+                      aria-label="検索をクリア"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </label>
+              </div>
+            )}
+
             <div className="border-t border-ink/[0.06]" />
 
             {/* Cast list */}
@@ -188,9 +223,13 @@ export function NewDmSheet({ storeCasts }: Props) {
                 <p className="px-5 py-8 text-center text-body-sm text-ink-mute">
                   同じ店舗のキャストが見つかりません
                 </p>
+              ) : filteredCasts.length === 0 ? (
+                <p className="px-5 py-8 text-center text-body-sm text-ink-mute">
+                  「{query.trim()}」に一致する相手がいません
+                </p>
               ) : (
                 <ul className="px-3 py-2">
-                  {storeCasts.map((cast) => {
+                  {filteredCasts.map((cast) => {
                     const isChecked = selected.has(cast.id);
                     return (
                       <li key={cast.id}>

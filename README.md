@@ -58,7 +58,7 @@ npm run dev
 
 ### 開発ブランチを検証したい時
 
-Vercel は PR ごとに Preview URL を自動発行します。`claude/nightos-mvp-development-nQHc4` 等の作業ブランチに push すると、コメントに Preview URL が貼られます。
+Vercel は PR ごとに Preview URL を自動発行します。`codex/<feature>` 等の作業ブランチに push すると、コメントに Preview URL が貼られます。
 
 ---
 
