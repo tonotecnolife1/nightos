@@ -102,9 +102,9 @@ done
 
 | ブランチ | 内容 | 推奨 |
 |---|---|---|
-| `claude/fix-champagne-data` | ボトルキープ枠からシャンパンを除外 + テスト (main 未反映のバグ修正) | マージ |
-| `claude/trusting-bell-SBfsx` | ヘルプ報告の自動作成 → さくらママ編集 → チャット送信 (新機能、テスト付き) | 動作確認してからマージ |
-| `claude/new-chat-user-search-zpTEW` | 新規チャット作成シートに相手検索 | マージ |
+| `claude/fix-champagne-data` | ボトルキープ枠からシャンパンを除外 + テスト (main 未反映のバグ修正) | ✅ PR #42 で取り込み |
+| `claude/trusting-bell-SBfsx` | ヘルプ報告の自動作成 → さくらママ編集 → チャット送信 (新機能、テスト付き) | ✅ PR #42 で取り込み (API はスタブモードで動作確認済み。画面は Preview で要確認) |
+| `claude/new-chat-user-search-zpTEW` | 新規チャット作成シートに相手検索 | ✅ PR #42 で取り込み |
 | `claude/nightos-business-model-EGDEX` | ビジネスモデル分析ドキュメント | 必要なら |
 | `claude/focused-goldberg-LVkqV` | オーナーアカウント作成 SQL。初期パスワードが平文で書かれている | **リポジトリに入れない** (実行済みならパスワードを変更) |
 
