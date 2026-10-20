@@ -60,6 +60,13 @@ export function MoreMenu({ tone = "default" }: Props) {
   );
 
   const items = [
+    {
+      key: "personal-line-settings",
+      label: "LINE接続",
+      href: "/cast/line?settings=1",
+      icon: Settings,
+      active: false,
+    },
     ...navItems.map((it) => ({
       key: it.key,
       label: it.label,

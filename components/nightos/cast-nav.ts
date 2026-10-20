@@ -6,7 +6,6 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
-import { SAKURA_MAMA_DISPLAY_NAME } from "@/lib/nightos/constants";
 
 export interface CastNavItem {
   key: string;
@@ -35,20 +34,28 @@ export const CAST_NAV_ITEMS: CastNavItem[] = [
     inTabBar: true,
   },
   {
-    key: "customers",
-    label: "顧客",
-    href: "/cast/customers",
-    icon: Users,
-    match: (p) => p.startsWith("/cast/customers"),
-    inTabBar: true,
-  },
-  {
     key: "ruri-mama",
-    label: SAKURA_MAMA_DISPLAY_NAME,
+    label: "AI",
     href: "/cast/ruri-mama",
     icon: Sparkles,
     match: (p) =>
       p.startsWith("/cast/ruri-mama") || p.startsWith("/mama/ruri-mama"),
+    inTabBar: true,
+  },
+  {
+    key: "line",
+    label: "LINE",
+    href: "/cast/line",
+    icon: MessageCircle,
+    match: (p) => p.startsWith("/cast/line"),
+    inTabBar: true,
+  },
+  {
+    key: "customers",
+    label: "お客様",
+    href: "/cast/customers",
+    icon: Users,
+    match: (p) => p.startsWith("/cast/customers"),
     inTabBar: true,
   },
   {
@@ -57,7 +64,7 @@ export const CAST_NAV_ITEMS: CastNavItem[] = [
     href: "/cast/chat",
     icon: MessageCircle,
     match: (p) => p.startsWith("/cast/chat") || p.startsWith("/mama/chat"),
-    inTabBar: true,
+    inTabBar: false,
   },
   {
     key: "schedule",
@@ -73,7 +80,7 @@ export const CAST_NAV_ITEMS: CastNavItem[] = [
     href: "/cast/stats",
     icon: TrendingUp,
     match: (p) => p.startsWith("/cast/stats"),
-    inTabBar: true,
+    inTabBar: false,
   },
 ];
 
