@@ -30,8 +30,8 @@ MacはNIGHTOSにHTTPSで外向きの接続を行い、2秒間隔で仕事を取�
 ## サーバー反映手順
 
 1. 変更ブランチをVercel previewでビルドする。本番mainへのマージは実機確認後に行う。
-2. 同じSupabaseプロジェクトへ `supabase/migrations/021_personal_line_bridge.sql` を適用する。既存データの更新・削除は行わず、3テーブルとclaim関数を追加する。
-3. Next.jsサーバーの環境変数に既存のSupabase URL / anonキー / Anthropicキーと、`SUPABASE_SERVICE_ROLE_KEY`、`NIGHTOS_LINE_BRIDGE_ENABLED=true` を設定する。service roleキーはブラウザ・Mac・チャットへ渡さない。
+2. Previewが使用するSupabaseプロジェクトを特定し、本番との共用有無を確認してから `supabase/migrations/021_personal_line_bridge.sql` を適用する。本番DBを使う場合は適用前に最終確認を取る。既存データの更新・削除は行わず、3テーブルとclaim関数を追加する。
+3. Next.jsサーバーの環境変数に既存のSupabase URL / anonキー / Anthropicキーと、`SUPABASE_SERVICE_ROLE_KEY`、`NIGHTOS_LINE_BRIDGE_ENABLED=true` を設定する。検証時はPreviewの対象ブランチだけに設定する。service roleキーはブラウザ・Mac・チャットへ渡さない。
 4. Supabaseの実アカウント（user_role=cast）でログインし、LINEタブの設定から接続コードを作る。
 5. Mac用配布物の `Start.command` をダブルクリックする。初回はyを入力し、接続コードを貼る。LINEへの再ログインは不要。Node.js 20以上、またはこのMacにあるCodex同梱Nodeが必要。
 6. 接続状態が変わり、自動読み込みが終わることを確認する。追加の読み込みは「読み込む」から行う。
@@ -51,6 +51,73 @@ MacはNIGHTOSにHTTPSで外向きの接続を行い、2秒間隔で仕事を取�
 DBの検証は別の一時フォルダにPGliteをインストールし、`node scripts/personal-line/check-db.mjs /absolute/path/to/@electric-sql/pglite/dist/index.js` で実施できます。本番DBに接続しないメモリ内PostgreSQLで、権限・二重claim禁止・期限・解除・所有者一致・ロール変更と再適用を確認します。
 
 ブラウザ試験用の `scripts/personal-line/browser-fixture.js` は、localhost上の隔離したテストページにだけ読み込みます。実サービスのルートや本番バンドルからは読み込まないでください。
+
+### Macからの到達性とPreview保護
+
+配布ZIPを展開したフォルダで、次を実行できます。MacのLINEプログラムは起動せず、認証情報・接続鍵を使わず、ジョブの取得・送信・DB変更も行いません。
+
+```bash
+node scripts/personal-line/check-preview.mjs https://nightos-app-git-codex-mac-line-bridge-tonotecnolife1s-projects.vercel.app
+```
+
+認証なしの中継pollがJSONの401 `device_authentication_required` を返した場合だけPASSにします。PASSはAPIへの到達性のみを意味し、DB権限・本人ログイン・Mac接続の成功は意味しません。302などの転送、ログインHTML、設定未完了503は失敗です。Mac接続プログラム自体も転送を追わず、Preview保護やJSON以外の応答を区別して停止します。送信要求を自動で再実行することはありません。
+
+CloudのようにHTTPプロキシが必須の環境では、対応するNode.js（このCloudでは24）の `node --use-env-proxy ...` を使います。Macで通常のネット接続を使う場合は不要です。通信先の許可がない場合、プロキシを回避せずCloud設定で許可してください。
+
+Preview保護で停止した場合、まずVercelの現在の設定と利用プランを確認します。検証用Previewの固有ドメインだけを例外にできる場合は、それを候補として提示し、本番や他のPreviewの保護には広げません。固有ドメイン例外が使えない場合は検証専用プロジェクト等の範囲を限定できる構成を検討します。プロジェクト全体の保護OFFは行いません。どの場合もNIGHTOSの実Auth・cast本人確認は維持します。この版はVercelの保護バイパストークンを接続コードへ入れたり保存したりする機能を持ちません。
+
+### DB適用前後の確認
+
+- PreviewとProductionそれぞれの `NEXT_PUBLIC_SUPABASE_URL` のプロジェクト参照を比較する。Cloudの接続先だけでは共用か判断できない。同じ参照なら「Previewは本番DBを共用」と明示し、SQL適用前に確認を取る。
+- 管理接続で適用済みmigration履歴を確認する。SQL Editorで手動適用した場合はCLI履歴に残らないことがあるため、実スキーマも比較する。
+- 021は `auth.users` / `public.nightos_casts` / `public.customers` を参照する3テーブル、キュー・期限・ownerの3インデックス、claim関数、RLSとアクセス権を追加する。既存テーブルの行の更新・削除はない。既に同名オブジェクトがある場合は、`IF NOT EXISTS` だけに頼らず定義の一致を確認する。
+- 承認済みの対象DBに021をトランザクション内で適用し、`scripts/personal-line/verify-deployed-db.sql` を管理接続で実行する。このチェックは読み取り専用で、テーブル・RLS・ロールの権限・関数定義・制約・インデックスとAuth紐づけ件数を確認し、個人情報は表示しない。claim関数は呼び出さない。
+- 実キャスト本人のログインで `nightos_casts.auth_user_id = auth.getUser().id` かつ `user_role = cast` を確認する。デモCookieや店舗ロールでの接続は不可。本人確認のために既存Authユーザーやロールを書き換えない。
+- 二重claim等の破壊的な確認は本番DBへテストジョブを入れず、既存の隔離PGlite試験を使用する。
+
+### Cloud引き継ぎ確認記録（2026-10-21）
+
+着手時のPR #43はdraft/open、headは `f03cf339a3e4df8b718f099afcf878b5f62f6df3`。既存実装を引き継いだ。GitHubのVercel botコメントは次をReadyとしている（現在のAPI疎通やDB反映を保証するものではない）。
+
+- チーム: `tonotecnolife1s-projects` / `team_8jTCfUd9XXq1EtR410PR4L7v`
+- プロジェクト: `nightos-app` / `prj_DMqHn7SrPOCBEmqcDzi2Q5e5KMCl`
+- [Preview](https://nightos-app-git-codex-mac-line-bridge-tonotecnolife1s-projects.vercel.app)
+- [Vercelの既存デプロイ記録](https://vercel.com/tonotecnolife1s-projects/nightos-app/5ZXyqrBrtcPFAAB6PACYGFdbcMp2)
+
+| 項目 | このCloudで確認した状態 |
+|---|---|
+| CloudのSupabase接続先 | `tswzmjkswegjdsjyogjx.supabase.co`。Preview/Productionとの対応は未確認 |
+| URL / anonキー | 注入済み。Auth health/settingsは200。anonでnightos_castsを読むと権限拒否（401/42501） |
+| 中継テーブル | anonによるdevices照会で404/PGRST205（schema cacheに未検出）。管理接続でのmigration履歴・実スキーマ確認は未実施 |
+| Anthropic | 認証付きmodels API 200。アプリの `claude-haiku-4-5-20251001` で合成文の生成200。LINE本文は使用せず |
+| Vercel管理認証 | このCloudにトークン・CLIログインなし。チーム権限は未確認 |
+| 管理用Supabase認証 / DB接続 | service role、管理アクセストークン、DB接続情報の注入なし |
+| 通信許可 | Supabase接続先とAnthropicは到達。Vercel APIとPreviewは許可対象外のため到達未確認。302を成功扱いしていない |
+| Vercelアプリ環境変数 | 未取得・未変更。Cloudへの設定とは別。Previewの5変数の設定・再デプロイが必要 |
+| 本番操作 | mainマージ、本番設定変更、実DB migration、実LINE送信はいずれも未実施 |
+
+Cloudの秘密はドメイン限定のプロキシ注入である場合がある。Cloudで認証成功しても、その環境変数をコピーしてVercelで使えるとは限らない。Vercel管理トークンはVercel API/CLIの認証専用で、アプリの5変数へ設定しない。アプリ用の実値はVercelの秘密設定へ直接登録するか、安全に移送できる正規のsecret bindingを使用する。
+
+ローカルのデザインチェック・ビルド成功、Vitestは29ファイル中28成功/1未実施、249件成功/2件未実施。追加9件は転送・HTML・異常JSON・未設定応答・未認証の到達性診断を検証する。Mac実バイナリがないため、隔離demoモードの2件は未実施。PGliteで021の再適用・private権限・owner一致・二重claim禁止・期限・解除・ロール変更と読み取り専用SQLの実行を確認した。フォント最適化のダウンロード警告はあるがビルドは完了した。
+
+### 依存監査と公開前の残作業（2026-10-21）
+
+`npm audit --omit=dev` は着手時 critical 1 / high 7 / moderate 3。Next.jsを14.2.21→14.2.35へ更新し、互換範囲のform-data 4.0.6 / ws 8.22.0 / nanoid 3.3.20 / source-map-js 1.2.2へlockfileを更新した。新しい実行時依存は追加していない。再監査は **critical 1 / high 1**。指摘数は依存パッケージ単位であり脆弱性の件数ではない。
+
+- **Next.js（critical、未解決）**: 14系の最新パッチでも、現時点の監査にはApp Router/RSC/Server ActionsのDoSやキャッシュ関連等が残る。このアプリはそれらの機能を使用するため、到達性がないと一括で判断できない。Vercel側の緩和策の適用も未確認。監査が示す修正版15.5.24以上のサポート系列への更新と、非同期cookies/headers・ルートparams・Supabase SSRの互換確認を公開前に完了する必要がある。
+- **critical指摘の条件**: Windowsサーバー向けRCEは通常のVercel Linux実行とは条件が異なる。AVIF画像最適化向けRCEは現在 `images.unoptimized: true` のため通常のアプリ画像では使わないが、設定だけで全Next.js指摘が解消したとは扱わない。
+- **Next内包PostCSS（high、未解決）**: 8.4.31が固定されており、攻撃者由来CSSのsourceMappingURL等に関する読み取り/XSSの指摘が残る。このLINE機能はCSSを受け付けないが、アプリ全体のビルド経路も含めて修正版へ更新する。メジャー更新やoverrideを無検証で適用しない。
+- form-data/ws等の指摘は今回の互換更新で監査から消えた。AI返信はJSONリクエストを使うが、それだけを理由に依存の指摘を放置しない。
+
+本番反映前には、上の依存対応、PreviewとDBの対応確認、対象DBでの021と権限検証、Previewだけへの5変数設定、実castログイン、Macからの到達性、読込→AI返信案→編集→送信しない→本人承認のテスト1通→受信確認を完了する。完了結果を提示してから本番DB/設定変更とmainマージの最終確認を取る。
+
+### Macで次に行う操作
+
+1. 担当者からPreviewのサーバー/DB準備完了の連絡を受け、新しい配布ZIPを展開する。旧版と同時に起動しない。
+2. 必要なら上の `check-preview.mjs` を実行する。PASS以外は担当者へ結果の分類だけを伝え、接続コードや鍵を共有しない。
+3. Previewに実castアカウントでログインし、LINE設定で接続コードを作る。展開先の `Start.command` を開き、y→接続コードを入力する。既存LINEログイン/Keychainは変更しない。
+4. 読込・AI返信案・編集・宛先/個人かグループ/本文を確認し、まず「送信しない」を試す。実送信はMacの本人がテスト宛先と本文を確認し、NIGHTOSの確認画面で承認した1通のみ。結果不明ならLINEアプリで確認し、自動再送しない。
+5. 接続中はMacのプログラムとブラウザのタブを開いておく。タブを閉じた場合は古い接続を解除して再接続する。停止はControl+C。
 
 ## 取り消し
 

@@ -39,5 +39,8 @@ await db.exec('reset role');
 await db.exec("update personal_line_jobs set expires_at=now()+interval '1 minute'; update nightos_casts set user_role='store_owner'");
 await db.exec('set role service_role');
 assert.equal((await claim()).rows.length,0);
+await db.exec('reset role');
+// Verify that the production read-only checklist also runs on the fixture.
+await db.exec(await readFile(new URL('./verify-deployed-db.sql',import.meta.url),'utf8'));
 await db.close();
 console.log('PASS: idempotent migration, private table/function grants, no reclaim, owner binding, revocation, expiry, role change. No production database used.');

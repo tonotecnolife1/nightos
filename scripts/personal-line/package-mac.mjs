@@ -11,7 +11,7 @@ const folder=join(scratch,'NIGHTOS-LINE-Mac-Bridge');
 try{
   await mkdir(join(folder,'scripts/personal-line'),{recursive:true});
   await mkdir(join(folder,'lib/personal-line'),{recursive:true});
-  for(const file of ['bridge.mjs','mcp-client.mjs','send-form.mjs','Start-line-bridge.command'])await copyFile(join(root,'scripts/personal-line',file),join(folder,'scripts/personal-line',file));
+  for(const file of ['bridge.mjs','mcp-client.mjs','send-form.mjs','relay-http.mjs','check-preview.mjs','Start-line-bridge.command'])await copyFile(join(root,'scripts/personal-line',file),join(folder,'scripts/personal-line',file));
   await copyFile(join(root,'lib/personal-line/crypto.mjs'),join(folder,'lib/personal-line/crypto.mjs'));
   await copyFile(join(root,'docs/personal-line-mac-bridge.md'),join(folder,'README.md'));
   await writeFile(join(folder,'Start.command'),'#!/bin/bash\nset -euo pipefail\nexec bash "$(dirname "$0")/scripts/personal-line/Start-line-bridge.command"\n');

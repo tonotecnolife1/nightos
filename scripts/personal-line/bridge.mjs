@@ -6,6 +6,7 @@ import { createInterface } from 'node:readline/promises';
 import { decodePairing, seal, open } from '../../lib/personal-line/crypto.mjs';
 import { LineMcpClient, toolFor } from './mcp-client.mjs';
 import { createSendFormHandler } from './send-form.mjs';
+import { relayRequest, relayMessages } from './relay-http.mjs';
 
 const pause = ms => new Promise(resolve => setTimeout(resolve,ms));
 export function validateOrigin(value) {
@@ -43,9 +44,9 @@ export async function run() {
       const pair = decodePairing(code);
       const origin = validateOrigin(pair.origin);
       if(!/^[a-f0-9]{64}$/.test(pair.secret) || !/^[A-Za-z0-9_-]{43}$/.test(pair.key) || !/^[a-f0-9-]{36}$/.test(pair.id))throw new Error('invalid_pairing');
-      const result = await fetch(origin+'/api/personal-line/bridge/pair',{method:'POST',redirect:'error',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:pair.id,secret:pair.secret}),signal:AbortSignal.timeout(15_000)});
+      const result = await relayRequest(origin+'/api/personal-line/bridge/pair',{method:'POST',payload:{id:pair.id,secret:pair.secret}});
       if(!result.ok)throw new Error('pairing_failed');
-      const {token} = await result.json();
+      const {token} = result.data ?? {};
       if(!/^[a-f0-9]{64}$/.test(token))throw new Error('invalid_device_token');
       config = {origin,deviceId:pair.id,key:pair.key,token};
       await writeFile(configPath,JSON.stringify(config),{mode:0o600});
@@ -54,9 +55,9 @@ export async function run() {
       config = JSON.parse(await readFile(configPath,'utf8'));validateOrigin(config.origin);
     }
     const api = async (path,method='GET',payload) => {
-      const response = await fetch(config.origin+'/api/personal-line/bridge/'+path,{method,redirect:'error',headers:{Authorization:'Bearer '+config.token,'Content-Type':'application/json'},body:payload===undefined?undefined:JSON.stringify(payload),signal:AbortSignal.timeout(15_000)});
+      const response = await relayRequest(config.origin+'/api/personal-line/bridge/'+path,{method,token:config.token,payload});
       if(!response.ok)throw new Error(response.status===401?'device_revoked':'relay_unavailable');
-      return response.json();
+      return response.data;
     };
     const binary = process.env.NIGHTOS_LINE_BINARY || join(homedir(),'.local/share/line-personal-mcp-independent/bin/line-personal-mcp');
     let currentJob = null;
@@ -70,7 +71,7 @@ export async function run() {
     while(true) {
       let job;
       try { ({job} = await api('poll','POST',{})); }
-      catch(error) { if(error.message==='device_revoked')throw error;process.stdout.write('NIGHTOSとの通信を再接続しています。送信の再実行はしません。\n');await pause(10_000);continue; }
+      catch(error) { if(error.message==='device_revoked'||relayMessages[error.message])throw error;process.stdout.write('NIGHTOSとの通信を再接続しています。送信の再実行はしません。\n');await pause(10_000);continue; }
       if(!job) { await pause(2000);continue; }
       currentJob = job;
       const context = config.deviceId+':'+job.id;
@@ -89,5 +90,5 @@ export async function run() {
   } finally { await cleanup(); }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  run().catch(error => { process.stderr.write('LINE接続を停止しました（'+(['bridge_already_running','pairing_failed','line_connector_not_ready','device_revoked','connection_file_permissions'].includes(error.message)?error.message:'bridge_start_failed')+'）。本文・鍵は出力していません。\n');process.exitCode=1; });
+  run().catch(error => { process.stderr.write((relayMessages[error.message] ?? 'LINE接続を停止しました（'+(['bridge_already_running','pairing_failed','line_connector_not_ready','device_revoked','connection_file_permissions'].includes(error.message)?error.message:'bridge_start_failed')+'）。本文・鍵は出力していません。')+'\n');process.exitCode=1; });
 }
