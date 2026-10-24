@@ -38,6 +38,7 @@ function visit(
     table_name: "T1",
     is_nominated: nominated,
     visited_at: d.toISOString(),
+    sales_amount: 0,
   };
 }
 

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // node 環境には localStorage / window が無いので最小スタブを差し込む。
 class MemoryStorage {
@@ -15,23 +15,22 @@ class MemoryStorage {
   clear() {
     this.store.clear();
   }
+  get length() { return this.store.size; }
+  key(index: number) { return Array.from(this.store.keys())[index] ?? null; }
 }
 
 const memoryStorage = new MemoryStorage();
-// @ts-expect-error – test shim
-globalThis.localStorage = memoryStorage;
-// @ts-expect-error – test shim
-globalThis.window = {
+vi.stubGlobal("localStorage", memoryStorage);
+vi.stubGlobal("window", {
   localStorage: memoryStorage,
   dispatchEvent: () => true,
   addEventListener: () => {},
   removeEventListener: () => {},
-};
+});
 // CustomEvent は jsdom 無し環境には無いので最小スタブ。
-// @ts-expect-error – test shim
-globalThis.CustomEvent = class {
+vi.stubGlobal("CustomEvent", class {
   constructor(public type: string) {}
-};
+});
 
 import type { Learning } from "@/lib/nightos/chat-learnings-store";
 import {
