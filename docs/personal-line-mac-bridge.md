@@ -75,6 +75,43 @@ Preview保護で停止した場合、まずVercelの現在の設定と利用プ�
 - 実キャスト本人のログインで `nightos_casts.auth_user_id = auth.getUser().id` かつ `user_role = cast` を確認する。デモCookieや店舗ロールでの接続は不可。本人確認のために既存Authユーザーやロールを書き換えない。
 - 二重claim等の破壊的な確認は本番DBへテストジョブを入れず、既存の隔離PGlite試験を使用する。
 
+### Preview DB分離の進行記録（2026-10-25、JST）
+
+今回の対象は `nightos-app` / `tonotecnolife1s-projects` の `codex/mac-line-bridge`。ユーザーの方針は**Preview専用Supabaseプロジェクトを新規作成**すること。今回の作業ではmigration、本番設定変更、mainマージ、実LINE送信を行わない。下の2026-10-21の記録は当時の状態で、今回確認できた項目は本節を優先する。
+
+確認済みの状態:
+
+- 着手時のPR #43はdraft/open。headは `7e5c4665d1e32a5a884cb5b5b8493e13b6029899`。同じコミットのVercel PreviewはREADY。
+- Cloud `nightos` の `VERCEL_TOKEN` はready、通信ポリシーはenforced。Vercel APIの認証付きGETは200で、チームとプロジェクトIDの一致を確認した。
+- Supabase URL / anonキー / service roleの3設定はProduction・Preview共通で、ブランチ専用上書きはない。個別env APIで復号したURLはCloudと同じ `tswzmjkswegjdsjyogjx.supabase.co`。env一覧のencrypted値は暗号文なので、URLの比較には使用しない。秘密値はチャット・リポジトリ・ローカルファイルに出力していない。
+- 対象ブランチだけに `NIGHTOS_LINE_BRIDGE_ENABLED=false` と `NIGHTOS_DISABLE_MOCK_AUTH=true` をencryptedで追加した。targetはpreviewのみ、gitBranchは `codex/mac-line-bridge`。それ以外のenvエントリは変更前後で一致した。反映先は追加後のPreviewデプロイで、設定の追加だけでは既存デプロイへ反映されない。
+- Previewへの認証なしpollはHTTP 401 / JSONだが、期待する `device_authentication_required` ではない。到達性PASSやMac接続成功とは扱わない。Vercelの保護設定は変更していない。
+- Supabase管理認証の登録・公開はユーザーが進める方針。確認時点のCloudには `SUPABASE_ACCESS_TOKEN` のbindingも実行時変数もなく、新DBは未作成。反映・ready確認と管理API疎通が済むまで、新DBの作成完了とは扱わない。
+- 設定診断の実行結果はDBの4項目がFAIL、LINE連携OFF・mock認証OFFの2項目がPASS。想定どおり分離未完了を検出した。`npm ci` 後のNext.js 14.2.35でbuild成功、Vitestは258件成功・2件未実施（Mac実バイナリがないため）。追加9件は本番DB共用、別チーム、重複設定、秘密非表示、GET限定などの境界を確認する。
+
+分離の残りの手順（実DBへのSQL適用なし）:
+
+1. Cloudの秘密設定で `SUPABASE_ACCESS_TOKEN` を `api.supabase.com` 限定で登録・公開し、readyとAPI権限を確認する。チャットやリポジトリへトークンを貼らない。
+2. 既存NIGHTOSプロジェクトの所属組織・リージョンと作成枠を確認し、専用の空プロジェクト（候補名 `nightos-preview`）を作る。本番からのデータ・Authユーザーの複製、DBブランチの自動migration、リポジトリの自動migration連携は行わない。追加課金やプラン変更が必要なら、作成前に条件を提示する。
+3. 新プロジェクトのURL・anonキー・service roleを、Vercelの次の3つの**新規ブランチ専用エントリ**に登録する。既存のProduction/Preview共通エントリは編集・削除しない。URL / anonキーは比較できるencrypted、service roleはsensitiveで登録する。Cloudのプロキシ用秘密プレースホルダーをアプリ用キーとして転用しない。
+
+   | キー | Vercel target | gitBranch | 値の出所 |
+   |---|---|---|---|
+   | `NEXT_PUBLIC_SUPABASE_URL` | previewのみ | `codex/mac-line-bridge` | 新プロジェクトのURL |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | previewのみ | `codex/mac-line-bridge` | 同じ新プロジェクトのanonキー |
+   | `SUPABASE_SERVICE_ROLE_KEY` | previewのみ | `codex/mac-line-bridge` | 同じ新プロジェクトのservice role |
+
+4. 新プロジェクトだけのAuth Site URL / Redirect URLを対象Previewに合わせる。本番Auth設定は変更しない。Cloudから新しいSupabaseホストへ接続するには、そのホストの通信許可も別途必要。
+5. 下の診断で設定の分離を確認する。空DBにはアプリの既存スキーマも本人Auth紐づけもないため、設定が分離できてもアプリやLINEが利用可能とは扱わない。migration禁止の今回の段階では、連携無効のまま止める。
+
+```bash
+node --use-env-proxy scripts/personal-line/check-preview-config.mjs
+```
+
+診断は固定した対象チーム・プロジェクト・ブランチについてVercel管理APIのGETだけを行う。必要な認証は `VERCEL_TOKEN`。秘密値・API本文・URLは出力せず、3設定のブランチ限定上書き、Productionと異なるSupabase URL / anonキー、service roleの別エントリ、LINE連携OFF・mock認証OFFを判定する。未設定、重複、読み取れないURL/anonキー、認証失敗は成功扱いにしない。service roleはsensitiveのため値の正しさを証明しない。PASSでも実DBの認証・スキーマ・Authユーザー・既存デプロイへの反映は未検証である。
+
+DB接続設定をロールバックする場合は、追加したDBの3つのブランチ専用エントリだけを対象にする。削除すると共通設定の本番DBを再び継承するため、`NIGHTOS_LINE_BRIDGE_ENABLED=false` と `NIGHTOS_DISABLE_MOCK_AUTH=true` のブランチ設定は維持する。新プロジェクトの削除やデータの移動は、この手順に含めない。
+
 ### Cloud引き継ぎ確認記録（2026-10-21）
 
 着手時のPR #43はdraft/open、headは `f03cf339a3e4df8b718f099afcf878b5f62f6df3`。既存実装を引き継いだ。GitHubのVercel botコメントは次をReadyとしている（現在のAPI疎通やDB反映を保証するものではない）。
